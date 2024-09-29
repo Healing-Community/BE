@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
-    <Folder Include="Interfaces\GenericRepository\" />
-    <Folder Include="Interfaces\Repository\" />
-    <Folder Include="Queries\" />
+    <Folder Include="Commands\Roles\AddRole\" />
+    <Folder Include="Queries\Roles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit.Abstractions" Version="8.2.5" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
   </ItemGroup>
 
   <ItemGroup>

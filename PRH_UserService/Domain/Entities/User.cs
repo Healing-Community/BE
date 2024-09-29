@@ -12,7 +12,8 @@ namespace Domain.Entities
         public string FullName { get; set; } = null!;
         public string UserName { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public int status { get; set; } = 0;
+        public string PasswordHash { get; set; } = null!;
+        public int Status { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
         public int RoleId { get; set; }
