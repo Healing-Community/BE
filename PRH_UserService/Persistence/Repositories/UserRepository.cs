@@ -50,5 +50,15 @@ namespace Persistence.Repositories
             hFDbContext.Entry(existingUser).State = EntityState.Modified;
             await hFDbContext.SaveChangesAsync();
         }
+
+        public async Task<User?> GetUserByUserNameAsync(string userName)
+        {
+            return await hFDbContext.Users.SingleOrDefaultAsync(u => u.UserName == userName);
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await hFDbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
+        }
     }
 }

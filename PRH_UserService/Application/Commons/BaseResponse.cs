@@ -8,5 +8,4 @@ public class BaseResponse<T>
     public T? Data { get; set; }
     public IEnumerable<string>? Errors { get; set; }
     public DateTime Timestamp { get; set; }
-
 }
