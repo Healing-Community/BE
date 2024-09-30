@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Commands\Roles\AddRole\" />
-    <Folder Include="Queries\Roles\" />
   </ItemGroup>
 
   <ItemGroup>
