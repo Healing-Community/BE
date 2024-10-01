@@ -12,10 +12,12 @@ namespace Application.Commands.Users.LoginUser
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<string>>
     {
         private readonly IUserRepository _userRepository;
+        private readonly IJwtTokenRepository _jwtTokenRepository;
 
-        public LoginUserCommandHandler(IUserRepository userRepository)
+        public LoginUserCommandHandler(IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
         {
             _userRepository = userRepository;
+            _jwtTokenRepository = jwtTokenRepository;
         }
 
         public async Task<BaseResponse<string>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -27,7 +29,8 @@ namespace Application.Commands.Users.LoginUser
                 {
                     Success = false,
                     Message = "Invalid email or password.",
-                    Errors = new List<string> { "User not found." }
+                    Errors = new List<string> { "User not found." },
+                    Timestamp = DateTime.UtcNow
                 };
             }
 
@@ -37,15 +40,19 @@ namespace Application.Commands.Users.LoginUser
                 {
                     Success = false,
                     Message = "Invalid email or password.",
-                    Errors = new List<string> { "Incorrect password." }
+                    Errors = new List<string> { "Incorrect password." },
+                    Timestamp = DateTime.UtcNow
                 };
             }
+
+            var token = _jwtTokenRepository.GenerateToken(user);
 
             return new BaseResponse<string>
             {
                 Success = true,
                 Message = "Login successful.",
-                Data = "Login successful."
+                Data = token,
+                Timestamp = DateTime.UtcNow
             };
         }
 

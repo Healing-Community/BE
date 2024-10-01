@@ -29,7 +29,8 @@ namespace Application.Commands.Users.RegisterUser
                 {
                     Success = false,
                     Message = "UserName already exists.",
-                    Data = null
+                    Data = null,
+                    Timestamp = DateTime.UtcNow
                 };
             }
 
@@ -40,7 +41,8 @@ namespace Application.Commands.Users.RegisterUser
                 {
                     Success = false,
                     Message = "Email already exists.",
-                    Data = null
+                    Data = null,
+                    Timestamp = DateTime.UtcNow
                 };
             }
 
@@ -63,7 +65,8 @@ namespace Application.Commands.Users.RegisterUser
             {
                 Success = true,
                 Message = "Registration successful.",
-                Data = "User registered successfully."
+                Data = "User registered successfully.",
+                Timestamp = DateTime.UtcNow
             };
         }
 

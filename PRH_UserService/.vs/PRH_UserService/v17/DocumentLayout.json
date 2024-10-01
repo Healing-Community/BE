@@ -3,26 +3,6 @@
   "WorkspaceRootPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\application\\commands\\users\\adduser\\createusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|solutionrelative:application\\commands\\users\\adduser\\createusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{92A1D2D3-4303-4ECE-AC2D-FD7B6A2D660C}|Domain\\Domain.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\domain\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{92A1D2D3-4303-4ECE-AC2D-FD7B6A2D660C}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{92A1D2D3-4303-4ECE-AC2D-FD7B6A2D660C}|Domain\\Domain.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{92A1D2D3-4303-4ECE-AC2D-FD7B6A2D660C}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{92A1D2D3-4303-4ECE-AC2D-FD7B6A2D660C}|Domain\\Domain.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\domain\\entities\\token.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{92A1D2D3-4303-4ECE-AC2D-FD7B6A2D660C}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\token.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{71891F6A-3DA3-4E5C-9C00-49103C869CFF}|Infrastructure\\Infrastructure.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\infrastructure\\context\\hfdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{71891F6A-3DA3-4E5C-9C00-49103C869CFF}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\hfdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\application\\commands\\users\\loginuser\\loginusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|solutionrelative:application\\commands\\users\\loginuser\\loginusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -38,97 +18,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "CreateUserCommandHandler.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\AddUser\\CreateUserCommandHandler.cs",
-              "RelativeDocumentMoniker": "Application\\Commands\\Users\\AddUser\\CreateUserCommandHandler.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\AddUser\\CreateUserCommandHandler.cs",
-              "RelativeToolTip": "Application\\Commands\\Users\\AddUser\\CreateUserCommandHandler.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAswBEAAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-01T12:20:35.035Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Role.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Domain\\Entities\\Role.cs",
-              "RelativeDocumentMoniker": "Domain\\Entities\\Role.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Domain\\Entities\\Role.cs",
-              "RelativeToolTip": "Domain\\Entities\\Role.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-01T12:12:19.068Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "User.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Domain\\Entities\\User.cs",
-              "RelativeDocumentMoniker": "Domain\\Entities\\User.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Domain\\Entities\\User.cs",
-              "RelativeToolTip": "Domain\\Entities\\User.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-01T12:10:53.607Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Token.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Domain\\Entities\\Token.cs",
-              "RelativeDocumentMoniker": "Domain\\Entities\\Token.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Domain\\Entities\\Token.cs",
-              "RelativeToolTip": "Domain\\Entities\\Token.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-01T11:53:06.438Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "HFDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Infrastructure\\Context\\HFDbContext.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Context\\HFDbContext.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Infrastructure\\Context\\HFDbContext.cs",
-              "RelativeToolTip": "Infrastructure\\Context\\HFDbContext.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAswDgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-01T11:50:38.991Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "LoginUserCommandHandler.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
-              "RelativeDocumentMoniker": "Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
-              "RelativeToolTip": "Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAABkAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-30T16:22:07.352Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
               "Title": "RegisterUserCommandHandler.cs",
               "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
               "RelativeDocumentMoniker": "Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
               "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
               "RelativeToolTip": "Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
-              "ViewState": "AgIAABkAAAAAAAAAAAAAAC0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABEAAAAAAAAAAAAiwEQAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-30T16:21:37.12Z",
+              "WhenOpened": "2024-10-01T14:02:13.772Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LoginUserCommandHandler.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
+              "RelativeDocumentMoniker": "Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
+              "RelativeToolTip": "Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
+              "ViewState": "AgIAACEAAAAAAAAAAAAUwDUAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T12:44:20.81Z",
               "EditorCaption": ""
             }
           ]
