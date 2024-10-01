@@ -52,8 +52,8 @@ namespace Application.Commands.Users.RegisterUser
                 Email = request.RegisterUserDto.Email,
                 PasswordHash = HashPassword(request.RegisterUserDto.Password),
                 Status = (int)UserStatus.Active,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
                 RoleId = 4
             };
 

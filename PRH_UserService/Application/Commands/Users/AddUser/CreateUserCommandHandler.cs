@@ -22,8 +22,8 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             Status = request.UserDto.Status,
             UserName = request.UserDto.UserName,
             PasswordHash = request.UserDto.PasswordHash,
-            Created = DateTime.UtcNow,
-            Updated = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
         };
 
         var response = new BaseResponse<string>
