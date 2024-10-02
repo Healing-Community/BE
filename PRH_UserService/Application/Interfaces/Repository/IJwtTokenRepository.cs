@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces.Repository
 {
-    public interface IUserRepository : IReadRepository<User>, ICreateRepository<User>, IUpdateRepository<User>, IDeleteRepository
+    public interface IJwtTokenRepository
     {
-        Task<User?> GetUserByEmailAsync(string email);
-        Task<User?> GetUserByUserNameAsync(string userName);
+        string GenerateToken(User user);
     }
 }

@@ -1,6 +1,11 @@
-﻿using Application.Commands.Users.AddUser;
+using Application.Commands.Users.AddUser;
+
 using Application.Commands.Users.DeleteUser;
 using Application.Commands.Users.UpdateUser;
+
+using Application.Commands.Users.LoginUser;
+using Application.Commands.Users.RegisterUser;
+
 using Application.Commons.DTOs;
 using Application.Queries.Users.GetUsers;
 using Application.Queries.Users.GetUsersById;
@@ -44,6 +49,7 @@ namespace PRH_UserService_API.Controllers
             return Ok(addedUser);
         }
 
+
         [HttpPut("Update/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id,  UserDto user)
         {
@@ -63,7 +69,18 @@ namespace PRH_UserService_API.Controllers
     }
 
 
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            var response = await _iSender.Send(new LoginUserCommand(loginDto));
+            return Ok(response);
+        }
 
-
-
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
+        {
+            var response = await _iSender.Send(new RegisterUserCommand(registerUserDto));
+            return Ok(response);
+        }
+    }
 }

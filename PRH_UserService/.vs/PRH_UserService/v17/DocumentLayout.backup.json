@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\application\\commands\\users\\loginuser\\loginusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|solutionrelative:application\\commands\\users\\loginuser\\loginusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_userservice\\application\\commands\\users\\registeruser\\registerusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F14ADC1E-80CF-44FC-BB10-3D8D1B8B9B74}|Application\\Application.csproj|solutionrelative:application\\commands\\users\\registeruser\\registerusercommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RegisterUserCommandHandler.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
+              "RelativeDocumentMoniker": "Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
+              "RelativeToolTip": "Application\\Commands\\Users\\RegisterUser\\RegisterUserCommandHandler.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAiwEQAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T14:02:13.772Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LoginUserCommandHandler.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
+              "RelativeDocumentMoniker": "Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_UserService\\Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs*",
+              "RelativeToolTip": "Application\\Commands\\Users\\LoginUser\\LoginUserCommandHandler.cs*",
+              "ViewState": "AgIAACEAAAAAAAAAAAAUwDUAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T12:44:20.81Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
