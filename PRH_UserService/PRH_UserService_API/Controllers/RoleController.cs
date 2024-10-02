@@ -1,6 +1,5 @@
-﻿using Application.Queries.Roles;
+﻿using Application.Queries.Roles.GetRoles;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PRH_UserService_API.Controllers

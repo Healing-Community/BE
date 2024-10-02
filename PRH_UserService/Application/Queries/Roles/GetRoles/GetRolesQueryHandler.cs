@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.Roles
+namespace Application.Queries.Roles.GetRoles
 {
     public class GetRolesQueryHandler(IRoleRepository roleRepository) : IRequestHandler<GetRolesQuery, BaseResponse<IEnumerable<Role>>>
     {
