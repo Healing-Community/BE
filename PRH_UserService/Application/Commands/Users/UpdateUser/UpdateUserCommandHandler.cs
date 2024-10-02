@@ -30,8 +30,8 @@ namespace Application.Commands.Users.UpdateUser
                     Status = request.UserDto.Status,
                     UserName = request.UserDto.UserName,
                     PasswordHash = request.UserDto.PasswordHash,
-                    Created = DateTime.UtcNow,
-                    Updated = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
                     RoleId = request.UserDto.RoleId,
                 };
                 await userRepository.Update(request.Id, updatedUser);

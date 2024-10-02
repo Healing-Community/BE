@@ -13,8 +13,8 @@ namespace Application.Commons.DTOs
         public string Email { get; set; } = null!;
         public int Status { get; set; }
         public string PasswordHash { get; set; } = null!;
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public int RoleId { get; set; }
     }
 }
