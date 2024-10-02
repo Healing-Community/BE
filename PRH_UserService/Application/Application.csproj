@@ -7,18 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-
-    <Folder Include="Commands\Roles\AddRole\" />
-    <Compile Remove="Commands\Roles\**" />
-    <Compile Remove="Queries\Roles\**" />
-    <EmbeddedResource Remove="Commands\Roles\**" />
-    <EmbeddedResource Remove="Queries\Roles\**" />
-    <None Remove="Commands\Roles\**" />
-    <None Remove="Queries\Roles\**" />
-
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="MassTransit.Abstractions" Version="8.2.5" />
     <PackageReference Include="MediatR" Version="12.4.1" />
@@ -27,6 +15,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\Roles\AddRole\" />
   </ItemGroup>
 
 </Project>

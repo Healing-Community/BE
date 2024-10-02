@@ -51,7 +51,7 @@ namespace PRH_UserService_API.Controllers
 
 
         [HttpPut("Update/{id:guid}")]
-        public async Task<IActionResult> UpdateUser(Guid id,  UserDto user)
+        public async Task<IActionResult> UpdateUser(Guid id, UserDto user)
         {
             var updatedUser = await _iSender.Send(new UpdateUserCommand(id, user));
             return Ok(updatedUser);
@@ -63,11 +63,6 @@ namespace PRH_UserService_API.Controllers
             var response = await _iSender.Send(new DeleteUserCommand(id));
             return Ok(response);
         }
-
-
-
-    }
-
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
@@ -82,5 +77,6 @@ namespace PRH_UserService_API.Controllers
             var response = await _iSender.Send(new RegisterUserCommand(registerUserDto));
             return Ok(response);
         }
+
     }
 }
