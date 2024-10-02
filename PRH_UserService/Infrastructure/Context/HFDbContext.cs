@@ -25,6 +25,15 @@ namespace Infrastructure.Context
                 .HasIndex(u => u.UserName)
                 .IsUnique();
             modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+            modelBuilder.Entity<User>()
+               .Property(u => u.UserName)
+               .IsRequired(false);
+            modelBuilder.Entity<User>()
+                .Property(u => u.FullName)
+                .IsRequired(false);
+            modelBuilder.Entity<User>()
                 .HasOne(u => u.Role)
                 .WithMany(r =>r.Users)
                 .HasForeignKey(u => u.RoleId)
@@ -45,9 +54,6 @@ namespace Infrastructure.Context
                 .WithMany(u => u.Tokens)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Token>()
-                .HasIndex(t => t.AccessToken)
-                .IsUnique();
             modelBuilder.Entity<Token>()
                 .HasIndex(t => t.RefreshToken)
                 .IsUnique();
