@@ -13,6 +13,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IJwtTokenRepository, JwtTokenRepository>();
+        services.AddScoped<IEmailRepository, EmailRepository>();
 
         //#region MongoDB
 

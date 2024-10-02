@@ -25,6 +25,15 @@ namespace Infrastructure.Context
                 .HasIndex(u => u.UserName)
                 .IsUnique();
             modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+            modelBuilder.Entity<User>()
+               .Property(u => u.UserName)
+               .IsRequired(false);
+            modelBuilder.Entity<User>()
+                .Property(u => u.FullName)
+                .IsRequired(false);
+            modelBuilder.Entity<User>()
                 .HasOne(u => u.Role)
                 .WithMany(r =>r.Users)
                 .HasForeignKey(u => u.RoleId)

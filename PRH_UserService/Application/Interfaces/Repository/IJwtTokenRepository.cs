@@ -11,5 +11,7 @@ namespace Application.Interfaces.Repository
     public interface IJwtTokenRepository
     {
         string GenerateToken(User user);
+        string GenerateVerificationToken(User user);
+        bool ValidateToken(string token, out Guid userId);
     }
 }

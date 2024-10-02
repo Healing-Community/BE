@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Users.AddUser;
 using Application.Commands.Users.LoginUser;
 using Application.Commands.Users.RegisterUser;
+using Application.Commands.Users.VerifyUser;
 using Application.Commons.DTOs;
 using Application.Queries.Users.GetUsers;
 using MediatR;
@@ -43,11 +44,18 @@ namespace PRH_UserService_API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
+        [HttpPost("RegisterUser")]
+        public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
         {
             var response = await _iSender.Send(new RegisterUserCommand(registerUserDto));
             return Ok(response);
+        }
+
+        [HttpPost("VerifyUser")]
+        public async Task<IActionResult> VerifyUser([FromBody] VerifyUserCommand command)
+        {
+            var result = await _iSender.Send(command);
+            return Ok(result);
         }
     }
 }
