@@ -24,30 +24,10 @@ namespace Application.Services
         public string GenerateToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["Secret"];
-            var issuer = jwtSettings["Issuer"];
-            var audience = jwtSettings["Audience"];
-            var expiryMinutesStr = jwtSettings["ExpiryMinutes"];
-
-            if (string.IsNullOrEmpty(secretKey))
-            {
-                throw new InvalidOperationException("Secret key is not configured.");
-            }
-
-            if (string.IsNullOrEmpty(issuer))
-            {
-                throw new InvalidOperationException("Issuer is not configured.");
-            }
-
-            if (string.IsNullOrEmpty(audience))
-            {
-                throw new InvalidOperationException("Audience is not configured.");
-            }
-
-            if (string.IsNullOrEmpty(expiryMinutesStr))
-            {
-                throw new InvalidOperationException("Expiry minutes are not configured.");
-            }
+            var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
+            var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("Issuer is not configured.");
+            var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("Audience is not configured.");
+            var expiryMinutesStr = jwtSettings["ExpiryMinutes"] ?? throw new InvalidOperationException("Expiry minutes are not configured.");
 
             if (!int.TryParse(expiryMinutesStr, out int expiryMinutes))
             {
@@ -57,8 +37,8 @@ namespace Application.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>
-    {
+            var claims = new[]
+            {
         new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
         new Claim(JwtRegisteredClaimNames.Email, user.Email),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
