@@ -46,9 +46,6 @@ namespace Infrastructure.Context
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Token>()
-                .HasIndex(t => t.AccessToken)
-                .IsUnique();
-            modelBuilder.Entity<Token>()
                 .HasIndex(t => t.RefreshToken)
                 .IsUnique();
 
