@@ -22,36 +22,42 @@ namespace Application.Commands.Users.VerifyUser
 
         public async Task<BaseResponse<string>> Handle(VerifyUserCommand request, CancellationToken cancellationToken)
         {
-            if (!_jwtTokenRepository.ValidateToken(request.Token, out Guid userId))
+            var response = new BaseResponse<string>
             {
-                return new BaseResponse<string>
-                {
-                    Success = false,
-                    Message = "Invalid or expired verification token.",
-                    Timestamp = DateTime.UtcNow
-                };
-            }
-
-            var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null)
-            {
-                return new BaseResponse<string>
-                {
-                    Success = false,
-                    Message = "User not found.",
-                    Timestamp = DateTime.UtcNow
-                };
-            }
-
-            user.Status = 1;
-            await _userRepository.Update(user.Id, user);
-
-            return new BaseResponse<string>
-            {
-                Success = true,
-                Message = "Email verified successfully.",
                 Timestamp = DateTime.UtcNow
             };
+
+            try
+            {
+                if (!_jwtTokenRepository.ValidateToken(request.Token, out Guid userId))
+                {
+                    response.Success = false;
+                    response.Message = "Invalid or expired verification token.";
+                    return response;
+                }
+
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    response.Success = false;
+                    response.Message = "User not found.";
+                    return response;
+                }
+
+                user.Status = 1;
+                await _userRepository.Update(user.Id, user);
+
+                response.Success = true;
+                response.Message = "Email verified successfully.";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Failed to verify email.";
+                response.Errors = new List<string> { ex.Message };
+            }
+
+            return response;
         }
     }
 }
