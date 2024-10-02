@@ -7,12 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+    <Folder Include="Commands\Roles\AddRole\" />
     <Compile Remove="Commands\Roles\**" />
     <Compile Remove="Queries\Roles\**" />
     <EmbeddedResource Remove="Commands\Roles\**" />
     <EmbeddedResource Remove="Queries\Roles\**" />
     <None Remove="Commands\Roles\**" />
     <None Remove="Queries\Roles\**" />
+
   </ItemGroup>
 
   <ItemGroup>

@@ -1,9 +1,14 @@
-﻿using Application.Commands.Users.AddUser;
+using Application.Commands.Users.AddUser;
+
+using Application.Commands.Users.DeleteUser;
+using Application.Commands.Users.UpdateUser;
+
 using Application.Commands.Users.LoginUser;
 using Application.Commands.Users.RegisterUser;
 using Application.Commands.Users.VerifyUser;
 using Application.Commons.DTOs;
 using Application.Queries.Users.GetUsers;
+using Application.Queries.Users.GetUsersById;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +28,18 @@ namespace PRH_UserService_API.Controllers
             _iSender = sender;
         }
 
-        [HttpGet("Gets")]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> Get()
         {
             var users = await _iSender.Send(new GetUsersQuery());
             return Ok(users);
+        }
+
+        [HttpGet("GetById/{id:guid}")]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var user = await _iSender.Send(new GetUsersByIdQuery(id));
+            return Ok(user);
         }
 
         [HttpPost("Create")]
@@ -36,6 +48,26 @@ namespace PRH_UserService_API.Controllers
             var addedUser = await _iSender.Send(new CreateUserCommand(user));
             return Ok(addedUser);
         }
+
+
+        [HttpPut("Update/{id:guid}")]
+        public async Task<IActionResult> UpdateUser(Guid id,  UserDto user)
+        {
+            var updatedUser = await _iSender.Send(new UpdateUserCommand(id, user));
+            return Ok(updatedUser);
+        }
+
+        [HttpDelete("Delete/{id:guid}")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            var response = await _iSender.Send(new DeleteUserCommand(id));
+            return Ok(response);
+        }
+
+
+
+    }
+
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
