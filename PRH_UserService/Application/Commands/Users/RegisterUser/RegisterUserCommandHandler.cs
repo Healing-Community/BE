@@ -28,6 +28,7 @@ namespace Application.Commands.Users.RegisterUser
         {
             var response = new BaseResponse<string>
             {
+                Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow
             };
 
@@ -35,17 +36,37 @@ namespace Application.Commands.Users.RegisterUser
             {
                 if (request.RegisterUserDto.Password != request.RegisterUserDto.ConfirmPassword)
                 {
-                    response.Success = false;
-                    response.Message = "Password and Confirm Password do not match.";
-                    return response;
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Password and Confirm Password do not match.",
+                        Timestamp = DateTime.UtcNow
+                    };
                 }
 
                 var existingUser = await _userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
                 if (existingUser != null)
                 {
-                    response.Success = false;
-                    response.Message = "Email is already registered.";
-                    return response;
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Email is already registered.",
+                        Timestamp = DateTime.UtcNow
+                    };
+                }
+
+                var addr = new System.Net.Mail.MailAddress(request.RegisterUserDto.Email);
+                if (addr.Address != request.RegisterUserDto.Email)
+                {
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Invalid email format.",
+                        Timestamp = DateTime.UtcNow
+                    };
                 }
 
                 var user = new User
@@ -71,6 +92,7 @@ namespace Application.Commands.Users.RegisterUser
             }
             catch (Exception ex)
             {
+                response.Id = Guid.NewGuid();
                 response.Success = false;
                 response.Message = "Failed to register user.";
                 response.Errors = new List<string> { ex.Message };

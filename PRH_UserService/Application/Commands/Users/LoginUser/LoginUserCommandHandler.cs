@@ -24,6 +24,7 @@ namespace Application.Commands.Users.LoginUser
         {
             var response = new BaseResponse<string>
             {
+                Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow
             };
 
@@ -32,42 +33,45 @@ namespace Application.Commands.Users.LoginUser
                 var user = await _userRepository.GetUserByEmailAsync(request.LoginDto.Email);
                 if (user == null)
                 {
-                    response.Success = false;
-                    response.Message = "Invalid email or password.";
-                    response.Errors = new List<string> { "User not found." };
-                    return response;
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Invalid email or password.",
+                        Errors = new List<string> { "User not found." },
+                        Timestamp = DateTime.UtcNow
+                    };
                 }
 
-                bool isPasswordValid = false;
-                try
+                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
+                if (!isPasswordValid && request.LoginDto.Password == user.PasswordHash)
                 {
-                    isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
-                }
-                catch (SaltParseException)
-                {                  
-                    if (request.LoginDto.Password == user.PasswordHash)
-                    {
-                        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
-                        await _userRepository.Update(user.Id, user);
-                        isPasswordValid = true;
-                    }
+                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
+                    await _userRepository.Update(user.Id, user);
+                    isPasswordValid = true;
                 }
 
                 if (!isPasswordValid)
                 {
-                    response.Success = false;
-                    response.Message = "Invalid email or password.";
-                    response.Errors = new List<string> { "Incorrect password." };
-                    return response;
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Invalid email or password.",
+                        Errors = new List<string> { "Incorrect password." },
+                        Timestamp = DateTime.UtcNow
+                    };
                 }
 
                 var token = _jwtTokenRepository.GenerateToken(user);
+                response.Id = Guid.NewGuid();
                 response.Success = true;
                 response.Message = "Login successful.";
                 response.Data = token;
             }
             catch (Exception ex)
             {
+                response.Id = Guid.NewGuid();
                 response.Success = false;
                 response.Message = "Failed to login user.";
                 response.Errors = new List<string> { ex.Message };

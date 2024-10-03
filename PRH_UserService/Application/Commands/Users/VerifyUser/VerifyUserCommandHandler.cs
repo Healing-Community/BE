@@ -24,6 +24,7 @@ namespace Application.Commands.Users.VerifyUser
         {
             var response = new BaseResponse<string>
             {
+                Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow
             };
 
@@ -31,17 +32,25 @@ namespace Application.Commands.Users.VerifyUser
             {
                 if (!_jwtTokenRepository.ValidateToken(request.Token, out Guid userId))
                 {
-                    response.Success = false;
-                    response.Message = "Invalid or expired verification token.";
-                    return response;
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Invalid or expired verification token.",
+                        Timestamp = DateTime.UtcNow
+                    };
                 }
 
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    response.Success = false;
-                    response.Message = "User not found.";
-                    return response;
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "User not found.",
+                        Timestamp = DateTime.UtcNow
+                    };
                 }
 
                 user.Status = 1;
@@ -52,6 +61,7 @@ namespace Application.Commands.Users.VerifyUser
             }
             catch (Exception ex)
             {
+                response.Id = Guid.NewGuid();
                 response.Success = false;
                 response.Message = "Failed to verify email.";
                 response.Errors = new List<string> { ex.Message };
