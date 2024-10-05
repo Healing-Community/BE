@@ -1,0 +1,6 @@
+@PRH_PostService_API_HostAddress = http://localhost:5175
+
+GET {{PRH_PostService_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
