@@ -21,7 +21,7 @@ namespace Persistence.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var user = await hFDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await hFDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
             if (user == null) return;
             hFDbContext.Users.Remove(user);
             await hFDbContext.SaveChangesAsync();
@@ -29,7 +29,7 @@ namespace Persistence.Repositories
 
         public async Task<User> GetByIdAsync(Guid id)
         {
-            return await hFDbContext.Users.FirstAsync(x => x.Id == id);
+            return await hFDbContext.Users.FirstAsync(x => x.UserId == id);
         }
 
         public async Task<User> GetByPropertyAsync(Expression<Func<User, bool>> predicate)
@@ -44,7 +44,7 @@ namespace Persistence.Repositories
 
         public async Task Update(Guid id, User entity)
         {
-            var existingUser = await hFDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var existingUser = await hFDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
             if (existingUser == null) return;
             hFDbContext.Entry(existingUser).CurrentValues.SetValues(entity);
             hFDbContext.Entry(existingUser).State = EntityState.Modified;

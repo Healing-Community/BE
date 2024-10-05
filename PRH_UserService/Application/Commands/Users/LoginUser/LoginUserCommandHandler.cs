@@ -49,7 +49,7 @@ namespace Application.Commands.Users.LoginUser
                     if (request.LoginDto.Password == user.PasswordHash)
                     {
                         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
-                        await _userRepository.Update(user.Id, user);
+                        await _userRepository.Update(user.UserId, user);
                         isPasswordValid = true;
                     }
                     else

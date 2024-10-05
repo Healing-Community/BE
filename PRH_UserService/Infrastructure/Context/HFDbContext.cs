@@ -20,7 +20,7 @@ namespace Infrastructure.Context
         {
             // User configuration
             modelBuilder.Entity<User>()
-                .HasKey(u => u.Id);
+                .HasKey(u => u.UserId);
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.UserName)
                 .IsUnique();
@@ -41,7 +41,7 @@ namespace Infrastructure.Context
 
             // Role configuration
             modelBuilder.Entity<Role>()
-                .HasKey(r => r.Id);
+                .HasKey(r => r.RoleId);
             modelBuilder.Entity<Role>()
                 .HasIndex(r => r.Name)
                 .IsUnique();

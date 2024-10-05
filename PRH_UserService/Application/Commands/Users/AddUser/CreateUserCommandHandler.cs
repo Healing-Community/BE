@@ -15,7 +15,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
         var userId = NewId.NextSequentialGuid();
         var user = new User
         {
-            Id = userId,
+            UserId = userId,
             RoleId = request.UserDto.RoleId,
             Email = request.UserDto.Email,
             FullName = request.UserDto.FullName,

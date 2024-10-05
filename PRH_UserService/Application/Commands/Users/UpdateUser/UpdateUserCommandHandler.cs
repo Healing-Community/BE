@@ -24,7 +24,7 @@ namespace Application.Commands.Users.UpdateUser
                 var existingUser = await userRepository.GetByIdAsync(request.Id);
                 var updatedUser = new User
                 {
-                    Id = request.Id,
+                    UserId = request.Id,
                     Email = request.UserDto.Email,
                     FullName = request.UserDto.FullName,
                     Status = request.UserDto.Status,

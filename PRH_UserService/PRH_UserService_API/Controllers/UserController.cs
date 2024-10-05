@@ -19,62 +19,72 @@ namespace PRH_UserService_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class userController : ControllerBase
     {
         private readonly ISender _iSender;
-        public UserController(ISender sender)
+
+        public userController(ISender sender)
         {
             _iSender = sender;
         }
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> Get()
+
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAll()
         {
             var users = await _iSender.Send(new GetUsersQuery());
             return Ok(users);
         }
-        [HttpGet("GetById/{id:guid}")]
-        public async Task<IActionResult> Get(Guid id)
+
+        [HttpGet("get-by-id/{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
             var user = await _iSender.Send(new GetUsersByIdQuery(id));
             return Ok(user);
         }
-        [HttpPost("Create")]
+
+        [HttpPost("create")]
         public async Task<IActionResult> AddUser(UserDto user)
         {
             var addedUser = await _iSender.Send(new CreateUserCommand(user));
             return Ok(addedUser);
         }
-        [HttpPut("Update/{id:guid}")]
+
+        [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, UserDto user)
         {
             var updatedUser = await _iSender.Send(new UpdateUserCommand(id, user));
             return Ok(updatedUser);
         }
-        [HttpDelete("Delete/{id:guid}")]
+
+        [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             var response = await _iSender.Send(new DeleteUserCommand(id));
             return Ok(response);
         }
-        [HttpPost("Login")]
+
+        [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             var response = await _iSender.Send(new LoginUserCommand(loginDto));
             return Ok(response);
         }
-        [HttpPost("RegisterUser")]
+
+        [HttpPost("register-user")]
         public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
         {
             var response = await _iSender.Send(new RegisterUserCommand(registerUserDto));
             return Ok(response);
         }
-        [HttpPost("VerifyUser")]
+
+        [HttpPost("verify-user")]
         public async Task<IActionResult> VerifyUser([FromBody] VerifyUserCommand command)
         {
             var result = await _iSender.Send(command);
             return Ok(result);
         }
-        [HttpPost("Logout")]
+
+        [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] LogoutUserCommand command)
         {
             var result = await _iSender.Send(command);

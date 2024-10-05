@@ -52,7 +52,7 @@ namespace Application.Commands.Users.VerifyUser
                 }
 
                 user.Status = 1;
-                await _userRepository.Update(user.Id, user);
+                await _userRepository.Update(user.UserId, user);
 
                 response.Success = true;
                 response.Message = "Email verified successfully.";

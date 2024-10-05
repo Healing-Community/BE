@@ -8,7 +8,7 @@ namespace Domain.Entities
 {
     public class User
     {
-        public Guid Id { get; init; }
+        public Guid UserId { get; init; }
         public int RoleId { get; set; }
         public string FullName { get; set; } = null!;
         public string UserName { get; set; } = null!;

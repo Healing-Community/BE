@@ -45,7 +45,7 @@ namespace Application.Commands.Users.Logout
                     {
                         token.IsActive = false;
                     }
-                    await _userRepository.Update(user.Id, user);
+                    await _userRepository.Update(user.UserId, user);
                 }
 
                 response.Success = true;
