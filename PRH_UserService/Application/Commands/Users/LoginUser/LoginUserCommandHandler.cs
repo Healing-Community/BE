@@ -1,10 +1,10 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
+using BCrypt.Net;
 using MediatR;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Commands.Users.LoginUser
@@ -22,43 +22,62 @@ namespace Application.Commands.Users.LoginUser
 
         public async Task<BaseResponse<string>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetUserByEmailAsync(request.LoginDto.Email);
-            if (user == null)
+            var response = new BaseResponse<string>
             {
-                return new BaseResponse<string>
-                {
-                    Success = false,
-                    Message = "Invalid email or password.",
-                    Errors = new List<string> { "User not found." },
-                    Timestamp = DateTime.UtcNow
-                };
-            }
-
-            if (!VerifyPassword(request.LoginDto.Password, user.PasswordHash))
-            {
-                return new BaseResponse<string>
-                {
-                    Success = false,
-                    Message = "Invalid email or password.",
-                    Errors = new List<string> { "Incorrect password." },
-                    Timestamp = DateTime.UtcNow
-                };
-            }
-
-            var token = _jwtTokenRepository.GenerateToken(user);
-
-            return new BaseResponse<string>
-            {
-                Success = true,
-                Message = "Login successful.",
-                Data = token,
+                Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow
             };
-        }
 
-        private bool VerifyPassword(string password, string storedHash)
-        {
-            return BCrypt.Net.BCrypt.Verify(password, storedHash);
+            try
+            {
+                var user = await _userRepository.GetUserByEmailAsync(request.LoginDto.Email);
+                if (user == null)
+                {
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Invalid email or password.",
+                        Errors = new List<string> { "User not found." },
+                        Timestamp = DateTime.UtcNow
+                    };
+                }
+
+                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
+                if (!isPasswordValid)
+                {
+                    if (request.LoginDto.Password == user.PasswordHash)
+                    {
+                        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
+                        await _userRepository.Update(user.Id, user);
+                        isPasswordValid = true;
+                    }
+                    else
+                    {
+                        return new BaseResponse<string>
+                        {
+                            Id = Guid.NewGuid(),
+                            Success = false,
+                            Message = "Invalid email or password.",
+                            Errors = new List<string> { "Incorrect password." },
+                            Timestamp = DateTime.UtcNow
+                        };
+                    }
+                }
+
+                var token = _jwtTokenRepository.GenerateToken(user);
+                response.Success = true;
+                response.Message = "Login successful.";
+                response.Data = token;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Failed to login user.";
+                response.Errors = new List<string> { ex.Message };
+            }
+
+            return response;
         }
     }
 }
