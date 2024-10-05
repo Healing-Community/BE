@@ -1,6 +1,0 @@
-@PRH_NotificationService_HostAddress = http://localhost:5027
-
-GET {{PRH_NotificationService_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
