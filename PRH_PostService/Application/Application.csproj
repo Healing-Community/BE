@@ -20,8 +20,6 @@
 	<ItemGroup>
 	  <Folder Include="Commands\" />
 	  <Folder Include="Commons\DTOs\" />
-	  <Folder Include="Interfaces\Repository\" />
-	  <Folder Include="Queries\" />
 	</ItemGroup>
 
 
