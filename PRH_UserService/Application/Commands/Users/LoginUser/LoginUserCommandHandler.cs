@@ -44,34 +44,34 @@ namespace Application.Commands.Users.LoginUser
                 }
 
                 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
-                if (!isPasswordValid && request.LoginDto.Password == user.PasswordHash)
-                {
-                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
-                    await _userRepository.Update(user.Id, user);
-                    isPasswordValid = true;
-                }
-
                 if (!isPasswordValid)
                 {
-                    return new BaseResponse<string>
+                    if (request.LoginDto.Password == user.PasswordHash)
                     {
-                        Id = Guid.NewGuid(),
-                        Success = false,
-                        Message = "Invalid email or password.",
-                        Errors = new List<string> { "Incorrect password." },
-                        Timestamp = DateTime.UtcNow
-                    };
+                        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
+                        await _userRepository.Update(user.Id, user);
+                        isPasswordValid = true;
+                    }
+                    else
+                    {
+                        return new BaseResponse<string>
+                        {
+                            Id = Guid.NewGuid(),
+                            Success = false,
+                            Message = "Invalid email or password.",
+                            Errors = new List<string> { "Incorrect password." },
+                            Timestamp = DateTime.UtcNow
+                        };
+                    }
                 }
 
                 var token = _jwtTokenRepository.GenerateToken(user);
-                response.Id = Guid.NewGuid();
                 response.Success = true;
                 response.Message = "Login successful.";
                 response.Data = token;
             }
             catch (Exception ex)
             {
-                response.Id = Guid.NewGuid();
                 response.Success = false;
                 response.Message = "Failed to login user.";
                 response.Errors = new List<string> { ex.Message };

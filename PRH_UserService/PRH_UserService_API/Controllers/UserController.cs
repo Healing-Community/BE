@@ -13,6 +13,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
+using Application.Commands.Users.Logout;
 
 namespace PRH_UserService_API.Controllers
 {
@@ -69,6 +70,12 @@ namespace PRH_UserService_API.Controllers
         }
         [HttpPost("VerifyUser")]
         public async Task<IActionResult> VerifyUser([FromBody] VerifyUserCommand command)
+        {
+            var result = await _iSender.Send(command);
+            return Ok(result);
+        }
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout([FromBody] LogoutUserCommand command)
         {
             var result = await _iSender.Send(command);
             return Ok(result);

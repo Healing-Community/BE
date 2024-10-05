@@ -34,7 +34,6 @@ namespace Application.Commands.Users.VerifyUser
                 {
                     return new BaseResponse<string>
                     {
-                        Id = Guid.NewGuid(),
                         Success = false,
                         Message = "Invalid or expired verification token.",
                         Timestamp = DateTime.UtcNow
@@ -46,7 +45,6 @@ namespace Application.Commands.Users.VerifyUser
                 {
                     return new BaseResponse<string>
                     {
-                        Id = Guid.NewGuid(),
                         Success = false,
                         Message = "User not found.",
                         Timestamp = DateTime.UtcNow
@@ -61,7 +59,6 @@ namespace Application.Commands.Users.VerifyUser
             }
             catch (Exception ex)
             {
-                response.Id = Guid.NewGuid();
                 response.Success = false;
                 response.Message = "Failed to verify email.";
                 response.Errors = new List<string> { ex.Message };

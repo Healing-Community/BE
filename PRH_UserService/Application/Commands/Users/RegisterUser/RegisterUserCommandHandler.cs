@@ -57,8 +57,21 @@ namespace Application.Commands.Users.RegisterUser
                     };
                 }
 
-                var addr = new System.Net.Mail.MailAddress(request.RegisterUserDto.Email);
-                if (addr.Address != request.RegisterUserDto.Email)
+                try
+                {
+                    var addr = new System.Net.Mail.MailAddress(request.RegisterUserDto.Email);
+                    if (addr.Address != request.RegisterUserDto.Email)
+                    {
+                        return new BaseResponse<string>
+                        {
+                            Id = Guid.NewGuid(),
+                            Success = false,
+                            Message = "Invalid email format.",
+                            Timestamp = DateTime.UtcNow
+                        };
+                    }
+                }
+                catch
                 {
                     return new BaseResponse<string>
                     {
@@ -92,7 +105,6 @@ namespace Application.Commands.Users.RegisterUser
             }
             catch (Exception ex)
             {
-                response.Id = Guid.NewGuid();
                 response.Success = false;
                 response.Message = "Failed to register user.";
                 response.Errors = new List<string> { ex.Message };
