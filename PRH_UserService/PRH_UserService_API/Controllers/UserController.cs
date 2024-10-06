@@ -16,6 +16,7 @@ using System.Reflection;
 using Application.Commands.Users.Logout;
 using Application.Commands.Users.ForgotPassword;
 using Application.Commands.Users.ResetPassword;
+using Application.Commands.Users.RefreshToken;
 
 namespace PRH_UserService_API.Controllers
 {
@@ -104,6 +105,13 @@ namespace PRH_UserService_API.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             var result = await _iSender.Send(resetPasswordDto);
+            return Ok(result);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        {
+            var result = await _iSender.Send(command);
             return Ok(result);
         }
     }

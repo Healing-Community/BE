@@ -1,5 +1,6 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
+using Domain.Enum;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace Application.Commands.Users.Logout
                 {
                     foreach (var token in user.Tokens)
                     {
-                        token.IsActive = false;
+                        token.Status = (int)TokenStatus.Revoked;
                     }
                     await _userRepository.Update(user.UserId, user);
                 }
