@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Application.Commons.DTOs
 {
-    public class RegisterUserDto
+    public class ResetPasswordDto
     {
-        public string Email { get; set; } = null!;
-        public string UserName { get; set; } = null!;
-        public string Password { get; set; } = null!;
+        public string Token { get; set; } = null!;
+        public string NewPassword { get; set; } = null!;
         public string ConfirmPassword { get; set; } = null!;
     }
 }

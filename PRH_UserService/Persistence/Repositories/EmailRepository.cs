@@ -58,5 +58,12 @@ namespace Persistence.Repositories
 
             await smtpClient.SendMailAsync(mailMessage);
         }
+
+        public async Task SendPasswordResetEmailAsync(string to, string resetLink)
+        {
+            var subject = "Reset your password";
+            var body = $"Please reset your password by clicking <a href='{resetLink}'>here</a>.";
+            await SendEmailAsync(to, subject, body);
+        }
     }
 }

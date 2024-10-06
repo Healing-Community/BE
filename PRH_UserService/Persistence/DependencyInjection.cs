@@ -15,19 +15,5 @@ public static class DependencyInjection
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IJwtTokenRepository, JwtTokenRepository>();
         services.AddScoped<IEmailRepository, EmailRepository>();
-
-
-        //#region MongoDB
-
-        //services.AddSingleton<IMongoClient>(sp =>
-        //{
-        //    var config = sp.GetRequiredService<IConfiguration>();
-        //    var connectionString = config.GetConnectionString("MongoDb");
-        //    return new MongoClient(connectionString);
-        //});
-
-        //services.AddScoped(typeof(IMongoRepository<>), typeof(MongoGenericMongoRepository<>));
-        //#endregion
-
     }
 }

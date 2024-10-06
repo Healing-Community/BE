@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using Application.Commands.Users.Logout;
+using Application.Commands.Users.ForgotPassword;
+using Application.Commands.Users.ResetPassword;
 
 namespace PRH_UserService_API.Controllers
 {
@@ -88,6 +90,20 @@ namespace PRH_UserService_API.Controllers
         public async Task<IActionResult> Logout([FromBody] LogoutUserCommand command)
         {
             var result = await _iSender.Send(command);
+            return Ok(result);
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            var result = await _iSender.Send(forgotPasswordDto);
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            var result = await _iSender.Send(resetPasswordDto);
             return Ok(result);
         }
     }

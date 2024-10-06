@@ -86,6 +86,7 @@ namespace Application.Commands.Users.RegisterUser
                 {
                     UserId = Guid.NewGuid(),
                     Email = request.RegisterUserDto.Email,
+                    UserName = request.RegisterUserDto.UserName,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.RegisterUserDto.Password),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
