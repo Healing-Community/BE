@@ -9,5 +9,4 @@ using System.Threading.Tasks;
 namespace Application.Commands.Users.Logout
 {
     public record LogoutUserCommand(Guid UserId) : IRequest<BaseResponse<string>>;
-
 }

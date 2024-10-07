@@ -2,11 +2,6 @@
 using Application.Interfaces.Repository;
 using Domain.Enum;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Users.Logout
 {
@@ -29,6 +24,14 @@ namespace Application.Commands.Users.Logout
                 Timestamp = DateTime.UtcNow
             };
 
+            if (request == null || request.UserId == Guid.Empty)
+            {
+                response.Success = false;
+                response.Message = "Invalid request.";
+                response.Errors = new[] { "The command field is required." };
+                return response;
+            }
+
             try
             {
                 var user = await _userRepository.GetByIdAsync(request.UserId);
@@ -40,7 +43,7 @@ namespace Application.Commands.Users.Logout
                     return response;
                 }
 
-                if (user.Tokens.Any())
+                if (user.Tokens != null && user.Tokens.Any())
                 {
                     foreach (var token in user.Tokens)
                     {

@@ -45,14 +45,26 @@ namespace Application.Commands.Users.RegisterUser
                     };
                 }
 
-                var existingUser = await _userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
-                if (existingUser != null)
+                var existingUserByEmail = await _userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
+                if (existingUserByEmail != null)
                 {
                     return new BaseResponse<string>
                     {
                         Id = Guid.NewGuid(),
                         Success = false,
                         Message = "Email is already registered.",
+                        Timestamp = DateTime.UtcNow
+                    };
+                }
+
+                var existingUserByUserName = await _userRepository.GetUserByUserNameAsync(request.RegisterUserDto.UserName);
+                if (existingUserByUserName != null)
+                {
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "Username is already taken.",
                         Timestamp = DateTime.UtcNow
                     };
                 }
