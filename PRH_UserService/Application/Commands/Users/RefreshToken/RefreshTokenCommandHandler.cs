@@ -45,10 +45,21 @@ namespace Application.Commands.Users.RefreshToken
                     return response;
                 }
 
+                var token = user.Tokens.FirstOrDefault(t => t.RefreshTokenHash == request.RefreshToken);
+                if (token == null || token.ExpiresAt < DateTime.UtcNow)
+                {
+                    response.Success = false;
+                    response.Message = "Expired refresh token.";
+                    return response;
+                }
+
                 var newToken = _jwtTokenRepository.GenerateToken(user);
                 response.Success = true;
                 response.Message = "Token refreshed successfully.";
                 response.Data = newToken;
+
+                token.IsUsed = true;
+                await _userRepository.Update(user.UserId, user);
             }
             catch (Exception ex)
             {

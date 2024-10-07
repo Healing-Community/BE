@@ -97,14 +97,14 @@ namespace PRH_UserService_API.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
         {
-            var result = await _iSender.Send(forgotPasswordDto);
+            var result = await _iSender.Send(new ForgotPasswordCommand(forgotPasswordDto));
             return Ok(result);
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
-            var result = await _iSender.Send(resetPasswordDto);
+            var result = await _iSender.Send(new ResetPasswordCommand(resetPasswordDto));
             return Ok(result);
         }
 

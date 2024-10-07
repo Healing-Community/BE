@@ -9,30 +9,40 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
     public class JwtTokenRepository : IJwtTokenRepository
     {
         private readonly IConfiguration _configuration;
+        private readonly ILogger<JwtTokenRepository> _logger;
 
-        public JwtTokenRepository(IConfiguration configuration)
+        public JwtTokenRepository(IConfiguration configuration, ILogger<JwtTokenRepository> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
-        public string GenerateToken(User user)
+        private (string SecretKey, string Issuer, string Audience, int ExpiryMinutes) GetJwtSettings(string expiryKey)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
             var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("Issuer is not configured.");
             var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("Audience is not configured.");
-            var expiryMinutesStr = jwtSettings["ExpiryMinutes"] ?? throw new InvalidOperationException("Expiry minutes are not configured.");
+            var expiryMinutesStr = jwtSettings[expiryKey] ?? throw new InvalidOperationException($"{expiryKey} is not configured.");
 
             if (!int.TryParse(expiryMinutesStr, out int expiryMinutes))
             {
-                throw new InvalidOperationException("Expiry minutes must be a valid integer.");
+                throw new InvalidOperationException($"{expiryKey} must be a valid integer.");
             }
+
+            return (secretKey, issuer, audience, expiryMinutes);
+        }
+
+        public string GenerateToken(User user)
+        {
+            var (secretKey, issuer, audience, expiryMinutes) = GetJwtSettings("ExpiryMinutes");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -56,16 +66,7 @@ namespace Application.Services
 
         public string GenerateVerificationToken(User user)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
-            var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("Issuer is not configured.");
-            var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("Audience is not configured.");
-            var expiryMinutesStr = jwtSettings["VerificationExpiryMinutes"] ?? throw new InvalidOperationException("Verification expiry minutes are not configured.");
-
-            if (!int.TryParse(expiryMinutesStr, out int expiryMinutes))
-            {
-                throw new InvalidOperationException("Verification expiry minutes must be a valid integer.");
-            }
+            var (secretKey, issuer, audience, expiryMinutes) = GetJwtSettings("VerificationExpiryMinutes");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -117,9 +118,9 @@ namespace Application.Services
                     return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                _logger.LogError(ex, "Token validation failed.");
             }
 
             return false;
@@ -127,16 +128,7 @@ namespace Application.Services
 
         public string GenerateRefreshToken(User user)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
-            var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("Issuer is not configured.");
-            var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("Audience is not configured.");
-            var expiryDaysStr = jwtSettings["RefreshTokenExpiryDays"] ?? throw new InvalidOperationException("Refresh token expiry days are not configured.");
-
-            if (!int.TryParse(expiryDaysStr, out int expiryDays))
-            {
-                throw new InvalidOperationException("Refresh token expiry days must be a valid integer.");
-            }
+            var (secretKey, issuer, audience, expiryDays) = GetJwtSettings("RefreshTokenExpiryDays");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -183,8 +175,9 @@ namespace Application.Services
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Refresh token validation failed.");
                 return false;
             }
         }

@@ -43,6 +43,18 @@ namespace Application.Commands.Users.LoginUser
                     };
                 }
 
+                if (user.Status == 0)
+                {
+                    return new BaseResponse<string>
+                    {
+                        Id = Guid.NewGuid(),
+                        Success = false,
+                        Message = "User account is inactive.",
+                        Errors = new List<string> { "Inactive account." },
+                        Timestamp = DateTime.UtcNow
+                    };
+                }
+
                 bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
                 if (!isPasswordValid)
                 {
