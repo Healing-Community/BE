@@ -1,5 +1,7 @@
 ﻿
+using Application.Commons.DTOs;
 using AutoMapper;
+using Domain.Entities;
 
 
 namespace Infrastructure.Mapper
@@ -8,7 +10,9 @@ namespace Infrastructure.Mapper
     {
         public MappingProfile() 
         {
-            
+            CreateMap<Post, PostDto>().ReverseMap();
+            CreateMap<Category, CategoryDto>().ReverseMap();
+
         }
     }
 }

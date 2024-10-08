@@ -1,17 +1,19 @@
-﻿namespace Domain.Entities
+﻿using Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Commons.DTOs
 {
-    public class Post
+    public class PostDto
     {
-        public Guid Id { get; init; }
-        public Guid UserId { get; set; }
         public Guid CategoryId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string CoverImgUrl { get; set; } = string.Empty;
         public string VideoUrl { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int Status { get; set; }
-        public DateTime CreateAt { get; init; }
-        public DateTime? UpdateAt { get; set; }
-        public Category Category { get; set; } = null!;
     }
 }

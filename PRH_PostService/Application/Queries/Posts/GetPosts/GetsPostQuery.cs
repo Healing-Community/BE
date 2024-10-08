@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.Posts
+namespace Application.Queries.Posts.GetPosts
 {
-    public record GetsPostQuery: IRequest<BaseResponse<IEnumerable<Post>>>;
+    public record GetsPostQuery : IRequest<BaseResponse<IEnumerable<Post>>>;
 }

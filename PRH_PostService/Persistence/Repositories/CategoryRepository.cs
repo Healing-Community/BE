@@ -1,39 +1,49 @@
 ﻿using Application.Interfaces.Repository;
 using Domain.Entities;
+using Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Persistence.Repositories
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CategoryRepository(HFDBPostserviceContext hFDBPostserviceContext) : ICategoryRepository
     {
-        public Task Create(Category entity)
+        public async Task Create(Category entity)
         {
-            throw new NotImplementedException();
+            await hFDBPostserviceContext.Categories.AddAsync(entity);
+            await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var category = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            if (category == null) return;
+            hFDBPostserviceContext.Categories.Remove(category);
+            await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public Task<Category> GetByIdAsync(Guid id)
+        public async Task<Category> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await hFDBPostserviceContext.Categories.FirstAsync(x => x.Id == id);
         }
 
-        public Task<Category> GetByPropertyAsync(Expression<Func<Category, bool>> predicate)
+        public async Task<Category> GetByPropertyAsync(Expression<Func<Category, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await hFDBPostserviceContext.Categories.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Category();
         }
 
-        public Task<IEnumerable<Category>> GetsAsync()
+        public async Task<IEnumerable<Category>> GetsAsync()
         {
-            throw new NotImplementedException();
+            return await hFDBPostserviceContext.Categories.ToListAsync();
         }
 
-        public Task Update(Guid id, Category entity)
+        public async Task Update(Guid id, Category entity)
         {
-            throw new NotImplementedException();
+            var existingCategory = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingCategory == null) return;
+            hFDBPostserviceContext.Entry(existingCategory).CurrentValues.SetValues(entity);
+            hFDBPostserviceContext.Entry(existingCategory).State = EntityState.Modified;
+            await hFDBPostserviceContext.SaveChangesAsync();
         }
     }
 }
