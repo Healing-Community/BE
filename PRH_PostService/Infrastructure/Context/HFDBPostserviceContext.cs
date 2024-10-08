@@ -7,7 +7,7 @@ namespace Infrastructure.Context
     {
         public HFDBPostserviceContext() { }
 
-        public virtual DbSet<Post> Costs { get; set; }
+        public virtual DbSet<Post> Posts { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
 
         public HFDBPostserviceContext(DbContextOptions<HFDBPostserviceContext> options) : base(options) { }
@@ -25,7 +25,7 @@ namespace Infrastructure.Context
             // Relationship
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.Category)
-                .WithMany(c => c.posts)
+                .WithMany(c => c.Posts)
                 .HasForeignKey(p => p.CategoryId);
                
 

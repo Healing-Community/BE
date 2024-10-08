@@ -1,40 +1,51 @@
 ﻿using Application.Interfaces.Repository;
 using Domain.Entities;
+using Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 
 namespace Persistence.Repositories
 {
-    public class PostRepository : IPostRepository
+    public class PostRepository(HFDBPostserviceContext hFDBPostserviceContext) : IPostRepository
     {
-        public Task Create(Post entity)
+        public async Task Create(Post entity)
         {
-            throw new NotImplementedException();
+            await hFDBPostserviceContext.Posts.AddAsync(entity);
+            await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var post = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            if (post == null) return;
+            hFDBPostserviceContext.Posts.Remove(post);
+            await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public Task<Post> GetByIdAsync(Guid id)
+        public async Task<Post> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await hFDBPostserviceContext.Posts.FirstAsync(x => x.Id == id);
         }
 
-        public Task<Post> GetByPropertyAsync(Expression<Func<Post, bool>> predicate)
+        public async Task<Post> GetByPropertyAsync(Expression<Func<Post, bool>> predicate)
         {
-            throw new NotImplementedException();
+            var post = await hFDBPostserviceContext.Posts.AsNoTracking().FirstOrDefaultAsync(predicate);
+            return post ?? new Post();
         }
 
-        public Task<IEnumerable<Post>> GetsAsync()
+        public async Task<IEnumerable<Post>> GetsAsync()
         {
-            throw new NotImplementedException();
+            return await hFDBPostserviceContext.Posts.ToListAsync();
         }
 
-        public Task Update(Guid id, Post entity)
+        public async Task Update(Guid id, Post entity)
         {
-            throw new NotImplementedException();
+            var existingPost = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingPost == null) return;
+            hFDBPostserviceContext.Entry(existingPost).CurrentValues.SetValues(entity);
+            hFDBPostserviceContext.Entry(existingPost).State = EntityState.Modified;
+            await hFDBPostserviceContext.SaveChangesAsync();
         }
     }
 }
