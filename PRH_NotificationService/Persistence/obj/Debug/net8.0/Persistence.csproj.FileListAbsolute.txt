@@ -4,9 +4,9 @@ C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_Notific
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\bin\Debug\net8.0\Application.dll
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\bin\Debug\net8.0\Domain.dll
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\bin\Debug\net8.0\Infrastructure.dll
+C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\bin\Debug\net8.0\Domain.pdb
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\bin\Debug\net8.0\Infrastructure.pdb
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\bin\Debug\net8.0\Application.pdb
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\bin\Debug\net8.0\Domain.pdb
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\obj\Debug\net8.0\Persistence.csproj.AssemblyReference.cache
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\obj\Debug\net8.0\Persistence.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Persistence\obj\Debug\net8.0\Persistence.AssemblyInfoInputs.cache
