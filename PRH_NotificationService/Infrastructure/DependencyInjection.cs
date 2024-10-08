@@ -11,7 +11,7 @@ public static class DependencyInjection
     public static void AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
     {
         // Add DbContext
-        services.AddDbContext<HFDbContext>(options =>
+        services.AddDbContext<HFDBNotificationServiceContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("PostgresDb"));
         });

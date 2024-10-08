@@ -10,6 +10,7 @@
         "dependencies": {
           "Application": "1.0.0",
           "AutoMapper": "13.0.1",
+          "Domain": "1.0.0",
           "Microsoft.EntityFrameworkCore": "8.0.8",
           "Microsoft.EntityFrameworkCore.Design": "8.0.8",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.8",

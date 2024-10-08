@@ -506,6 +506,7 @@
         "dependencies": {
           "Application": "1.0.0",
           "AutoMapper": "13.0.1",
+          "Domain": "1.0.0",
           "Microsoft.EntityFrameworkCore": "8.0.8",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.8",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.8"
@@ -1247,6 +1248,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Domain >= 1.0.0",
       "Infrastructure >= 1.0.0"
     ]
   },
@@ -1283,6 +1285,9 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
+            "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj": {
+              "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj"
+            },
             "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Infrastructure\\Infrastructure.csproj": {
               "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Infrastructure\\Infrastructure.csproj"
             }

@@ -187,6 +187,9 @@
             "projectReferences": {
               "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Application\\Application.csproj": {
                 "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Application\\Application.csproj"
+              },
+              "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj"
               }
             }
           }

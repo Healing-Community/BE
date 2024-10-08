@@ -12,9 +12,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+# region Layer Dependencies
 builder.Services.AddApplicationDependencies();
 builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
+# endregion
 
 var app = builder.Build();
 

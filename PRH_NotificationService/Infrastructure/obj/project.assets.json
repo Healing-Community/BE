@@ -2811,6 +2811,7 @@
     "net8.0": [
       "Application >= 1.0.0",
       "AutoMapper >= 13.0.1",
+      "Domain >= 1.0.0",
       "Microsoft.EntityFrameworkCore >= 8.0.8",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.8",
       "Microsoft.EntityFrameworkCore.Relational >= 8.0.8",
@@ -2853,6 +2854,9 @@
           "projectReferences": {
             "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Application\\Application.csproj": {
               "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Application\\Application.csproj"
+            },
+            "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj": {
+              "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj"
             }
           }
         }
