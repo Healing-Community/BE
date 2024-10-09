@@ -72,5 +72,33 @@ namespace Persistence.Repositories
 
             await Create(notification);
         }
+
+        public async Task MarkAsReadAsync(Guid notificationId)
+        {
+            var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.NotificationId == notificationId);
+            if (notification == null) return;
+
+            notification.IsRead = true;
+            notification.UpdatedAt = DateTime.UtcNow;
+
+            _context.Notifications.Update(notification);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ArchiveUnreadNotificationsAsync(Guid userId)
+        {
+            var unreadNotifications = await _context.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .ToListAsync();
+
+            foreach (var notification in unreadNotifications)
+            {
+                notification.IsRead = true;
+                notification.UpdatedAt = DateTime.UtcNow;
+            }
+
+            _context.Notifications.UpdateRange(unreadNotifications);
+            await _context.SaveChangesAsync();
+        }
     }
 }
