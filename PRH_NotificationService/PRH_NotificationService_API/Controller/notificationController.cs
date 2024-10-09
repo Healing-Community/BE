@@ -1,4 +1,6 @@
-﻿using Application.Commands.Notification;
+﻿using Application.Commands.ArchiveUnreadNotifications;
+using Application.Commands.MarkNotificationAsRead;
+using Application.Commands.Notification;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +22,20 @@ namespace PRH_NotificationService_API.Controller
         public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationCommand command)
         {
             var response = await _sender.Send(command);
+            return Ok(response);
+        }
+
+        [HttpPost("mark-as-read/{notificationId}")]
+        public async Task<IActionResult> MarkAsRead(Guid notificationId)
+        {
+            var response = await _sender.Send(new MarkNotificationAsReadCommand(notificationId));
+            return Ok(response);
+        }
+
+        [HttpPost("archive-unread/{userId}")]
+        public async Task<IActionResult> ArchiveUnread(Guid userId)
+        {
+            var response = await _sender.Send(new ArchiveUnreadNotificationsCommand(userId));
             return Ok(response);
         }
     }
