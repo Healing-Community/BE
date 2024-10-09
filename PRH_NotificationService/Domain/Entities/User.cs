@@ -14,5 +14,6 @@
 
         public Role Role { get; set; } = null!;
         public ICollection<Notification> Notifications { get; set; } = null!;
+        public ICollection<UserNotificationPreference> NotificationPreferences { get; set; } = null!;
     }
 }
