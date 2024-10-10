@@ -19,9 +19,11 @@ namespace Persistence.Repositories
             await hFDbContext.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var token = await hFDbContext.Tokens.FindAsync(id) ?? throw new ArgumentException($"Token with ID {id} not found.");
+            hFDbContext.Tokens.Remove(token);
+            await hFDbContext.SaveChangesAsync();
         }
 
         public Task<Token> GetByIdAsync(Guid id)
@@ -31,7 +33,7 @@ namespace Persistence.Repositories
 
         public async Task<Token> GetByPropertyAsync(Expression<Func<Token, bool>> predicate)
         {
-            return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Token();
+            return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public Task<IEnumerable<Token>> GetsAsync()

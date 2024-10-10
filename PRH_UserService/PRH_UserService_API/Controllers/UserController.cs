@@ -100,12 +100,5 @@ namespace PRH_UserService_API.Controllers
             var result = await sender.Send(new ResetPasswordCommand(resetPasswordDto));
             return Ok(result);
         }
-
-        [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
-        {
-            var result = await sender.Send(command);
-            return Ok(result);
-        }
     }
 }

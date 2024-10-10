@@ -48,7 +48,7 @@ namespace Infrastructure.Context
 
             // Token configuration
             modelBuilder.Entity<Token>()
-                .HasKey(t => t.TokenId);
+                .HasKey(t => t.UserId);
             modelBuilder.Entity<Token>()
                 .HasOne(t => t.User)
                 .WithMany(u => u.Tokens)

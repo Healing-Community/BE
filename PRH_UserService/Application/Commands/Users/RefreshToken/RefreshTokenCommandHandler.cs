@@ -49,7 +49,7 @@ namespace Application.Commands.Users.RefreshToken
                 // Logic to update the refress token in the database
                 token.RefreshToken = newRefreshToken;
                 token.ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60")); 
-                await tokenRepository.Update(token.TokenId, token); 
+                await tokenRepository.Update(token.UserId, token); 
 
                 // Set response details
                 response.Success = true;

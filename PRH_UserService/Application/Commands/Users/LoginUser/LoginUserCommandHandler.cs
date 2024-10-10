@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Application.Commands.Users.LoginUser
 {
-    public class LoginUserCommandHandler(IConfiguration configuration,ITokenRepository tokenRepository,IRoleRepository roleRepository,ITokenService tokenService,IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
+    public class LoginUserCommandHandler(IConfiguration configuration, ITokenRepository tokenRepository, IRoleRepository roleRepository, ITokenService tokenService, IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
         : IRequestHandler<LoginUserCommand, BaseResponse<TokenDto>>
     {
         public async Task<BaseResponse<TokenDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -71,7 +71,7 @@ namespace Application.Commands.Users.LoginUser
                 }
                 var roleName = roleRepository.GetRoleNameById(user.RoleId);
                 var claims = new List<Claim>{
-                    new Claim(ClaimTypes.Name, user.UserName),  
+                    new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, roleName.Result ?? "None")
@@ -90,9 +90,16 @@ namespace Application.Commands.Users.LoginUser
                 response.Data = tokenData;
 
                 // Save Refress token into database
+
+                var userToken = await tokenRepository.GetByPropertyAsync(t => t.UserId == user.UserId);
+
+                if (userToken != null)
+                {
+                    await tokenRepository.DeleteAsync(userToken.UserId);
+                }
+
                 var token = new Token
                 {
-                    TokenId = NewId.NextSequentialGuid(),
                     UserId = user.UserId,
                     RefreshToken = tokenData.RefreshToken,
                     ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60")),
