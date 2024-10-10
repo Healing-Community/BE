@@ -1,6 +1,7 @@
 ﻿using Application.Commands.ArchiveUnreadNotifications;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
+using Application.Commands.NotifyFollowers;
 using Application.Commands.UpdateNotificationPreference;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,13 @@ namespace PRH_NotificationService_API.Controller
 
         [HttpPost("upserst-notification-preference")]
         public async Task<IActionResult> UpdateNotificationPreference([FromBody] UpsertNotificationPreferenceCommand command)
+        {
+            var response = await _sender.Send(command);
+            return Ok(response);
+        }
+
+        [HttpPost("notify-followers")]
+        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersCommand command)
         {
             var response = await _sender.Send(command);
             return Ok(response);

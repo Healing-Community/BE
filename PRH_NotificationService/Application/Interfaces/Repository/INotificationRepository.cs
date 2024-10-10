@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.GenericRepository;
 using Domain.Entities;
+using Domain.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,7 @@ namespace Application.Interfaces.Repository
         Task MarkAsReadAsync(Guid notificationId);
         Task ArchiveUnreadNotificationsAsync(Guid userId);
         Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId);
+        Task<NotificationType?> GetNotificationTypeByEnum(NotificationTypeEnum typeEnum);
+        Task CreateNotificationsAsync(IEnumerable<Notification> notifications);
     }
 }

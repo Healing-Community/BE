@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Repository;
 using Domain.Entities;
+using Domain.Enum;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -110,6 +111,18 @@ namespace Persistence.Repositories
                 .FirstOrDefaultAsync(unp => unp.UserId == userId && unp.NotificationTypeId == notificationTypeId);
 
             return userNotificationPreference?.IsSubscribed ?? false;
+        }
+
+        public async Task<NotificationType?> GetNotificationTypeByEnum(NotificationTypeEnum typeEnum)
+        {
+            return await _context.NotificationTypes
+                .FirstOrDefaultAsync(nt => nt.Name == typeEnum.ToString());
+        }
+
+        public async Task CreateNotificationsAsync(IEnumerable<Notification> notifications)
+        {
+            await _context.Set<Notification>().AddRangeAsync(notifications);
+            await _context.SaveChangesAsync();
         }
     }
 }

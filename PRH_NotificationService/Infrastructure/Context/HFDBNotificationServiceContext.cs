@@ -15,6 +15,7 @@ namespace Infrastructure.Context
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<NotificationType> NotificationTypes { get; set; }
         public virtual DbSet<UserNotificationPreference> UserNotificationPreferences { get; set; }
+        public virtual DbSet<UserFollow> UserFollows { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql("Host=localhost; Database=HFDB_NotificationService; Username=postgres; Password=Abcd1234");
@@ -146,6 +147,22 @@ namespace Infrastructure.Context
             modelBuilder.Entity<UserNotificationPreference>()
                 .Property(unp => unp.IsSubscribed)
                 .IsRequired();
+
+            // UserFollows configuration
+            modelBuilder.Entity<UserFollow>()
+                .HasKey(uf => new { uf.FollowerId, uf.FolloweeId });
+
+            modelBuilder.Entity<UserFollow>()
+                .HasOne(uf => uf.Follower)
+                .WithMany(u => u.Following)
+                .HasForeignKey(uf => uf.FollowerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserFollow>()
+                .HasOne(uf => uf.Followee)
+                .WithMany(u => u.Followers)
+                .HasForeignKey(uf => uf.FolloweeId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             OnModelCreatingPartial(modelBuilder);
         }
