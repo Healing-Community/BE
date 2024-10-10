@@ -1,28 +1,21 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
-using BCrypt.Net;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Application.Commons.DTOs;
+using Application.Interfaces.Services;
+using System.Security.Claims;
+using Domain.Entities;
+using MassTransit;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Commands.Users.LoginUser
 {
-    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<string>>
+    public class LoginUserCommandHandler(IConfiguration configuration,ITokenRepository tokenRepository,IRoleRepository roleRepository,ITokenService tokenService,IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
+        : IRequestHandler<LoginUserCommand, BaseResponse<TokenDto>>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IJwtTokenRepository _jwtTokenRepository;
-
-        public LoginUserCommandHandler(IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
+        public async Task<BaseResponse<TokenDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            _userRepository = userRepository;
-            _jwtTokenRepository = jwtTokenRepository;
-        }
-
-        public async Task<BaseResponse<string>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
-        {
-            var response = new BaseResponse<string>
+            var response = new BaseResponse<TokenDto>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow
@@ -30,10 +23,10 @@ namespace Application.Commands.Users.LoginUser
 
             try
             {
-                var user = await _userRepository.GetUserByEmailAsync(request.LoginDto.Email);
+                var user = await userRepository.GetUserByEmailAsync(request.LoginDto.Email);
                 if (user == null)
                 {
-                    return new BaseResponse<string>
+                    return new BaseResponse<TokenDto>
                     {
                         Id = Guid.NewGuid(),
                         Success = false,
@@ -45,7 +38,7 @@ namespace Application.Commands.Users.LoginUser
 
                 if (user.Status == 0)
                 {
-                    return new BaseResponse<string>
+                    return new BaseResponse<TokenDto>
                     {
                         Id = Guid.NewGuid(),
                         Success = false,
@@ -55,18 +48,18 @@ namespace Application.Commands.Users.LoginUser
                     };
                 }
 
-                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
+                var isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
                 if (!isPasswordValid)
                 {
                     if (request.LoginDto.Password == user.PasswordHash)
                     {
                         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
-                        await _userRepository.Update(user.UserId, user);
+                        await userRepository.Update(user.UserId, user);
                         isPasswordValid = true;
                     }
                     else
                     {
-                        return new BaseResponse<string>
+                        return new BaseResponse<TokenDto>
                         {
                             Id = Guid.NewGuid(),
                             Success = false,
@@ -76,11 +69,36 @@ namespace Application.Commands.Users.LoginUser
                         };
                     }
                 }
+                var roleName = roleRepository.GetRoleNameById(user.RoleId);
+                var claims = new List<Claim>{
+                    new Claim(ClaimTypes.Name, user.UserName),  
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, roleName.Result ?? "None")
+                };
 
-                var token = _jwtTokenRepository.GenerateToken(user);
+                var accessToken = tokenService.GenerateAccessToken(claims);
                 response.Success = true;
                 response.Message = "Login successful.";
-                response.Data = token;
+
+                var tokenData = new TokenDto
+                {
+                    Token = accessToken,
+                    RefreshToken = tokenService.GenerateRefreshToken()
+                };
+
+                response.Data = tokenData;
+
+                // Save Refress token into database
+                var token = new Token
+                {
+                    TokenId = NewId.NextSequentialGuid(),
+                    UserId = user.UserId,
+                    RefreshToken = tokenData.RefreshToken,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60")),
+                };
+                await tokenRepository.Create(token);
+
             }
             catch (Exception ex)
             {

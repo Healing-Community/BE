@@ -1,17 +1,13 @@
-﻿using Application.Interfaces.Repository;
-using Domain.Entities;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using Application.Interfaces.Repository;
+using Domain.Entities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
-namespace Application.Services
+namespace Persistence.Repositories
 {
     public class JwtTokenRepository : IJwtTokenRepository
     {

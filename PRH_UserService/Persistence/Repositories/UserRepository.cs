@@ -2,12 +2,8 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Persistence.Repositories
 {
@@ -36,12 +32,6 @@ namespace Persistence.Repositories
         {
             return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new User();
         }
-
-        public async Task<IEnumerable<User>> GetsAsync()
-        {
-            return await hFDbContext.Users.ToListAsync();
-        }
-
         public async Task Update(Guid id, User entity)
         {
             var existingUser = await hFDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
@@ -59,6 +49,11 @@ namespace Persistence.Repositories
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await hFDbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<IEnumerable<User>> GetsAsync()
+        {
+            return await hFDbContext.Users.ToListAsync();
         }
     }
 }

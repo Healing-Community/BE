@@ -2,12 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence.Repositories
 {
@@ -32,6 +27,12 @@ namespace Persistence.Repositories
         public Task<Role> GetByPropertyAsync(Expression<Func<Role, bool>> predicate)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<string> GetRoleNameById(int roleId)
+        {
+            var role = await hFDbContext.Roles.FirstAsync(r => r.RoleId == roleId);
+            return role.Name;
         }
 
         public async Task<IEnumerable<Role>> GetsAsync()

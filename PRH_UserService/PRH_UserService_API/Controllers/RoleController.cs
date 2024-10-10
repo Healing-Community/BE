@@ -1,5 +1,6 @@
 ﻿using Application.Queries.Roles.GetRoles;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PRH_UserService_API.Controllers
@@ -13,7 +14,7 @@ namespace PRH_UserService_API.Controllers
         {
             _iSender = sender;
         }
-
+        [Authorize(Roles ="Admin")]
         [HttpGet("gets")]
         public async Task<IActionResult> Get() 
         {

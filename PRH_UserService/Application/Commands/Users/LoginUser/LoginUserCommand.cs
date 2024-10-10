@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.Users.LoginUser
 {
-    public record LoginUserCommand(LoginDto LoginDto) : IRequest<BaseResponse<string>>;
+    public record LoginUserCommand(LoginDto LoginDto) : IRequest<BaseResponse<TokenDto>>;
 }
