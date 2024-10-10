@@ -1,6 +1,7 @@
 ﻿using Application.Commands.ArchiveUnreadNotifications;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
+using Application.Commands.UpdateNotificationPreference;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +37,13 @@ namespace PRH_NotificationService_API.Controller
         public async Task<IActionResult> ArchiveUnread(Guid userId)
         {
             var response = await _sender.Send(new ArchiveUnreadNotificationsCommand(userId));
+            return Ok(response);
+        }
+
+        [HttpPost("upserst-notification-preference")]
+        public async Task<IActionResult> UpdateNotificationPreference([FromBody] UpsertNotificationPreferenceCommand command)
+        {
+            var response = await _sender.Send(command);
             return Ok(response);
         }
     }

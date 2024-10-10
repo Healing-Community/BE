@@ -27,7 +27,7 @@ namespace Persistence.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.NotificationId == id);
+            var notification = await _context.Notifications.FindAsync(id);
             if (notification == null) return;
             _context.Notifications.Remove(notification);
             await _context.SaveChangesAsync();
@@ -35,7 +35,8 @@ namespace Persistence.Repositories
 
         public async Task<Notification> GetByIdAsync(Guid id)
         {
-            return await _context.Notifications.FirstAsync(n => n.NotificationId == id);
+            var notification = await _context.Notifications.FindAsync(id);
+            return notification ?? new Notification();
         }
 
         public async Task<Notification> GetByPropertyAsync(Expression<Func<Notification, bool>> predicate)
@@ -50,16 +51,17 @@ namespace Persistence.Repositories
 
         public async Task Update(Guid id, Notification entity)
         {
-            var existingNotification = await _context.Notifications.FirstOrDefaultAsync(n => n.NotificationId == id);
+            var existingNotification = await _context.Notifications.FindAsync(id);
             if (existingNotification == null) return;
             _context.Entry(existingNotification).CurrentValues.SetValues(entity);
-            _context.Entry(existingNotification).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
         public async Task CreateNotificationAsync(Guid userId, Guid notificationTypeId, string message)
         {
-            var notification = new Notification
+            if (!await GetUserNotificationPreferenceAsync(userId, notificationTypeId)) return;
+
+            var createNotification = new Notification
             {
                 NotificationId = Guid.NewGuid(),
                 UserId = userId,
@@ -70,12 +72,12 @@ namespace Persistence.Repositories
                 Message = message
             };
 
-            await Create(notification);
+            await Create(createNotification);
         }
 
         public async Task MarkAsReadAsync(Guid notificationId)
         {
-            var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.NotificationId == notificationId);
+            var notification = await _context.Notifications.FindAsync(notificationId);
             if (notification == null) return;
 
             notification.IsRead = true;
@@ -99,6 +101,15 @@ namespace Persistence.Repositories
 
             _context.Notifications.UpdateRange(unreadNotifications);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId)
+        {
+            var userNotificationPreference = await _context.UserNotificationPreferences
+                .AsNoTracking()
+                .FirstOrDefaultAsync(unp => unp.UserId == userId && unp.NotificationTypeId == notificationTypeId);
+
+            return userNotificationPreference?.IsSubscribed ?? false;
         }
     }
 }

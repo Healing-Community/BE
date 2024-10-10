@@ -10,5 +10,6 @@ public static class DependencyInjection
     {
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationTypeRepository, NotificationTypeRepository>();
+        services.AddScoped<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>();
     }
 }

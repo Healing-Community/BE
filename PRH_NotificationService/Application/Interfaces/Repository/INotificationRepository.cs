@@ -13,5 +13,6 @@ namespace Application.Interfaces.Repository
         Task CreateNotificationAsync(Guid userId, Guid notificationTypeId, string message);
         Task MarkAsReadAsync(Guid notificationId);
         Task ArchiveUnreadNotificationsAsync(Guid userId);
+        Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId);
     }
 }
