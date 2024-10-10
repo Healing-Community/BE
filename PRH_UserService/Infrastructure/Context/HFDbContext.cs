@@ -43,7 +43,7 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Role>()
                 .HasKey(r => r.RoleId);
             modelBuilder.Entity<Role>()
-                .HasIndex(r => r.Name)
+                .HasIndex(r => r.RoleName)
                 .IsUnique();
 
             // Token configuration
