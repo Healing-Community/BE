@@ -21,7 +21,7 @@ public class GetUsersQueryHandler(IUserRepository userRepository) : IRequestHand
             var users = await userRepository.GetsAsync();
             response.Message = "Users retrieved successfully";
             response.Success = true;
-            response.Data = users;
+            response.Data = (IEnumerable<User>?)users;
         }
         catch (Exception e)
         {

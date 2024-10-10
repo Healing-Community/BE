@@ -1,74 +1,70 @@
 ﻿using Application.Commons;
+using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
-using Domain.Entities;
+using Application.Interfaces.Services;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Commands.Users.RefreshToken
 {
-    public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, BaseResponse<string>>
+    public class RefreshTokenCommandHandler(IConfiguration configuration,ITokenRepository tokenRepository,IUserRepository userRepository,ITokenService tokenService) : IRequestHandler<RefreshTokenCommand, BaseResponse<TokenDto>>
     {
-        private readonly IJwtTokenRepository _jwtTokenRepository;
-        private readonly IUserRepository _userRepository;
-
-        public RefreshTokenCommandHandler(IJwtTokenRepository jwtTokenRepository, IUserRepository userRepository)
+        public async Task<BaseResponse<TokenDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            _jwtTokenRepository = jwtTokenRepository;
-            _userRepository = userRepository;
-        }
-
-        public async Task<BaseResponse<string>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
-        {
-            var response = new BaseResponse<string>
+            var response = new BaseResponse<TokenDto>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow
             };
 
-            try
-            {
-                if (!_jwtTokenRepository.ValidateRefreshToken(request.RefreshToken, out Guid userId))
-                {
-                    response.Success = false;
-                    response.Message = "Invalid or expired refresh token.";
-                    return response;
-                }
+            var accessToken = request.TokenDto.Token;
+            var refreshToken = request.TokenDto.RefreshToken;
 
-                var user = await _userRepository.GetByIdAsync(userId);
-                if (user == null)
-                {
-                    response.Success = false;
-                    response.Message = "User not found.";
-                    return response;
-                }
+            var principal = tokenService.GetPrincipalFromExpiredToken(accessToken ?? "");
+            var username = principal?.Identity?.Name;
 
-                var token = user.Tokens.FirstOrDefault(t => t.RefreshTokenHash == request.RefreshToken);
-                if (token == null || token.ExpiresAt < DateTime.UtcNow)
-                {
-                    response.Success = false;
-                    response.Message = "Expired refresh token.";
-                    return response;
-                }
-
-                var newToken = _jwtTokenRepository.GenerateToken(user);
-                response.Success = true;
-                response.Message = "Token refreshed successfully.";
-                response.Data = newToken;
-
-                token.IsUsed = true;
-                await _userRepository.Update(user.UserId, user);
-            }
-            catch (Exception ex)
+            // Check user mail and expired token
+            if (string.IsNullOrEmpty(username) || refreshToken == null)
             {
                 response.Success = false;
-                response.Message = "Failed to refresh token.";
-                response.Errors = new List<string> { ex.Message };
+                response.Message = "Invalid token";
+                return response;
             }
+    
 
+            var user = await userRepository.GetByPropertyAsync(u => u.UserName == username);
+            var token =await tokenRepository.GetByPropertyAsync(u=> u.UserId == user.UserId);
+            if(user == null || token.RefreshToken != refreshToken)
+            {
+                response.Success = false;
+                response.Message = "Invalid token";
+                response.Data = null;
+            }
+            else
+            {
+                var newAccessToken = tokenService.GenerateAccessToken(principal?.Claims ?? []);
+                var newRefreshToken = tokenService.GenerateRefreshToken();
+                response.Success = true;
+                response.Message = "Token refreshed successfully";
+                // Logic to update the refress token in the database
+                token.RefreshToken = newRefreshToken;
+                token.ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60")); 
+                await tokenRepository.Update(token.TokenId, token); 
+
+                // Set response details
+                response.Success = true;
+                response.Message = "Token refreshed successfully";
+
+                response.Data = new TokenDto
+                {
+                    RefreshToken = newRefreshToken ,
+                    Token = newAccessToken
+                };
+                
+                
+            }
             return response;
+
         }
     }
 }

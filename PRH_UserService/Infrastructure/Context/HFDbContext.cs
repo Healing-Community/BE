@@ -55,7 +55,7 @@ namespace Infrastructure.Context
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Token>()
-                .HasIndex(t => t.RefreshTokenHash)
+                .HasIndex(t => t.RefreshToken)
                 .IsUnique();
 
             OnModelCreatingPartial(modelBuilder);

@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces.Repository;
-using Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Repositories;
@@ -15,5 +14,6 @@ public static class DependencyInjection
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IJwtTokenRepository, JwtTokenRepository>();
         services.AddScoped<IEmailRepository, EmailRepository>();
+        services.AddScoped<ITokenRepository, TokenRepository>();
     }
 }
