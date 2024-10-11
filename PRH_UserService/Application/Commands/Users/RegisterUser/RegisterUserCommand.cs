@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.Users.RegisterUser
 {
-    public record RegisterUserCommand(RegisterUserDto RegisterUserDto) : IRequest<BaseResponse<string>>;
+    public record RegisterUserCommand(RegisterUserDto RegisterUserDto, string BaseUrl) : IRequest<BaseResponse<string>>;
 }

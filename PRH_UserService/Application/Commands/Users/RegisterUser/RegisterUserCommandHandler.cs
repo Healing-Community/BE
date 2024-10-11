@@ -1,29 +1,14 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using Domain.Entities;
-using Domain.Enum;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace Application.Commands.Users.RegisterUser
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, BaseResponse<string>>
+    public class RegisterUserCommandHandler(ITokenService tokenService, IUserRepository userRepository, IEmailRepository emailRepository) : IRequestHandler<RegisterUserCommand, BaseResponse<string>>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IJwtTokenRepository _jwtTokenRepository;
-        private readonly IEmailRepository _emailRepository;
-
-        public RegisterUserCommandHandler(IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository, IEmailRepository emailRepository)
-        {
-            _userRepository = userRepository;
-            _jwtTokenRepository = jwtTokenRepository;
-            _emailRepository = emailRepository;
-        }
-
         public async Task<BaseResponse<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
@@ -34,66 +19,56 @@ namespace Application.Commands.Users.RegisterUser
 
             try
             {
+                // Check if passwords match
                 if (request.RegisterUserDto.Password != request.RegisterUserDto.ConfirmPassword)
                 {
-                    return new BaseResponse<string>
-                    {
-                        Id = Guid.NewGuid(),
-                        Success = false,
-                        Message = "Password and Confirm Password do not match.",
-                        Timestamp = DateTime.UtcNow
-                    };
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    response.Success = false;
+                    response.Message = "Password and Confirm Password do not match.";
+                    return response;
                 }
 
-                var existingUserByEmail = await _userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
+                // Check if email already exists
+                var existingUserByEmail = await userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
                 if (existingUserByEmail != null)
                 {
-                    return new BaseResponse<string>
-                    {
-                        Id = Guid.NewGuid(),
-                        Success = false,
-                        Message = "Email is already registered.",
-                        Timestamp = DateTime.UtcNow
-                    };
+                    response.StatusCode = (int)HttpStatusCode.Conflict; // Conflict for duplicate email
+                    response.Success = false;
+                    response.Message = "Email is already registered.";
+                    return response;
                 }
 
-                var existingUserByUserName = await _userRepository.GetUserByUserNameAsync(request.RegisterUserDto.UserName);
+                // Check if username already exists
+                var existingUserByUserName = await userRepository.GetUserByUserNameAsync(request.RegisterUserDto.UserName);
                 if (existingUserByUserName != null)
                 {
-                    return new BaseResponse<string>
-                    {
-                        Id = Guid.NewGuid(),
-                        Success = false,
-                        Message = "Username is already taken.",
-                        Timestamp = DateTime.UtcNow
-                    };
+                    response.StatusCode = (int)HttpStatusCode.Conflict; // Conflict for duplicate username
+                    response.Success = false;
+                    response.Message = "Username is already taken.";
+                    return response;
                 }
 
+                // Validate email format
                 try
                 {
                     var addr = new System.Net.Mail.MailAddress(request.RegisterUserDto.Email);
                     if (addr.Address != request.RegisterUserDto.Email)
                     {
-                        return new BaseResponse<string>
-                        {
-                            Id = Guid.NewGuid(),
-                            Success = false,
-                            Message = "Invalid email format.",
-                            Timestamp = DateTime.UtcNow
-                        };
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        response.Success = false;
+                        response.Message = "Invalid email format.";
+                        return response;
                     }
                 }
                 catch
                 {
-                    return new BaseResponse<string>
-                    {
-                        Id = Guid.NewGuid(),
-                        Success = false,
-                        Message = "Invalid email format.",
-                        Timestamp = DateTime.UtcNow
-                    };
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    response.Success = false;
+                    response.Message = "Invalid email format.";
+                    return response;
                 }
 
+                // Create new user
                 var user = new User
                 {
                     UserId = Guid.NewGuid(),
@@ -103,21 +78,24 @@ namespace Application.Commands.Users.RegisterUser
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     Status = 0,
-                    RoleId = 4
+                    RoleId = 1
                 };
 
-                await _userRepository.Create(user);
+                await userRepository.Create(user);
 
-                var verificationToken = _jwtTokenRepository.GenerateVerificationToken(user);
-                var verificationLink = $"https://healingcommunity.com/verify?token={verificationToken}";
+                // Generate verification token and send email
+                var verificationToken = tokenService.GenerateVerificationToken(user);
+                var verificationLink = $"{request.BaseUrl}/api/user/verify-user?Token={verificationToken}";
+                
+                await emailRepository.SendEmailAsync(user.Email, "Verify your email", $"Please verify your email by clicking <a href='{verificationLink}'>here</a>.");
 
-                await _emailRepository.SendEmailAsync(user.Email, "Verify your email", $"Please verify your email by clicking <a href='{verificationLink}'>here</a>.");
-
+                response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
                 response.Message = "Registration successful. Please check your email to verify your account.";
             }
             catch (Exception ex)
             {
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
                 response.Message = "Failed to register user.";
                 response.Errors = new List<string> { ex.Message };

@@ -32,7 +32,7 @@ namespace Persistence.Repositories
         public async Task<string> GetRoleNameById(int roleId)
         {
             var role = await hFDbContext.Roles.FirstAsync(r => r.RoleId == roleId);
-            return role.Name;
+            return role.RoleName;
         }
 
         public async Task<IEnumerable<Role>> GetsAsync()

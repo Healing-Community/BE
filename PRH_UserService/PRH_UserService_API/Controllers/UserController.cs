@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Commands.Users.Logout;
 using Application.Commands.Users.ForgotPassword;
 using Application.Commands.Users.ResetPassword;
-using Application.Commands.Users.RefreshToken;
 using Microsoft.AspNetCore.Authorization;
 using PRH_UserService_API.Middleware;
+using PRH_UserService_API.Extentions;
 
 namespace PRH_UserService_API.Controllers
 {
@@ -26,22 +26,22 @@ namespace PRH_UserService_API.Controllers
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
-            var users = await sender.Send(new GetUsersQuery());
-            return Ok(users);
+            var response = await sender.Send(new GetUsersQuery());
+            return response.ToActionResult();
         }
 
         [HttpGet("get-by-id/{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var user = await sender.Send(new GetUsersByIdQuery(id));
-            return Ok(user);
+            var response = await sender.Send(new GetUsersByIdQuery(id));
+            return response.ToActionResult();
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> AddUser(UserDto user)
         {
-            var addedUser = await sender.Send(new CreateUserCommand(user));
-            return Ok(addedUser);
+            var response = await sender.Send(new CreateUserCommand(user));
+            return response.ToActionResult();
         }
 
         [HttpPut("update/{id:guid}")]
@@ -69,36 +69,38 @@ namespace PRH_UserService_API.Controllers
         [HttpPost("register-user")]
         public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
         {
-            var response = await sender.Send(new RegisterUserCommand(registerUserDto));
-            return Ok(response);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var response = await sender.Send(new RegisterUserCommand(registerUserDto,baseUrl));
+            return response.ToActionResult();
         }
-
-        [HttpPost("verify-user")]
-        public async Task<IActionResult> VerifyUser([FromBody] VerifyUserCommand command)
+        [Obsolete]
+        [HttpGet("verify-user")]
+        public async Task<IActionResult> VerifyUser(string Token)
         {
-            var result = await sender.Send(command);
-            return Ok(result);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var response = await sender.Send(new VerifyUserCommand(Token));
+            return Redirect($"{baseUrl}/swagger");
         }
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] LogoutUserCommand command)
         {
-            var result = await sender.Send(command);
-            return Ok(result);
+            var response = await sender.Send(command);
+            return response.ToActionResult();
         }
 
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
         {
-            var result = await sender.Send(new ForgotPasswordCommand(forgotPasswordDto));
-            return Ok(result);
+            var response = await sender.Send(new ForgotPasswordCommand(forgotPasswordDto));
+            return response.ToActionResult();
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
-            var result = await sender.Send(new ResetPasswordCommand(resetPasswordDto));
-            return Ok(result);
+            var response = await sender.Send(new ResetPasswordCommand(resetPasswordDto));
+            return response.ToActionResult();
         }
     }
 }

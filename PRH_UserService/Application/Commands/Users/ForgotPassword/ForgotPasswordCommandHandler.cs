@@ -1,12 +1,6 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
-using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Application.Commands.Users.ForgotPassword
 {
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, BaseResponse<string>>

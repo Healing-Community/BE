@@ -1,24 +1,12 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Users.VerifyUser
 {
-    public class VerifyUserCommandHandler : IRequestHandler<VerifyUserCommand, BaseResponse<string>>
+    public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepository userRepository) : IRequestHandler<VerifyUserCommand, BaseResponse<string>>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IJwtTokenRepository _jwtTokenRepository;
-
-        public VerifyUserCommandHandler(IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
-        {
-            _userRepository = userRepository;
-            _jwtTokenRepository = jwtTokenRepository;
-        }
 
         public async Task<BaseResponse<string>> Handle(VerifyUserCommand request, CancellationToken cancellationToken)
         {
@@ -30,7 +18,7 @@ namespace Application.Commands.Users.VerifyUser
 
             try
             {
-                if (!_jwtTokenRepository.ValidateToken(request.Token, out Guid userId))
+                if (!tokenService.ValidateToken(request.Token, out Guid userId))
                 {
                     return new BaseResponse<string>
                     {
@@ -41,7 +29,7 @@ namespace Application.Commands.Users.VerifyUser
                     };
                 }
 
-                var user = await _userRepository.GetByIdAsync(userId);
+                var user = await userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
                     return new BaseResponse<string>
@@ -54,7 +42,7 @@ namespace Application.Commands.Users.VerifyUser
                 }
 
                 user.Status = 1;
-                await _userRepository.Update(user.UserId, user);
+                await userRepository.Update(user.UserId, user);
 
                 response.Success = true;
                 response.Message = "Email verified successfully.";

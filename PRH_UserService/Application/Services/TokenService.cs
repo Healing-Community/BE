@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Interfaces.Services;
+using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -46,7 +47,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"] ?? "")),
-            ValidateLifetime = false 
+            ValidateLifetime = false
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -55,5 +56,86 @@ public class TokenService(IConfiguration configuration) : ITokenService
             throw new SecurityTokenException("Invalid token");
 
         return principal;
+    }
+    public bool ValidateRefreshToken(string refreshToken, out Guid userId)
+    {
+        userId = Guid.Empty;
+        var jwtSettings = configuration.GetSection("JwtSettings");
+        var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(secretKey);
+
+        try
+        {
+            tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value);
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    public bool ValidateToken(string token, out Guid userId)
+    {
+        userId = Guid.Empty;
+        var jwtSettings = configuration.GetSection("JwtSettings");
+        var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(secretKey);
+
+        tokenHandler.ValidateToken(token, new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        }, out SecurityToken validatedToken);
+
+        var jwtToken = (JwtSecurityToken)validatedToken;
+        var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
+
+        if (userIdClaim != null)
+        {
+            userId = Guid.Parse(userIdClaim.Value);
+            return true;
+        }
+        return false;
+    }
+    public string GenerateVerificationToken(User user)
+    {
+        var jwtSettings = configuration.GetSection("JwtSettings");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.")));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("verification", "true")
+            };
+
+        var token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpiryMinutes"] ?? throw new InvalidOperationException("Secret key is not configured."))),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
