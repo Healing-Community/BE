@@ -1,6 +1,11 @@
 ﻿using Application.Commands.ArchiveUnreadNotifications;
+using Application.Commands.GetPopularNotificationTypes;
+using Application.Commands.GetReadNotificationRate;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
+using Application.Commands.NotifyFollowers;
+using Application.Commands.UpdateNotificationPreference;
+using MassTransit.Mediator;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +41,34 @@ namespace PRH_NotificationService_API.Controller
         public async Task<IActionResult> ArchiveUnread(Guid userId)
         {
             var response = await _sender.Send(new ArchiveUnreadNotificationsCommand(userId));
+            return Ok(response);
+        }
+
+        [HttpPost("upserst-notification-preference")]
+        public async Task<IActionResult> UpdateNotificationPreference([FromBody] UpsertNotificationPreferenceCommand command)
+        {
+            var response = await _sender.Send(command);
+            return Ok(response);
+        }
+
+        [HttpPost("notify-followers")]
+        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersCommand command)
+        {
+            var response = await _sender.Send(command);
+            return Ok(response);
+        }
+
+        [HttpGet("read-rate")]
+        public async Task<IActionResult> GetReadNotificationRate()
+        {
+            var response = await _sender.Send(new GetReadNotificationRateCommand());
+            return Ok(response);
+        }
+
+        [HttpGet("popular-types")]
+        public async Task<IActionResult> GetPopularNotificationTypes()
+        {
+            var response = await _sender.Send(new GetPopularNotificationTypesCommand());
             return Ok(response);
         }
     }

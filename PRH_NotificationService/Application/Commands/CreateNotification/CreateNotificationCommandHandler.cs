@@ -1,11 +1,6 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
-using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Notification
 {
@@ -33,11 +28,17 @@ namespace Application.Commands.Notification
                 var notificationType = await _notificationTypeRepository.GetByNameAsync(request.NotificationType.ToString());
                 if (notificationType == null)
                 {
-                    return new BaseResponse<string>
-                    {
-                        Success = false,
-                        Message = "Invalid notification type."
-                    };
+                    response.Success = false;
+                    response.Message = "Invalid notification type.";
+                    return response;
+                }
+
+                var isSubscribed = await _notificationRepository.GetUserNotificationPreferenceAsync(request.UserId, notificationType.NotificationTypeId);
+                if (!isSubscribed)
+                {
+                    response.Success = false;
+                    response.Message = "User is not subscribed to this notification type.";
+                    return response;
                 }
 
                 var notification = new Domain.Entities.Notification

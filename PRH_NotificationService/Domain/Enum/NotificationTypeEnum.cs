@@ -10,9 +10,9 @@ namespace Domain.Enum
     {
         Comment = 1,
         Like = 2,
-        Message = 3,
-        NewPostByFollowedUser = 4,
-        Follower = 5,
+        Follower = 3,
+        Message = 4,
+        NewPostByFollowedUser = 5,
         Report = 6,
         StoryApproved = 7,
         StoryRejected = 8,

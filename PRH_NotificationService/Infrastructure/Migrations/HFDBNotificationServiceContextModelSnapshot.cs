@@ -142,6 +142,42 @@ namespace Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserFollow", b =>
+                {
+                    b.Property<Guid>("FollowerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FolloweeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("FollowedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("FollowerId", "FolloweeId");
+
+                    b.HasIndex("FolloweeId");
+
+                    b.ToTable("UserFollows");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserNotificationPreference", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("NotificationTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsSubscribed")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("UserId", "NotificationTypeId");
+
+                    b.HasIndex("NotificationTypeId");
+
+                    b.ToTable("UserNotificationPreferences");
+                });
+
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
                     b.HasOne("Domain.Entities.NotificationType", "NotificationType")
@@ -172,9 +208,49 @@ namespace Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserFollow", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "Followee")
+                        .WithMany("Followers")
+                        .HasForeignKey("FolloweeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "Follower")
+                        .WithMany("Following")
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Followee");
+
+                    b.Navigation("Follower");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserNotificationPreference", b =>
+                {
+                    b.HasOne("Domain.Entities.NotificationType", "NotificationType")
+                        .WithMany("UserPreferences")
+                        .HasForeignKey("NotificationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("NotificationPreferences")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NotificationType");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.NotificationType", b =>
                 {
                     b.Navigation("Notifications");
+
+                    b.Navigation("UserPreferences");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -184,6 +260,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
+
+                    b.Navigation("NotificationPreferences");
+
                     b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
