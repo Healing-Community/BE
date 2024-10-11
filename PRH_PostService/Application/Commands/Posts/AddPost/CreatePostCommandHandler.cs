@@ -1,5 +1,8 @@
 ﻿using Application.Commons;
+using Application.Commons.Request;
+using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
+using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
@@ -11,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.Posts.AddPost
 {
-    public class CreatePostCommandHandler(IPostRepository postRepository, ICategoryRepository categoryRepository) 
+    public class CreatePostCommandHandler(IMessagePublisher messagePublisher, IPostRepository postRepository, ICategoryRepository categoryRepository) 
         : IRequestHandler<CreatePostCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -38,9 +41,20 @@ namespace Application.Commands.Posts.AddPost
             try
             {
                 await postRepository.Create(post);
+
                 response.Success = true;
                 response.Errors = Enumerable.Empty<string>();
                 response.Message = "Post created successfully";
+
+                // Send the Request to the Queue for processing
+                var postingRequestCreatedMessage = new PostingRequestCreatedMessage
+                {
+                    PostedDate = post.CreateAt,
+                    PostingRequestId = NewId.NextSequentialGuid(),
+                    Tittle = post.Title,
+                    UserId = post.UserId,                   
+                };
+                await messagePublisher.PublishAsync(postingRequestCreatedMessage, QueueName.PostQueue, cancellationToken);
             }
             catch (Exception ex)
             {

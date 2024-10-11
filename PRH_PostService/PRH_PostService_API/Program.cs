@@ -1,5 +1,6 @@
-using Application;
+﻿using Application;
 using Infrastructure;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
@@ -70,9 +71,46 @@ builder.Services.AddAuthentication(options =>
 });
 #endregion
 
+#region AMQP
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(new Uri(builder.Configuration["RabbitMq:Host"] ?? throw new NullReferenceException()), h =>
+        {
+            h.Username(builder.Configuration["RabbitMq:Username"] ?? throw new NullReferenceException());
+            h.Password(builder.Configuration["RabbitMq:Password"] ?? throw new NullReferenceException());
+        });
+        // Thiết lập Retry
+        cfg.UseMessageRetry(retryConfig =>
+        {
+            retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Thử lại 5 lần, mỗi lần cách nhau 10 giây
+        });
+
+        // Tùy chọn khác như Timeout, CircuitBreaker nếu cần
+        cfg.UseCircuitBreaker(cbConfig =>
+        {
+            cbConfig.TrackingPeriod = TimeSpan.FromMinutes(1);
+            cbConfig.ActiveThreshold = 5;
+            cbConfig.ResetInterval = TimeSpan.FromMinutes(5);
+        });
+    });
+});
+// Add MassTransit hosted service
+builder.Services.AddHostedService<MassTransitHostedService>();
+
+#endregion
+
 var app = builder.Build();
 
+#region MassTransitHostedService
 
+// Configure MassTransit bus control
+var busControl = app.Services.GetRequiredService<IBusControl>();
+await busControl.StartAsync();
+
+#endregion
 app.UseSwagger();
 
 app.UseSwaggerUI();

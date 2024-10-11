@@ -17,5 +17,9 @@
 		<ProjectReference Include="..\Domain\Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Commands\PostRequest\" />
+	</ItemGroup>
+
 
 </Project>
