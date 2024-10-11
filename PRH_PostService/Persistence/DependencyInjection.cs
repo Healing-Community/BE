@@ -1,4 +1,6 @@
-﻿using Application.Interfaces.Repository;
+﻿using Application.Interfaces.AMQP;
+using Application.Interfaces.Repository;
+using CleanArchitecture.Persistence.AMQP;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Repositories;
 
@@ -11,6 +13,9 @@ public static class DependencyInjection
     {
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<IMessagePublisher, MessagePublisher>();
+
+
         //#region MongoDB
 
         //services.AddSingleton<IMongoClient>(sp =>
