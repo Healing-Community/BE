@@ -17,5 +17,7 @@ namespace Application.Interfaces.Repository
         Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId);
         Task<NotificationType?> GetNotificationTypeByEnum(NotificationTypeEnum typeEnum);
         Task CreateNotificationsAsync(IEnumerable<Notification> notifications);
+        Task<double> GetReadNotificationRateAsync();
+        Task<Dictionary<string, int>> GetPopularNotificationTypesAsync();
     }
 }

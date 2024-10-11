@@ -124,5 +124,23 @@ namespace Persistence.Repositories
             await _context.Set<Notification>().AddRangeAsync(notifications);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<double> GetReadNotificationRateAsync()
+        {
+            var totalNotifications = await _context.Notifications.CountAsync();
+            if (totalNotifications == 0) return 0;
+
+            var readNotifications = await _context.Notifications.CountAsync(n => n.IsRead);
+            return (double)readNotifications / totalNotifications * 100;
+        }
+
+        public async Task<Dictionary<string, int>> GetPopularNotificationTypesAsync()
+        {
+            return await _context.Notifications
+            .GroupBy(n => n.NotificationType.Name)
+            .Select(g => new { NotificationType = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .ToDictionaryAsync(x => x.NotificationType, x => x.Count);
+        }
     }
 }
