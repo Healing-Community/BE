@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
+
 #region Swagger
 builder.Services.AddSwaggerGen(c =>
 {

@@ -19,6 +19,7 @@ builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 # endregion
 #region Swagger
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "PRH UserSerive API", Version = "v1" });
@@ -46,6 +47,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 #endregion
+
 #region Authorization-Authentication
 builder.Services.AddAuthorization();
 
