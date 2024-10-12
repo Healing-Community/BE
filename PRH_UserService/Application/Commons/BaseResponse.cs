@@ -7,6 +7,6 @@ public class BaseResponse<T>
     public string? Message { get; set; }
     public bool Success { get; set; }
     public T? Data { get; set; }
-    public IEnumerable<string>? Errors { get; set; }
+    public List<string>? Errors { get; set; }
     public DateTime Timestamp { get; set; }
 }

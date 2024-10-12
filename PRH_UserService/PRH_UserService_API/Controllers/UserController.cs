@@ -81,11 +81,12 @@ namespace PRH_UserService_API.Controllers
             var response = await sender.Send(new VerifyUserCommand(Token));
             return Redirect($"{baseUrl}/swagger");
         }
-
+        [Authorize(Roles ="User")]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout([FromBody] LogoutUserCommand command)
+        public async Task<IActionResult> Logout([FromBody] LogoutRequestDto logoutRequestDto)
         {
-            var response = await sender.Send(command);
+            logoutRequestDto.context = HttpContext;
+            var response = await sender.Send(new LogoutUserCommand(logoutRequestDto));
             return response.ToActionResult();
         }
 

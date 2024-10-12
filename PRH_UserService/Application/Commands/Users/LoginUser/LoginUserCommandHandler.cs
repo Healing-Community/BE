@@ -5,12 +5,11 @@ using Application.Commons.DTOs;
 using Application.Interfaces.Services;
 using System.Security.Claims;
 using Domain.Entities;
-using MassTransit;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Commands.Users.LoginUser
 {
-    public class LoginUserCommandHandler(IConfiguration configuration, ITokenRepository tokenRepository, IRoleRepository roleRepository, ITokenService tokenService, IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
+    public class LoginUserCommandHandler(IConfiguration configuration, ITokenRepository tokenRepository, IRoleRepository roleRepository, ITokenService tokenService, IUserRepository userRepository)
         : IRequestHandler<LoginUserCommand, BaseResponse<TokenDto>>
     {
         public async Task<BaseResponse<TokenDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -89,7 +88,7 @@ namespace Application.Commands.Users.LoginUser
 
                 response.Data = tokenData;
 
-                // Save Refress token into database
+                // Save Refresh token into database
 
                 var userToken = await tokenRepository.GetByPropertyAsync(t => t.UserId == user.UserId);
 

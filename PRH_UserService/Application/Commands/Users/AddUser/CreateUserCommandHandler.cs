@@ -1,5 +1,4 @@
-﻿
-using Application.Commons;
+﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
@@ -29,7 +28,8 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
         var response = new BaseResponse<string>
         {
             Id = userId,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow,
+            Errors = new List<string>() // Initialize the error list
         };
 
         try
@@ -37,17 +37,15 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             // Create user if name does not exist
             await userRepository.Create(user);
             response.Success = true;
-            response.Errors = Enumerable.Empty<string>();
             response.Message = "User created successfully";
         }
         catch (Exception ex)
         {
             response.Success = false;
-            response.Errors = new[] { ex.Message };
-            response.Message = "Failed to create product";
+            response.Errors.Add(ex.Message); // Add error message to the list
+            response.Message = "Failed to create user"; // Fixed typo from "product" to "user"
         }
 
         return response;
     }
 }
-
