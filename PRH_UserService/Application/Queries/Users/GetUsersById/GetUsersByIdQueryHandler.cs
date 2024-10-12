@@ -6,12 +6,13 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Queries.Users.GetUsersById
 {
-    public class GetUsersByIdQueryHandler(IUserRepository userRepository) : IRequestHandler<GetUsersByIdQuery, BaseResponse<User>>
+    public class GetUsersByIdQueryHandler(IUserRepository userRepository)
+        : IRequestHandler<GetUsersByIdQuery, BaseResponse<User>>
     {
         public async Task<BaseResponse<User>> Handle(GetUsersByIdQuery request, CancellationToken cancellationToken)
         {
@@ -19,21 +20,31 @@ namespace Application.Queries.Users.GetUsersById
             {
                 Id = NewId.NextSequentialGuid(),
                 Timestamp = DateTime.UtcNow,
+                Errors = new List<string>() // Initialize the error list
             };
+
             try
             {
                 var user = await userRepository.GetByIdAsync(request.id);
+                if (user == null)
+                {
+                    response.Success = false;
+                    response.Message = "User not found";
+                    response.Errors.Add("No user found with the provided ID.");
+                    return response;
+                }
+
                 response.Data = user;
                 response.Success = true;
                 response.Message = "User retrieved successfully";
-                response.Errors = Enumerable.Empty<string>();
             }
             catch (Exception e)
             {
                 response.Success = false;
-                response.Message = "An error occurred";
-                response.Errors = new[] { e.Message };
+                response.Message = "An error occurred while retrieving the user";
+                response.Errors.Add(e.Message); // Add error message to the list
             }
+
             return response;
         }
     }

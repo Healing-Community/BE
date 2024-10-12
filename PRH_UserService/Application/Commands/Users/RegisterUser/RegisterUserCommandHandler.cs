@@ -7,14 +7,16 @@ using System.Net;
 
 namespace Application.Commands.Users.RegisterUser
 {
-    public class RegisterUserCommandHandler(ITokenService tokenService, IUserRepository userRepository, IEmailRepository emailRepository) : IRequestHandler<RegisterUserCommand, BaseResponse<string>>
+    public class RegisterUserCommandHandler(ITokenService tokenService, IUserRepository userRepository, IEmailRepository emailRepository)
+        : IRequestHandler<RegisterUserCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Errors = new List<string>() // Initialize the error list
             };
 
             try
@@ -22,53 +24,46 @@ namespace Application.Commands.Users.RegisterUser
                 // Check if passwords match
                 if (request.RegisterUserDto.Password != request.RegisterUserDto.ConfirmPassword)
                 {
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    response.Success = false;
-                    response.Message = "Password and Confirm Password do not match.";
-                    return response;
+                    response.Errors.Add("Mật khẩu và xác nhận mật khẩu không khớp.");
                 }
 
                 // Check if email already exists
                 var existingUserByEmail = await userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
                 if (existingUserByEmail != null)
                 {
-                    response.StatusCode = (int)HttpStatusCode.Conflict; // Conflict for duplicate email
-                    response.Success = false;
-                    response.Message = "Email is already registered.";
-                    return response;
+                    response.Errors.Add("Email đã được đăng ký.");
                 }
 
                 // Check if username already exists
                 var existingUserByUserName = await userRepository.GetUserByUserNameAsync(request.RegisterUserDto.UserName);
                 if (existingUserByUserName != null)
                 {
-                    response.StatusCode = (int)HttpStatusCode.Conflict; // Conflict for duplicate username
-                    response.Success = false;
-                    response.Message = "Username is already taken.";
-                    return response;
+                    response.Errors.Add("Tên người dùng đã bị sử dụng.");
                 }
 
                 // Validate email format
                 try
                 {
-                    var addr = new System.Net.Mail.MailAddress(request.RegisterUserDto.Email);
-                    if (addr.Address != request.RegisterUserDto.Email)
+                    var address = new System.Net.Mail.MailAddress(request.RegisterUserDto.Email);
+                    if (address.Address != request.RegisterUserDto.Email)
                     {
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        response.Success = false;
-                        response.Message = "Invalid email format.";
-                        return response;
+                        response.Errors.Add("Định dạng email không hợp lệ.");
                     }
                 }
                 catch
                 {
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    response.Errors.Add("Định dạng email không hợp lệ.");
+                }
+
+                // If there are any errors, set the response properties accordingly
+                if (response.Errors.Any())
+                {
+                    response.StatusCode = (int)HttpStatusCode.BadRequest; // Set to BadRequest or Conflict based on your logic
                     response.Success = false;
-                    response.Message = "Invalid email format.";
                     return response;
                 }
 
-                // Create new user
+                // Create new user if no errors
                 var user = new User
                 {
                     UserId = Guid.NewGuid(),
@@ -86,19 +81,19 @@ namespace Application.Commands.Users.RegisterUser
                 // Generate verification token and send email
                 var verificationToken = tokenService.GenerateVerificationToken(user);
                 var verificationLink = $"{request.BaseUrl}/api/user/verify-user?Token={verificationToken}";
-                
-                await emailRepository.SendEmailAsync(user.Email, "Verify your email", $"Please verify your email by clicking <a href='{verificationLink}'>here</a>.");
+
+                await emailRepository.SendEmailAsync(user.Email, "Xác thực email của bạn", $"Vui lòng xác thực email của bạn bằng cách nhấp vào <a href='{verificationLink}'>đây</a>.");
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Registration successful. Please check your email to verify your account.";
+                response.Message = "Đăng ký thành công. Vui lòng kiểm tra email của bạn để xác thực tài khoản.";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to register user.";
-                response.Errors = new List<string> { ex.Message };
+                response.Message = "Đã xảy ra lỗi khi đăng ký người dùng.";
+                response.Errors.Add(ex.Message); // Add the exception message to the error list
             }
 
             return response;
