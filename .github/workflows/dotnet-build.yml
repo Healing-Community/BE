@@ -1,4 +1,4 @@
-name: Build and Publish .NET Project
+name: Build Multiple Services
 
 on:
   push:
@@ -9,9 +9,8 @@ on:
       - main
 
 jobs:
-  dotnet-build:
+  build-notification-service:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -19,19 +18,68 @@ jobs:
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0'  # Adjust to your .NET version
+        dotnet-version: '8.0'
 
-    - name: Restore dependencies
-      run: dotnet restore PRH_UserService.sln  # Reference the solution file
+    - name: Build Notification Service
+      working-directory: ./PRH_NotificationService  # Navigate to NotificationService directory
+      run: dotnet build --configuration Release
 
-    - name: Build project
-      run: dotnet build PRH_UserService/PRH_UserService.sln --configuration Release
+    - name: Publish Notification Service
+      working-directory: ./PRH_NotificationService
+      run: dotnet publish --configuration Release --output ./publish
 
-    - name: Publish project
-      run: dotnet publish PRH_UserService/PRH_UserService.sln --configuration Release --output ./publish
-
-    - name: Upload build artifacts
+    - name: Upload Notification Service artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: published-app
-        path: ./publish
+        name: notification-service-publish
+        path: ./PRH_NotificationService/publish
+
+  build-post-service:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'
+
+    - name: Build Post Service
+      working-directory: ./PRH_PostService  # Navigate to PostService directory
+      run: dotnet build --configuration Release
+
+    - name: Publish Post Service
+      working-directory: ./PRH_PostService
+      run: dotnet publish --configuration Release --output ./publish
+
+    - name: Upload Post Service artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: post-service-publish
+        path: ./PRH_PostService/publish
+
+  build-user-service:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'
+
+    - name: Build User Service
+      working-directory: ./PRH_UserService  # Navigate to UserService directory
+      run: dotnet build --configuration Release
+
+    - name: Publish User Service
+      working-directory: ./PRH_UserService
+      run: dotnet publish --configuration Release --output ./publish
+
+    - name: Upload User Service artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: user-service-publish
+        path: ./PRH_UserService/publish
