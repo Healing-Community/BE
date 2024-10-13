@@ -1,7 +1,4 @@
-﻿
-using System.Security.Claims;
-
-namespace Application.Commons.DTOs;
+﻿namespace Application.Commons.DTOs;
 
 public class TokenDto
 {

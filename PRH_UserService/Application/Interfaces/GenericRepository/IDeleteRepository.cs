@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.Interfaces.GenericRepository;
 
-namespace Application.Interfaces.GenericRepository
+public interface IDeleteRepository
 {
-    public interface IDeleteRepository
-    {
-        Task DeleteAsync(Guid id);
-
-    }
+    Task DeleteAsync(Guid id);
 }

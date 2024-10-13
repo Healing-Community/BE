@@ -1,59 +1,58 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿#nullable disable
 
-#nullable disable
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations;
+
+/// <inheritdoc />
+public partial class changefieldtoken : Migration
 {
     /// <inheritdoc />
-    public partial class changefieldtoken : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.RenameColumn(
-                name: "RefreshToken",
-                table: "Tokens",
-                newName: "RefreshTokenHash");
+        migrationBuilder.RenameColumn(
+            "RefreshToken",
+            "Tokens",
+            "RefreshTokenHash");
 
-            migrationBuilder.RenameColumn(
-                name: "IsActive",
-                table: "Tokens",
-                newName: "IsUsed");
+        migrationBuilder.RenameColumn(
+            "IsActive",
+            "Tokens",
+            "IsUsed");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_Tokens_RefreshToken",
-                table: "Tokens",
-                newName: "IX_Tokens_RefreshTokenHash");
+        migrationBuilder.RenameIndex(
+            "IX_Tokens_RefreshToken",
+            table: "Tokens",
+            newName: "IX_Tokens_RefreshTokenHash");
 
-            migrationBuilder.AddColumn<int>(
-                name: "Status",
-                table: "Tokens",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-        }
+        migrationBuilder.AddColumn<int>(
+            "Status",
+            "Tokens",
+            "integer",
+            nullable: false,
+            defaultValue: 0);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "Status",
-                table: "Tokens");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            "Status",
+            "Tokens");
 
-            migrationBuilder.RenameColumn(
-                name: "RefreshTokenHash",
-                table: "Tokens",
-                newName: "RefreshToken");
+        migrationBuilder.RenameColumn(
+            "RefreshTokenHash",
+            "Tokens",
+            "RefreshToken");
 
-            migrationBuilder.RenameColumn(
-                name: "IsUsed",
-                table: "Tokens",
-                newName: "IsActive");
+        migrationBuilder.RenameColumn(
+            "IsUsed",
+            "Tokens",
+            "IsActive");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_Tokens_RefreshTokenHash",
-                table: "Tokens",
-                newName: "IX_Tokens_RefreshToken");
-        }
+        migrationBuilder.RenameIndex(
+            "IX_Tokens_RefreshTokenHash",
+            table: "Tokens",
+            newName: "IX_Tokens_RefreshToken");
     }
 }

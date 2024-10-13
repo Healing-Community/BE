@@ -1,9 +1,8 @@
-﻿namespace Domain.Enum
+﻿namespace Domain.Enum;
+
+public enum TokenStatus
 {
-    public enum TokenStatus
-    {
-        Active = 0,
-        Revoked = 1,
-        Expired = 2,
-    }
+    Active = 0,
+    Revoked = 1,
+    Expired = 2
 }

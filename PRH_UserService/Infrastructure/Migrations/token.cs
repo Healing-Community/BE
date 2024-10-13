@@ -1,83 +1,81 @@
-﻿using System;
+﻿#nullable disable
+
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
+namespace Infrastructure.Migrations;
 
-namespace Infrastructure.Migrations
+/// <inheritdoc />
+public partial class token : Migration
 {
     /// <inheritdoc />
-    public partial class token : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.RenameColumn(
-                name: "Updated",
-                table: "Users",
-                newName: "UpdatedAt");
+        migrationBuilder.RenameColumn(
+            "Updated",
+            "Users",
+            "UpdatedAt");
 
-            migrationBuilder.RenameColumn(
-                name: "Created",
-                table: "Users",
-                newName: "CreatedAt");
+        migrationBuilder.RenameColumn(
+            "Created",
+            "Users",
+            "CreatedAt");
 
-            migrationBuilder.CreateTable(
-                name: "Tokens",
-                columns: table => new
-                {
-                    TokenId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccessToken = table.Column<string>(type: "text", nullable: false),
-                    RefreshToken = table.Column<string>(type: "text", nullable: false),
-                    IssuedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tokens", x => x.TokenId);
-                    table.ForeignKey(
-                        name: "FK_Tokens_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+        migrationBuilder.CreateTable(
+            "Tokens",
+            table => new
+            {
+                TokenId = table.Column<Guid>("uuid", nullable: false),
+                UserId = table.Column<Guid>("uuid", nullable: false),
+                AccessToken = table.Column<string>("text", nullable: false),
+                RefreshToken = table.Column<string>("text", nullable: false),
+                IssuedAt = table.Column<DateTime>("timestamp with time zone", nullable: false),
+                ExpiresAt = table.Column<DateTime>("timestamp with time zone", nullable: false),
+                RefreshTokenExpiresAt = table.Column<DateTime>("timestamp with time zone", nullable: false),
+                IsActive = table.Column<bool>("boolean", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Tokens", x => x.TokenId);
+                table.ForeignKey(
+                    "FK_Tokens_Users_UserId",
+                    x => x.UserId,
+                    "Users",
+                    "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Tokens_AccessToken",
-                table: "Tokens",
-                column: "AccessToken",
-                unique: true);
+        migrationBuilder.CreateIndex(
+            "IX_Tokens_AccessToken",
+            "Tokens",
+            "AccessToken",
+            unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Tokens_RefreshToken",
-                table: "Tokens",
-                column: "RefreshToken",
-                unique: true);
+        migrationBuilder.CreateIndex(
+            "IX_Tokens_RefreshToken",
+            "Tokens",
+            "RefreshToken",
+            unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Tokens_UserId",
-                table: "Tokens",
-                column: "UserId");
-        }
+        migrationBuilder.CreateIndex(
+            "IX_Tokens_UserId",
+            "Tokens",
+            "UserId");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "Tokens");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            "Tokens");
 
-            migrationBuilder.RenameColumn(
-                name: "UpdatedAt",
-                table: "Users",
-                newName: "Updated");
+        migrationBuilder.RenameColumn(
+            "UpdatedAt",
+            "Users",
+            "Updated");
 
-            migrationBuilder.RenameColumn(
-                name: "CreatedAt",
-                table: "Users",
-                newName: "Created");
-        }
+        migrationBuilder.RenameColumn(
+            "CreatedAt",
+            "Users",
+            "Created");
     }
 }

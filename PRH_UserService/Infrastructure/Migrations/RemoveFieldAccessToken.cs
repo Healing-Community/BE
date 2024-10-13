@@ -1,51 +1,49 @@
-﻿using System;
+﻿#nullable disable
+
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
+namespace Infrastructure.Migrations;
 
-namespace Infrastructure.Migrations
+/// <inheritdoc />
+public partial class RemoveFieldAccessToken : Migration
 {
     /// <inheritdoc />
-    public partial class RemoveFieldAccessToken : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropIndex(
-                name: "IX_Tokens_AccessToken",
-                table: "Tokens");
+        migrationBuilder.DropIndex(
+            "IX_Tokens_AccessToken",
+            "Tokens");
 
-            migrationBuilder.DropColumn(
-                name: "AccessToken",
-                table: "Tokens");
+        migrationBuilder.DropColumn(
+            "AccessToken",
+            "Tokens");
 
-            migrationBuilder.DropColumn(
-                name: "RefreshTokenExpiresAt",
-                table: "Tokens");
-        }
+        migrationBuilder.DropColumn(
+            "RefreshTokenExpiresAt",
+            "Tokens");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<string>(
-                name: "AccessToken",
-                table: "Tokens",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.AddColumn<string>(
+            "AccessToken",
+            "Tokens",
+            "text",
+            nullable: false,
+            defaultValue: "");
 
-            migrationBuilder.AddColumn<DateTime>(
-                name: "RefreshTokenExpiresAt",
-                table: "Tokens",
-                type: "timestamp with time zone",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+        migrationBuilder.AddColumn<DateTime>(
+            "RefreshTokenExpiresAt",
+            "Tokens",
+            "timestamp with time zone",
+            nullable: false,
+            defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Tokens_AccessToken",
-                table: "Tokens",
-                column: "AccessToken",
-                unique: true);
-        }
+        migrationBuilder.CreateIndex(
+            "IX_Tokens_AccessToken",
+            "Tokens",
+            "AccessToken",
+            unique: true);
     }
 }

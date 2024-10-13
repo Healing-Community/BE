@@ -1,10 +1,9 @@
-﻿namespace Domain.Enum
+﻿namespace Domain.Enum;
+
+public enum UserStatus
 {
-    public enum UserStatus
-    {
-        Pending = 0,
-        Active = 1,
-        Inactive = 2,
-        Banned = 3
-    }
+    Pending = 0,
+    Active = 1,
+    Inactive = 2,
+    Banned = 3
 }

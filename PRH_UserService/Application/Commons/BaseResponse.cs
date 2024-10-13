@@ -1,5 +1,5 @@
-﻿
-namespace Application.Commons;
+﻿namespace Application.Commons;
+
 public class BaseResponse<T>
 {
     public Guid Id { get; set; }

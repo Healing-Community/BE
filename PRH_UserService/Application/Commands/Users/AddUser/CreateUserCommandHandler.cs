@@ -22,7 +22,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             UserName = request.UserDto.UserName,
             PasswordHash = request.UserDto.PasswordHash,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         var response = new BaseResponse<string>

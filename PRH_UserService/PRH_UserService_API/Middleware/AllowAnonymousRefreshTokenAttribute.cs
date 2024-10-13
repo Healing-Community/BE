@@ -1,5 +1,6 @@
-﻿namespace PRH_UserService_API.Middleware
+﻿namespace PRH_UserService_API.Middleware;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+public class AllowAnonymousRefreshTokenAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class AllowAnonymousRefreshTokenAttribute : Attribute { }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace PRH_UserService_API;
 
@@ -13,10 +14,7 @@ public static class DependencyInjection
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddRouting(options =>
-        {
-            options.LowercaseUrls = true;
-        });
+        services.AddRouting(options => { options.LowercaseUrls = true; });
 
         #endregion
 
@@ -26,29 +24,29 @@ public static class DependencyInjection
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1",
-                new Microsoft.OpenApi.Models.OpenApiInfo
+                new OpenApiInfo
                 {
                     Title = generalSettings["ApiName"],
                     Version = generalSettings["ApiVersion"],
                     Description = generalSettings["ApiDescription"]
                 });
-            c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                In = ParameterLocation.Header,
                 Description = "Please insert JWT with Bearer into field",
                 Name = "Authorization",
-                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
                 Scheme = "bearer"
             });
-            c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
-                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                    new OpenApiSecurityScheme
                     {
-                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                        Reference = new OpenApiReference
                         {
-                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                            Type = ReferenceType.SecurityScheme,
                             Id = "Bearer"
                         }
                     },
@@ -79,7 +77,7 @@ public static class DependencyInjection
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = false,
-                ValidateIssuerSigningKey = true,
+                ValidateIssuerSigningKey = true
             };
         });
 

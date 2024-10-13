@@ -1,38 +1,37 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿#nullable disable
 
-#nullable disable
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations;
+
+/// <inheritdoc />
+public partial class changeidname : Migration
 {
     /// <inheritdoc />
-    public partial class changeidname : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "Users",
-                newName: "UserId");
+        migrationBuilder.RenameColumn(
+            "Id",
+            "Users",
+            "UserId");
 
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "Roles",
-                newName: "RoleId");
-        }
+        migrationBuilder.RenameColumn(
+            "Id",
+            "Roles",
+            "RoleId");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.RenameColumn(
-                name: "UserId",
-                table: "Users",
-                newName: "Id");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.RenameColumn(
+            "UserId",
+            "Users",
+            "Id");
 
-            migrationBuilder.RenameColumn(
-                name: "RoleId",
-                table: "Roles",
-                newName: "Id");
-        }
+        migrationBuilder.RenameColumn(
+            "RoleId",
+            "Roles",
+            "Id");
     }
 }

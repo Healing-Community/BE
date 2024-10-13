@@ -1,50 +1,49 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿#nullable disable
 
-#nullable disable
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations;
+
+/// <inheritdoc />
+public partial class addpasswordhash : Migration
 {
     /// <inheritdoc />
-    public partial class addpasswordhash : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "Description",
-                table: "Roles");
+        migrationBuilder.DropColumn(
+            "Description",
+            "Roles");
 
-            migrationBuilder.RenameColumn(
-                name: "status",
-                table: "Users",
-                newName: "Status");
+        migrationBuilder.RenameColumn(
+            "status",
+            "Users",
+            "Status");
 
-            migrationBuilder.AddColumn<string>(
-                name: "PasswordHash",
-                table: "Users",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-        }
+        migrationBuilder.AddColumn<string>(
+            "PasswordHash",
+            "Users",
+            "text",
+            nullable: false,
+            defaultValue: "");
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "PasswordHash",
-                table: "Users");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(
+            "PasswordHash",
+            "Users");
 
-            migrationBuilder.RenameColumn(
-                name: "Status",
-                table: "Users",
-                newName: "status");
+        migrationBuilder.RenameColumn(
+            "Status",
+            "Users",
+            "status");
 
-            migrationBuilder.AddColumn<string>(
-                name: "Description",
-                table: "Roles",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-        }
+        migrationBuilder.AddColumn<string>(
+            "Description",
+            "Roles",
+            "text",
+            nullable: false,
+            defaultValue: "");
     }
 }

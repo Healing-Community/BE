@@ -1,5 +1,5 @@
-using Infrastructure;
 using Application;
+using Infrastructure;
 using Persistence;
 using PRH_UserService_API;
 using PRH_UserService_API.Middleware;
@@ -7,10 +7,12 @@ using PRH_UserService_API.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 #region Add-layer-dependencies
+
 builder.Services.AddPresentationDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
+
 # endregion
 
 var app = builder.Build();

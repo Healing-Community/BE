@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.Interfaces.GenericRepository;
 
-namespace Application.Interfaces.GenericRepository
+public interface ICreateRepository<in T> where T : class
 {
-    public interface ICreateRepository<in T> where T : class
-    {
-        Task Create(T entity);
-    }
+    Task Create(T entity);
 }
