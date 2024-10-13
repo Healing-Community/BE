@@ -4,18 +4,11 @@ using System.Threading.Tasks;
 
 namespace PRH_UserService_API.Middleware
 {
-    public class ConvertForbiddenToUnauthorizedMiddleware
+    public class ConvertForbiddenToUnauthorizedMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
-
-        public ConvertForbiddenToUnauthorizedMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
         public async Task Invoke(HttpContext context)
         {
-            await _next(context);
+            await next(context);
 
             if (context.Response.StatusCode == (int)HttpStatusCode.Forbidden)
             {

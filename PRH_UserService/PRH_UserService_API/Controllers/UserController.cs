@@ -20,7 +20,7 @@ namespace PRH_UserService_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class userController(ISender sender) : ControllerBase
+    public class UserController(ISender sender) : ControllerBase
     {
         [Authorize(Roles= "Users")]
         [HttpGet("get-all")]

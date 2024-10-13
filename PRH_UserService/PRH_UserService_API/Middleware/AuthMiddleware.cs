@@ -4,28 +4,18 @@ using System.Net;
 
 namespace PRH_UserService_API.Middleware
 {
-    public class AuthMiddleware
+    public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
     {
-        private readonly RequestDelegate _next;
-        private readonly IConfiguration _configuration;
-
-        public AuthMiddleware(RequestDelegate next, IConfiguration configuration)
-        {
-            _next = next;
-            _configuration = configuration;
-        }
+        private readonly IConfiguration _configuration = configuration;
 
         public async Task Invoke(HttpContext context)
         {
             var endpoint = context.GetEndpoint();
-            if (endpoint != null)
+            var allowAnonymousRefreshTokenAttribute = endpoint?.Metadata.GetMetadata<AllowAnonymousRefreshTokenAttribute>();
+            if (allowAnonymousRefreshTokenAttribute != null)
             {
-                var allowAnonymousRefreshTokenAttribute = endpoint.Metadata.GetMetadata<AllowAnonymousRefreshTokenAttribute>();
-                if (allowAnonymousRefreshTokenAttribute != null)
-                {
-                    await _next(context);
-                    return;
-                }
+                await next(context);
+                return;
             }
 
             // Token validation logic...
@@ -54,7 +44,7 @@ namespace PRH_UserService_API.Middleware
                 }
             }
 
-            await _next(context);
+            await next(context);
         }
     }
 }
