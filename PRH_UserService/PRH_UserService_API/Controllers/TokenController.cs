@@ -7,7 +7,7 @@ namespace PRH_UserService_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class tokenController(ISender sender) : ControllerBase
+    public class TokenController(ISender sender) : ControllerBase
     {
         [AllowAnonymousRefreshToken]
         [HttpPost("refresh-token")]
