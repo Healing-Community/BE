@@ -1,0 +1,37 @@
+name: Build and Publish .NET Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dotnet-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'  # Adjust to your .NET version
+
+    - name: Restore dependencies
+      run: dotnet restore PRH_UserService.sln  # Reference the solution file
+
+    - name: Build project
+      run: dotnet build PRH_UserService.sln --configuration Release
+
+    - name: Publish project
+      run: dotnet publish PRH_UserService.sln --configuration Release --output ./publish
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: published-app
+        path: ./publish
