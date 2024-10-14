@@ -1,6 +1,8 @@
 using Application;
 using Infrastructure;
 using Persistence;
+using PRH_ReportService_API;
+
 var builder = WebApplication.CreateBuilder(args);
 
 #region Add-layer-dependencies
@@ -11,7 +13,6 @@ builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
-
 var app = builder.Build();
 
 #region Middleware

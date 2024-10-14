@@ -62,8 +62,7 @@
               "RelativeToolTip": "PRH_ReportService_API\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T06:16:41.232Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:16:41.232Z"
             },
             {
               "$type": "Document",
@@ -75,8 +74,7 @@
               "RelativeToolTip": "PRH_ReportService_API\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-10-14T06:18:15.995Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:18:15.995Z"
             },
             {
               "$type": "Document",
@@ -88,21 +86,19 @@
               "RelativeToolTip": "PRH_ReportService_API\\DependencyInjection.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T06:16:12.879Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:16:12.879Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Persistence",
+              "Title": "Persistence.csproj",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Persistence\\Persistence.csproj",
               "RelativeDocumentMoniker": "Persistence\\Persistence.csproj",
               "ToolTip": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Persistence\\Persistence.csproj",
               "RelativeToolTip": "Persistence\\Persistence.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-10-14T06:15:29.401Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:15:29.401Z"
             },
             {
               "$type": "Document",
@@ -112,7 +108,7 @@
               "RelativeDocumentMoniker": "Persistence\\DependencyInjection.cs",
               "ToolTip": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Persistence\\DependencyInjection.cs",
               "RelativeToolTip": "Persistence\\DependencyInjection.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-14T06:15:19.551Z",
               "EditorCaption": ""
@@ -127,8 +123,7 @@
               "RelativeToolTip": "Application\\DependencyInjection.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T06:13:54.507Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:13:54.507Z"
             },
             {
               "$type": "Document",
@@ -140,8 +135,7 @@
               "RelativeToolTip": "Infrastructure\\DependencyInjection.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T06:07:17.797Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:07:17.797Z"
             },
             {
               "$type": "Document",
@@ -153,8 +147,7 @@
               "RelativeToolTip": "Infrastructure\\Context\\ReportDbContext.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAqwCcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T06:03:08.927Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:03:08.927Z"
             },
             {
               "$type": "Document",
@@ -166,8 +159,7 @@
               "RelativeToolTip": "Domain\\Entities\\ReportType.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T06:01:34.53Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T06:01:34.53Z"
             },
             {
               "$type": "Document",
@@ -179,8 +171,7 @@
               "RelativeToolTip": "Domain\\Entities\\Report.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T05:59:00.229Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-14T05:59:00.229Z"
             }
           ]
         }

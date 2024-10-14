@@ -53,7 +53,6 @@ builder.Services.AddSwaggerGen(c =>
 #region AMQP
 builder.Services.AddMassTransit(x =>
 {
-    #region AMQP
     builder.Services.AddMassTransit(x =>
     {
         x.AddConsumer<PostServiceConsumer>();
@@ -89,8 +88,6 @@ builder.Services.AddMassTransit(x =>
 
     // Add MassTransit hosted service
     builder.Services.AddHostedService<MassTransitHostedService>();
-
-    #endregion
 });
 
 // Add MassTransit hosted service

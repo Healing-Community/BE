@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj",
+      "projectUniqueName": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Domain\\Domain.csproj",
       "projectName": "Domain",
-      "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj",
+      "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Domain\\Domain.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\obj\\",
+      "outputPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Domain\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Apps\\Code\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -50,8 +50,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "all"
-      },
-      "SdkAnalysisLevel": "9.0.100"
+      }
     },
     "frameworks": {
       "net8.0": {

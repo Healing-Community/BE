@@ -515,11 +515,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Application.csproj",
+      "projectUniqueName": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Application\\Application.csproj",
       "projectName": "Application",
-      "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Application.csproj",
+      "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Application\\Application.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\obj\\",
+      "outputPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Apps\\Code\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -551,8 +551,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "all"
-      },
-      "SdkAnalysisLevel": "9.0.100"
+      }
     },
     "frameworks": {
       "net8.0": {

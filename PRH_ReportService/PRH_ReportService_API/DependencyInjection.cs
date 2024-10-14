@@ -1,7 +1,11 @@
 ﻿using System.Text;
+using Domain.Constants;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+namespace PRH_ReportService_API;
 
 public static class DependencyInjection
 {
@@ -54,7 +58,48 @@ public static class DependencyInjection
         });
 
         #endregion
+        
+        #region AMQP
+        services.AddMassTransit(x =>
+        {
+            services.AddMassTransit(x =>
+            {
+                //x.AddConsumer<PostServiceConsumer>();
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(new Uri(configuration["RabbitMq:Host"] ?? throw new NullReferenceException()), h =>
+                    {
+                        h.Username(configuration["RabbitMq:Username"] ?? throw new NullReferenceException());
+                        h.Password(configuration["RabbitMq:Password"] ?? throw new NullReferenceException());
+                    });
 
+                    // Đăng ký consumer
+                    cfg.ReceiveEndpoint(QueueName.PostQueue.ToString(), c =>
+                    {
+                        //c.ConfigureConsumer<PostServiceConsumer>(context);
+                    });
+
+                    // Thiết lập Retry
+                    cfg.UseMessageRetry(retryConfig =>
+                    {
+                        retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Thử lại 5 lần, mỗi lần cách nhau 5 giây
+                    });
+
+                    // Tùy chọn khác như Timeout, CircuitBreaker nếu cần
+                    cfg.UseCircuitBreaker(cbConfig =>
+                    {
+                        cbConfig.TrackingPeriod = TimeSpan.FromMinutes(1);
+                        cbConfig.ActiveThreshold = 5;
+                        cbConfig.ResetInterval = TimeSpan.FromMinutes(5);
+                    });
+                });
+            });
+
+            // Add MassTransit hosted service
+            services.AddHostedService<MassTransitHostedService>();
+        });
+        # endregion
+        
         #region Authorization-Authentication
 
         var jwtSettings = configuration.GetSection("JwtSettings");
@@ -68,10 +113,10 @@ public static class DependencyInjection
         {
             o.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidIssuer = configuration["Issuer"],
-                ValidAudience = configuration["Audience"],
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(configuration["Secret"] ?? "")),
+                    (Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException())),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = false,

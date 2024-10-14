@@ -1,7 +1,7 @@
 using Application;
 using Infrastructure;
 using Persistence;
-using PRH_ReportService_API;
+using PRH_BaseService_API;
 
 var builder = WebApplication.CreateBuilder(args);
 

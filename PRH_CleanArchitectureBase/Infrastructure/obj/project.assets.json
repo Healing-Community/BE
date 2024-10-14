@@ -2672,11 +2672,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Infrastructure\\Infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Infrastructure\\Infrastructure.csproj",
       "projectName": "Infrastructure",
-      "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Infrastructure\\Infrastructure.csproj",
+      "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Infrastructure\\Infrastructure.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Infrastructure\\obj\\",
+      "outputPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Apps\\Code\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2697,11 +2697,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Application.csproj": {
-              "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Application.csproj"
+            "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Application\\Application.csproj": {
+              "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Application\\Application.csproj"
             },
-            "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj": {
-              "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj"
+            "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Domain\\Domain.csproj": {
+              "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Domain\\Domain.csproj"
             }
           }
         }
@@ -2715,8 +2715,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "all"
-      },
-      "SdkAnalysisLevel": "9.0.100"
+      }
     },
     "frameworks": {
       "net8.0": {

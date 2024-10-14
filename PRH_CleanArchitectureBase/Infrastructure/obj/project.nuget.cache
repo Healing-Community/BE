@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vhxG9K+vQ3Q=",
+  "dgSpecHash": "sKtXFPT8PE0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Infrastructure\\Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_CleanArchitectureBase\\Infrastructure\\Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Administrator\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",

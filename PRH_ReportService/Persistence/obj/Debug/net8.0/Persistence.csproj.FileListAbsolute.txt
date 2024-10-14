@@ -10,3 +10,9 @@ C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\obj\Debug\net8.0
 C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\obj\Debug\net8.0\refint\Persistence.dll
 C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\obj\Debug\net8.0\Persistence.pdb
 C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\obj\Debug\net8.0\ref\Persistence.dll
+C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\bin\Debug\net8.0\Application.dll
+C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\bin\Debug\net8.0\Domain.dll
+C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\bin\Debug\net8.0\Application.pdb
+C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\bin\Debug\net8.0\Domain.pdb
+C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\obj\Debug\net8.0\Persistence.csproj.AssemblyReference.cache
+C:\Users\Administrator\Desktop\BE\PRH_ReportService\Persistence\obj\Debug\net8.0\Persiste.61C28332.Up2Date

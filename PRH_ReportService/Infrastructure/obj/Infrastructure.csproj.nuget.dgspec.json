@@ -31,7 +31,11 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -43,8 +47,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "all"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -54,7 +57,7 @@
               "target": "Package",
               "version": "[4.0.3, )"
             },
-            "MassTransit.Abstractions": {
+            "MassTransit.RabbitMQ": {
               "target": "Package",
               "version": "[8.2.5, )"
             },
@@ -126,8 +129,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "all"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -198,8 +200,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "all"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
