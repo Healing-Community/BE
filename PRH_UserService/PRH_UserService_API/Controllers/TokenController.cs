@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Users.RefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PRH_UserService_API.Extentions;
 using PRH_UserService_API.Middleware;
 
 namespace PRH_UserService_API.Controllers;
@@ -13,7 +14,7 @@ public class TokenController(ISender sender) : ControllerBase
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
     {
-        var result = await sender.Send(command);
-        return Ok(result);
+        var response = await sender.Send(command);
+        return response.ToActionResult();
     }
 }

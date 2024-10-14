@@ -4,6 +4,7 @@ using AutoMapper;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,7 @@ namespace Application.Commands.Reports.CreateReport
                 response.Message = "Report created!";
                 response.Data = "report created!";
                 response.Success = true;
+                response.StatusCode = (int)StatusCodes.Status200OK;
                 return response;
             }
             catch (Exception ex)
@@ -41,6 +43,7 @@ namespace Application.Commands.Reports.CreateReport
                 response.Success = false;
                 response.Data = null;
                 response.Message = "An error occurred";
+                response.StatusCode = 500;
                 return response;
             }
         }

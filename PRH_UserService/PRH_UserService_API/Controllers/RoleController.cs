@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PRH_UserService_API.Extentions;
 
 namespace PRH_UserService_API.Controllers;
 
@@ -13,7 +14,7 @@ public class RoleController(ISender sender) : ControllerBase
     [HttpGet("gets")]
     public async Task<IActionResult> Get()
     {
-        var roles = await sender.Send(new GetRolesQuery());
-        return Ok(roles);
+        var response = await sender.Send(new GetRolesQuery());
+        return response.ToActionResult();
     }
 }

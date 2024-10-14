@@ -4,16 +4,10 @@ using MediatR;
 
 namespace Application.Commands.Users.ResetPassword;
 
-public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, BaseResponse<string>>
+public class ResetPasswordCommandHandler(IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository) : IRequestHandler<ResetPasswordCommand, BaseResponse<string>>
 {
-    private readonly IJwtTokenRepository _jwtTokenRepository;
-    private readonly IUserRepository _userRepository;
-
-    public ResetPasswordCommandHandler(IUserRepository userRepository, IJwtTokenRepository jwtTokenRepository)
-    {
-        _userRepository = userRepository;
-        _jwtTokenRepository = jwtTokenRepository;
-    }
+    private readonly IJwtTokenRepository _jwtTokenRepository = jwtTokenRepository;
+    private readonly IUserRepository _userRepository = userRepository;
 
     public async Task<BaseResponse<string>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
