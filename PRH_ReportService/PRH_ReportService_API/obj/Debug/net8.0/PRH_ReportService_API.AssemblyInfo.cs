@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("c27c80bc-c8f3-44c8-ae4f-6129ba06248a")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("PRH_ReportService_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+81a325a0d0d02cc05c34f84611587d8a8fda8120")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+588d5d21fdeca1db5052cbfc9303507f1797317e")]
 [assembly: System.Reflection.AssemblyProductAttribute("PRH_ReportService_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PRH_ReportService_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -17,9 +17,9 @@ public partial class ReportDbContext : DbContext
     public virtual DbSet<ReportType> ReportTypes { get; set; }
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost; Database=ReportService; Username=postgres; Password=Abcd1234");
+    //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.lulikwsdqzlsbjcwhiyc; Password=ProjectHealing@1234");
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //    => optionsBuilder.UseNpgsql("Host=localhost; Database=ReportService; Username=postgres; Password=Abcd1234");
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // PRIMARY KEY
