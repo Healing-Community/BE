@@ -28,7 +28,8 @@ namespace Application.Commands.Notification
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
 
             try
@@ -37,7 +38,8 @@ namespace Application.Commands.Notification
                 if (followers == null || !followers.Any())
                 {
                     response.Success = false;
-                    response.Message = "No followers found.";
+                    response.Message = "Không tìm thấy người theo dõi.";
+                    response.StatusCode = 404;
                     return response;
                 }
 
@@ -45,7 +47,8 @@ namespace Application.Commands.Notification
                 if (notificationType == null)
                 {
                     response.Success = false;
-                    response.Message = "Notification type not found.";
+                    response.Message = "Không tìm thấy loại thông báo.";
+                    response.StatusCode = 404;
                     return response;
                 }
 
@@ -59,7 +62,7 @@ namespace Application.Commands.Notification
                         {
                             UserId = follower.UserId,
                             NotificationTypeId = notificationType.NotificationTypeId,
-                            Message = $"New post titled '{request.PostTitle}' by user {request.UserId}",
+                            Message = $"Bài viết mới có tiêu đề '{request.PostTitle}' bởi người dùng {request.UserId}",
                             CreatedAt = DateTime.UtcNow,
                             UpdatedAt = DateTime.UtcNow,
                             IsRead = false
@@ -75,13 +78,15 @@ namespace Application.Commands.Notification
                 }
 
                 response.Success = true;
-                response.Message = "Notifications sent to followers.";
+                response.Message = "Thông báo đã được gửi đến người theo dõi.";
+                response.StatusCode = 200;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Failed to notify followers.";
-                response.Errors = new List<string> { ex.Message };
+                response.Message = "Không thể thông báo cho người theo dõi.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = 500;
             }
 
             return response;

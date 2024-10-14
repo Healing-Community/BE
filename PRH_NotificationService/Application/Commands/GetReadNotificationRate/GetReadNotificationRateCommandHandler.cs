@@ -3,8 +3,7 @@ using Application.Interfaces.Repository;
 using MediatR;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Commands.GetReadNotificationRate
@@ -23,21 +22,24 @@ namespace Application.Commands.GetReadNotificationRate
             var response = new BaseResponse<double>
             {
                 Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
 
             try
             {
-                var rate = await _notificationRepository.GetReadNotificationRateAsync();
-                response.Data = rate;
+                var readRate = await _notificationRepository.GetReadNotificationRateAsync();
+                response.Data = readRate;
                 response.Success = true;
-                response.Message = "Read notification rate retrieved successfully.";
+                response.Message = "Tỷ lệ thông báo đã đọc đã được lấy thành công.";
+                response.StatusCode = 200;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Failed to retrieve read notification rate.";
-                response.Errors = new List<string> { ex.Message };
+                response.Message = "Không thể lấy tỷ lệ thông báo đã đọc.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = 500;
             }
 
             return response;
