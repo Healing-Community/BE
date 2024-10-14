@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\PRH_ReportService_API.props" />
+</Project>

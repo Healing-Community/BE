@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "PqttHPaUMz8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Persistence\\Persistence.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
