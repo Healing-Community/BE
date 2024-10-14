@@ -6,6 +6,7 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,20 +20,29 @@ namespace Application.Queries.Posts.GetPostsById
             {
                 Id = NewId.NextSequentialGuid(),
                 Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
             try
             {
                 var post = await postRepository.GetByIdAsync(request.id);
+                if (post == null)
+                {
+                    response.Success = false;
+                    response.Message = "Post not found";
+                    response.Errors.Add("No post found with the provided ID.");
+                    return response;
+                }
+                response.StatusCode = (int)HttpStatusCode.OK;
                 response.Data = post;
                 response.Success = true;
                 response.Message = "Post retrieved successfully";
-                response.Errors = Enumerable.Empty<string>();
             }
             catch (Exception e)
             {
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
                 response.Message = "An error occurred";
-                response.Errors = new[] { e.Message };
+                response.Errors.Add(e.Message);
             }
             return response;
         }

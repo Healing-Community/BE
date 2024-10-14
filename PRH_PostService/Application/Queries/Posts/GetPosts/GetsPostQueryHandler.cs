@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using System.Net;
 
 namespace Application.Queries.Posts.GetPosts
 {
@@ -14,16 +15,19 @@ namespace Application.Queries.Posts.GetPosts
             {
                 Id = NewId.NextSequentialGuid(),
                 Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
             try
             {
                 var posts = await postRepository.GetsAsync();
+                response.StatusCode = (int)HttpStatusCode.OK;
                 response.Message = "Post retrieved successfully";
                 response.Success = true;
                 response.Data = posts;
             }
             catch (Exception e)
             {
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Message = e.Message;
                 response.Success = false;
             }

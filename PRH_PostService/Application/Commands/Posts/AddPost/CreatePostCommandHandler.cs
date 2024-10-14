@@ -9,12 +9,13 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Commands.Posts.AddPost
 {
-    public class CreatePostCommandHandler(IMessagePublisher messagePublisher, IPostRepository postRepository, ICategoryRepository categoryRepository) 
+    public class CreatePostCommandHandler(IMessagePublisher messagePublisher, IPostRepository postRepository)
         : IRequestHandler<CreatePostCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -37,13 +38,13 @@ namespace Application.Commands.Posts.AddPost
             {
                 Id = postId,
                 Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
             try
             {
                 await postRepository.Create(post);
-
+                response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Errors = Enumerable.Empty<string>();
                 response.Message = "Post created successfully";
 
                 // Send the Request to the Queue for processing
@@ -52,15 +53,16 @@ namespace Application.Commands.Posts.AddPost
                     PostedDate = post.CreateAt,
                     PostingRequestId = NewId.NextSequentialGuid(),
                     Tittle = post.Title,
-                    UserId = post.UserId,                   
+                    UserId = post.UserId,
                 };
                 await messagePublisher.PublishAsync(postingRequestCreatedMessage, QueueName.PostQueue, cancellationToken);
             }
             catch (Exception ex)
             {
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Errors = new[] { ex.Message };
                 response.Message = "Failed to create post";
+                response.Errors.Add(ex.Message);
             }
 
             return response;
