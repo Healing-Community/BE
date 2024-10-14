@@ -9,9 +9,11 @@ using Application.Queries.Categories.GetCategories;
 using Application.Queries.Categories.GetCategoriesById;
 using Application.Queries.Posts.GetPosts;
 using Application.Queries.Posts.GetPostsById;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PRH_PostService_API.Extentions;
 
 namespace PRH_PostService_API.Controllers
 {
@@ -23,35 +25,35 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> GetsCategory()
         {
             var response = await sender.Send(new GetCategoryQuery());
-            return Ok(response);
+            return response.ToActionResult();
         }
 
         [HttpGet("get-by-id/{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var category = await sender.Send(new GetCategoryByIdQuery(id));
-            return Ok(category);
+            var response = await sender.Send(new GetCategoryByIdQuery(id));
+            return response.ToActionResult();
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateCategory(CategoryDto category)
         {
-            var addedCategory = await sender.Send(new CreateCategoryCommand(category));
-            return Ok(addedCategory);
+            var response = await sender.Send(new CreateCategoryCommand(category));
+            return response.ToActionResult();
         }
 
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateCategory(Guid id, CategoryDto category)
         {
-            var updatedCategory = await sender.Send(new UpdateCategoryCommand(id, category));
-            return Ok(updatedCategory);
+            var response = await sender.Send(new UpdateCategoryCommand(id, category));
+            return response.ToActionResult();
         }
 
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
             var response = await sender.Send(new DeleteCategoryCommand(id));
-            return Ok(response);
+            return response.ToActionResult();
         }
 
 
