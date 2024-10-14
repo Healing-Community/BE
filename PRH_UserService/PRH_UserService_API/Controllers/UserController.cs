@@ -10,6 +10,7 @@ using Application.Commands.Users.VerifyUser;
 using Application.Commons.DTOs;
 using Application.Queries.Users.GetUsers;
 using Application.Queries.Users.GetUsersById;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,15 +48,15 @@ public class UserController(ISender sender) : ControllerBase
     [HttpPut("update/{id:guid}")]
     public async Task<IActionResult> UpdateUser(Guid id, UserDto user)
     {
-        var updatedUser = await sender.Send(new UpdateUserCommand(id, user));
-        return Ok(updatedUser);
+        var response = await sender.Send(new UpdateUserCommand(id, user));
+        return response.ToActionResult();
     }
 
     [HttpDelete("delete/{id:guid}")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
         var response = await sender.Send(new DeleteUserCommand(id));
-        return Ok(response);
+        return response.ToActionResult();
     }
 
     [AllowAnonymousRefreshToken]
@@ -63,7 +64,7 @@ public class UserController(ISender sender) : ControllerBase
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
         var response = await sender.Send(new LoginUserCommand(loginDto));
-        return Ok(response);
+        return response.ToActionResult();
     }
 
     [AllowAnonymousRefreshToken]

@@ -1,0 +1,12 @@
+[
+  {
+    "ContainingType": "PRH_ReportService_API.Controllers.ReportController",
+    "Method": "Get",
+    "RelativePath": "api/report",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

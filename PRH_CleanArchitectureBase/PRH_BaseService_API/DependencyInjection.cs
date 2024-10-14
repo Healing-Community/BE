@@ -70,10 +70,10 @@ public static class DependencyInjection
         {
             o.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidIssuer = configuration["Issuer"],
-                ValidAudience = configuration["Audience"],
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(configuration["Secret"] ?? "")),
+                    (Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException())),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = false,

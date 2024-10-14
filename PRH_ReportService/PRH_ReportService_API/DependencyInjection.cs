@@ -4,6 +4,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRH_ReportService_API.Consummer;
 
 namespace PRH_ReportService_API;
 
@@ -58,25 +59,26 @@ public static class DependencyInjection
         });
 
         #endregion
-        
+
         #region AMQP
+        var rabbitMq = configuration.GetSection("RabbitMq");
         services.AddMassTransit(x =>
         {
             services.AddMassTransit(x =>
             {
-                //x.AddConsumer<PostServiceConsumer>();
+                x.AddConsumer<ReportConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(new Uri(configuration["RabbitMq:Host"] ?? throw new NullReferenceException()), h =>
+                    cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
                     {
-                        h.Username(configuration["RabbitMq:Username"] ?? throw new NullReferenceException());
-                        h.Password(configuration["RabbitMq:Password"] ?? throw new NullReferenceException());
+                        h.Username(rabbitMq["Username"] ?? throw new NullReferenceException());
+                        h.Password(rabbitMq["Password"] ?? throw new NullReferenceException());
                     });
 
                     // Đăng ký consumer
-                    cfg.ReceiveEndpoint(QueueName.PostQueue.ToString(), c =>
+                    cfg.ReceiveEndpoint(QueueName.ReportQueue.ToString(), c =>
                     {
-                        //c.ConfigureConsumer<PostServiceConsumer>(context);
+                        c.ConfigureConsumer<ReportConsumer>(context);
                     });
 
                     // Thiết lập Retry

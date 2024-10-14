@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "AYNO6lWnNoA=",
+  "dgSpecHash": "CVoChT5vRxQ=",
   "success": true,
   "projectFilePath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Application.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Administrator\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\masstransit\\8.2.5\\masstransit.8.2.5.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\masstransit.abstractions\\8.2.5\\masstransit.abstractions.8.2.5.nupkg.sha512",
