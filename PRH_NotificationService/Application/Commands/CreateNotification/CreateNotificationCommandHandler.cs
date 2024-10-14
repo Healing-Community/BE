@@ -1,6 +1,10 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Application.Commands.Notification
 {
@@ -20,7 +24,8 @@ namespace Application.Commands.Notification
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
 
             try
@@ -29,7 +34,8 @@ namespace Application.Commands.Notification
                 if (notificationType == null)
                 {
                     response.Success = false;
-                    response.Message = "Invalid notification type.";
+                    response.Message = "Không tìm thấy loại thông báo.";
+                    response.StatusCode = 404;
                     return response;
                 }
 
@@ -37,7 +43,8 @@ namespace Application.Commands.Notification
                 if (!isSubscribed)
                 {
                     response.Success = false;
-                    response.Message = "User is not subscribed to this notification type.";
+                    response.Message = "Người dùng không đăng ký loại thông báo này.";
+                    response.StatusCode = 404;
                     return response;
                 }
 
@@ -55,14 +62,16 @@ namespace Application.Commands.Notification
                 await _notificationRepository.Create(notification);
 
                 response.Success = true;
-                response.Message = "Notification created successfully.";
+                response.Message = "Thông báo đã được tạo thành công.";
                 response.Data = notification.NotificationId.ToString();
+                response.StatusCode = 200;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Failed to create notification.";
-                response.Errors = new List<string> { ex.Message };
+                response.Message = "Không thể tạo thông báo.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = 500;
             }
 
             return response;

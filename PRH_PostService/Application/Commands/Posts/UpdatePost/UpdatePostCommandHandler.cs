@@ -5,12 +5,13 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Commands.Posts.UpdatePost
 {
-    public class UpdatePostCommandHandler(IPostRepository postRepository, ICategoryRepository categoryRepository) 
+    public class UpdatePostCommandHandler(IPostRepository postRepository, ICategoryRepository categoryRepository)
         : IRequestHandler<UpdatePostCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
@@ -18,7 +19,8 @@ namespace Application.Commands.Posts.UpdatePost
             var response = new BaseResponse<string>
             {
                 Id = request.postId,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
             try
             {
@@ -35,15 +37,16 @@ namespace Application.Commands.Posts.UpdatePost
                     UpdateAt = DateTime.UtcNow,
                 };
                 await postRepository.Update(request.postId, updatedPost);
+                response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
                 response.Message = "Post updated successfully";
-                response.Errors = Enumerable.Empty<string>();
             }
             catch (Exception ex)
             {
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
                 response.Message = "Failed to update post";
-                response.Errors = new[] { ex.Message };
+                response.Errors.Add(ex.Message);
             }
 
             return response;

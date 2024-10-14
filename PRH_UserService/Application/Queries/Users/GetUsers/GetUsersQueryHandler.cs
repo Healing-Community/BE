@@ -4,17 +4,18 @@ using Domain.Entities;
 using MassTransit;
 using MediatR;
 
-
 namespace Application.Queries.Users.GetUsers;
 
-public class GetUsersQueryHandler(IUserRepository userRepository) : IRequestHandler<GetUsersQuery, BaseResponse<IEnumerable<User>>>
+public class GetUsersQueryHandler(IUserRepository userRepository)
+    : IRequestHandler<GetUsersQuery, BaseResponse<IEnumerable<User>>>
 {
-    public async Task<BaseResponse<IEnumerable<User>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<IEnumerable<User>>> Handle(GetUsersQuery request,
+        CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<IEnumerable<User>>()
+        var response = new BaseResponse<IEnumerable<User>>
         {
             Id = NewId.NextSequentialGuid(),
-            Timestamp = DateTime.UtcNow,
+            Timestamp = DateTime.UtcNow
         };
         try
         {
@@ -28,6 +29,7 @@ public class GetUsersQueryHandler(IUserRepository userRepository) : IRequestHand
             response.Message = e.Message;
             response.Success = false;
         }
+
         return response;
     }
 }

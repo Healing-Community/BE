@@ -22,7 +22,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             UserName = request.UserDto.UserName,
             PasswordHash = request.UserDto.PasswordHash,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         var response = new BaseResponse<string>
@@ -38,6 +38,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             await userRepository.Create(user);
             response.Success = true;
             response.Message = "User created successfully";
+            response.StatusCode = 200;
         }
         catch (Exception ex)
         {

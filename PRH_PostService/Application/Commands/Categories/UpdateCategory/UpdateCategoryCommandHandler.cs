@@ -5,6 +5,7 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace Application.Commands.Categories.UpdateCategory
             {
                 Id = request.categoryId,
                 Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
 
             try
@@ -30,15 +32,16 @@ namespace Application.Commands.Categories.UpdateCategory
                     UpdateAt = DateTime.UtcNow,
                 };
                 await categoryRepository.Update(request.categoryId, updatedCategory);
+                response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
                 response.Message = "Category updated successfully";
-                response.Errors = Enumerable.Empty<string>();
             }
             catch (Exception ex)
             {
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
                 response.Message = "Failed to update category";
-                response.Errors = new[] { ex.Message };
+                response.Errors.Add(ex.Message);
             }
             return response;
         }

@@ -1,19 +1,12 @@
-﻿using Application.Interfaces.GenericRepository;
-using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Entities;
 
-namespace Application.Interfaces.Repository
+namespace Application.Interfaces.Repository;
+
+public interface IJwtTokenRepository
 {
-    public interface IJwtTokenRepository
-    {
-        string GenerateToken(User user);
-        string GenerateVerificationToken(User user);
-        bool ValidateToken(string token, out Guid userId);
-        string GenerateRefreshToken(User user);
-        bool ValidateRefreshToken(string refreshToken, out Guid userId);
-    }
+    string GenerateToken(User user);
+    string GenerateVerificationToken(User user);
+    bool ValidateToken(string token, out Guid userId);
+    string GenerateRefreshToken(User user);
+    bool ValidateRefreshToken(string refreshToken, out Guid userId);
 }

@@ -3,36 +3,33 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Queries.Roles.GetRoles
+namespace Application.Queries.Roles.GetRoles;
+
+public class GetRolesQueryHandler(IRoleRepository roleRepository)
+    : IRequestHandler<GetRolesQuery, BaseResponse<IEnumerable<Role>>>
 {
-    public class GetRolesQueryHandler(IRoleRepository roleRepository) : IRequestHandler<GetRolesQuery, BaseResponse<IEnumerable<Role>>>
+    public async Task<BaseResponse<IEnumerable<Role>>> Handle(GetRolesQuery request,
+        CancellationToken cancellationToken)
     {
-        public async Task<BaseResponse<IEnumerable<Role>>> Handle(GetRolesQuery request, CancellationToken cancellationToken)
+        var response = new BaseResponse<IEnumerable<Role>>
         {
-            var response = new BaseResponse<IEnumerable<Role>>()
-            {
-                Id = NewId.NextSequentialGuid(),
-                Timestamp = DateTime.UtcNow,
-            };
-            try
-            {
-                var roles = await roleRepository.GetsAsync();
-                response.Message = "Roles retrieved successfully";
-                response.Success = true;
-                response.Data = roles;
-            }
-            catch (Exception e)
-            {
-                response.Message = e.Message;
-                response.Success = false;
-            }
-            return response;
+            Id = NewId.NextSequentialGuid(),
+            Timestamp = DateTime.UtcNow
+        };
+        try
+        {
+            var roles = await roleRepository.GetsAsync();
+            response.Message = "Roles retrieved successfully";
+            response.Success = true;
+            response.Data = roles;
         }
+        catch (Exception e)
+        {
+            response.Message = e.Message;
+            response.Success = false;
+        }
+
+        return response;
     }
 }

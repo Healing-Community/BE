@@ -1,21 +1,20 @@
-﻿using Application.Commons.Tools;
-using Application.Queries.Roles.GetRoles;
+﻿using Application.Queries.Roles.GetRoles;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PRH_UserService_API.Extentions;
 
-namespace PRH_UserService_API.Controllers
+namespace PRH_UserService_API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RoleController(ISender sender) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RoleController(ISender sender) : ControllerBase
+    [Authorize(Roles = "Admin")]
+    [HttpGet("gets")]
+    public async Task<IActionResult> Get()
     {
-        [Authorize(Roles ="Admin")]
-        [HttpGet("gets")]
-        public async Task<IActionResult> Get() 
-        {
-            var roles = await sender.Send(new GetRolesQuery());
-            return Ok(roles);
-        }
+        var response = await sender.Send(new GetRolesQuery());
+        return response.ToActionResult();
     }
 }

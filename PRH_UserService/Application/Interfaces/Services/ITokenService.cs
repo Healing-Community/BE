@@ -1,6 +1,5 @@
-using Domain.Entities;
-using System;
 using System.Security.Claims;
+using Domain.Entities;
 
 namespace Application.Interfaces.Services;
 

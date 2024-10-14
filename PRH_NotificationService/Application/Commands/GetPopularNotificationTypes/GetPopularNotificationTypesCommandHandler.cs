@@ -3,8 +3,7 @@ using Application.Interfaces.Repository;
 using MediatR;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Commands.GetPopularNotificationTypes
@@ -23,7 +22,8 @@ namespace Application.Commands.GetPopularNotificationTypes
             var response = new BaseResponse<Dictionary<string, int>>
             {
                 Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
 
             try
@@ -31,13 +31,15 @@ namespace Application.Commands.GetPopularNotificationTypes
                 var popularTypes = await _notificationRepository.GetPopularNotificationTypesAsync();
                 response.Data = popularTypes;
                 response.Success = true;
-                response.Message = "Popular notification types retrieved successfully.";
+                response.Message = "Các loại thông báo phổ biến đã được lấy thành công.";
+                response.StatusCode = 200;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Failed to retrieve popular notification types.";
-                response.Errors = new List<string> { ex.Message };
+                response.Message = "Không thể lấy các loại thông báo phổ biến.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = 500;
             }
 
             return response;

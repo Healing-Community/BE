@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace Application.Commons.DTOs;
 
-namespace Application.Commons.DTOs
+public class ForgotPasswordDto
 {
-    public class ForgotPasswordDto
-    {
-        public string Email { get; set; } = null!;
-    }
+    public string Email { get; set; } = null!;
 }

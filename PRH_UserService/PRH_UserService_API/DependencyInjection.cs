@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using MassTransit;
 
 namespace PRH_UserService_API;
 
@@ -13,10 +15,7 @@ public static class DependencyInjection
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddRouting(options =>
-        {
-            options.LowercaseUrls = true;
-        });
+        services.AddRouting(options => { options.LowercaseUrls = true; });
 
         #endregion
 
@@ -26,29 +25,29 @@ public static class DependencyInjection
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1",
-                new Microsoft.OpenApi.Models.OpenApiInfo
+                new OpenApiInfo
                 {
                     Title = generalSettings["ApiName"],
                     Version = generalSettings["ApiVersion"],
                     Description = generalSettings["ApiDescription"]
                 });
-            c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                In = ParameterLocation.Header,
                 Description = "Please insert JWT with Bearer into field",
                 Name = "Authorization",
-                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
                 Scheme = "bearer"
             });
-            c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
-                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                    new OpenApiSecurityScheme
                     {
-                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                        Reference = new OpenApiReference
                         {
-                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                            Type = ReferenceType.SecurityScheme,
                             Id = "Bearer"
                         }
                     },
@@ -56,6 +55,38 @@ public static class DependencyInjection
                 }
             });
         });
+
+        #endregion
+
+        #region AMQP
+        var rabbitMq = configuration.GetSection("RabbitMq");
+
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
+                {
+                    h.Username(rabbitMq["Username"] ?? throw new NullReferenceException());
+                    h.Password(rabbitMq["Password"] ?? throw new NullReferenceException());
+                });
+                // Thiết lập Retry
+                cfg.UseMessageRetry(retryConfig =>
+                {
+                    retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Thử lại 5 lần, mỗi lần cách nhau 10 giây
+                });
+
+                // Tùy chọn khác như Timeout, CircuitBreaker nếu cần
+                cfg.UseCircuitBreaker(cbConfig =>
+                {
+                    cbConfig.TrackingPeriod = TimeSpan.FromMinutes(1);
+                    cbConfig.ActiveThreshold = 5;
+                    cbConfig.ResetInterval = TimeSpan.FromMinutes(5);
+                });
+            });
+        });
+        // Add MassTransit hosted service
+        services.AddHostedService<MassTransitHostedService>();
 
         #endregion
 
@@ -72,14 +103,14 @@ public static class DependencyInjection
         {
             o.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidIssuer = configuration["Issuer"],
-                ValidAudience = configuration["Audience"],
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(configuration["Secret"] ?? "")),
+                    (Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException())),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = false,
-                ValidateIssuerSigningKey = true,
+                ValidateIssuerSigningKey = true
             };
         });
 

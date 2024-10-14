@@ -1,9 +1,8 @@
-﻿namespace Domain.Entities
+﻿namespace Domain.Entities;
+
+public class Role
 {
-    public class Role
-    {
-        public int RoleId { get; init; }
-        public string RoleName { get; set; } = null!;
-        public ICollection<User> Users { get; set; } = new List<User>();
-    }
+    public int RoleId { get; init; }
+    public string RoleName { get; set; } = null!;
+    public ICollection<User> Users { get; set; } = new List<User>();
 }

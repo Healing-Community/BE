@@ -3,49 +3,43 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Application.Queries.Users.GetUsersById
+namespace Application.Queries.Users.GetUsersById;
+
+public class GetUsersByIdQueryHandler(IUserRepository userRepository)
+    : IRequestHandler<GetUsersByIdQuery, BaseResponse<User>>
 {
-    public class GetUsersByIdQueryHandler(IUserRepository userRepository)
-        : IRequestHandler<GetUsersByIdQuery, BaseResponse<User>>
+    public async Task<BaseResponse<User>> Handle(GetUsersByIdQuery request, CancellationToken cancellationToken)
     {
-        public async Task<BaseResponse<User>> Handle(GetUsersByIdQuery request, CancellationToken cancellationToken)
+        var response = new BaseResponse<User>
         {
-            var response = new BaseResponse<User>()
-            {
-                Id = NewId.NextSequentialGuid(),
-                Timestamp = DateTime.UtcNow,
-                Errors = new List<string>() // Initialize the error list
-            };
+            Id = NewId.NextSequentialGuid(),
+            Timestamp = DateTime.UtcNow,
+            Errors = new List<string>() // Initialize the error list
+        };
 
-            try
-            {
-                var user = await userRepository.GetByIdAsync(request.id);
-                if (user == null)
-                {
-                    response.Success = false;
-                    response.Message = "User not found";
-                    response.Errors.Add("No user found with the provided ID.");
-                    return response;
-                }
-
-                response.Data = user;
-                response.Success = true;
-                response.Message = "User retrieved successfully";
-            }
-            catch (Exception e)
+        try
+        {
+            var user = await userRepository.GetByIdAsync(request.id);
+            if (user == null)
             {
                 response.Success = false;
-                response.Message = "An error occurred while retrieving the user";
-                response.Errors.Add(e.Message); // Add error message to the list
+                response.Message = "User not found";
+                response.Errors.Add("No user found with the provided ID.");
+                return response;
             }
 
-            return response;
+            response.Data = user;
+            response.Success = true;
+            response.Message = "User retrieved successfully";
         }
+        catch (Exception e)
+        {
+            response.Success = false;
+            response.Message = "An error occurred while retrieving the user";
+            response.Errors.Add(e.Message); // Add error message to the list
+        }
+
+        return response;
     }
 }
