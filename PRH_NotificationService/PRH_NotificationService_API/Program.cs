@@ -1,7 +1,7 @@
 ﻿using Application;
 using Infrastructure;
 using Persistence;
-using PRH_UserService_API;
+using PRH_NotificationService_API;
 
 var builder = WebApplication.CreateBuilder(args);
 

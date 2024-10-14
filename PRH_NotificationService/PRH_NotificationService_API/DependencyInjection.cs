@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace PRH_UserService_API;
+namespace PRH_NotificationService_API;
 
 public static class DependencyInjection
 {
