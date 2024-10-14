@@ -38,6 +38,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             await userRepository.Create(user);
             response.Success = true;
             response.Message = "User created successfully";
+            response.StatusCode = 200;
         }
         catch (Exception ex)
         {

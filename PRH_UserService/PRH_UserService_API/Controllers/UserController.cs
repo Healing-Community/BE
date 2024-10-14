@@ -10,7 +10,6 @@ using Application.Commands.Users.VerifyUser;
 using Application.Commons.DTOs;
 using Application.Queries.Users.GetUsers;
 using Application.Queries.Users.GetUsersById;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
