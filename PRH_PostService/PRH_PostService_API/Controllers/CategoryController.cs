@@ -22,7 +22,7 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class categoryController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Users")]
+        [Authorize(Roles = "User")]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetsCategory()
         {
@@ -30,7 +30,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Users")]
+        [Authorize(Roles = "User")]
         [HttpGet("get-by-id/{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -38,7 +38,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Users")]
+        [Authorize(Roles = "User")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateCategory(CategoryDto category)
         {
@@ -46,7 +46,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Users")]
+        [Authorize(Roles = "User")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateCategory(Guid id, CategoryDto category)
         {
@@ -54,7 +54,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Users")]
+        [Authorize(Roles = "User")]
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
