@@ -21,7 +21,6 @@ var app = builder.Build();
 #region Middleware
 
 app.UseMiddleware<AuthMiddleware>();
-app.UseMiddleware<ConvertForbiddenToUnauthorizedMiddleware>();
 
 #endregion
 

@@ -3,6 +3,26 @@
   "WorkspaceRootPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\prh_reportservice_api\\controllers\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\controllers\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\prh_reportservice_api\\consumer\\reportconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\consumer\\reportconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\application\\commands\\reports\\createreport\\createreporthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|solutionrelative:application\\commands\\reports\\createreport\\createreporthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\prh_reportservice_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\prh_reportservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\prh_reportservice_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -15,20 +35,8 @@
       "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\prh_reportservice_api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\prh_reportservice_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\infrastructure\\context\\reportdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\reportdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\prh_reportservice_api\\consumer\\reportconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\consumer\\reportconsumer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\application\\commands\\reports\\createreport\\createreporthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|solutionrelative:application\\commands\\reports\\createreport\\createreporthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|c:\\users\\administrator\\desktop\\be\\prh_reportservice\\application\\commands\\reports\\createreport\\createreportcommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,11 +54,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
+              "Title": "ReportController.cs",
+              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\Controllers\\ReportController.cs",
+              "RelativeDocumentMoniker": "PRH_ReportService_API\\Controllers\\ReportController.cs",
+              "ToolTip": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\Controllers\\ReportController.cs",
+              "RelativeToolTip": "PRH_ReportService_API\\Controllers\\ReportController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-14T13:29:37.568Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "PRH_ReportService_API\\DependencyInjection.cs",
+              "ToolTip": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\DependencyInjection.cs",
+              "RelativeToolTip": "PRH_ReportService_API\\DependencyInjection.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-14T13:27:49.372Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "PRH_ReportService_API.csproj",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\PRH_ReportService_API.csproj",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\PRH_ReportService_API.csproj",
@@ -62,7 +96,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "Dockerfile",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\Dockerfile",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\Dockerfile",
@@ -79,13 +113,14 @@
               "RelativeDocumentMoniker": "PRH_ReportService_API\\Program.cs",
               "ToolTip": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\Program.cs",
               "RelativeToolTip": "PRH_ReportService_API\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAB0AAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T08:46:10.386Z"
+              "WhenOpened": "2024-10-14T08:46:10.386Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\appsettings.json",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\appsettings.json",
@@ -98,7 +133,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 8,
               "Title": "ReportDbContext.cs",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Infrastructure\\Context\\ReportDbContext.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Context\\ReportDbContext.cs",
@@ -110,7 +145,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
               "Title": "ReportConsumer.cs",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\PRH_ReportService_API\\Consumer\\ReportConsumer.cs",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\Consumer\\ReportConsumer.cs",
@@ -118,11 +153,12 @@
               "RelativeToolTip": "PRH_ReportService_API\\Consumer\\ReportConsumer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T08:27:51.924Z"
+              "WhenOpened": "2024-10-14T08:27:51.924Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "CreateReportCommand.cs",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Commands\\Reports\\CreateReport\\CreateReportCommand.cs",
               "RelativeDocumentMoniker": "Application\\Commands\\Reports\\CreateReport\\CreateReportCommand.cs",
@@ -134,7 +170,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "MappingProfile.cs",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Infrastructure\\Mapper\\MappingProfile.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Mapper\\MappingProfile.cs",
@@ -146,15 +182,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 2,
               "Title": "CreateReportHandler.cs",
               "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Commands\\Reports\\CreateReport\\CreateReportHandler.cs",
               "RelativeDocumentMoniker": "Application\\Commands\\Reports\\CreateReport\\CreateReportHandler.cs",
               "ToolTip": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Commands\\Reports\\CreateReport\\CreateReportHandler.cs",
               "RelativeToolTip": "Application\\Commands\\Reports\\CreateReport\\CreateReportHandler.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAiwDAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAC4AAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-14T08:21:37.074Z"
+              "WhenOpened": "2024-10-14T08:21:37.074Z",
+              "EditorCaption": ""
             }
           ]
         }
