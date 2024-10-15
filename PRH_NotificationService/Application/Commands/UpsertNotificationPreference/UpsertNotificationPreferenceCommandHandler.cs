@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Application.Commands.UpdateNotificationPreference
         private readonly IUserNotificationPreferenceRepository _userNotificationPreferenceRepository;
         private readonly INotificationTypeRepository _notificationTypeRepository;
 
-        public UpsertNotificationPreferenceCommandHandler(IUserNotificationPreferenceRepository userNotificationPreferenceRepository, 
+        public UpsertNotificationPreferenceCommandHandler(IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
             INotificationTypeRepository notificationTypeRepository)
         {
             _userNotificationPreferenceRepository = userNotificationPreferenceRepository;
@@ -25,7 +26,8 @@ namespace Application.Commands.UpdateNotificationPreference
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Errors = new List<string>()
             };
 
             try
@@ -34,7 +36,8 @@ namespace Application.Commands.UpdateNotificationPreference
                 if (notificationType == null)
                 {
                     response.Success = false;
-                    response.Message = "Invalid notification type.";
+                    response.Message = "Không tìm thấy loại thông báo.";
+                    response.StatusCode = 404;
                     return response;
                 }
 
@@ -57,13 +60,15 @@ namespace Application.Commands.UpdateNotificationPreference
                 }
 
                 response.Success = true;
-                response.Message = "Notification preference updated successfully.";
+                response.Message = "Thông báo đã được cập nhật thành công.";
+                response.StatusCode = 200;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Failed to update notification preference.";
-                response.Errors = new List<string> { ex.Message };
+                response.Message = "Không thể cập nhật thông báo.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = 500;
             }
 
             return response;

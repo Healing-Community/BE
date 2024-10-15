@@ -2,6 +2,7 @@
 using Infrastructure;
 using Persistence;
 using PRH_NotificationService_API;
+using PRH_NotificationService_API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,12 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 # endregion
 
 var app = builder.Build();
+
+#region Middleware
+
+app.UseMiddleware<AuthMiddleware>();
+
+#endregion
 
 app.UseSwagger();
 

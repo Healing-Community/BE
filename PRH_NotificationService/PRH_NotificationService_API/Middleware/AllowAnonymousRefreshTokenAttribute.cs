@@ -1,0 +1,6 @@
+﻿namespace PRH_NotificationService_API.Middleware;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+public class AllowAnonymousRefreshTokenAttribute : Attribute
+{
+}
