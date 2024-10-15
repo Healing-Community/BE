@@ -5,6 +5,7 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Commands.Users.LoginUser;
@@ -35,7 +36,8 @@ public class LoginUserCommandHandler(
                     Success = false,
                     Message = "Invalid email or password.",
                     Errors = new List<string> { "User not found." },
-                    Timestamp = DateTime.UtcNow
+                    Timestamp = DateTime.UtcNow,
+                    StatusCode = (int)StatusCodes.Status401Unauthorized
                 };
 
             if (user.Status == 0)
@@ -45,7 +47,8 @@ public class LoginUserCommandHandler(
                     Success = false,
                     Message = "User account is inactive.",
                     Errors = new List<string> { "Inactive account." },
-                    Timestamp = DateTime.UtcNow
+                    Timestamp = DateTime.UtcNow,
+                    StatusCode = (int)StatusCodes.Status401Unauthorized
                 };
 
             var isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
@@ -65,7 +68,8 @@ public class LoginUserCommandHandler(
                         Success = false,
                         Message = "Invalid email or password.",
                         Errors = new List<string> { "Incorrect password." },
-                        Timestamp = DateTime.UtcNow
+                        Timestamp = DateTime.UtcNow,
+                        StatusCode = (int)StatusCodes.Status401Unauthorized
                     };
                 }
             }
@@ -104,9 +108,11 @@ public class LoginUserCommandHandler(
                 ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60"))
             };
             await tokenRepository.Create(token);
+            response.StatusCode = (int)StatusCodes.Status200OK;
         }
         catch (Exception ex)
         {
+            response.StatusCode = (int)StatusCodes.Status500InternalServerError;
             response.Success = false;
             response.Message = "Failed to login user.";
             response.Errors = new List<string> { ex.Message };

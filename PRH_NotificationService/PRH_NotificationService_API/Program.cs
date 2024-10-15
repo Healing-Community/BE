@@ -16,6 +16,12 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 var app = builder.Build();
 
+#region Middleware
+
+app.UseMiddleware<AuthMiddleware>();
+
+#endregion
+
 app.UseSwagger();
 
 app.UseSwaggerUI(c =>

@@ -32,6 +32,7 @@ public class RefreshTokenCommandHandler(
         {
             response.Success = false;
             response.Message = "Invalid token";
+            response.StatusCode = 401;
             return response;
         }
 
@@ -42,6 +43,7 @@ public class RefreshTokenCommandHandler(
         {
             response.Success = false;
             response.Message = "Invalid token";
+            response.StatusCode = 401;
             response.Data = null;
         }
         else
@@ -58,7 +60,7 @@ public class RefreshTokenCommandHandler(
             // Set response details
             response.Success = true;
             response.Message = "Token refreshed successfully";
-
+            response.StatusCode = 200;
             response.Data = new TokenDto
             {
                 RefreshToken = newRefreshToken,
