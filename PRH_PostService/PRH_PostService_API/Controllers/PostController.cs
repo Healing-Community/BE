@@ -4,8 +4,10 @@ using Application.Commands.Posts.UpdatePost;
 using Application.Commons.DTOs;
 using Application.Queries.Posts.GetPosts;
 using Application.Queries.Posts.GetPostsById;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PRH_PostService_API.Extentions;
 
 namespace PRH_PostService_API.Controllers
 {
@@ -17,35 +19,35 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> GetsPost()
         {
             var response = await sender.Send(new GetsPostQuery());
-            return Ok(response);
+            return response.ToActionResult();
         }
 
         [HttpGet("get-by-id/{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var post = await sender.Send(new GetPostsByIdQuery(id));
-            return Ok(post);
+            var response = await sender.Send(new GetPostsByIdQuery(id));
+            return response.ToActionResult();
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreatePost(PostDto post)
         {
-            var addedPost = await sender.Send(new CreatePostCommand(post));
-            return Ok(addedPost);
+            var response = await sender.Send(new CreatePostCommand(post));
+            return response.ToActionResult();
         }
 
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdatePost(Guid id, PostDto post)
         {
-            var updatedPost = await sender.Send(new UpdatePostCommand(id, post));
-            return Ok(updatedPost);
+            var response = await sender.Send(new UpdatePostCommand(id, post));
+            return response.ToActionResult();
         }
 
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeletePost(Guid id)
         {
             var response = await sender.Send(new DeletePostCommand(id));
-            return Ok(response);
+            return response.ToActionResult();
         }
 
     }
