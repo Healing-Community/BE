@@ -22,7 +22,7 @@ namespace PRH_UserService_API.Controllers;
 [ApiController]
 public class UserController(ISender sender) : ControllerBase
 {
-    [Authorize(Roles = "Users")]
+    [Authorize(Roles = "User")]
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
