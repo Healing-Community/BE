@@ -2,14 +2,8 @@
 using Application.Commons;
 using Application.Commons.Tools;
 using Application.Interfaces.Repository;
-using Domain.Entities;
 using Domain.Enum;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Notification
 {
@@ -33,7 +27,6 @@ namespace Application.Commands.Notification
 
             try
             {
-                // Extract user ID from the token
                 var userId = Authentication.GetUserIdFromHttpContext(request.NotifyFollowersRequestDto.Context ?? throw new InvalidOperationException());
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -42,7 +35,6 @@ namespace Application.Commands.Notification
 
                 var parsedUserId = Guid.Parse(userId);
 
-                // Fetch notification type
                 var notificationType = await _notificationRepository.GetNotificationTypeByEnum(NotificationTypeEnum.NewPostByFollowedUser);
                 if (notificationType == null)
                 {
@@ -52,26 +44,25 @@ namespace Application.Commands.Notification
                     return response;
                 }
 
-                // Create notifications for followers
-                var notifications = new List<Domain.Entities.Notification>();
-                var tasks = request.NotifyFollowersRequestDto.Followers.Select(async follower =>
-                {
-                    var preference = await _notificationRepository.GetUserNotificationPreferenceAsync(follower.UserId, notificationType.NotificationTypeId);
-                    if (preference)
-                    {
-                        notifications.Add(new Domain.Entities.Notification
-                        {
-                            UserId = follower.UserId,
-                            NotificationTypeId = notificationType.NotificationTypeId,
-                            Message = $"Bài viết mới có tiêu đề '{request.NotifyFollowersRequestDto.PostTitle}' bởi người dùng {parsedUserId}",
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow,
-                            IsRead = false
-                        });
-                    }
-                });
+                var followerIds = request.NotifyFollowersRequestDto.Followers.Select(f => f.UserId).ToList();
 
-                await Task.WhenAll(tasks);
+                // Lấy tất cả các preferences của các followers một lần
+                var userPreferences = await _notificationRepository.GetUserNotificationPreferencesAsync(followerIds, notificationType.NotificationTypeId);
+
+                var notifications = new List<Domain.Entities.Notification>();
+
+                foreach (var preference in userPreferences)
+                {
+                    notifications.Add(new Domain.Entities.Notification
+                    {
+                        UserId = preference.UserId,
+                        NotificationTypeId = notificationType.NotificationTypeId,
+                        Message = $"Bài viết mới có tiêu đề '{request.NotifyFollowersRequestDto.PostTitle}' bởi người dùng {parsedUserId}",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        IsRead = false
+                    });
+                }
 
                 if (notifications.Any())
                 {

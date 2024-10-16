@@ -26,7 +26,7 @@ namespace PRH_NotificationService_API.Controller
             _sender = sender;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost("create-notification")]
         public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationCommand command)
         {
@@ -58,7 +58,7 @@ namespace PRH_NotificationService_API.Controller
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost("notify-followers")]
         public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersRequestDto notifyFollowersRequestDto)
         {

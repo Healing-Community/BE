@@ -3,11 +3,7 @@ using Domain.Entities;
 using Domain.Enum;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace Persistence.Repositories
 {
@@ -104,6 +100,7 @@ namespace Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        // Kiểm tra preference của một người dùng
         public async Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId)
         {
             var userNotificationPreference = await _context.UserNotificationPreferences
@@ -111,6 +108,15 @@ namespace Persistence.Repositories
                 .FirstOrDefaultAsync(unp => unp.UserId == userId && unp.NotificationTypeId == notificationTypeId);
 
             return userNotificationPreference?.IsSubscribed ?? false;
+        }
+
+        // Lấy danh sách preferences của nhiều người dùng
+        public async Task<List<UserNotificationPreference>> GetUserNotificationPreferencesAsync(List<Guid> userIds, Guid notificationTypeId)
+        {
+            return await _context.UserNotificationPreferences
+                .AsNoTracking()
+                .Where(unp => userIds.Contains(unp.UserId) && unp.NotificationTypeId == notificationTypeId && unp.IsSubscribed)
+                .ToListAsync();
         }
 
         public async Task<NotificationType?> GetNotificationTypeByEnum(NotificationTypeEnum typeEnum)
@@ -137,10 +143,10 @@ namespace Persistence.Repositories
         public async Task<Dictionary<string, int>> GetPopularNotificationTypesAsync()
         {
             return await _context.Notifications
-            .GroupBy(n => n.NotificationType.Name)
-            .Select(g => new { NotificationType = g.Key, Count = g.Count() })
-            .OrderByDescending(x => x.Count)
-            .ToDictionaryAsync(x => x.NotificationType, x => x.Count);
+                .GroupBy(n => n.NotificationType.Name)
+                .Select(g => new { NotificationType = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .ToDictionaryAsync(x => x.NotificationType, x => x.Count);
         }
     }
 }
