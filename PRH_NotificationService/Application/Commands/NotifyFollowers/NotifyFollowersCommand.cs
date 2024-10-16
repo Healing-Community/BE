@@ -1,4 +1,5 @@
 ﻿using Application.Commons;
+using Application.Commons.DTOs;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.NotifyFollowers
 {
-    public record NotifyFollowersCommand(Guid UserId, Guid PostId, string PostTitle) : IRequest<BaseResponse<string>>;
+    public record NotifyFollowersCommand(NotifyFollowersRequestDto NotifyFollowersRequestDto) : IRequest<BaseResponse<string>>;
 }
