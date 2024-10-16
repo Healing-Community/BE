@@ -13,7 +13,7 @@
         public DateTime CreateAt { get; init; }
         public DateTime? UpdateAt { get; set; }
         public Category Category { get; set; } = null!;
-        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
-        public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
+        public ICollection<Comment> Comments { get; set; } 
+        public ICollection<Reaction> Reactions { get; set; } 
     }
 }
