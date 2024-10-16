@@ -12,6 +12,9 @@ namespace Infrastructure.Mapper
         {
             CreateMap<Post, PostDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Reaction, ReactionDto>().ReverseMap();
+            CreateMap<ReactionType, ReactionTypeDto>().ReverseMap();
+            CreateMap<Comment, CommentDto>().ReverseMap();
 
         }
     }

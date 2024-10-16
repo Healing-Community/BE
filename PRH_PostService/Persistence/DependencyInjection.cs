@@ -13,6 +13,9 @@ public static class DependencyInjection
     {
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<IReactionRepository, ReactionRepository>();
+        services.AddScoped<IReactionTypeRepository, ReactionTypeRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IMessagePublisher, MessagePublisher>();
 
 
