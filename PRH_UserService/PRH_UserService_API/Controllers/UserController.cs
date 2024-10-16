@@ -14,7 +14,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_UserService_API.Extentions;
-using PRH_UserService_API.Middleware;
 
 namespace PRH_UserService_API.Controllers;
 
@@ -22,7 +21,7 @@ namespace PRH_UserService_API.Controllers;
 [ApiController]
 public class UserController(ISender sender) : ControllerBase
 {
-    [Authorize(Roles = "Users")]
+    [Authorize(Roles = "User")]
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
