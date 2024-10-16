@@ -10,7 +10,6 @@
         public bool IsRead { get; set; }
         public string Message { get; set; } = null!;
 
-        public User User { get; set; } = null!;
         public NotificationType NotificationType { get; set; } = null!;
     }
 }
