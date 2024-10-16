@@ -3,7 +3,6 @@ using Infrastructure;
 using MassTransit;
 using Persistence;
 using PRH_UserService_API;
-using PRH_UserService_API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 

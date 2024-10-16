@@ -1,12 +1,18 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace PRH_UserService_API.Middleware;
-
-public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
+public class AuthMiddleware
 {
-    private readonly IConfiguration _configuration = configuration;
+    private readonly RequestDelegate _next;
+    private readonly IConfiguration _configuration;
+
+    public AuthMiddleware(RequestDelegate next, IConfiguration configuration)
+    {
+        _next = next;
+        _configuration = configuration;
+    }
 
     public async Task Invoke(HttpContext context)
     {
@@ -14,11 +20,10 @@ public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
         var allowAnonymousRefreshTokenAttribute = endpoint?.Metadata.GetMetadata<AllowAnonymousRefreshTokenAttribute>();
         if (allowAnonymousRefreshTokenAttribute != null)
         {
-            await next(context);
+            await _next(context);
             return;
         }
 
-        // Token validation logic...
         if (context.Request.Headers.ContainsKey("Authorization"))
         {
             var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
@@ -27,23 +32,43 @@ public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
                 var tokenHandler = new JwtSecurityTokenHandler();
                 try
                 {
-                    var jwtToken = tokenHandler.ReadJwtToken(token);
-                    if (jwtToken.ValidTo < DateTime.UtcNow)
+                    // Retrieve the secret key from appsettings.json
+                    var jwtSettings = _configuration.GetSection("JwtSettings");
+
+
+                    // Set up token validation parameters
+                    var validationParameters = new TokenValidationParameters
                     {
-                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        await context.Response.WriteAsync("Token has expired");
-                        return;
-                    }
+                        ValidIssuer = jwtSettings["Issuer"],
+                        ValidAudience = jwtSettings["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException())),
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = false,
+                        ValidateIssuerSigningKey = true
+                    };
+
+                    // Validate the token
+                    tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+
+                    // You can further inspect the validatedToken if needed
                 }
                 catch (SecurityTokenException)
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    await context.Response.WriteAsync("Invalid token");
+                    await context.Response.WriteAsync("Invalid token or secret key mismatch");
+                    return;
+                }
+                catch (Exception)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    await context.Response.WriteAsync("Token validation failed");
                     return;
                 }
             }
         }
 
-        await next(context);
+        await _next(context);
     }
 }
