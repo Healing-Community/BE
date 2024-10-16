@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using PRH_PostService_API;
+using PRH_PostService_API.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,11 @@ builder.Services.AddApplicationDependencies();
 # endregion
 
 var app = builder.Build();
+#region Middleware
 
+app.UseMiddleware<AuthMiddleware>();
+
+#endregion
 #region MassTransitHostedService
 
 // Configure MassTransit bus control
