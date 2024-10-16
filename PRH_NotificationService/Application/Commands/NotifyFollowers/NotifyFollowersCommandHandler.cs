@@ -1,26 +1,19 @@
 ﻿using Application.Commands.NotifyFollowers;
 using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
-using Domain.Entities;
 using Domain.Enum;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Notification
 {
     public class NotifyFollowersCommandHandler : IRequestHandler<NotifyFollowersCommand, BaseResponse<string>>
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly IUserRepository _userRepository;
 
-        public NotifyFollowersCommandHandler(INotificationRepository notificationRepository, IUserRepository userRepository)
+        public NotifyFollowersCommandHandler(INotificationRepository notificationRepository)
         {
             _notificationRepository = notificationRepository;
-            _userRepository = userRepository;
         }
 
         public async Task<BaseResponse<string>> Handle(NotifyFollowersCommand request, CancellationToken cancellationToken)
@@ -34,15 +27,16 @@ namespace Application.Commands.Notification
 
             try
             {
-                var followers = await _userRepository.GetFollowersAsync(request.UserId);
-                if (followers == null || !followers.Any())
+                // Extract user ID from the token
+                var userId = Authentication.GetUserIdFromHttpContext(request.NotifyFollowersRequestDto.Context ?? throw new InvalidOperationException());
+                if (string.IsNullOrEmpty(userId))
                 {
-                    response.Success = false;
-                    response.Message = "Không tìm thấy người theo dõi.";
-                    response.StatusCode = 404;
-                    return response;
+                    throw new InvalidOperationException("User ID cannot be null or empty.");
                 }
 
+                var parsedUserId = Guid.Parse(userId);
+
+                // Fetch notification type
                 var notificationType = await _notificationRepository.GetNotificationTypeByEnum(NotificationTypeEnum.NewPostByFollowedUser);
                 if (notificationType == null)
                 {
@@ -52,8 +46,9 @@ namespace Application.Commands.Notification
                     return response;
                 }
 
+                // Create notifications for followers
                 var notifications = new List<Domain.Entities.Notification>();
-                var tasks = followers.Select(async follower =>
+                var tasks = request.NotifyFollowersRequestDto.Followers.Select(async follower =>
                 {
                     var preference = await _notificationRepository.GetUserNotificationPreferenceAsync(follower.UserId, notificationType.NotificationTypeId);
                     if (preference)
@@ -62,7 +57,7 @@ namespace Application.Commands.Notification
                         {
                             UserId = follower.UserId,
                             NotificationTypeId = notificationType.NotificationTypeId,
-                            Message = $"Bài viết mới có tiêu đề '{request.PostTitle}' bởi người dùng {request.UserId}",
+                            Message = $"Bài viết mới có tiêu đề '{request.NotifyFollowersRequestDto.PostTitle}' bởi người dùng {parsedUserId}",
                             CreatedAt = DateTime.UtcNow,
                             UpdatedAt = DateTime.UtcNow,
                             IsRead = false
