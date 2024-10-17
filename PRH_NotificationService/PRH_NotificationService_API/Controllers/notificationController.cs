@@ -1,4 +1,5 @@
 ﻿using Application.Commands.ArchiveUnreadNotifications;
+using Application.Commands.CreateNotificationType;
 using Application.Commands.DeleteNotification;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
@@ -104,6 +105,14 @@ namespace PRH_NotificationService_API.Controller
         public async Task<IActionResult> DeleteNotification(Guid notificationId)
         {
             var response = await _sender.Send(new DeleteNotificationCommand(notificationId));
+            return response.ToActionResult();
+        }
+
+        [Authorize]
+        [HttpPost("create-notification-type")]
+        public async Task<IActionResult> CreateNotificationType([FromBody] CreateNotificationTypeCommand command)
+        {
+            var response = await _sender.Send(command);
             return response.ToActionResult();
         }
     }
