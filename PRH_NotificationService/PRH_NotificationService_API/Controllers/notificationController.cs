@@ -6,6 +6,7 @@ using Application.Commands.UpdateNotificationPreference;
 using Application.Queries.GetPopularNotificationTypes;
 using Application.Queries.GetReadNotificationRate;
 using Application.Queries.GetUnreadNotificationCount;
+using Application.Queries.GetUserNotifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -86,6 +87,14 @@ namespace PRH_NotificationService_API.Controller
         public async Task<IActionResult> GetUnreadNotificationCount(Guid userId)
         {
             var response = await _sender.Send(new GetUnreadNotificationCountQuery(userId));
+            return response.ToActionResult();
+        }
+
+        [Authorize]
+        [HttpGet("notifications/{userId}")]
+        public async Task<IActionResult> GetUserNotifications(Guid userId, [FromQuery] bool includeRead = false)
+        {
+            var response = await _sender.Send(new GetUserNotificationsQuery(userId, includeRead));
             return response.ToActionResult();
         }
     }

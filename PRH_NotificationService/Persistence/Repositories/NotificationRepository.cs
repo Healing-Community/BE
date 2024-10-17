@@ -16,6 +16,19 @@ namespace Persistence.Repositories
             _context = context;
         }
 
+        public async Task<List<Notification>> GetNotificationsByUserAsync(Guid userId, bool includeRead)
+        {
+            var query = _context.Notifications
+                .Where(n => n.UserId == userId);
+
+            if (!includeRead)
+            {
+                query = query.Where(n => !n.IsRead);
+            }
+
+            return await query.OrderByDescending(n => n.CreatedAt).ToListAsync();
+        }
+
         public async Task Create(Notification entity)
         {
             await _context.Notifications.AddAsync(entity);
