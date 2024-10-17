@@ -1,9 +1,11 @@
 ﻿using System.Text;
+using Domain.Constants;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRH_NotificationService_API.Consumer;
 
 namespace PRH_NotificationService_API;
 
@@ -90,6 +92,7 @@ public static class DependencyInjection
 
         services.AddMassTransit(x =>
         {
+            x.AddConsumer<PostServiceConsumer>();
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
@@ -97,6 +100,13 @@ public static class DependencyInjection
                     h.Username(rabbitMq["Username"] ?? throw new NullReferenceException());
                     h.Password(rabbitMq["Password"] ?? throw new NullReferenceException());
                 });
+
+                // Đăng ký consumer
+                cfg.ReceiveEndpoint(QueueName.PostQueue.ToString(), c =>
+                {
+                    c.ConfigureConsumer<PostServiceConsumer>(context);
+                });
+
                 // Thiết lập Retry
                 cfg.UseMessageRetry(retryConfig =>
                 {
