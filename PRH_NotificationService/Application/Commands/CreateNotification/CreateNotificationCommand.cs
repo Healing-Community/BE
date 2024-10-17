@@ -1,8 +1,8 @@
 ﻿using Application.Commons;
-using Domain.Enum;
+using Domain.Entities;
 using MediatR;
 
 namespace Application.Commands.Notification
 {
-    public record CreateNotificationCommand(Guid UserId, NotificationTypeEnum NotificationType, string Message) : IRequest<BaseResponse<string>>;
+    public record CreateNotificationCommand(Guid UserId, Guid NotificationTypeId, string Message) : IRequest<BaseResponse<string>>;
 }

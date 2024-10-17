@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces.Repository;
 using Domain.Entities;
-using Domain.Enum;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -45,8 +44,8 @@ namespace Persistence.Repositories
 
         public async Task<Notification> GetByIdAsync(Guid id)
         {
-            var notification = await _context.Notifications.FindAsync(id);
-            return notification ?? new Notification();
+            return await _context.Notifications.FirstAsync(x => x.NotificationId == id);
+
         }
 
         public async Task<Notification> GetByPropertyAsync(Expression<Func<Notification, bool>> predicate)
@@ -61,9 +60,10 @@ namespace Persistence.Repositories
 
         public async Task Update(Guid id, Notification entity)
         {
-            var existingNotification = await _context.Notifications.FindAsync(id);
+            var existingNotification = await _context.Notifications.FirstOrDefaultAsync(x => x.NotificationId == id);
             if (existingNotification == null) return;
             _context.Entry(existingNotification).CurrentValues.SetValues(entity);
+            _context.Entry(existingNotification).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
@@ -128,12 +128,6 @@ namespace Persistence.Repositories
                 .AsNoTracking()
                 .Where(unp => userIds.Contains(unp.UserId) && unp.NotificationTypeId == notificationTypeId && unp.IsSubscribed)
                 .ToListAsync();
-        }
-
-        public async Task<NotificationType?> GetNotificationTypeByEnum(NotificationTypeEnum typeEnum)
-        {
-            return await _context.NotificationTypes
-                .FirstOrDefaultAsync(nt => nt.Name == typeEnum.ToString());
         }
 
         public async Task CreateNotificationsAsync(IEnumerable<Notification> notifications)

@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.NotifyFollowers
 {
-    public record NotifyFollowersCommand(Guid UserId, string PostTitle) : IRequest<BaseResponse<string>>;
+    public record NotifyFollowersCommand(Guid UserId, Guid NotificationTypeId, string PostTitle) : IRequest<BaseResponse<string>>;
 }

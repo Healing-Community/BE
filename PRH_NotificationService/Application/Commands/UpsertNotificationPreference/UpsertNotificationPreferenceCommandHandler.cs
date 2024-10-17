@@ -32,7 +32,7 @@ namespace Application.Commands.UpdateNotificationPreference
 
             try
             {
-                var notificationType = await _notificationTypeRepository.GetByNameAsync(request.NotificationType.ToString());
+                var notificationType = await _notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
                 if (notificationType == null)
                 {
                     response.Success = false;

@@ -1,7 +1,6 @@
 ﻿using Application.Commands.NotifyFollowers;
 using Application.Commons;
 using Application.Interfaces.Repository;
-using Domain.Enum;
 using MediatR;
 
 namespace Application.Commands.Notification
@@ -28,7 +27,7 @@ namespace Application.Commands.Notification
 
             try
             {
-                var notificationType = await _notificationTypeRepository.GetByNameAsync(NotificationTypeEnum.NewPostByFollowedUser.ToString());
+                var notificationType = await _notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
                 if (notificationType == null)
                 {
                     response.Success = false;
