@@ -1,6 +1,5 @@
 ﻿using Application.Commands.NotifyFollowers;
 using Application.Commons;
-using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using Domain.Enum;
 using MediatR;
@@ -10,10 +9,12 @@ namespace Application.Commands.Notification
     public class NotifyFollowersCommandHandler : IRequestHandler<NotifyFollowersCommand, BaseResponse<string>>
     {
         private readonly INotificationRepository _notificationRepository;
+        private readonly INotificationTypeRepository _notificationTypeRepository;
 
-        public NotifyFollowersCommandHandler(INotificationRepository notificationRepository)
+        public NotifyFollowersCommandHandler(INotificationRepository notificationRepository, INotificationTypeRepository notificationTypeRepository)
         {
             _notificationRepository = notificationRepository;
+            _notificationTypeRepository = notificationTypeRepository;
         }
 
         public async Task<BaseResponse<string>> Handle(NotifyFollowersCommand request, CancellationToken cancellationToken)
@@ -27,15 +28,7 @@ namespace Application.Commands.Notification
 
             try
             {
-                var userId = Authentication.GetUserIdFromHttpContext(request.NotifyFollowersRequestDto.Context ?? throw new InvalidOperationException());
-                if (string.IsNullOrEmpty(userId))
-                {
-                    throw new InvalidOperationException("User ID cannot be null or empty.");
-                }
-
-                var parsedUserId = Guid.Parse(userId);
-
-                var notificationType = await _notificationRepository.GetNotificationTypeByEnum(NotificationTypeEnum.NewPostByFollowedUser);
+                var notificationType = await _notificationTypeRepository.GetByNameAsync(NotificationTypeEnum.NewPostByFollowedUser.ToString());
                 if (notificationType == null)
                 {
                     response.Success = false;
@@ -44,10 +37,7 @@ namespace Application.Commands.Notification
                     return response;
                 }
 
-                var followerIds = request.NotifyFollowersRequestDto.Followers.Select(f => f.UserId).ToList();
-
-                // Lấy tất cả các preferences của các followers một lần
-                var userPreferences = await _notificationRepository.GetUserNotificationPreferencesAsync(followerIds, notificationType.NotificationTypeId);
+                var userPreferences = await _notificationRepository.GetUserNotificationPreferencesAsync(new List<Guid>(), notificationType.NotificationTypeId);
 
                 var notifications = new List<Domain.Entities.Notification>();
 
@@ -57,7 +47,7 @@ namespace Application.Commands.Notification
                     {
                         UserId = preference.UserId,
                         NotificationTypeId = notificationType.NotificationTypeId,
-                        Message = $"Bài viết mới có tiêu đề '{request.NotifyFollowersRequestDto.PostTitle}' bởi người dùng {parsedUserId}",
+                        Message = $"Bài viết mới có tiêu đề '{request.PostTitle}' bởi người dùng {request.UserId}",
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         IsRead = false
