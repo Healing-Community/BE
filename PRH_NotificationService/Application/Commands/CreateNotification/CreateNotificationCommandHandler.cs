@@ -1,10 +1,6 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Notification
 {
@@ -30,7 +26,7 @@ namespace Application.Commands.Notification
 
             try
             {
-                var notificationType = await _notificationTypeRepository.GetByNameAsync(request.NotificationType.ToString());
+                var notificationType = await _notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
                 if (notificationType == null)
                 {
                     response.Success = false;

@@ -9,7 +9,8 @@ namespace PRH_NotificationService_API.Consumer
         {
             var postingRequest = context.Message;
 
-            await Console.Out.WriteLineAsync($"Received Posting Request: {postingRequest.Tittle}");
+
+            //await Console.Out.WriteLineAsync($"Received Posting Request: {postingRequest.Tittle}");
         }
     }
 }

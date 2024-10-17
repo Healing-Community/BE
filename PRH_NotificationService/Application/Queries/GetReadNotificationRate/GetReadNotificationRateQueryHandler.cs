@@ -1,23 +1,19 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Application.Commands.GetReadNotificationRate
+namespace Application.Queries.GetReadNotificationRate
 {
-    public class GetReadNotificationRateCommandHandler : IRequestHandler<GetReadNotificationRateCommand, BaseResponse<double>>
+    public class GetReadNotificationRateQueryHandler : IRequestHandler<GetReadNotificationRateQuery, BaseResponse<double>>
     {
         private readonly INotificationRepository _notificationRepository;
 
-        public GetReadNotificationRateCommandHandler(INotificationRepository notificationRepository)
+        public GetReadNotificationRateQueryHandler(INotificationRepository notificationRepository)
         {
             _notificationRepository = notificationRepository;
         }
 
-        public async Task<BaseResponse<double>> Handle(GetReadNotificationRateCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<double>> Handle(GetReadNotificationRateQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<double>
             {

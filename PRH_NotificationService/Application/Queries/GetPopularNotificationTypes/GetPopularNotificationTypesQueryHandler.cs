@@ -1,23 +1,19 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Application.Commands.GetPopularNotificationTypes
+namespace Application.Queries.GetPopularNotificationTypes
 {
-    public class GetPopularNotificationTypesCommandHandler : IRequestHandler<GetPopularNotificationTypesCommand, BaseResponse<Dictionary<string, int>>>
+    public class GetPopularNotificationTypesQueryHandler : IRequestHandler<GetPopularNotificationTypesQuery, BaseResponse<Dictionary<string, int>>>
     {
         private readonly INotificationRepository _notificationRepository;
 
-        public GetPopularNotificationTypesCommandHandler(INotificationRepository notificationRepository)
+        public GetPopularNotificationTypesQueryHandler(INotificationRepository notificationRepository)
         {
             _notificationRepository = notificationRepository;
         }
 
-        public async Task<BaseResponse<Dictionary<string, int>>> Handle(GetPopularNotificationTypesCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<Dictionary<string, int>>> Handle(GetPopularNotificationTypesQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<Dictionary<string, int>>
             {

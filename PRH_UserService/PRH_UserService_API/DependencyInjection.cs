@@ -1,8 +1,10 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using MassTransit;
+
 
 namespace PRH_UserService_API;
 
@@ -130,6 +132,28 @@ public static class DependencyInjection
 
         #endregion
 
+        #region HealthCheck
+
+        // Retrieve connection strings and settings from configuration
+        string postgresConnectionString = configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
+        services.AddHealthChecks()
+                .AddCheck("Self", () => HealthCheckResult.Healthy(),tags: new[] { "self" })
+                .AddNpgSql(
+                    configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
+                    name: "PostgresDb-check",
+                    tags: ["db", "postgres"],
+                    healthQuery: "SELECT 1;",
+                    failureStatus: HealthStatus.Unhealthy
+                )
+                .AddRabbitMQ(
+                    rabbitConnectionString: rabbitMq["Host"] ?? throw new NullReferenceException(),
+                    name: "RabbitMq-check",
+                    tags: ["rabbitmq", "messaging"],
+                    failureStatus: HealthStatus.Unhealthy
+                );
+        #endregion
+
         return services;
+
     }
 }
