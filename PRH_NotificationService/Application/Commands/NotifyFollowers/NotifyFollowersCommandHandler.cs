@@ -1,25 +1,20 @@
 ﻿using Application.Commands.NotifyFollowers;
 using Application.Commons;
-using Application.Commons.Tools;
 using Application.Interfaces.Repository;
-using Domain.Entities;
 using Domain.Enum;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Notification
 {
     public class NotifyFollowersCommandHandler : IRequestHandler<NotifyFollowersCommand, BaseResponse<string>>
     {
         private readonly INotificationRepository _notificationRepository;
+        private readonly INotificationTypeRepository _notificationTypeRepository;
 
-        public NotifyFollowersCommandHandler(INotificationRepository notificationRepository)
+        public NotifyFollowersCommandHandler(INotificationRepository notificationRepository, INotificationTypeRepository notificationTypeRepository)
         {
             _notificationRepository = notificationRepository;
+            _notificationTypeRepository = notificationTypeRepository;
         }
 
         public async Task<BaseResponse<string>> Handle(NotifyFollowersCommand request, CancellationToken cancellationToken)
@@ -33,17 +28,7 @@ namespace Application.Commands.Notification
 
             try
             {
-                // Extract user ID from the token
-                var userId = Authentication.GetUserIdFromHttpContext(request.NotifyFollowersRequestDto.Context ?? throw new InvalidOperationException());
-                if (string.IsNullOrEmpty(userId))
-                {
-                    throw new InvalidOperationException("User ID cannot be null or empty.");
-                }
-
-                var parsedUserId = Guid.Parse(userId);
-
-                // Fetch notification type
-                var notificationType = await _notificationRepository.GetNotificationTypeByEnum(NotificationTypeEnum.NewPostByFollowedUser);
+                var notificationType = await _notificationTypeRepository.GetByNameAsync(NotificationTypeEnum.NewPostByFollowedUser.ToString());
                 if (notificationType == null)
                 {
                     response.Success = false;
@@ -52,26 +37,22 @@ namespace Application.Commands.Notification
                     return response;
                 }
 
-                // Create notifications for followers
-                var notifications = new List<Domain.Entities.Notification>();
-                var tasks = request.NotifyFollowersRequestDto.Followers.Select(async follower =>
-                {
-                    var preference = await _notificationRepository.GetUserNotificationPreferenceAsync(follower.UserId, notificationType.NotificationTypeId);
-                    if (preference)
-                    {
-                        notifications.Add(new Domain.Entities.Notification
-                        {
-                            UserId = follower.UserId,
-                            NotificationTypeId = notificationType.NotificationTypeId,
-                            Message = $"Bài viết mới có tiêu đề '{request.NotifyFollowersRequestDto.PostTitle}' bởi người dùng {parsedUserId}",
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow,
-                            IsRead = false
-                        });
-                    }
-                });
+                var userPreferences = await _notificationRepository.GetUserNotificationPreferencesAsync(new List<Guid>(), notificationType.NotificationTypeId);
 
-                await Task.WhenAll(tasks);
+                var notifications = new List<Domain.Entities.Notification>();
+
+                foreach (var preference in userPreferences)
+                {
+                    notifications.Add(new Domain.Entities.Notification
+                    {
+                        UserId = preference.UserId,
+                        NotificationTypeId = notificationType.NotificationTypeId,
+                        Message = $"Bài viết mới có tiêu đề '{request.PostTitle}' bởi người dùng {request.UserId}",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        IsRead = false
+                    });
+                }
 
                 if (notifications.Any())
                 {

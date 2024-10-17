@@ -3,11 +3,7 @@ using Domain.Entities;
 using Domain.Enum;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace Persistence.Repositories
 {
@@ -113,6 +109,14 @@ namespace Persistence.Repositories
             return userNotificationPreference?.IsSubscribed ?? false;
         }
 
+        public async Task<List<UserNotificationPreference>> GetUserNotificationPreferencesAsync(List<Guid> userIds, Guid notificationTypeId)
+        {
+            return await _context.UserNotificationPreferences
+                .AsNoTracking()
+                .Where(unp => userIds.Contains(unp.UserId) && unp.NotificationTypeId == notificationTypeId && unp.IsSubscribed)
+                .ToListAsync();
+        }
+
         public async Task<NotificationType?> GetNotificationTypeByEnum(NotificationTypeEnum typeEnum)
         {
             return await _context.NotificationTypes
@@ -137,10 +141,17 @@ namespace Persistence.Repositories
         public async Task<Dictionary<string, int>> GetPopularNotificationTypesAsync()
         {
             return await _context.Notifications
-            .GroupBy(n => n.NotificationType.Name)
-            .Select(g => new { NotificationType = g.Key, Count = g.Count() })
-            .OrderByDescending(x => x.Count)
-            .ToDictionaryAsync(x => x.NotificationType, x => x.Count);
+                .GroupBy(n => n.NotificationType.Name)
+                .Select(g => new { NotificationType = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .ToDictionaryAsync(x => x.NotificationType, x => x.Count);
+        }
+
+        public async Task<int> GetUnreadCountAsync(Guid userId)
+        {
+            return await _context.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .CountAsync();
         }
     }
 }

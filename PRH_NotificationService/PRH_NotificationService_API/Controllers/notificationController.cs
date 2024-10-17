@@ -1,12 +1,11 @@
 ﻿using Application.Commands.ArchiveUnreadNotifications;
-using Application.Commands.GetPopularNotificationTypes;
-using Application.Commands.GetReadNotificationRate;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
 using Application.Commands.NotifyFollowers;
 using Application.Commands.UpdateNotificationPreference;
-using Application.Commons.DTOs;
-using MassTransit.Mediator;
+using Application.Queries.GetPopularNotificationTypes;
+using Application.Queries.GetReadNotificationRate;
+using Application.Queries.GetUnreadNotificationCount;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +25,7 @@ namespace PRH_NotificationService_API.Controller
             _sender = sender;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost("create-notification")]
         public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationCommand command)
         {
@@ -58,12 +57,11 @@ namespace PRH_NotificationService_API.Controller
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost("notify-followers")]
-        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersRequestDto notifyFollowersRequestDto)
+        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersCommand command)
         {
-            notifyFollowersRequestDto.Context = HttpContext;
-            var response = await _sender.Send(new NotifyFollowersCommand(notifyFollowersRequestDto));
+            var response = await _sender.Send(command);
             return response.ToActionResult();
         }
 
@@ -71,14 +69,23 @@ namespace PRH_NotificationService_API.Controller
         [HttpGet("read-rate")]
         public async Task<IActionResult> GetReadNotificationRate()
         {
-            var response = await _sender.Send(new GetReadNotificationRateCommand());
+            var response = await _sender.Send(new GetReadNotificationRateQuery());
             return response.ToActionResult();
         }
 
+        [Authorize]
         [HttpGet("popular-types")]
         public async Task<IActionResult> GetPopularNotificationTypes()
         {
-            var response = await _sender.Send(new GetPopularNotificationTypesCommand());
+            var response = await _sender.Send(new GetPopularNotificationTypesQuery());
+            return response.ToActionResult();
+        }
+
+        [Authorize]
+        [HttpGet("unread-count/{userId}")]
+        public async Task<IActionResult> GetUnreadNotificationCount(Guid userId)
+        {
+            var response = await _sender.Send(new GetUnreadNotificationCountQuery(userId));
             return response.ToActionResult();
         }
     }
