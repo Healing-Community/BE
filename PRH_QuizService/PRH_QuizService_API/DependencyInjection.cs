@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -131,6 +132,33 @@ public static class DependencyInjection
             });
         });
 
+        #endregion
+
+        #region HealthCheck
+
+        // Retrieve connection strings and settings from configuration
+        string postgresConnectionString = configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
+        services.AddHealthChecks()
+                .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: ["self"])
+                //.AddNpgSql(
+                //    configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
+                //    name: "PostgresDb-check",
+                //    tags: ["db", "postgres"],
+                //    healthQuery: "SELECT 1;",
+                //    failureStatus: HealthStatus.Unhealthy
+                //)
+                .AddMongoDb(
+                    configuration.GetConnectionString("MongoDb") ?? throw new NullReferenceException(),
+                    name: "MongoDb-check",
+                    tags: ["db", "mongo"],
+                    failureStatus: HealthStatus.Unhealthy
+                )
+                .AddRabbitMQ(
+                    rabbitConnectionString: rabbitMq["Host"] ?? throw new NullReferenceException(),
+                    name: "RabbitMq-check",
+                    tags: ["rabbitmq", "messaging"],
+                    failureStatus: HealthStatus.Unhealthy
+                );
         #endregion
 
         return services;
