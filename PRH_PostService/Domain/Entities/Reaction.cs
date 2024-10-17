@@ -12,9 +12,7 @@ namespace Domain.Entities
         public Guid UserId { get; set; }
         public Guid PostId { get; set; }
         public Guid ReactionTypeId { get; set; }
-
-        // Navigation properties
-        public Post Post { get; set; } = null!;
-        public ReactionType ReactionType { get; set; } = null!;
+        public Post Post { get; set; } 
+        public ReactionType ReactionType { get; set; } 
     }
 }

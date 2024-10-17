@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.Posts.UpdatePost
 {
-    public class UpdatePostCommandHandler(IPostRepository postRepository, ICategoryRepository categoryRepository)
+    public class UpdatePostCommandHandler(IPostRepository postRepository)
         : IRequestHandler<UpdatePostCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(UpdatePostCommand request, CancellationToken cancellationToken)

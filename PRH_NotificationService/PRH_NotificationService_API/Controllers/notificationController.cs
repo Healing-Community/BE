@@ -5,6 +5,7 @@ using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
 using Application.Commands.NotifyFollowers;
 using Application.Commands.UpdateNotificationPreference;
+using Application.Commons.DTOs;
 using MassTransit.Mediator;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -59,9 +60,10 @@ namespace PRH_NotificationService_API.Controller
 
         [Authorize(Roles = "User")]
         [HttpPost("notify-followers")]
-        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersCommand command)
+        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersRequestDto notifyFollowersRequestDto)
         {
-            var response = await _sender.Send(command);
+            notifyFollowersRequestDto.Context = HttpContext;
+            var response = await _sender.Send(new NotifyFollowersCommand(notifyFollowersRequestDto));
             return response.ToActionResult();
         }
 

@@ -1269,24 +1269,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Administrator\\.nuget\\packages\\": {},
-    "D:\\Apps\\Code\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Administrator\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Application.csproj",
+      "projectUniqueName": "D:\\Repos\\BE\\PRH_ReportService\\Application\\Application.csproj",
       "projectName": "Application",
-      "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\Application.csproj",
+      "projectPath": "D:\\Repos\\BE\\PRH_ReportService\\Application\\Application.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Application\\obj\\",
+      "outputPath": "D:\\Repos\\BE\\PRH_ReportService\\Application\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "D:\\Apps\\Code\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
         "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1294,14 +1289,15 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj": {
-              "projectPath": "C:\\Users\\Administrator\\Desktop\\BE\\PRH_ReportService\\Domain\\Domain.csproj"
+            "D:\\Repos\\BE\\PRH_ReportService\\Domain\\Domain.csproj": {
+              "projectPath": "D:\\Repos\\BE\\PRH_ReportService\\Domain\\Domain.csproj"
             }
           }
         }
@@ -1314,9 +1310,8 @@
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
-        "auditMode": "all"
-      },
-      "SdkAnalysisLevel": "9.0.100"
+        "auditMode": "direct"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -1359,7 +1354,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100-rc.1.24452.12/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
