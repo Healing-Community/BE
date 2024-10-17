@@ -36,12 +36,12 @@ namespace Application.Queries.GetUserNotifications
                     CreatedAt = n.CreatedAt
                 }).ToList();
                 response.StatusCode = 200;
-                response.Message = "Notifications retrieved successfully.";
+                response.Message = "Lấy thông báo thành công.";
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "An error occurred while retrieving notifications.";
+                response.Message = "Đã xảy ra lỗi khi lấy thông báo.";
                 response.Errors.Add(ex.Message);
                 response.StatusCode = 500;
             }

@@ -1,4 +1,5 @@
 ﻿using Application.Commands.ArchiveUnreadNotifications;
+using Application.Commands.DeleteNotification;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
 using Application.Commands.NotifyFollowers;
@@ -95,6 +96,14 @@ namespace PRH_NotificationService_API.Controller
         public async Task<IActionResult> GetUserNotifications(Guid userId, [FromQuery] bool includeRead = false)
         {
             var response = await _sender.Send(new GetUserNotificationsQuery(userId, includeRead));
+            return response.ToActionResult();
+        }
+
+        [Authorize]
+        [HttpDelete("delete/{notificationId}")]
+        public async Task<IActionResult> DeleteNotification(Guid notificationId)
+        {
+            var response = await _sender.Send(new DeleteNotificationCommand(notificationId));
             return response.ToActionResult();
         }
     }
