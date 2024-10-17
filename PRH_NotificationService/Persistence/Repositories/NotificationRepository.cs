@@ -100,7 +100,6 @@ namespace Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        // Kiểm tra preference của một người dùng
         public async Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId)
         {
             var userNotificationPreference = await _context.UserNotificationPreferences
@@ -110,7 +109,6 @@ namespace Persistence.Repositories
             return userNotificationPreference?.IsSubscribed ?? false;
         }
 
-        // Lấy danh sách preferences của nhiều người dùng
         public async Task<List<UserNotificationPreference>> GetUserNotificationPreferencesAsync(List<Guid> userIds, Guid notificationTypeId)
         {
             return await _context.UserNotificationPreferences
@@ -147,6 +145,13 @@ namespace Persistence.Repositories
                 .Select(g => new { NotificationType = g.Key, Count = g.Count() })
                 .OrderByDescending(x => x.Count)
                 .ToDictionaryAsync(x => x.NotificationType, x => x.Count);
+        }
+
+        public async Task<int> GetUnreadCountAsync(Guid userId)
+        {
+            return await _context.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .CountAsync();
         }
     }
 }

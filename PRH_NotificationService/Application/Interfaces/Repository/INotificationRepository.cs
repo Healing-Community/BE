@@ -15,5 +15,7 @@ namespace Application.Interfaces.Repository
         Task CreateNotificationsAsync(IEnumerable<Notification> notifications);
         Task<double> GetReadNotificationRateAsync();
         Task<Dictionary<string, int>> GetPopularNotificationTypesAsync();
+        Task<int> GetUnreadCountAsync(Guid userId);
+
     }
 }

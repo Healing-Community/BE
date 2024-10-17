@@ -19,7 +19,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Commons\DTOs\" />
-	  <Folder Include="Queries\" />
 	</ItemGroup>
 
 </Project>
