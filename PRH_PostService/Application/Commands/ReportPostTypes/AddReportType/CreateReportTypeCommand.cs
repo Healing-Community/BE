@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Commands.Comments.AddComment
+namespace Application.Commands.ReportPostTypes.AddReportType
 {
-    public record CreateCommentCommand(CommentDto CommentDto, HttpContext HttpContext) : IRequest<BaseResponse<string>>;
+    public record CreateReportTypeCommand(ReportTypeDto ReportTypeDto, HttpContext HttpContext) : IRequest<BaseResponse<string>>;
 }

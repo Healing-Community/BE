@@ -16,8 +16,9 @@ public static class DependencyInjection
         services.AddScoped<IReactionRepository, ReactionRepository>();
         services.AddScoped<IReactionTypeRepository, ReactionTypeRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IReportTypeRepository, ReportTypeRepository>();
         services.AddScoped<IMessagePublisher, MessagePublisher>();
-
 
         //#region MongoDB
 

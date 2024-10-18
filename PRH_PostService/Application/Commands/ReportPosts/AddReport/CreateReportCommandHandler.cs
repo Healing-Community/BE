@@ -7,19 +7,15 @@ using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Commands.Comments.AddComment
+
+namespace Application.Commands.ReportPosts.AddReport
 {
-    public class CreateCommentCommandHandler(ICommentRepository commentRepository, IMessagePublisher messagePublisher)
-        : IRequestHandler<CreateCommentCommand, BaseResponse<string>>
+    public class CreateReportCommandHandler(IMessagePublisher messagePublisher, IReportRepository reportRepository)
+        : IRequestHandler<CreateReportCommand, BaseResponse<string>>
     {
-        public async Task<BaseResponse<string>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(CreateReportCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
@@ -36,40 +32,40 @@ namespace Application.Commands.Comments.AddComment
                 return response;
             }
             var userGuid = Guid.Parse(userId);
-            var comment = new Comment
+            var report = new Report
             {
-                CommentId = NewId.NextSequentialGuid(),
-                PostId = request.CommentDto.PostId,
+                ReportId = NewId.NextSequentialGuid(),
+                PostId = request.reportDto.PostId,
                 UserId = userGuid,
-                //ParentId = request.CommentDto.ParentId,
-                Content = request.CommentDto.Content,
-                CreatedAt = DateTime.UtcNow                  
+                ReportTypeId = request.reportDto.ReportTypeId,
+                Status = request.reportDto.Status,
+                CreatedAt = DateTime.UtcNow,
             };
             try
             {
-                await commentRepository.Create(comment);
+                await reportRepository.Create(report);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Comment created successfully";
+                response.Message = "Report created successfully";
                 // Send the Request to the Queue for processing
-                var commentRequestCreatedMessage = new CommentRequestCreatedMessage
+                var reportRequestCreatedMessage = new ReportRequestCreatedMessage
                 {
-                    CommentRequestId = NewId.NextSequentialGuid(),
-                    PostId = comment.PostId,
-                    UserId = userGuid,
-                    Content = comment.Content,
-                    CommentedDate = comment.CreatedAt
+                    ReportRequestId = NewId.NextSequentialGuid(),
+                    PostId = report.PostId,
+                    UserId = report.UserId,
+                    ReportTypeId = report.ReportTypeId,
+                    Status = report.Status,
+                    ReportedDate = report.CreatedAt
                 };
-                await messagePublisher.PublishAsync(commentRequestCreatedMessage, QueueName.CommentQueue, cancellationToken);
+                await messagePublisher.PublishAsync(reportRequestCreatedMessage, QueueName.ReportQueue, cancellationToken);
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create comment";
+                response.Message = "Failed to create report";
                 response.Errors.Add(ex.Message);
             }
-
             return response;
         }
     }

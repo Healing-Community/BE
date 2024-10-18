@@ -23,7 +23,7 @@ namespace PRH_PostService_API.Controllers
     {
         [Authorize(Roles = "User")]
         [HttpGet("get-all")]
-        public async Task<IActionResult> GetReaction()
+        public async Task<IActionResult> GetComment()
         {
             var response = await sender.Send(new GetCommentsQuery());
             return response.ToActionResult();
@@ -39,15 +39,15 @@ namespace PRH_PostService_API.Controllers
 
         [Authorize(Roles = "User")]
         [HttpPost("create")]
-        public async Task<IActionResult> CreateReaction(CommentDto comment)
+        public async Task<IActionResult> CreateComment(CommentDto comment)
         {
-            var response = await sender.Send(new CreateCommentCommand(comment));
+            var response = await sender.Send(new CreateCommentCommand(comment, HttpContext));
             return response.ToActionResult();
         }
 
         [Authorize(Roles = "User")]
         [HttpPut("update/{id:guid}")]
-        public async Task<IActionResult> UpdateReaction(Guid id, CommentDto comment)
+        public async Task<IActionResult> UpdateComment(Guid id, CommentDto comment)
         {
             var response = await sender.Send(new UpdateCommentCommand(id, comment));
             return response.ToActionResult();
@@ -55,7 +55,7 @@ namespace PRH_PostService_API.Controllers
 
         [Authorize(Roles = "User")]
         [HttpDelete("delete/{id:guid}")]
-        public async Task<IActionResult> DeleteReaction(Guid id)
+        public async Task<IActionResult> DeleteComment(Guid id)
         {
             var response = await sender.Send(new DeleteCommentCommand(id));
             return response.ToActionResult();

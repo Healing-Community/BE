@@ -15,7 +15,7 @@ namespace Infrastructure.Mapper
             CreateMap<Reaction, ReactionDto>().ReverseMap();
             CreateMap<ReactionType, ReactionTypeDto>().ReverseMap();
             CreateMap<Comment, CommentDto>().ReverseMap();
-
+            CreateMap<Report, ReportDto>().ReverseMap();
         }
     }
 }
