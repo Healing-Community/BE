@@ -11,25 +11,19 @@ namespace PRH_NotificationService_API.Consumer
         {
             var postingRequest = context.Message;
 
-            //await Console.Out.WriteLineAsync($"Received message: {postingRequest.Tittle}");
-
-            var notificationType = await notificationTypeRepository.GetByNameAsync("NewPostByFollowedUser") ?? throw new Exception("Notification type not found");
+            var notificationType = await notificationTypeRepository.GetByNameAsync("Post") ?? throw new Exception("Notification type not found");
             var notification = new Notification
             {
                 NotificationId = Guid.NewGuid(),
                 UserId = postingRequest.UserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
-                Message = postingRequest.Tittle ?? string.Empty,
+                Message = $"Người dùng {postingRequest.UserId} đã đăng bài viết với tiêu đề: {postingRequest.Tittle}",
                 CreatedAt = postingRequest.PostedDate,
                 UpdatedAt = postingRequest.PostedDate,
                 IsRead = false
             };
 
-            //await Console.Out.WriteLineAsync($"Creating notification for UserId: {postingRequest.UserId}");
-
             await notificationRepository.CreateNotificationsAsync([notification]);
-
-            //await Console.Out.WriteLineAsync("Notification created successfully");
         }
     }
 }

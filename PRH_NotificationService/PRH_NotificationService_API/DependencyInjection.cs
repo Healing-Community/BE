@@ -93,6 +93,10 @@ public static class DependencyInjection
         services.AddMassTransit(x =>
         {
             x.AddConsumer<PostServiceConsumer>();
+            x.AddConsumer<ReactionServiceConsumer>();
+            x.AddConsumer<CommentServiceConsumer>();
+            x.AddConsumer<ReportServiceConsumer>();
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
@@ -101,19 +105,37 @@ public static class DependencyInjection
                     h.Password(rabbitMq["Password"] ?? throw new NullReferenceException());
                 });
 
-                // Đăng ký consumer
+                // Register PostServiceConsumer
                 cfg.ReceiveEndpoint(QueueName.PostQueue.ToString(), c =>
                 {
                     c.ConfigureConsumer<PostServiceConsumer>(context);
                 });
 
-                // Thiết lập Retry
-                cfg.UseMessageRetry(retryConfig =>
+                // Register ReactionServiceConsumer
+                cfg.ReceiveEndpoint(QueueName.ReactionQueue.ToString(), c =>
                 {
-                    retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Thử lại 5 lần, mỗi lần cách nhau 10 giây
+                    c.ConfigureConsumer<ReactionServiceConsumer>(context);
                 });
 
-                // Tùy chọn khác như Timeout, CircuitBreaker nếu cần
+                // Register CommentServiceConsumer
+                cfg.ReceiveEndpoint(QueueName.CommentQueue.ToString(), c =>
+                {
+                    c.ConfigureConsumer<CommentServiceConsumer>(context);
+                });
+
+                // Register ReportServiceConsumer
+                cfg.ReceiveEndpoint(QueueName.ReportQueue.ToString(), c =>
+                {
+                    c.ConfigureConsumer<ReportServiceConsumer>(context);
+                });
+
+                // Configure Retry
+                cfg.UseMessageRetry(retryConfig =>
+                {
+                    retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Retry 5 times, every 5 seconds
+                });
+
+                // Configure CircuitBreaker
                 cfg.UseCircuitBreaker(cbConfig =>
                 {
                     cbConfig.TrackingPeriod = TimeSpan.FromMinutes(1);
@@ -122,6 +144,7 @@ public static class DependencyInjection
                 });
             });
         });
+
         // Add MassTransit hosted service
         services.AddHostedService<MassTransitHostedService>();
 
