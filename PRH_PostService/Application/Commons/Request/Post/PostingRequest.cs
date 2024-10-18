@@ -1,4 +1,4 @@
-﻿namespace Application.Commons.Request
+﻿namespace Application.Commons.Request.Post
 {
     public class PostingRequest
     {

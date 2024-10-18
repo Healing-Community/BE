@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Commons.Request
+namespace Application.Commons.Request.Reaction
 {
     public class ReactionRequest
     {

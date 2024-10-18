@@ -1,5 +1,5 @@
 ﻿using Application.Commons;
-using Application.Commons.Request;
+using Application.Commons.Request.Post;
 using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
