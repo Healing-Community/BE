@@ -1,34 +1,23 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Commands.MarkNotificationAsRead
 {
-    public class MarkNotificationAsReadCommandHandler : IRequestHandler<MarkNotificationAsReadCommand, BaseResponse<string>>
+    public class MarkNotificationAsReadCommandHandler(INotificationRepository notificationRepository) : IRequestHandler<MarkNotificationAsReadCommand, BaseResponse<string>>
     {
-        private readonly INotificationRepository _notificationRepository;
-
-        public MarkNotificationAsReadCommandHandler(INotificationRepository notificationRepository)
-        {
-            _notificationRepository = notificationRepository;
-        }
-
         public async Task<BaseResponse<string>> Handle(MarkNotificationAsReadCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
             {
-                var notification = await _notificationRepository.GetByIdAsync(request.NotificationId);
+                var notification = await notificationRepository.GetByIdAsync(request.NotificationId);
                 if (notification == null)
                 {
                     response.Success = false;
@@ -40,7 +29,7 @@ namespace Application.Commands.MarkNotificationAsRead
                 notification.IsRead = true;
                 notification.UpdatedAt = DateTime.UtcNow;
 
-                await _notificationRepository.Update(notification.NotificationId, notification);
+                await notificationRepository.Update(notification.NotificationId, notification);
 
                 response.Success = true;
                 response.Message = "Thông báo đã được đánh dấu là đã đọc.";

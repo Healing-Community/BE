@@ -2,31 +2,22 @@
 using Application.Interfaces.Repository;
 using MediatR;
 
-namespace Application.Commands.Notification
+namespace Application.Commands.CreateNotification
 {
-    public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificationCommand, BaseResponse<string>>
+    public class CreateNotificationCommandHandler(INotificationRepository notificationRepository, INotificationTypeRepository notificationTypeRepository) : IRequestHandler<CreateNotificationCommand, BaseResponse<string>>
     {
-        private readonly INotificationRepository _notificationRepository;
-        private readonly INotificationTypeRepository _notificationTypeRepository;
-
-        public CreateNotificationCommandHandler(INotificationRepository notificationRepository, INotificationTypeRepository notificationTypeRepository)
-        {
-            _notificationRepository = notificationRepository;
-            _notificationTypeRepository = notificationTypeRepository;
-        }
-
         public async Task<BaseResponse<string>> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
             {
-                var notificationType = await _notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
+                var notificationType = await notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
                 if (notificationType == null)
                 {
                     response.Success = false;
@@ -35,7 +26,7 @@ namespace Application.Commands.Notification
                     return response;
                 }
 
-                var isSubscribed = await _notificationRepository.GetUserNotificationPreferenceAsync(request.UserId, notificationType.NotificationTypeId);
+                var isSubscribed = await notificationRepository.GetUserNotificationPreferenceAsync(request.UserId, notificationType.NotificationTypeId);
                 if (!isSubscribed)
                 {
                     response.Success = false;
@@ -55,7 +46,7 @@ namespace Application.Commands.Notification
                     IsRead = false
                 };
 
-                await _notificationRepository.Create(notification);
+                await notificationRepository.Create(notification);
 
                 response.Success = true;
                 response.Message = "Thông báo đã được tạo thành công.";

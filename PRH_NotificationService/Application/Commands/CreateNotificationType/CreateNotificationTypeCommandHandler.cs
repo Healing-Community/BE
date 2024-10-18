@@ -5,22 +5,15 @@ using MediatR;
 
 namespace Application.Commands.CreateNotificationType
 {
-    public class CreateNotificationTypeCommandHandler : IRequestHandler<CreateNotificationTypeCommand, BaseResponse<string>>
+    public class CreateNotificationTypeCommandHandler(INotificationTypeRepository notificationTypeRepository) : IRequestHandler<CreateNotificationTypeCommand, BaseResponse<string>>
     {
-        private readonly INotificationTypeRepository _notificationTypeRepository;
-
-        public CreateNotificationTypeCommandHandler(INotificationTypeRepository notificationTypeRepository)
-        {
-            _notificationTypeRepository = notificationTypeRepository;
-        }
-
         public async Task<BaseResponse<string>> Handle(CreateNotificationTypeCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
@@ -32,7 +25,7 @@ namespace Application.Commands.CreateNotificationType
                     Description = request.Description
                 };
 
-                await _notificationTypeRepository.Create(notificationType);
+                await notificationTypeRepository.Create(notificationType);
 
                 response.Success = true;
                 response.Message = "Loại thông báo đã được tạo thành công.";

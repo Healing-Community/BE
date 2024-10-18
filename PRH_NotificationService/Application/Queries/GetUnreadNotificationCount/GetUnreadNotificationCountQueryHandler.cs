@@ -4,27 +4,20 @@ using MediatR;
 
 namespace Application.Queries.GetUnreadNotificationCount
 {
-    public class GetUnreadNotificationCountQueryHandler : IRequestHandler<GetUnreadNotificationCountQuery, BaseResponse<int>>
+    public class GetUnreadNotificationCountQueryHandler(INotificationRepository notificationRepository) : IRequestHandler<GetUnreadNotificationCountQuery, BaseResponse<int>>
     {
-        private readonly INotificationRepository _notificationRepository;
-
-        public GetUnreadNotificationCountQueryHandler(INotificationRepository notificationRepository)
-        {
-            _notificationRepository = notificationRepository;
-        }
-
         public async Task<BaseResponse<int>> Handle(GetUnreadNotificationCountQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<int>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
             {
-                var unreadCount = await _notificationRepository.GetUnreadCountAsync(request.UserId);
+                var unreadCount = await notificationRepository.GetUnreadCountAsync(request.UserId);
                 response.Success = true;
                 response.Data = unreadCount;
                 response.StatusCode = 200;

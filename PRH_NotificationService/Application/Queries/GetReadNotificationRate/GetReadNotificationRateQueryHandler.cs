@@ -4,27 +4,20 @@ using MediatR;
 
 namespace Application.Queries.GetReadNotificationRate
 {
-    public class GetReadNotificationRateQueryHandler : IRequestHandler<GetReadNotificationRateQuery, BaseResponse<double>>
+    public class GetReadNotificationRateQueryHandler(INotificationRepository notificationRepository) : IRequestHandler<GetReadNotificationRateQuery, BaseResponse<double>>
     {
-        private readonly INotificationRepository _notificationRepository;
-
-        public GetReadNotificationRateQueryHandler(INotificationRepository notificationRepository)
-        {
-            _notificationRepository = notificationRepository;
-        }
-
         public async Task<BaseResponse<double>> Handle(GetReadNotificationRateQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<double>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
             {
-                var readRate = await _notificationRepository.GetReadNotificationRateAsync();
+                var readRate = await notificationRepository.GetReadNotificationRateAsync();
                 response.Data = readRate;
                 response.Success = true;
                 response.Message = "Tỷ lệ thông báo đã đọc đã được lấy thành công.";

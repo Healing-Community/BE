@@ -4,27 +4,20 @@ using MediatR;
 
 namespace Application.Commands.DeleteNotification
 {
-    public class DeleteNotificationCommandHandler : IRequestHandler<DeleteNotificationCommand, BaseResponse<string>>
+    public class DeleteNotificationCommandHandler(INotificationRepository notificationRepository) : IRequestHandler<DeleteNotificationCommand, BaseResponse<string>>
     {
-        private readonly INotificationRepository _notificationRepository;
-
-        public DeleteNotificationCommandHandler(INotificationRepository notificationRepository)
-        {
-            _notificationRepository = notificationRepository;
-        }
-
         public async Task<BaseResponse<string>> Handle(DeleteNotificationCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
             {
-                await _notificationRepository.DeleteAsync(request.NotificationId);
+                await notificationRepository.DeleteAsync(request.NotificationId);
                 response.Success = true;
                 response.Data = "Xóa thông báo thành công";
                 response.StatusCode = 200;
