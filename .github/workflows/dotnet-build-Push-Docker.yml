@@ -228,5 +228,5 @@ jobs:
     - name: List Docker images
       run: docker images
 
-    - name: Push Docker image for Quizz Service to Docker Hub
+    - name: Push Docker image for Expert Service to Docker Hub
       run: docker push ${{ secrets.DOCKER_USERNAME }}/expert-service:latest
