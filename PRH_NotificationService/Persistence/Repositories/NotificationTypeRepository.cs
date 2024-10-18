@@ -52,5 +52,11 @@ namespace Persistence.Repositories
             _context.Entry(existingNotificationType).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+        public async Task<NotificationType?> GetByNameAsync(string notificationTypeName)
+        {
+            return await _context.NotificationTypes
+                                 .FirstOrDefaultAsync(nt => nt.Name == notificationTypeName);
+        }
     }
 }

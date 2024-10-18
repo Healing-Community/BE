@@ -5,32 +5,26 @@ using MediatR;
 
 namespace Application.Queries.GetUserNotifications
 {
-    public class GetUserNotificationsQueryHandler : IRequestHandler<GetUserNotificationsQuery, BaseResponse<List<NotificationDto>>>
+    public class GetUserNotificationsQueryHandler(INotificationRepository notificationRepository) : IRequestHandler<GetUserNotificationsQuery, BaseResponse<List<NotificationDto>>>
     {
-        private readonly INotificationRepository _notificationRepository;
-
-        public GetUserNotificationsQueryHandler(INotificationRepository notificationRepository)
-        {
-            _notificationRepository = notificationRepository;
-        }
-
         public async Task<BaseResponse<List<NotificationDto>>> Handle(GetUserNotificationsQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<List<NotificationDto>>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
             {
-                var notifications = await _notificationRepository.GetNotificationsByUserAsync(request.UserId, request.IncludeRead);
+                var notifications = await notificationRepository.GetNotificationsByUserAsync(request.UserId, request.IncludeRead);
 
                 response.Success = true;
                 response.Data = notifications.Select(n => new NotificationDto
                 {
                     NotificationId = n.NotificationId,
+                    NotificationTypeId = n.NotificationTypeId,
                     Message = n.Message,
                     IsRead = n.IsRead,
                     CreatedAt = n.CreatedAt

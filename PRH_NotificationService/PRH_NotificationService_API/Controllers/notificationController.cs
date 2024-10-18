@@ -3,7 +3,6 @@ using Application.Commands.CreateNotificationType;
 using Application.Commands.DeleteNotification;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.Notification;
-using Application.Commands.NotifyFollowers;
 using Application.Commands.UpdateNotificationPreference;
 using Application.Queries.GetPopularNotificationTypes;
 using Application.Queries.GetReadNotificationRate;
@@ -55,14 +54,6 @@ namespace PRH_NotificationService_API.Controller
         [Authorize]
         [HttpPost("upserst-notification-preference")]
         public async Task<IActionResult> UpdateNotificationPreference([FromBody] UpsertNotificationPreferenceCommand command)
-        {
-            var response = await _sender.Send(command);
-            return response.ToActionResult();
-        }
-
-        [Authorize]
-        [HttpPost("notify-followers")]
-        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersCommand command)
         {
             var response = await _sender.Send(command);
             return response.ToActionResult();
