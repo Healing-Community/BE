@@ -1,4 +1,4 @@
-﻿using Application.Commons.Request;
+﻿using Application.Commons.Request.Post;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
@@ -10,6 +10,8 @@ namespace PRH_NotificationService_API.Consumer
         public async Task Consume(ConsumeContext<PostingRequestCreatedMessage> context)
         {
             var postingRequest = context.Message;
+
+            //await Console.Out.WriteLineAsync($"Received message: {postingRequest.Tittle}");
 
             var notificationType = await notificationTypeRepository.GetByNameAsync("NewPostByFollowedUser") ?? throw new Exception("Notification type not found");
             var notification = new Notification
@@ -23,7 +25,11 @@ namespace PRH_NotificationService_API.Consumer
                 IsRead = false
             };
 
+            //await Console.Out.WriteLineAsync($"Creating notification for UserId: {postingRequest.UserId}");
+
             await notificationRepository.CreateNotificationsAsync([notification]);
+
+            //await Console.Out.WriteLineAsync("Notification created successfully");
         }
     }
 }
