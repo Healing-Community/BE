@@ -29,6 +29,10 @@
           "SelectedChildIndex": 4,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Certificate.cs",
@@ -38,8 +42,7 @@
               "RelativeToolTip": "Domain\\Entities\\Certificate.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-18T10:13:48.507Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-18T10:13:48.507Z"
             },
             {
               "$type": "Document",
@@ -51,8 +54,7 @@
               "RelativeToolTip": "Domain\\Entities\\CertificateType.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-18T10:13:10.507Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-18T10:13:10.507Z"
             },
             {
               "$type": "Document",
@@ -64,12 +66,7 @@
               "RelativeToolTip": "Domain\\Entities\\ExpertProfile.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-18T10:12:48.777Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+              "WhenOpened": "2024-10-18T10:12:48.777Z"
             },
             {
               "$type": "Document",
@@ -79,7 +76,7 @@
               "RelativeDocumentMoniker": "Infrastructure\\Context\\ExpertDbContext.cs",
               "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Infrastructure\\Context\\ExpertDbContext.cs",
               "RelativeToolTip": "Infrastructure\\Context\\ExpertDbContext.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAqwB8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-18T10:07:44.768Z",
               "EditorCaption": ""
