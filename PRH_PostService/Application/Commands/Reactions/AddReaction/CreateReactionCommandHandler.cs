@@ -1,5 +1,6 @@
 ﻿using Application.Commons;
 using Application.Commons.Request;
+using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
 using Domain.Constants;
@@ -20,18 +21,27 @@ namespace Application.Commands.Reactions.AddReaction
     {
         public async Task<BaseResponse<string>> Handle(CreateReactionCommand request, CancellationToken cancellationToken)
         {
-            var reactionId = NewId.NextSequentialGuid();
-            var reaction = new Reaction
-            {
-                ReactionId = reactionId,
-                PostId = request.ReactionDto.PostId,
-                ReactionTypeId = request.ReactionDto.ReactionTypeId
-            };
             var response = new BaseResponse<string>
             {
-                Id = reactionId,
+                Id = NewId.NextSequentialGuid(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
+            };
+            var userId = Authentication.GetUserIdFromHttpContext(request.HttpContext);
+            if (userId == null)
+            {
+                response.Success = false;
+                response.Message = "Unauthorized";
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                return response;
+            }
+            var userGuid = Guid.Parse(userId);
+            var reaction = new Reaction
+            {
+                ReactionId = NewId.NextSequentialGuid(),
+                UserId = userGuid,
+                PostId = request.ReactionDto.PostId,
+                ReactionTypeId = request.ReactionDto.ReactionTypeId
             };
             try
             {
@@ -41,14 +51,14 @@ namespace Application.Commands.Reactions.AddReaction
                 response.Message = "Reaction created successfully";
 
                 // Send the Request to the Queue for processing
-                //var postingRequestCreatedMessage = new PostingRequestCreatedMessage
-                //{
-                //    PostedDate = post.CreateAt,
-                //    PostingRequestId = NewId.NextSequentialGuid(),
-                //    Tittle = post.Title,
-                //    UserId = post.UserId,
-                //};
-                //await messagePublisher.PublishAsync(postingRequestCreatedMessage, QueueName.PostQueue, cancellationToken);
+                var reactionRequestCreatedMessage = new ReactionRequestCreatedMessage
+                {
+                    ReactionRequestId = NewId.NextSequentialGuid(),
+                    UserId = reaction.UserId,
+                    PostId = reaction.PostId,
+                    ReactionTypeId= reaction.ReactionTypeId
+                };
+                await messagePublisher.PublishAsync(reactionRequestCreatedMessage, QueueName.ReactionQueue, cancellationToken);
             }
             catch (Exception ex)
             {

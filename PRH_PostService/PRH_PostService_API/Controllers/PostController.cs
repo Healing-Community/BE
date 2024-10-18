@@ -36,7 +36,7 @@ namespace PRH_PostService_API.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreatePost(PostDto post)
         {
-            var response = await sender.Send(new CreatePostCommand(post));
+            var response = await sender.Send(new CreatePostCommand(post, HttpContext));
             return response.ToActionResult();
         }
 

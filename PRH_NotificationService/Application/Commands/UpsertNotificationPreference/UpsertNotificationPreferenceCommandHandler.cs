@@ -9,30 +9,21 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.UpdateNotificationPreference
 {
-    public class UpsertNotificationPreferenceCommandHandler : IRequestHandler<UpsertNotificationPreferenceCommand, BaseResponse<string>>
+    public class UpsertNotificationPreferenceCommandHandler(IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
+        INotificationTypeRepository notificationTypeRepository) : IRequestHandler<UpsertNotificationPreferenceCommand, BaseResponse<string>>
     {
-        private readonly IUserNotificationPreferenceRepository _userNotificationPreferenceRepository;
-        private readonly INotificationTypeRepository _notificationTypeRepository;
-
-        public UpsertNotificationPreferenceCommandHandler(IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
-            INotificationTypeRepository notificationTypeRepository)
-        {
-            _userNotificationPreferenceRepository = userNotificationPreferenceRepository;
-            _notificationTypeRepository = notificationTypeRepository;
-        }
-
         public async Task<BaseResponse<string>> Handle(UpsertNotificationPreferenceCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>()
+                Errors = []
             };
 
             try
             {
-                var notificationType = await _notificationTypeRepository.GetByNameAsync(request.NotificationType.ToString());
+                var notificationType = await notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
                 if (notificationType == null)
                 {
                     response.Success = false;
@@ -41,7 +32,7 @@ namespace Application.Commands.UpdateNotificationPreference
                     return response;
                 }
 
-                var preference = await _userNotificationPreferenceRepository.GetByUserIdAndNotificationTypeIdAsync(request.UserId, notificationType.NotificationTypeId);
+                var preference = await userNotificationPreferenceRepository.GetByUserIdAndNotificationTypeIdAsync(request.UserId, notificationType.NotificationTypeId);
 
                 if (preference == null)
                 {
@@ -51,12 +42,12 @@ namespace Application.Commands.UpdateNotificationPreference
                         NotificationTypeId = notificationType.NotificationTypeId,
                         IsSubscribed = request.IsSubscribed
                     };
-                    await _userNotificationPreferenceRepository.Create(preference);
+                    await userNotificationPreferenceRepository.Create(preference);
                 }
                 else
                 {
                     preference.IsSubscribed = request.IsSubscribed;
-                    await _userNotificationPreferenceRepository.Update(preference);
+                    await userNotificationPreferenceRepository.Update(preference);
                 }
 
                 response.Success = true;

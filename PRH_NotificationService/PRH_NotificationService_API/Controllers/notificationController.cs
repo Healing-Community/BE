@@ -1,8 +1,8 @@
 ﻿using Application.Commands.ArchiveUnreadNotifications;
+using Application.Commands.CreateNotification;
+using Application.Commands.CreateNotificationType;
 using Application.Commands.DeleteNotification;
 using Application.Commands.MarkNotificationAsRead;
-using Application.Commands.Notification;
-using Application.Commands.NotifyFollowers;
 using Application.Commands.UpdateNotificationPreference;
 using Application.Queries.GetPopularNotificationTypes;
 using Application.Queries.GetReadNotificationRate;
@@ -13,25 +13,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_UserService_API.Extentions;
 
-namespace PRH_NotificationService_API.Controller
+namespace PRH_NotificationService_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
 
-    public class NotificationController : ControllerBase
+    public class NotificationController(ISender sender) : ControllerBase
     {
-        private readonly ISender _sender;
-
-        public NotificationController(ISender sender)
-        {
-            _sender = sender;
-        }
-
         [Authorize]
         [HttpPost("create-notification")]
         public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationCommand command)
         {
-            var response = await _sender.Send(command);
+            var response = await sender.Send(command);
             return response.ToActionResult();
         }
 
@@ -39,7 +32,7 @@ namespace PRH_NotificationService_API.Controller
         [HttpPost("mark-as-read/{notificationId}")]
         public async Task<IActionResult> MarkAsRead(Guid notificationId)
         {
-            var response = await _sender.Send(new MarkNotificationAsReadCommand(notificationId));
+            var response = await sender.Send(new MarkNotificationAsReadCommand(notificationId));
             return response.ToActionResult();
         }
 
@@ -47,7 +40,7 @@ namespace PRH_NotificationService_API.Controller
         [HttpPost("archive-unread/{userId}")]
         public async Task<IActionResult> ArchiveUnread(Guid userId)
         {
-            var response = await _sender.Send(new ArchiveUnreadNotificationsCommand(userId));
+            var response = await sender.Send(new ArchiveUnreadNotificationsCommand(userId));
             return response.ToActionResult();
         }
 
@@ -55,15 +48,7 @@ namespace PRH_NotificationService_API.Controller
         [HttpPost("upserst-notification-preference")]
         public async Task<IActionResult> UpdateNotificationPreference([FromBody] UpsertNotificationPreferenceCommand command)
         {
-            var response = await _sender.Send(command);
-            return response.ToActionResult();
-        }
-
-        [Authorize]
-        [HttpPost("notify-followers")]
-        public async Task<IActionResult> NotifyFollowers([FromBody] NotifyFollowersCommand command)
-        {
-            var response = await _sender.Send(command);
+            var response = await sender.Send(command);
             return response.ToActionResult();
         }
 
@@ -71,7 +56,7 @@ namespace PRH_NotificationService_API.Controller
         [HttpGet("read-rate")]
         public async Task<IActionResult> GetReadNotificationRate()
         {
-            var response = await _sender.Send(new GetReadNotificationRateQuery());
+            var response = await sender.Send(new GetReadNotificationRateQuery());
             return response.ToActionResult();
         }
 
@@ -79,7 +64,7 @@ namespace PRH_NotificationService_API.Controller
         [HttpGet("popular-types")]
         public async Task<IActionResult> GetPopularNotificationTypes()
         {
-            var response = await _sender.Send(new GetPopularNotificationTypesQuery());
+            var response = await sender.Send(new GetPopularNotificationTypesQuery());
             return response.ToActionResult();
         }
 
@@ -87,7 +72,7 @@ namespace PRH_NotificationService_API.Controller
         [HttpGet("unread-count/{userId}")]
         public async Task<IActionResult> GetUnreadNotificationCount(Guid userId)
         {
-            var response = await _sender.Send(new GetUnreadNotificationCountQuery(userId));
+            var response = await sender.Send(new GetUnreadNotificationCountQuery(userId));
             return response.ToActionResult();
         }
 
@@ -95,7 +80,7 @@ namespace PRH_NotificationService_API.Controller
         [HttpGet("notifications/{userId}")]
         public async Task<IActionResult> GetUserNotifications(Guid userId, [FromQuery] bool includeRead = false)
         {
-            var response = await _sender.Send(new GetUserNotificationsQuery(userId, includeRead));
+            var response = await sender.Send(new GetUserNotificationsQuery(userId, includeRead));
             return response.ToActionResult();
         }
 
@@ -103,7 +88,15 @@ namespace PRH_NotificationService_API.Controller
         [HttpDelete("delete/{notificationId}")]
         public async Task<IActionResult> DeleteNotification(Guid notificationId)
         {
-            var response = await _sender.Send(new DeleteNotificationCommand(notificationId));
+            var response = await sender.Send(new DeleteNotificationCommand(notificationId));
+            return response.ToActionResult();
+        }
+
+        [Authorize]
+        [HttpPost("create-notification-type")]
+        public async Task<IActionResult> CreateNotificationType([FromBody] CreateNotificationTypeCommand command)
+        {
+            var response = await sender.Send(command);
             return response.ToActionResult();
         }
     }
