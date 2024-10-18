@@ -5,20 +5,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace Persistence.Repositories;
 
-public class EmailRepository : IEmailRepository
+public class EmailRepository(IConfiguration configuration) : IEmailRepository
 {
-    private readonly IConfiguration _configuration;
-
-    public EmailRepository(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
     public async Task SendEmailAsync(string to, string subject, string body)
     {
         if (string.IsNullOrEmpty(to)) throw new ArgumentException("Email address cannot be null or empty", nameof(to));
 
-        var smtpSettings = _configuration.GetSection("SmtpSettings");
+        var smtpSettings = configuration.GetSection("SmtpSettings");
         var host = smtpSettings["Host"];
         var port = smtpSettings["Port"];
         var username = smtpSettings["Username"];

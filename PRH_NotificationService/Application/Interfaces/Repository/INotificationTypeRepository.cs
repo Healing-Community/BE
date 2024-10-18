@@ -1,14 +1,11 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Interfaces.GenericRepository;
+using Domain.Entities;
 
 namespace Application.Interfaces.Repository
 {
-    public interface INotificationTypeRepository
+    public interface INotificationTypeRepository : IReadRepository<NotificationType>, ICreateRepository<NotificationType>, IUpdateRepository<NotificationType>, IDeleteRepository
     {
-        Task<NotificationType?> GetByNameAsync(string name);
+        Task<NotificationType?> GetByNameAsync(string notificationTypeName);
+
     }
 }

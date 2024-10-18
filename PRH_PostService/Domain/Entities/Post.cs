@@ -14,6 +14,8 @@
         public DateTime? UpdateAt { get; set; }
         public Category Category { get; set; } = null!;
         public ICollection<Comment> Comments { get; set; } 
-        public ICollection<Reaction> Reactions { get; set; } 
+        public ICollection<Reaction> Reactions { get; set; }
+        public ICollection<Report> Reports { get; set; }
+
     }
 }
