@@ -1,4 +1,4 @@
-﻿namespace Application.Commons.Request
+﻿namespace Application.Commons.Request.Post
 {
     public class PostingRequest
     {
@@ -6,6 +6,5 @@
         public Guid UserId { get; set; }
         public string? Tittle { get; set; }
         public DateTime PostedDate { get; set; }
-
     }
 }
