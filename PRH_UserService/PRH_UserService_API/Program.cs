@@ -41,8 +41,31 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "";
 });
 
-app.MapHealthChecks("/health", new HealthCheckOptions
+app.MapHealthChecks("/health/liveness", new HealthCheckOptions
 {
+    Predicate = (check) => check.Tags.Contains("liveness"),  // Lọc chỉ liveness checks
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
+
+app.MapHealthChecks("/health/readiness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("readiness"),  // Lọc chỉ readiness checks
     ResponseWriter = async (context, report) =>
     {
         context.Response.ContentType = "application/json";
