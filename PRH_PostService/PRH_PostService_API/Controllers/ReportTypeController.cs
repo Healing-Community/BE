@@ -1,11 +1,8 @@
-﻿using Application.Commands.ReportPosts.AddReport;
-using Application.Commands.ReportPostTypes.AddReportType;
+﻿using Application.Commands.ReportPostTypes.AddReportType;
 using Application.Commons.DTOs;
-using Application.Queries.ReportPosts.GetReports;
 using Application.Queries.ReportPostTypes.GetReportTypes;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_PostService_API.Extentions;
 

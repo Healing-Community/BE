@@ -3,12 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Posts.GetPostsById
 {
@@ -28,20 +23,20 @@ namespace Application.Queries.Posts.GetPostsById
                 if (post == null)
                 {
                     response.Success = false;
-                    response.Message = "Post not found";
-                    response.Errors.Add("No post found with the provided ID.");
+                    response.Message = "Không tìm thấy";
+                    response.Errors.Add("Không tìm thấy dữ liệu nào có ID được cung cấp.");
                     return response;
                 }
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Data = post;
                 response.Success = true;
-                response.Message = "Post retrieved successfully";
+                response.Message = "Lấy dữ liệu thành công";
             }
             catch (Exception e)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "An error occurred";
+                response.Message = "Có lỗi xảy ra";
                 response.Errors.Add(e.Message);
             }
             return response;

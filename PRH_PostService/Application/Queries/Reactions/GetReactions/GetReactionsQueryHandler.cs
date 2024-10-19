@@ -3,12 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Reactions.GetReactions
 {
@@ -27,7 +22,7 @@ namespace Application.Queries.Reactions.GetReactions
             {
                 var reactions = await reactionRepository.GetsAsync();
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.Message = "Reaction retrieved successfully";
+                response.Message = "Lấy dữ liệu thành công";
                 response.Success = true;
                 response.Data = reactions;
             }

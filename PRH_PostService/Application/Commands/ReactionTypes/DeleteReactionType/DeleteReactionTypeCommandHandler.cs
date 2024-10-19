@@ -26,13 +26,13 @@ namespace Application.Commands.ReactionTypes.DeleteReactionType
                 await reactionTypeRepository.DeleteAsync(request.Id);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Reaction type deleted successfully";
+                response.Message = "Xoá thành công";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to delete reaction type";
+                response.Message = "Lỗi !!! Xoá thất bại";
                 response.Errors.Add(ex.Message);
             }
             return response;

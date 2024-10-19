@@ -27,7 +27,7 @@ namespace Application.Commands.ReportPosts.AddReport
             if (userId == null)
             {
                 response.Success = false;
-                response.Message = "Unauthorized";
+                response.Message = "Không có quyền để truy cập";
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
@@ -46,7 +46,7 @@ namespace Application.Commands.ReportPosts.AddReport
                 await reportRepository.Create(report);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Report created successfully";
+                response.Message = "Tạo thành công";
                 // Send the Request to the Queue for processing
                 var reportRequestCreatedMessage = new ReportRequestCreatedMessage
                 {
@@ -63,7 +63,7 @@ namespace Application.Commands.ReportPosts.AddReport
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create report";
+                response.Message = "Lỗi !!! Tạo thất bại";
                 response.Errors.Add(ex.Message);
             }
             return response;
