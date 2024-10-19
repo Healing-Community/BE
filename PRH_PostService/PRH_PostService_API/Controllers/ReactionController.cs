@@ -1,17 +1,11 @@
-﻿using Application.Commands.Posts.AddPost;
-using Application.Commands.Posts.DeletePost;
-using Application.Commands.Posts.UpdatePost;
-using Application.Commands.Reactions.AddReaction;
+﻿using Application.Commands.Reactions.AddReaction;
 using Application.Commands.Reactions.DeleteReaction;
 using Application.Commands.Reactions.UpdateReaction;
 using Application.Commons.DTOs;
-using Application.Queries.Posts.GetPosts;
-using Application.Queries.Posts.GetPostsById;
 using Application.Queries.Reactions.GetReactions;
 using Application.Queries.Reactions.GetReactionsById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_PostService_API.Extentions;
 

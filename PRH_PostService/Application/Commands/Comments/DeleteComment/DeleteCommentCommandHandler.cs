@@ -1,12 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Comments.DeleteComment
 {
@@ -26,13 +21,13 @@ namespace Application.Commands.Comments.DeleteComment
                 await commentRepository.DeleteAsync(request.Id);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Comment deleted successfully";
+                response.Message = "Xoá bình luận thành công!";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to delete comment";
+                response.Message = "Lỗi !!! Không xoá được bình luận";
                 response.Errors.Add(ex.Message);
             }
             return response;

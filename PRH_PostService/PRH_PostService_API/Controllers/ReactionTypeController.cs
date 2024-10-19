@@ -1,17 +1,11 @@
-﻿using Application.Commands.Reactions.AddReaction;
-using Application.Commands.Reactions.DeleteReaction;
-using Application.Commands.Reactions.UpdateReaction;
-using Application.Commands.ReactionTypes.AddReactionType;
+﻿using Application.Commands.ReactionTypes.AddReactionType;
 using Application.Commands.ReactionTypes.DeleteReactionType;
 using Application.Commands.ReactionTypes.UpdateReactionType;
 using Application.Commons.DTOs;
-using Application.Queries.Reactions.GetReactions;
-using Application.Queries.Reactions.GetReactionsById;
 using Application.Queries.ReactionTypes.GetReactionTypes;
 using Application.Queries.ReactionTypes.GetReactionTypesById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_PostService_API.Extentions;
 

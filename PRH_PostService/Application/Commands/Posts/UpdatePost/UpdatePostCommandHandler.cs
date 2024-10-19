@@ -2,12 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Posts.UpdatePost
 {
@@ -27,7 +22,7 @@ namespace Application.Commands.Posts.UpdatePost
                 var existingPost = await postRepository.GetByIdAsync(request.postId);
                 var updatedPost = new Post
                 {
-                    Id = request.postId,
+                    PostId = request.postId,
                     CategoryId = request.PostDto.CategoryId,
                     Title = request.PostDto.Title,
                     CoverImgUrl = request.PostDto.CoverImgUrl,
@@ -39,13 +34,13 @@ namespace Application.Commands.Posts.UpdatePost
                 await postRepository.Update(request.postId, updatedPost);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Post updated successfully";
+                response.Message = "Cập nhật bài viết thành công";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to update post";
+                response.Message = "Lỗi !!! Cập nhật bài viết thất bại";
                 response.Errors.Add(ex.Message);
             }
 

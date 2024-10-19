@@ -1,17 +1,11 @@
 ﻿using Application.Commands.Comments.AddComment;
 using Application.Commands.Comments.DeleteComment;
 using Application.Commands.Comments.UpdateComment;
-using Application.Commands.Reactions.AddReaction;
-using Application.Commands.Reactions.DeleteReaction;
-using Application.Commands.Reactions.UpdateReaction;
 using Application.Commons.DTOs;
 using Application.Queries.Comments.GetComments;
 using Application.Queries.Comments.GetCommentsById;
-using Application.Queries.Reactions.GetReactions;
-using Application.Queries.Reactions.GetReactionsById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_PostService_API.Extentions;
 

@@ -2,12 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Reactions.UpdateReaction
 {
@@ -28,18 +23,19 @@ namespace Application.Commands.Reactions.UpdateReaction
                 var updatedReaction = new Reaction
                 {
                     ReactionId = request.reactionId,
-                    ReactionTypeId = request.ReactionDto.ReactionTypeId
+                    ReactionTypeId = request.ReactionDto.ReactionTypeId,
+                    UpdateAt = DateTime.UtcNow,
                 };
                 await reactionRepository.Update(request.reactionId, updatedReaction);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Reaction updated successfully";
+                response.Message = "Cập nhật thành công";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to update reaction";
+                response.Message = "Lỗi !!! Cập nhật thất bại";
                 response.Errors.Add(ex.Message);
             }
 

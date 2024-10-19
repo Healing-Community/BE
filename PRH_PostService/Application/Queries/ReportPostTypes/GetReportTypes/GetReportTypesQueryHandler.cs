@@ -3,12 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Queries.ReportPostTypes.GetReportTypes
 {
@@ -27,7 +22,7 @@ namespace Application.Queries.ReportPostTypes.GetReportTypes
             {
                 var reportType = await reportTypeRepository.GetsAsync();
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.Message = "Report type retrieved successfully";
+                response.Message = "Lấy dữ liệu thành công";
                 response.Success = true;
                 response.Data = reportType;
             }

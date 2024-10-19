@@ -2,12 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.ReactionTypes.UpdateReactionType
 {
@@ -33,13 +28,13 @@ namespace Application.Commands.ReactionTypes.UpdateReactionType
                 await reactionTypeRepository.Update(request.reactionTypeId, updatedReaction);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Reaction type updated successfully";
+                response.Message = "Cập nhật thành công";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to update reaction type";
+                response.Message = "Lỗi !!! Cập nhật thất bại";
                 response.Errors.Add(ex.Message);
             }
             return response;

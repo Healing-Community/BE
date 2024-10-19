@@ -2,12 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Categories.UpdateCategory
 {
@@ -21,26 +16,25 @@ namespace Application.Commands.Categories.UpdateCategory
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
-
             try
             {
                 var existingCategory = await categoryRepository.GetByIdAsync(request.categoryId);
                 var updatedCategory = new Category
                 {
-                    Id = request.categoryId,
+                    CategoryId = request.categoryId,
                     Name = request.CategoryDto.Name,
                     UpdateAt = DateTime.UtcNow,
                 };
                 await categoryRepository.Update(request.categoryId, updatedCategory);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Category updated successfully";
+                response.Message = "Cập nhật danh mục thành công!";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to update category";
+                response.Message = "Lỗi !!! Không thể cập nhật được danh mục";
                 response.Errors.Add(ex.Message);
             }
             return response;

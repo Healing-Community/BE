@@ -27,14 +27,14 @@ namespace Application.Commands.Posts.AddPost
             if (userId == null)
             {
                 response.Success = false;
-                response.Message = "Unauthorized";
+                response.Message = "Không có quyền để truy cập";
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
             var userGuid = Guid.Parse(userId);
             var post = new Post
             {
-                Id = NewId.NextSequentialGuid(),
+                PostId = NewId.NextSequentialGuid(),
                 UserId = userGuid,
                 CategoryId = request.PostDto.CategoryId,
                 Title = request.PostDto.Title,
@@ -49,7 +49,7 @@ namespace Application.Commands.Posts.AddPost
                 await postRepository.Create(post);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Post created successfully";
+                response.Message = "Tạo bài viết thành công";
                 // Send the Request to the Queue for processing
                 var postingRequestCreatedMessage = new PostingRequestCreatedMessage
                 {
@@ -64,7 +64,7 @@ namespace Application.Commands.Posts.AddPost
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create post";
+                response.Message = "Lỗi !!! Tạo bài viết thất bại";
                 response.Errors.Add(ex.Message);
             }
             return response;

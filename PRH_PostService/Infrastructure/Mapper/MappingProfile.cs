@@ -1,8 +1,6 @@
-﻿
-using Application.Commons.DTOs;
+﻿using Application.Commons.DTOs;
 using AutoMapper;
 using Domain.Entities;
-
 
 namespace Infrastructure.Mapper
 {
