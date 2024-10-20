@@ -18,36 +18,53 @@ namespace Application.Commands.Report
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
-                Errors = new List<string>() // Initialize the error list
+                Errors = new List<string>() // Khởi tạo danh sách lỗi
             };
+
             try
             {
-                // Map the ReportMessageDto to ReportMessage
+                // Map ReportMessageDto sang ReportMessage
                 var reportMessage = mapper.Map<ReportMessage>(request.ReportMessageDto);
-                // Get the user id from the context
+
+                // Lấy user id từ HttpContext
                 var userId = Authentication.GetUserIdFromHttpContext(request.ReportMessageDto.context);
-                // Check if the user id is null so the user is unauthorized
+
+                // Kiểm tra nếu không có userId, báo lỗi không được phép truy cập (Unauthorized)
                 if (userId == null)
                 {
                     response.Success = false;
-                    response.Message = "Unauthorized";
+                    response.Message = "Không có quyền truy cập";
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     return response;
                 }
-                // Set the user id to the report message
+
+                // Gán userId vào reportMessage
                 reportMessage.UserId = Guid.Parse(userId);
-                // Publish the report message to the queue
+
+                // Gửi thông báo report qua hàng đợi
                 await messagePublisher.PublishAsync(reportMessage, QueueName.ReportQueue, cancellationToken);
-                // Set the response properties
+
+                // Thiết lập phản hồi
                 response.Success = true;
-                response.Message = "Report has been sent successfully";
+                response.Message = "Báo cáo đã được gửi thành công.";
                 response.StatusCode = (int)HttpStatusCode.OK;
                 return response;
             }
-            catch
+            catch (FormatException ex)
             {
+                // Bắt lỗi khi userId không hợp lệ (ví dụ không thể chuyển đổi sang GUID)
                 response.Success = false;
-                response.Message = "Report has not been sent";
+                response.Message = "Định dạng userId không hợp lệ.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // Bắt lỗi tổng quát
+                response.Success = false;
+                response.Message = "Gửi báo cáo thất bại.";
+                response.Errors.Add(ex.Message); // Thêm chi tiết lỗi vào danh sách
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return response;
             }

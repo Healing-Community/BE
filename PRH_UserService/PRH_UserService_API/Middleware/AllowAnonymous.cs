@@ -1,4 +1,4 @@
 ﻿[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class AllowAnonymousRefreshTokenAttribute : Attribute
+public class AllowAnonymous : Attribute
 {
 }

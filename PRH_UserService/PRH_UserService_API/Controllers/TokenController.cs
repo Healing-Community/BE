@@ -9,7 +9,7 @@ namespace PRH_UserService_API.Controllers;
 [ApiController]
 public class TokenController(ISender sender) : ControllerBase
 {
-    [AllowAnonymousRefreshToken]
+    [AllowAnonymous]
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
     {

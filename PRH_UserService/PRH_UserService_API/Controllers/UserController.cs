@@ -57,7 +57,7 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [AllowAnonymousRefreshToken]
+    [@AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
@@ -65,7 +65,7 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [AllowAnonymousRefreshToken]
+    [@AllowAnonymous]
     [HttpPost("register-user")]
     public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
     {
