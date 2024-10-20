@@ -7,12 +7,7 @@ using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Reactions.AddReaction
 {
@@ -31,7 +26,7 @@ namespace Application.Commands.Reactions.AddReaction
             if (userId == null)
             {
                 response.Success = false;
-                response.Message = "Unauthorized";
+                response.Message = "Không có quyền để truy cập";
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
@@ -41,15 +36,15 @@ namespace Application.Commands.Reactions.AddReaction
                 ReactionId = NewId.NextSequentialGuid(),
                 UserId = userGuid,
                 PostId = request.ReactionDto.PostId,
-                ReactionTypeId = request.ReactionDto.ReactionTypeId
+                ReactionTypeId = request.ReactionDto.ReactionTypeId,
+                CreateAt = DateTime.UtcNow,
             };
             try
             {
                 await reactionRepository.Create(reaction);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Reaction created successfully";
-
+                response.Message = "Tạo thành công";
                 // Send the Request to the Queue for processing
                 var reactionRequestCreatedMessage = new ReactionRequestCreatedMessage
                 {
@@ -64,10 +59,9 @@ namespace Application.Commands.Reactions.AddReaction
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create reaction";
+                response.Message = "Lỗi !!! Tạo thất bại";
                 response.Errors.Add(ex.Message);
             }
-
             return response;
         }
     }

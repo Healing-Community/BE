@@ -1,16 +1,9 @@
 ﻿using Application.Commons;
-using Application.Commons.Tools;
-using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.ReportPostTypes.AddReportType
 {
@@ -36,13 +29,13 @@ namespace Application.Commands.ReportPostTypes.AddReportType
                 await reportTypeRepository.Create(reportType);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Report type created successfully";
+                response.Message = "Tạo thành công";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create report type";
+                response.Message = "Lỗi !!! Tạo thất bại";
                 response.Errors.Add(ex.Message);
             }
             return response;

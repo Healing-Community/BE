@@ -1,18 +1,11 @@
 ﻿using Application.Commands.Categories.AddCategory;
 using Application.Commands.Categories.DeleteCategory;
 using Application.Commands.Categories.UpdateCategory;
-using Application.Commands.Posts.AddPost;
-using Application.Commands.Posts.DeletePost;
-using Application.Commands.Posts.UpdatePost;
 using Application.Commons.DTOs;
 using Application.Queries.Categories.GetCategories;
 using Application.Queries.Categories.GetCategoriesById;
-using Application.Queries.Posts.GetPosts;
-using Application.Queries.Posts.GetPostsById;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_PostService_API.Extentions;
 

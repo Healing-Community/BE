@@ -16,7 +16,7 @@ namespace Persistence.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var category = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var category = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
             if (category == null) return;
             hFDBPostserviceContext.Categories.Remove(category);
             await hFDBPostserviceContext.SaveChangesAsync();
@@ -24,7 +24,7 @@ namespace Persistence.Repositories
 
         public async Task<Category> GetByIdAsync(Guid id)
         {
-            return await hFDBPostserviceContext.Categories.FirstAsync(x => x.Id == id);
+            return await hFDBPostserviceContext.Categories.FirstAsync(x => x.CategoryId == id);
         }
 
         public async Task<Category> GetByPropertyAsync(Expression<Func<Category, bool>> predicate)
@@ -39,7 +39,7 @@ namespace Persistence.Repositories
 
         public async Task Update(Guid id, Category entity)
         {
-            var existingCategory = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var existingCategory = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
             if (existingCategory == null) return;
             hFDBPostserviceContext.Entry(existingCategory).CurrentValues.SetValues(entity);
             hFDBPostserviceContext.Entry(existingCategory).State = EntityState.Modified;

@@ -17,7 +17,7 @@ namespace Persistence.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var post = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            var post = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.PostId == id);
             if (post == null) return;
             hFDBPostserviceContext.Posts.Remove(post);
             await hFDBPostserviceContext.SaveChangesAsync();
@@ -25,7 +25,7 @@ namespace Persistence.Repositories
 
         public async Task<Post> GetByIdAsync(Guid id)
         {
-            return await hFDBPostserviceContext.Posts.FirstAsync(x => x.Id == id);
+            return await hFDBPostserviceContext.Posts.FirstAsync(x => x.PostId == id);
         }
 
         public async Task<Post> GetByPropertyAsync(Expression<Func<Post, bool>> predicate)
@@ -41,7 +41,7 @@ namespace Persistence.Repositories
 
         public async Task Update(Guid id, Post entity)
         {
-            var existingPost = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            var existingPost = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.PostId == id);
             if (existingPost == null) return;
             hFDBPostserviceContext.Entry(existingPost).CurrentValues.SetValues(entity);
             hFDBPostserviceContext.Entry(existingPost).State = EntityState.Modified;

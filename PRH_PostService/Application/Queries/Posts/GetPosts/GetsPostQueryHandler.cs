@@ -21,7 +21,7 @@ namespace Application.Queries.Posts.GetPosts
             {
                 var posts = await postRepository.GetsAsync();
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.Message = "Post retrieved successfully";
+                response.Message = "Lấy dữ liệu thành công";
                 response.Success = true;
                 response.Data = posts;
             }

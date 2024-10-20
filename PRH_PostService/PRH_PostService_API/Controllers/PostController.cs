@@ -4,7 +4,6 @@ using Application.Commands.Posts.UpdatePost;
 using Application.Commons.DTOs;
 using Application.Queries.Posts.GetPosts;
 using Application.Queries.Posts.GetPostsById;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

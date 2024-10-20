@@ -2,12 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Comments.UpdateComment
 {
@@ -34,13 +29,13 @@ namespace Application.Commands.Comments.UpdateComment
                 await commentRepository.Update(request.commentId, updatedComment);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Comment updated successfully";
+                response.Message = "Cập nhật bình luận thành công";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to update comment";
+                response.Message = "Lỗi !!! Không cập nhật được bình luận";
                 response.Errors.Add(ex.Message);
             }
             return response;
