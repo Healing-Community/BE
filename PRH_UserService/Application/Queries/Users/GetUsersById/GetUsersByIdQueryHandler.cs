@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.Users.GetUsersById;
 
@@ -13,7 +14,7 @@ public class GetUsersByIdQueryHandler(IUserRepository userRepository)
     {
         var response = new BaseResponse<User>
         {
-            Id = NewId.NextSequentialGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow,
             Errors = new List<string>() // Initialize the error list
         };

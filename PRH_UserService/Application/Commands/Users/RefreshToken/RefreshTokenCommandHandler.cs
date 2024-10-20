@@ -4,6 +4,7 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using NUlid;
 
 namespace Application.Commands.Users.RefreshToken;
 
@@ -17,7 +18,7 @@ public class RefreshTokenCommandHandler(
     {
         var response = new BaseResponse<TokenDto>
         {
-            Id = Guid.NewGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow
         };
 

@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.Users.ForgotPassword;
 
@@ -22,7 +23,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
     {
         var response = new BaseResponse<string>
         {
-            Id = Guid.NewGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow
         };
 

@@ -29,8 +29,8 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [HttpGet("get-by-id/{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("get-by-id/{id}")]
+    public async Task<IActionResult> GetById(string id)
     {
         var response = await sender.Send(new GetUsersByIdQuery(id));
         return response.ToActionResult();
@@ -43,15 +43,15 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [HttpPut("update/{id:guid}")]
-    public async Task<IActionResult> UpdateUser(Guid id, UserDto user)
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateUser(string id, UserDto user)
     {
         var response = await sender.Send(new UpdateUserCommand(id, user));
         return response.ToActionResult();
     }
 
-    [HttpDelete("delete/{id:guid}")]
-    public async Task<IActionResult> DeleteUser(Guid id)
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteUser(string id)
     {
         var response = await sender.Send(new DeleteUserCommand(id));
         return response.ToActionResult();
@@ -78,9 +78,9 @@ public class UserController(ISender sender) : ControllerBase
     [HttpGet("verify-user")]
     public async Task<IActionResult> VerifyUser(string token)
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        //var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var response = await sender.Send(new VerifyUserCommand(token));
-        return Redirect($"{baseUrl}/swagger");
+        return Redirect("https://scarlet-hilary-33.tiiny.site/");
     }
 
     [Authorize(Roles = "User")]

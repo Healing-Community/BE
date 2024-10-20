@@ -6,6 +6,7 @@ using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using NUlid;
 
 namespace Persistence.Repositories;
 
@@ -69,9 +70,9 @@ public class JwtTokenRepository : IJwtTokenRepository
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public bool ValidateRefreshToken(string refreshToken, out Guid userId)
+    public bool ValidateRefreshToken(string refreshToken, out string userId)
     {
-        userId = Guid.Empty;
+        userId = Ulid.NewUlid().ToString();
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
 
@@ -90,7 +91,7 @@ public class JwtTokenRepository : IJwtTokenRepository
             }, out var validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value);
+            userId = jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value;
 
             return true;
         }
@@ -101,9 +102,9 @@ public class JwtTokenRepository : IJwtTokenRepository
         }
     }
 
-    public bool ValidateToken(string token, out Guid userId)
+    public bool ValidateToken(string token, out string userId)
     {
-        userId = Guid.Empty;
+        userId = Ulid.NewUlid().ToString();
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
 
@@ -126,7 +127,7 @@ public class JwtTokenRepository : IJwtTokenRepository
 
             if (userIdClaim != null)
             {
-                userId = Guid.Parse(userIdClaim.Value);
+                userId = userIdClaim.Value;
                 return true;
             }
         }

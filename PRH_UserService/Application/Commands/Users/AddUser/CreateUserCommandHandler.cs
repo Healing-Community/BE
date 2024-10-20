@@ -1,8 +1,8 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Domain.Entities;
-using MassTransit;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.Users.AddUser;
 
@@ -11,7 +11,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
 {
     public async Task<BaseResponse<string>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var userId = NewId.NextSequentialGuid();
+        var userId = Ulid.NewUlid().ToString();
         var user = new User
         {
             UserId = userId,

@@ -2,6 +2,7 @@
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.Users.VerifyUser;
 
@@ -12,7 +13,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
     {
         var response = new BaseResponse<string>
         {
-            Id = Guid.NewGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow
         };
 
@@ -21,7 +22,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
             if (!tokenService.ValidateToken(request.Token, out var userId))
                 return new BaseResponse<string>
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Ulid.NewUlid().ToString(),
                     Success = false,
                     Message = "Invalid or expired verification token.",
                     Timestamp = DateTime.UtcNow
@@ -31,7 +32,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
             if (user == null)
                 return new BaseResponse<string>
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Ulid.NewUlid().ToString(),
                     Success = false,
                     Message = "User not found.",
                     Timestamp = DateTime.UtcNow

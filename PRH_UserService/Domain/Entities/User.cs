@@ -2,7 +2,7 @@
 
 public class User
 {
-    public Guid UserId { get; init; }
+    public required string UserId { get; init; }
     public int RoleId { get; init; }
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;
@@ -12,5 +12,5 @@ public class User
     public DateTime UpdatedAt { get; set; }
     public int Status { get; set; }
     public Role Role { get; set; } = null!;
-    public ICollection<Token> Tokens { get; set; } = new List<Token>();
+    public ICollection<Token> Tokens { get; set; } = [];
 }

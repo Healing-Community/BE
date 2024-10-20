@@ -6,6 +6,7 @@ using Application.Interfaces.Services;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using NUlid;
 
 namespace Application.Services;
 
@@ -60,9 +61,9 @@ public class TokenService(IConfiguration configuration) : ITokenService
         return principal;
     }
 
-    public bool ValidateRefreshToken(string refreshToken, out Guid userId)
+    public bool ValidateRefreshToken(string refreshToken, out string userId)
     {
-        userId = Guid.Empty;
+        userId = Ulid.NewUlid().ToString();
         var jwtSettings = configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
 
@@ -81,7 +82,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
             }, out var validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value);
+            userId = jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value;
 
             return true;
         }
@@ -91,9 +92,9 @@ public class TokenService(IConfiguration configuration) : ITokenService
         }
     }
 
-    public bool ValidateToken(string token, out Guid userId)
+    public bool ValidateToken(string token, out string userId)
     {
-        userId = Guid.Empty;
+        userId = Ulid.NewUlid().ToString();
         var jwtSettings = configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
 
@@ -114,7 +115,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
 
         if (userIdClaim != null)
         {
-            userId = Guid.Parse(userIdClaim.Value);
+            userId = userIdClaim.Value;
             return true;
         }
 

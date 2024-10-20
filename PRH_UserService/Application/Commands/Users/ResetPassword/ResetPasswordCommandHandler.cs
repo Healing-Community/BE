@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.Users.ResetPassword;
 
@@ -13,7 +14,7 @@ public class ResetPasswordCommandHandler(IUserRepository userRepository, IJwtTok
     {
         var response = new BaseResponse<string>
         {
-            Id = Guid.NewGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow
         };
 

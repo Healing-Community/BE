@@ -7,6 +7,7 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using NUlid;
 
 namespace Application.Commands.Users.LoginUser;
 
@@ -22,7 +23,7 @@ public class LoginUserCommandHandler(
     {
         var response = new BaseResponse<TokenDto>
         {
-            Id = Guid.NewGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow
         };
 
@@ -32,7 +33,7 @@ public class LoginUserCommandHandler(
             if (user == null)
                 return new BaseResponse<TokenDto>
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Ulid.NewUlid().ToString(),
                     Success = false,
                     Message = "Invalid email or password.",
                     Errors = new List<string> { "User not found." },
@@ -43,7 +44,7 @@ public class LoginUserCommandHandler(
             if (user.Status == 0)
                 return new BaseResponse<TokenDto>
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Ulid.NewUlid().ToString(),
                     Success = false,
                     Message = "User account is inactive.",
                     Errors = new List<string> { "Inactive account." },
@@ -64,7 +65,7 @@ public class LoginUserCommandHandler(
                 {
                     return new BaseResponse<TokenDto>
                     {
-                        Id = Guid.NewGuid(),
+                        Id = Ulid.NewUlid().ToString(),
                         Success = false,
                         Message = "Invalid email or password.",
                         Errors = new List<string> { "Incorrect password." },
@@ -103,6 +104,7 @@ public class LoginUserCommandHandler(
 
             var token = new Token
             {
+                TokenId = Ulid.NewUlid().ToString(),
                 UserId = user.UserId,
                 RefreshToken = tokenData.RefreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60"))
@@ -115,7 +117,7 @@ public class LoginUserCommandHandler(
             response.StatusCode = (int)StatusCodes.Status500InternalServerError;
             response.Success = false;
             response.Message = "Failed to login user.";
-            response.Errors = new List<string> { ex.Message };
+            response.Errors = [ex.Message];
         }
 
         return response;

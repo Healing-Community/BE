@@ -2,6 +2,7 @@
 using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.Users.Logout;
 
@@ -12,7 +13,7 @@ public class LogoutUserCommandHandler(ITokenRepository tokenRepository)
     {
         var response = new BaseResponse<string>
         {
-            Id = Guid.NewGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow,
             Errors = new List<string>() // Initialize the error list
         };

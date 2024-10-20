@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Constants;
 using Domain.Constants.AMQPMessage;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Commands.Report
@@ -15,7 +16,7 @@ namespace Application.Commands.Report
         {
             var response = new BaseResponse<string>
             {
-                Id = Guid.NewGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>() // Initialize the error list
             };

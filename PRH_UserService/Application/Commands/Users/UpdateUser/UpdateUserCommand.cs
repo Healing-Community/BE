@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Commands.Users.UpdateUser;
 
-public record UpdateUserCommand(Guid Id, UserDto UserDto) : IRequest<BaseResponse<string>>;
+public record UpdateUserCommand(string Id, UserDto UserDto) : IRequest<BaseResponse<string>>;

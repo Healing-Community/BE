@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.Roles.GetRoles;
 
@@ -14,7 +15,7 @@ public class GetRolesQueryHandler(IRoleRepository roleRepository)
     {
         var response = new BaseResponse<IEnumerable<Role>>
         {
-            Id = NewId.NextSequentialGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow
         };
         try

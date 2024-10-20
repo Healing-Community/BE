@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context;
 
-public partial class HFDbContext : DbContext
+public partial class UserServiceDbContext : DbContext
 {
-    public HFDbContext()
+    public UserServiceDbContext()
     {
     }
 
-    public HFDbContext(DbContextOptions<HFDbContext> options) : base(options)
+    public UserServiceDbContext(DbContextOptions<UserServiceDbContext> options) : base(options)
     {
     }
 
@@ -17,14 +17,14 @@ public partial class HFDbContext : DbContext
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Token> Tokens { get; set; } = null!;
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // User configuration
         modelBuilder.Entity<User>()
-            .HasKey(u => u.UserId);
+            .HasKey(u => u.UserId);  // Assuming UserId is Guid or string
         modelBuilder.Entity<User>()
             .HasIndex(u => u.UserName)
             .IsUnique();
@@ -52,7 +52,7 @@ public partial class HFDbContext : DbContext
 
         // Token configuration
         modelBuilder.Entity<Token>()
-            .HasKey(t => t.UserId);
+            .HasKey(t => t.TokenId);  // Use TokenId as primary key
         modelBuilder.Entity<Token>()
             .HasOne(t => t.User)
             .WithMany(u => u.Tokens)

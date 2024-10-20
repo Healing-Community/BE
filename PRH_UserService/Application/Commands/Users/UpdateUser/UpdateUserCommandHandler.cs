@@ -2,6 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.Users.UpdateUser;
 
@@ -12,7 +13,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
     {
         var response = new BaseResponse<string>
         {
-            Id = request.Id,
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow,
             Errors = new List<string>() // Initialize the error list
         };

@@ -1,8 +1,8 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Domain.Entities;
-using MassTransit;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.Users.GetUsers;
 
@@ -14,7 +14,7 @@ public class GetUsersQueryHandler(IUserRepository userRepository)
     {
         var response = new BaseResponse<IEnumerable<User>>
         {
-            Id = NewId.NextSequentialGuid(),
+            Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow
         };
         try
