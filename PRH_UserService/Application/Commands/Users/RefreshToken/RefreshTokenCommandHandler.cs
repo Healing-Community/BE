@@ -25,42 +25,45 @@ public class RefreshTokenCommandHandler(
         var accessToken = request.TokenDto.Token;
         var refreshToken = request.TokenDto.RefreshToken;
 
+        // Lấy thông tin từ token hết hạn
         var principal = tokenService.GetPrincipalFromExpiredToken(accessToken ?? "");
         var username = principal?.Identity?.Name;
 
-        // Check user mail and expired token
+        // Kiểm tra tính hợp lệ của token và refresh token
         if (string.IsNullOrEmpty(username) || refreshToken == null)
         {
             response.Success = false;
-            response.Message = "Invalid token";
+            response.Message = "Token không hợp lệ";
             response.StatusCode = 401;
             return response;
         }
 
-
+        // Tìm người dùng theo username
         var user = await userRepository.GetByPropertyAsync(u => u.UserName == username);
         var token = await tokenRepository.GetByPropertyAsync(u => u.UserId == user.UserId);
-        if (user == null || token.RefreshToken != refreshToken)
+
+        // Kiểm tra token của người dùng và refresh token có khớp không
+        if (user == null || token == null || token.RefreshToken != refreshToken)
         {
             response.Success = false;
-            response.Message = "Invalid token";
+            response.Message = "Token không hợp lệ";
             response.StatusCode = 401;
             response.Data = null;
         }
         else
         {
+            // Tạo access token và refresh token mới
             var newAccessToken = tokenService.GenerateAccessToken(principal?.Claims ?? []);
             var newRefreshToken = tokenService.GenerateRefreshToken();
-            response.Success = true;
-            response.Message = "Token refreshed successfully";
-            // Logic to update the refress token in the database
+
+            // Cập nhật refresh token trong cơ sở dữ liệu
             token.RefreshToken = newRefreshToken;
             token.ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60"));
-            await tokenRepository.Update(token.UserId, token);
+            await tokenRepository.Update(token.TokenId, token);
 
-            // Set response details
+            // Thiết lập chi tiết phản hồi
             response.Success = true;
-            response.Message = "Token refreshed successfully";
+            response.Message = "Tạo mới token thành công";
             response.StatusCode = 200;
             response.Data = new TokenDto
             {
