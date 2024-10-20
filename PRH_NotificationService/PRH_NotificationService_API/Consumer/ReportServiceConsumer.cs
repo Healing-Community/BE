@@ -2,6 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
+using NUlid;
 
 namespace PRH_NotificationService_API.Consumer
 {
@@ -11,11 +12,11 @@ namespace PRH_NotificationService_API.Consumer
         {
             var reportRequest = context.Message;
 
-            var notificationType = await notificationTypeRepository.GetByNameAsync("Report") ?? throw new Exception("Notification type not found");
+            var notificationType = await notificationTypeRepository.GetByIdAsync("02") ?? throw new Exception("Notification type not found");
             var notification = new Notification
             {
-                NotificationId = Guid.NewGuid(),
-                UserId = reportRequest.UserId,
+                NotificationId = Ulid.NewUlid().ToString(),
+                UserId = reportRequest.UserId.ToString(),
                 NotificationTypeId = notificationType.NotificationTypeId,
                 Message = $"Người dùng {reportRequest.UserId} đã báo cáo bài viết {reportRequest.PostId} với loại báo cáo {reportRequest.ReportTypeId} và trạng thái {reportRequest.Status}",
                 CreatedAt = reportRequest.ReportedDate,

@@ -2,7 +2,7 @@
 {
     public class NotificationType
     {
-        public Guid NotificationTypeId { get; init; }
+        public required string NotificationTypeId { get; init; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
 

@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.GetUnreadNotificationCount
 {
@@ -10,14 +11,14 @@ namespace Application.Queries.GetUnreadNotificationCount
         {
             var response = new BaseResponse<int>
             {
-                Id = Guid.NewGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = []
             };
 
             try
             {
-                var unreadCount = await notificationRepository.GetUnreadCountAsync(request.UserId);
+                var unreadCount = await notificationRepository.GetUnreadCountAsync(request.UserId.ToString());
                 response.Success = true;
                 response.Data = unreadCount;
                 response.StatusCode = 200;

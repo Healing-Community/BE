@@ -2,6 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
+using NUlid;
 
 namespace PRH_NotificationService_API.Consumer
 {
@@ -11,10 +12,10 @@ namespace PRH_NotificationService_API.Consumer
         {
             var reactionRequest = context.Message;
 
-            var notificationType = await notificationTypeRepository.GetByNameAsync("Reaction") ?? throw new Exception("Notification type not found");
+            var notificationType = await notificationTypeRepository.GetByIdAsync("10") ?? throw new Exception("Notification type not found");
             var notification = new Notification
             {
-                NotificationId = Guid.NewGuid(),
+                NotificationId = Ulid.NewUlid().ToString(),
                 UserId = reactionRequest.UserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
                 Message = $"Người dùng {reactionRequest.UserId} đã phản ứng với bài viết {reactionRequest.PostId} bằng loại phản ứng {reactionRequest.ReactionTypeId}",

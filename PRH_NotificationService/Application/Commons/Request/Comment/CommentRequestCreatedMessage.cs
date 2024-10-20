@@ -2,10 +2,10 @@
 {
     public class CommentRequestCreatedMessage
     {
-        public Guid CommentRequestId { get; set; }
-        public Guid PostId { get; set; }
-        //public Guid? ParentId { get; set; }
-        public Guid UserId { get; set; }
+        public required string CommentRequestId { get; set; }
+        public required string PostId { get; set; }
+        //public required string ParentId { get; set; }
+        public required string UserId { get; set; }
         public string? Content { get; set; }
         public DateTime CommentedDate { get; set; }
     }

@@ -1,14 +1,15 @@
-﻿using Application.Interfaces.Repository;
+﻿using System.Linq.Expressions;
+using Application.Interfaces.Repository;
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+using NUlid;
 
 namespace Persistence.Repositories
 {
     public class NotificationRepository(HFDBNotificationServiceContext context) : INotificationRepository
     {
-        public async Task<List<Notification>> GetNotificationsByUserAsync(Guid userId, bool includeRead)
+        public async Task<List<Notification>> GetNotificationsByUserAsync(string userId, bool includeRead)
         {
             var query = context.Notifications
                 .Where(n => n.UserId == userId);
@@ -27,23 +28,22 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(string id)
         {
-            var notification = await context.Notifications.FindAsync(id);
+            var notification = await context.Notifications.FirstOrDefaultAsync(x => x.NotificationId == id);
             if (notification == null) return;
             context.Notifications.Remove(notification);
             await context.SaveChangesAsync();
         }
 
-        public async Task<Notification> GetByIdAsync(Guid id)
+        public async Task<Notification> GetByIdAsync(string id)
         {
             return await context.Notifications.FirstAsync(x => x.NotificationId == id);
-
         }
 
         public async Task<Notification> GetByPropertyAsync(Expression<Func<Notification, bool>> predicate)
         {
-            return await context.Notifications.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Notification();
+            return await context.Notifications.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Notification { NotificationId = Ulid.NewUlid().ToString(), UserId = Ulid.NewUlid().ToString(), NotificationTypeId = Ulid.NewUlid().ToString() };
         }
 
         public async Task<IEnumerable<Notification>> GetsAsync()
@@ -51,7 +51,7 @@ namespace Persistence.Repositories
             return await context.Notifications.ToListAsync();
         }
 
-        public async Task Update(Guid id, Notification entity)
+        public async Task Update(string id, Notification entity)
         {
             var existingNotification = await context.Notifications.FirstOrDefaultAsync(x => x.NotificationId == id);
             if (existingNotification == null) return;
@@ -60,13 +60,13 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task CreateNotificationAsync(Guid userId, Guid notificationTypeId, string message)
+        public async Task CreateNotificationAsync(string userId, string notificationTypeId, string message)
         {
             if (!await GetUserNotificationPreferenceAsync(userId, notificationTypeId)) return;
 
             var createNotification = new Notification
             {
-                NotificationId = Guid.NewGuid(),
+                NotificationId = Ulid.NewUlid().ToString(),
                 UserId = userId,
                 NotificationTypeId = notificationTypeId,
                 CreatedAt = DateTime.UtcNow,
@@ -78,19 +78,16 @@ namespace Persistence.Repositories
             await Create(createNotification);
         }
 
-        public async Task MarkAsReadAsync(Guid notificationId)
+        public async Task MarkAsReadAsync(string notificationId)
         {
             var notification = await context.Notifications.FindAsync(notificationId);
             if (notification == null) return;
 
             notification.IsRead = true;
-            notification.UpdatedAt = DateTime.UtcNow;
-
-            context.Notifications.Update(notification);
             await context.SaveChangesAsync();
         }
 
-        public async Task ArchiveUnreadNotificationsAsync(Guid userId)
+        public async Task ArchiveUnreadNotificationsAsync(string userId)
         {
             var unreadNotifications = await context.Notifications
                 .Where(n => n.UserId == userId && !n.IsRead)
@@ -99,59 +96,51 @@ namespace Persistence.Repositories
             foreach (var notification in unreadNotifications)
             {
                 notification.IsRead = true;
-                notification.UpdatedAt = DateTime.UtcNow;
             }
 
-            context.Notifications.UpdateRange(unreadNotifications);
             await context.SaveChangesAsync();
         }
 
-        public async Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId)
+        public async Task<bool> GetUserNotificationPreferenceAsync(string userId, string notificationTypeId)
         {
-            var userNotificationPreference = await context.UserNotificationPreferences
-                .AsNoTracking()
+            var preference = await context.UserNotificationPreferences
                 .FirstOrDefaultAsync(unp => unp.UserId == userId && unp.NotificationTypeId == notificationTypeId);
 
-            return userNotificationPreference?.IsSubscribed ?? false;
+            return preference?.IsSubscribed ?? false;
         }
 
-        public async Task<List<UserNotificationPreference>> GetUserNotificationPreferencesAsync(List<Guid> userIds, Guid notificationTypeId)
+        public async Task<List<UserNotificationPreference>> GetUserNotificationPreferencesAsync(List<string> userIds, string notificationTypeId)
         {
             return await context.UserNotificationPreferences
-                .AsNoTracking()
                 .Where(unp => userIds.Contains(unp.UserId) && unp.NotificationTypeId == notificationTypeId && unp.IsSubscribed)
                 .ToListAsync();
         }
 
         public async Task CreateNotificationsAsync(IEnumerable<Notification> notifications)
         {
-            await context.Set<Notification>().AddRangeAsync(notifications);
+            await context.Notifications.AddRangeAsync(notifications);
             await context.SaveChangesAsync();
         }
 
         public async Task<double> GetReadNotificationRateAsync()
         {
             var totalNotifications = await context.Notifications.CountAsync();
-            if (totalNotifications == 0) return 0;
-
             var readNotifications = await context.Notifications.CountAsync(n => n.IsRead);
-            return (double)readNotifications / totalNotifications * 100;
+
+            return totalNotifications == 0 ? 0 : (double)readNotifications / totalNotifications;
         }
 
         public async Task<Dictionary<string, int>> GetPopularNotificationTypesAsync()
         {
             return await context.Notifications
-                .GroupBy(n => n.NotificationType.Name)
-                .Select(g => new { NotificationType = g.Key, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
-                .ToDictionaryAsync(x => x.NotificationType, x => x.Count);
+                .GroupBy(n => n.NotificationTypeId)
+                .OrderByDescending(g => g.Count())
+                .ToDictionaryAsync(g => g.Key, g => g.Count());
         }
 
-        public async Task<int> GetUnreadCountAsync(Guid userId)
+        public async Task<int> GetUnreadCountAsync(string userId)
         {
-            return await context.Notifications
-                .Where(n => n.UserId == userId && !n.IsRead)
-                .CountAsync();
+            return await context.Notifications.CountAsync(n => n.UserId == userId && !n.IsRead);
         }
     }
 }

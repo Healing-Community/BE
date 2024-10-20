@@ -2,6 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
+using NUlid;
 
 namespace PRH_NotificationService_API.Consumer
 {
@@ -11,10 +12,10 @@ namespace PRH_NotificationService_API.Consumer
         {
             var commentRequest = context.Message;
 
-            var notificationType = await notificationTypeRepository.GetByNameAsync("Comment") ?? throw new Exception("Notification type not found");
+            var notificationType = await notificationTypeRepository.GetByIdAsync("08") ?? throw new Exception("Notification type not found");
             var notification = new Notification
             {
-                NotificationId = Guid.NewGuid(),
+                NotificationId = Ulid.NewUlid().ToString(),
                 UserId = commentRequest.UserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
                 Message = $"Người dùng {commentRequest.UserId} đã bình luận: {commentRequest.Content} trên bài viết {commentRequest.PostId}",

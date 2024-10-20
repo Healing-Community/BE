@@ -2,9 +2,9 @@
 {
     public class Notification
     {
-        public Guid NotificationId { get; init; }
-        public Guid UserId { get; init; }
-        public Guid NotificationTypeId { get; init; }
+        public required string NotificationId { get; init; }
+        public required string UserId { get; init; }
+        public required string NotificationTypeId { get; init; }
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; set; }
         public bool IsRead { get; set; }
