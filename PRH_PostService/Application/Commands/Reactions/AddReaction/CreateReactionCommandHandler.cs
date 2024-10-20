@@ -51,7 +51,8 @@ namespace Application.Commands.Reactions.AddReaction
                     ReactionRequestId = NewId.NextSequentialGuid(),
                     UserId = reaction.UserId,
                     PostId = reaction.PostId,
-                    ReactionTypeId= reaction.ReactionTypeId
+                    ReactionTypeId= reaction.ReactionTypeId,
+                    ReactionDate = reaction.CreateAt,
                 };
                 await messagePublisher.PublishAsync(reactionRequestCreatedMessage, QueueName.ReactionQueue, cancellationToken);
             }
