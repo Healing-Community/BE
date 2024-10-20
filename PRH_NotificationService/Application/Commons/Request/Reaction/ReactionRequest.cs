@@ -2,10 +2,10 @@
 {
     public class ReactionRequest
     {
-        public Guid ReactionId { get; set; }
-        public Guid UserId { get; set; }
-        public Guid PostId { get; set; }
-        public Guid ReactionTypeId { get; set; }
+        public required string ReactionId { get; set; }
+        public required string UserId { get; set; }
+        public required string PostId { get; set; }
+        public required string ReactionTypeId { get; set; }
 
     }
 }

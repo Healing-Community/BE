@@ -14,8 +14,8 @@ namespace Infrastructure.Context
         public virtual DbSet<NotificationType> NotificationTypes { get; set; }
         public virtual DbSet<UserNotificationPreference> UserNotificationPreferences { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com;Database=postgres;Username=postgres.sozqnfhxkfabtlhdkvas;Password=ProjectHealing@1234");
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com;Database=postgres;Username=postgres.sozqnfhxkfabtlhdkvas;Password=ProjectHealing@1234");
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {          

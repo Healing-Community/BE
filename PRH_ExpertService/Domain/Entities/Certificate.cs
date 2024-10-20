@@ -3,9 +3,9 @@ namespace Domain.Entities
 {
     public class Certificate
     {
-        public Guid CertificateId { get; set; }
-        public Guid ExpertProfileId { get; set; }
-        public Guid CertificateTypeId { get; set; }
+        public required string CertificateId { get; set; }
+        public required string ExpertProfileId { get; set; }
+        public required string CertificateTypeId { get; set; }
         public DateTime IssueDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public int Status { get; set; }

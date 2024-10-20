@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.UpdateNotificationPreference
 {
-    public record UpsertNotificationPreferenceCommand(Guid UserId, Guid NotificationTypeId, bool IsSubscribed) : IRequest<BaseResponse<string>>;
+    public record UpsertNotificationPreferenceCommand(string UserId, string NotificationTypeId, bool IsSubscribed) : IRequest<BaseResponse<string>>;
 }

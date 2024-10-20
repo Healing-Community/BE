@@ -395,6 +395,18 @@
           }
         }
       },
+      "NUlid/1.7.2": {
+        "type": "package",
+        "dependencies": {
+          "System.Memory": "4.5.5"
+        },
+        "compile": {
+          "lib/netstandard2.0/NUlid.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/NUlid.dll": {}
+        }
+      },
       "RabbitMQ.Client/6.8.1": {
         "type": "package",
         "dependencies": {
@@ -1100,6 +1112,21 @@
         "microsoft.identitymodel.tokens.nuspec"
       ]
     },
+    "NUlid/1.7.2": {
+      "sha512": "34DfywdGJ1/DUcmCHMn72zW/NtZDkfsS1/wEjgrowrMRTeL6iPyPyjVqeIUK8QnhsFd/CWp2Pw1HeYLVeagYMg==",
+      "type": "package",
+      "path": "nulid/1.7.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/netstandard2.0/NUlid.dll",
+        "lib/netstandard2.0/nulid.xml",
+        "logo.png",
+        "nulid.1.7.2.nupkg.sha512",
+        "nulid.nuspec"
+      ]
+    },
     "RabbitMQ.Client/6.8.1": {
       "sha512": "jNsmGgmCNw2S/NzskeN2ijtGywtH4Sk/G6jWUTD5sY9SrC27Xz6BsLIiB8hdsfjeyWCa4j4GvCIGkpE8wrjU1Q==",
       "type": "package",
@@ -1233,7 +1260,8 @@
       "Domain >= 1.0.0",
       "MassTransit.RabbitMQ >= 8.2.5",
       "MediatR >= 12.4.1",
-      "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.8"
+      "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.8",
+      "NUlid >= 1.7.2"
     ]
   },
   "packageFolders": {
@@ -1305,6 +1333,10 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",
             "version": "[8.0.8, )"
+          },
+          "NUlid": {
+            "target": "Package",
+            "version": "[1.7.2, )"
           }
         },
         "imports": [

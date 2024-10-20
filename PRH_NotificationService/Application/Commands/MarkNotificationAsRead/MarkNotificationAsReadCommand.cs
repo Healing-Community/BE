@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.MarkNotificationAsRead
 {
-    public record MarkNotificationAsReadCommand(Guid NotificationId) : IRequest<BaseResponse<string>>;
+    public record MarkNotificationAsReadCommand(string NotificationId) : IRequest<BaseResponse<string>>;
 }

@@ -30,7 +30,7 @@ namespace PRH_NotificationService_API.Controllers
 
         [Authorize]
         [HttpPost("mark-as-read/{notificationId}")]
-        public async Task<IActionResult> MarkAsRead(Guid notificationId)
+        public async Task<IActionResult> MarkAsRead(string notificationId)
         {
             var response = await sender.Send(new MarkNotificationAsReadCommand(notificationId));
             return response.ToActionResult();
@@ -38,7 +38,7 @@ namespace PRH_NotificationService_API.Controllers
 
         [Authorize]
         [HttpPost("archive-unread/{userId}")]
-        public async Task<IActionResult> ArchiveUnread(Guid userId)
+        public async Task<IActionResult> ArchiveUnread(string userId)
         {
             var response = await sender.Send(new ArchiveUnreadNotificationsCommand(userId));
             return response.ToActionResult();
@@ -70,7 +70,7 @@ namespace PRH_NotificationService_API.Controllers
 
         [Authorize]
         [HttpGet("unread-count/{userId}")]
-        public async Task<IActionResult> GetUnreadNotificationCount(Guid userId)
+        public async Task<IActionResult> GetUnreadNotificationCount(string userId)
         {
             var response = await sender.Send(new GetUnreadNotificationCountQuery(userId));
             return response.ToActionResult();
@@ -78,7 +78,7 @@ namespace PRH_NotificationService_API.Controllers
 
         [Authorize]
         [HttpGet("notifications/{userId}")]
-        public async Task<IActionResult> GetUserNotifications(Guid userId, [FromQuery] bool includeRead = false)
+        public async Task<IActionResult> GetUserNotifications(string userId, [FromQuery] bool includeRead = false)
         {
             var response = await sender.Send(new GetUserNotificationsQuery(userId, includeRead));
             return response.ToActionResult();
@@ -86,7 +86,7 @@ namespace PRH_NotificationService_API.Controllers
 
         [Authorize]
         [HttpDelete("delete/{notificationId}")]
-        public async Task<IActionResult> DeleteNotification(Guid notificationId)
+        public async Task<IActionResult> DeleteNotification(string notificationId)
         {
             var response = await sender.Send(new DeleteNotificationCommand(notificationId));
             return response.ToActionResult();

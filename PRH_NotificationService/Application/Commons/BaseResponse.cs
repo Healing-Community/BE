@@ -2,7 +2,7 @@
 
 public class BaseResponse<T>
 {
-    public Guid Id { get; set; }
+    public required string Id { get; set; }
     public int StatusCode { get; set; }
     public string? Message { get; set; }
     public bool Success { get; set; }
