@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Commands\Roles\**" />
-      <EmbeddedResource Remove="Commands\Roles\**" />
-      <None Remove="Commands\Roles\**" />
+      <Compile Remove="Commads-Queries\Commands\Roles\**" />
+      <EmbeddedResource Remove="Commads-Queries\Commands\Roles\**" />
+      <None Remove="Commads-Queries\Commands\Roles\**" />
     </ItemGroup>
 
     <ItemGroup>

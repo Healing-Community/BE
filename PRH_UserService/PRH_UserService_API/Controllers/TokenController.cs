@@ -11,9 +11,9 @@ public class TokenController(ISender sender) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
     {
-        var response = await sender.Send(command);
+        var response = await sender.Send(refreshTokenCommand);
         return response.ToActionResult();
     }
 }

@@ -100,7 +100,7 @@ public class LoginUserCommandHandler(
 
             var userToken = await tokenRepository.GetByPropertyAsync(t => t.UserId == user.UserId);
 
-            if (userToken != null) await tokenRepository.DeleteAsync(userToken.UserId);
+            if (userToken != null) await tokenRepository.DeleteAsync(userToken.TokenId);
 
             var token = new Token
             {
