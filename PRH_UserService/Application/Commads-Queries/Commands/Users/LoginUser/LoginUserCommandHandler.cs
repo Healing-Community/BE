@@ -29,34 +29,39 @@ public class LoginUserCommandHandler(
 
         try
         {
+            // Tìm kiếm người dùng bằng email
             var user = await userRepository.GetUserByEmailAsync(request.LoginDto.Email);
             if (user == null)
                 return new BaseResponse<TokenDto>
                 {
                     Id = Ulid.NewUlid().ToString(),
                     Success = false,
-                    Message = "Invalid email or password.",
-                    Errors = new List<string> { "User not found." },
+                    Message = "Email hoặc mật khẩu không đúng.",
+                    Errors = new List<string> { "Không tìm thấy người dùng." },
                     Timestamp = DateTime.UtcNow,
                     StatusCode = (int)StatusCodes.Status401Unauthorized
                 };
 
+            // Kiểm tra trạng thái người dùng
             if (user.Status == 0)
                 return new BaseResponse<TokenDto>
                 {
                     Id = Ulid.NewUlid().ToString(),
                     Success = false,
-                    Message = "User account is inactive.",
-                    Errors = new List<string> { "Inactive account." },
+                    Message = "Tài khoản người dùng đã bị vô hiệu hóa.",
+                    Errors = new List<string> { "Tài khoản đã bị vô hiệu hóa." },
                     Timestamp = DateTime.UtcNow,
                     StatusCode = (int)StatusCodes.Status401Unauthorized
                 };
 
+            // Xác thực mật khẩu
             var isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
             if (!isPasswordValid)
             {
+                // Nếu mật khẩu không khớp
                 if (request.LoginDto.Password == user.PasswordHash)
                 {
+                    // Nếu mật khẩu cần được mã hóa lại
                     user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
                     await userRepository.Update(user.UserId, user);
                     isPasswordValid = true;
@@ -67,14 +72,15 @@ public class LoginUserCommandHandler(
                     {
                         Id = Ulid.NewUlid().ToString(),
                         Success = false,
-                        Message = "Invalid email or password.",
-                        Errors = new List<string> { "Incorrect password." },
+                        Message = "Email hoặc mật khẩu không đúng.",
+                        Errors = new List<string> { "Mật khẩu không chính xác." },
                         Timestamp = DateTime.UtcNow,
                         StatusCode = (int)StatusCodes.Status401Unauthorized
                     };
                 }
             }
 
+            // Lấy vai trò của người dùng
             var roleName = roleRepository.GetRoleNameById(user.RoleId);
             var claims = new List<Claim>
             {
@@ -84,9 +90,10 @@ public class LoginUserCommandHandler(
                 new(ClaimTypes.Role, roleName.Result ?? "None")
             };
 
+            // Tạo Access token
             var accessToken = tokenService.GenerateAccessToken(claims);
             response.Success = true;
-            response.Message = "Login successful.";
+            response.Message = "Đăng nhập thành công.";
 
             var tokenData = new TokenDto
             {
@@ -96,8 +103,7 @@ public class LoginUserCommandHandler(
 
             response.Data = tokenData;
 
-            // Save Refresh token into database
-
+            // Lưu Refresh token vào cơ sở dữ liệu
             var userToken = await tokenRepository.GetByPropertyAsync(t => t.UserId == user.UserId);
 
             if (userToken != null) await tokenRepository.DeleteAsync(userToken.TokenId);
@@ -114,10 +120,11 @@ public class LoginUserCommandHandler(
         }
         catch (Exception ex)
         {
+            // Xử lý lỗi
             response.StatusCode = (int)StatusCodes.Status500InternalServerError;
             response.Success = false;
-            response.Message = "Failed to login user.";
-            response.Errors = [ex.Message];
+            response.Message = "Đăng nhập không thành công.";
+            response.Errors = new List<string> { ex.Message };
         }
 
         return response;

@@ -13,53 +13,111 @@ public class RegisterUserCommandHandler(
     ITokenService tokenService,
     IUserRepository userRepository,
     IEmailRepository emailRepository)
-    : IRequestHandler<RegisterUserCommand, BaseResponse<string>>
+    : IRequestHandler<RegisterUserCommand, RegisterUserResponse<string>>
 {
-    public async Task<BaseResponse<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<RegisterUserResponse<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<string>
+        var response = new RegisterUserResponse<string>
         {
             Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow,
-            Errors = new List<string>() // Initialize the error list
+            Errors = new List<ErrorDetail>() // Khởi tạo danh sách lỗi theo định dạng yêu cầu
         };
 
         try
         {
-            // Check if passwords match
+            // Bắt lỗi cho mật khẩu
+            if (request.RegisterUserDto.Password.Length < 8)
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "Mật khẩu phải có ít nhất 8 ký tự.",
+                    Field = "password"
+                });
+            }
+
             if (request.RegisterUserDto.Password != request.RegisterUserDto.ConfirmPassword)
-                response.Errors.Add("Mật khẩu và xác nhận mật khẩu không khớp.");
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "Mật khẩu và xác nhận mật khẩu không khớp.",
+                    Field = "re-password"
+                });
+            }
 
-            // Check if email already exists
+            // Kiểm tra xem email đã được đăng ký hay chưa
             var existingUserByEmail = await userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
-            if (existingUserByEmail != null) response.Errors.Add("Email đã được đăng ký.");
+            if (existingUserByEmail != null)
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "Email đã được đăng ký.",
+                    Field = "email"
+                });
+            }
 
-            // Check if username already exists
+            // Kiểm tra xem tên người dùng đã tồn tại hay chưa
             var existingUserByUserName = await userRepository.GetUserByUserNameAsync(request.RegisterUserDto.UserName);
-            if (existingUserByUserName != null) response.Errors.Add("Tên người dùng đã bị sử dụng.");
+            if (existingUserByUserName != null)
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "Tên người dùng đã bị sử dụng.",
+                    Field = "username"
+                });
+            }
 
-            // Validate email format
+            // Bắt lỗi cho username
+            if (request.RegisterUserDto.UserName.Length < 8)
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "Tên người dùng phải có ít nhất 8 ký tự.",
+                    Field = "username"
+                });
+            }
+
+            if (request.RegisterUserDto.UserName.Length > 20)
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "Tên người dùng không được quá 20 ký tự.",
+                    Field = "username"
+                });
+            }
+
+            // Kiểm tra định dạng email hợp lệ
             try
             {
                 var address = new MailAddress(request.RegisterUserDto.Email);
                 if (address.Address != request.RegisterUserDto.Email)
-                    response.Errors.Add("Định dạng email không hợp lệ.");
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Định dạng email không hợp lệ.",
+                        Field = "email"
+                    });
+                }
             }
             catch
             {
-                response.Errors.Add("Định dạng email không hợp lệ.");
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "Định dạng email không hợp lệ.",
+                    Field = "email"
+                });
             }
 
-            // If there are any errors, set the response properties accordingly
+            // Nếu có bất kỳ lỗi nào, trả về BadRequest và hiển thị các lỗi
             if (response.Errors.Any())
             {
-                response.StatusCode =
-                    (int)HttpStatusCode.BadRequest; // Set to BadRequest or Conflict based on your logic
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.Success = false;
+                response.Message = "Đã xảy ra lỗi trong quá trình đăng ký.";
                 return response;
             }
 
-            // Create new user if no errors
+            // Tạo người dùng mới nếu không có lỗi
             var user = new User
             {
                 UserId = Ulid.NewUlid().ToString(),
@@ -74,11 +132,11 @@ public class RegisterUserCommandHandler(
 
             await userRepository.Create(user);
 
-            // Generate verification token and send email
+            // Tạo token xác minh và gửi email xác nhận
             var verificationToken = tokenService.GenerateVerificationToken(user);
             var verificationLink = $"{request.BaseUrl}/api/user/verify-user?Token={verificationToken}";
 
-            // Prepare email content
+            // Nội dung email
             string emailContent = $@"
                 <html>
                 <body style=""margin: 0; padding: 0; font-family: 'Verdana', sans-serif; background-color: #f0f4f8;"">
@@ -98,7 +156,7 @@ public class RegisterUserCommandHandler(
                 </html>
                 ";
 
-            // Send verification email
+            // Gửi email xác minh
             await emailRepository.SendEmailAsync(user.Email, "Xác thực email của bạn", emailContent);
 
             response.StatusCode = (int)HttpStatusCode.OK;
@@ -110,7 +168,11 @@ public class RegisterUserCommandHandler(
             response.StatusCode = (int)HttpStatusCode.InternalServerError;
             response.Success = false;
             response.Message = "Đã xảy ra lỗi khi đăng ký người dùng.";
-            response.Errors.Add(ex.Message); // Add the exception message to the error list
+            response.Errors.Add(new ErrorDetail
+            {
+                Message = ex.Message,
+                Field = "exception"
+            });
         }
 
         return response;

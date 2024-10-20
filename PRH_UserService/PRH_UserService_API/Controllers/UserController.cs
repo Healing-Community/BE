@@ -80,7 +80,7 @@ public class UserController(ISender sender) : ControllerBase
     {
         //var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var response = await sender.Send(new VerifyUserCommand(token));
-        return Redirect("https://scarlet-hilary-33.tiiny.site/");
+        return Redirect("https://magenta-virginie-55.tiiny.site/");
     }
 
     [Authorize(Roles = "User")]

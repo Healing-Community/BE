@@ -27,7 +27,7 @@ namespace Application.Commands.Report
                 var reportMessage = mapper.Map<ReportMessage>(request.ReportMessageDto);
 
                 // Lấy user id từ HttpContext
-                var userId = Authentication.GetUserIdFromHttpContext(request.ReportMessageDto.context);
+                var userId = Authentication.GetUserIdFromHttpContext(request.ReportMessageDto.context ?? throw new NullReferenceException());
 
                 // Kiểm tra nếu không có userId, báo lỗi không được phép truy cập (Unauthorized)
                 if (userId == null)
