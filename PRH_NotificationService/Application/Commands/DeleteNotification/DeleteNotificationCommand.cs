@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.DeleteNotification
 {
-    public record DeleteNotificationCommand(Guid NotificationId) : IRequest<BaseResponse<string>>;
+    public record DeleteNotificationCommand(string NotificationId) : IRequest<BaseResponse<string>>;
 }

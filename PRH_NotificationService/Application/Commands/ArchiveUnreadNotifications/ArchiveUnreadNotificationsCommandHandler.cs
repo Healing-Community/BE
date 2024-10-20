@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.ArchiveUnreadNotifications
 {
@@ -10,14 +11,14 @@ namespace Application.Commands.ArchiveUnreadNotifications
         {
             var response = new BaseResponse<string>
             {
-                Id = Guid.NewGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = []
             };
 
             try
             {
-                await notificationRepository.ArchiveUnreadNotificationsAsync(request.UserId);
+                await notificationRepository.ArchiveUnreadNotificationsAsync(request.UserId.ToString());
 
                 response.Success = true;
                 response.Message = "Thông báo chưa đọc đã được lưu trữ.";

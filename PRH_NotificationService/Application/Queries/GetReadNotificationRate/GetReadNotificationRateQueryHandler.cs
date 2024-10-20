@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.GetReadNotificationRate
 {
@@ -10,7 +11,7 @@ namespace Application.Queries.GetReadNotificationRate
         {
             var response = new BaseResponse<double>
             {
-                Id = Guid.NewGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = []
             };

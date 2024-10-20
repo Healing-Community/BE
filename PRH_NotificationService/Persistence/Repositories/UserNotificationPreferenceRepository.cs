@@ -13,7 +13,7 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<UserNotificationPreference?> GetByUserIdAndNotificationTypeIdAsync(Guid userId, Guid notificationTypeId)
+        public async Task<UserNotificationPreference?> GetByUserIdAndNotificationTypeIdAsync(string userId, string notificationTypeId)
         {
             return await context.UserNotificationPreferences
                 .FirstOrDefaultAsync(p => p.UserId == userId && p.NotificationTypeId == notificationTypeId);

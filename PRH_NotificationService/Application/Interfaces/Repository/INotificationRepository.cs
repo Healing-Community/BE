@@ -5,15 +5,15 @@ namespace Application.Interfaces.Repository
 {
     public interface INotificationRepository : IReadRepository<Notification>, ICreateRepository<Notification>, IUpdateRepository<Notification>, IDeleteRepository
     {
-        Task CreateNotificationAsync(Guid userId, Guid notificationTypeId, string message);
-        Task MarkAsReadAsync(Guid notificationId);
-        Task ArchiveUnreadNotificationsAsync(Guid userId);
-        Task<bool> GetUserNotificationPreferenceAsync(Guid userId, Guid notificationTypeId);
-        Task<List<UserNotificationPreference>> GetUserNotificationPreferencesAsync(List<Guid> userIds, Guid notificationTypeId);
+        Task CreateNotificationAsync(string userId, string notificationTypeId, string message);
+        Task MarkAsReadAsync(string notificationId);
+        Task ArchiveUnreadNotificationsAsync(string userId);
+        Task<bool> GetUserNotificationPreferenceAsync(string userId, string notificationTypeId);
+        Task<List<UserNotificationPreference>> GetUserNotificationPreferencesAsync(List<string> userIds, string notificationTypeId);
         Task CreateNotificationsAsync(IEnumerable<Notification> notifications);
-        Task<double> GetReadNotificationRateAsync();
+        Task <double> GetReadNotificationRateAsync();
         Task<Dictionary<string, int>> GetPopularNotificationTypesAsync();
-        Task<int> GetUnreadCountAsync(Guid userId);
-        Task<List<Notification>> GetNotificationsByUserAsync(Guid userId, bool includeRead);
+        Task<int> GetUnreadCountAsync(string userId);
+        Task<List<Notification>> GetNotificationsByUserAsync(string userId, bool includeRead);
     }
 }

@@ -2,8 +2,8 @@
 {
     public class UserNotificationPreference
     {
-        public Guid UserId { get; init; }
-        public Guid NotificationTypeId { get; init; }
+        public required string UserId { get; init; }
+        public required string NotificationTypeId { get; init; }
         public bool IsSubscribed { get; set; }
 
         public NotificationType NotificationType { get; set; } = null!;

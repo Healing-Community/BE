@@ -2,6 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.CreateNotificationType
 {
@@ -11,7 +12,7 @@ namespace Application.Commands.CreateNotificationType
         {
             var response = new BaseResponse<string>
             {
-                Id = Guid.NewGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = []
             };
@@ -20,7 +21,7 @@ namespace Application.Commands.CreateNotificationType
             {
                 var notificationType = new NotificationType
                 {
-                    NotificationTypeId = Guid.NewGuid(),
+                    NotificationTypeId = Ulid.NewUlid().ToString(),
                     Name = request.Name,
                     Description = request.Description
                 };
