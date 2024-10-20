@@ -23,12 +23,14 @@ public class LogoutUserCommandHandler(ITokenRepository tokenRepository)
             var userId =
                 Authentication.GetUserIdFromHttpContext(request.LogoutRequestDto.context ??
                                                         throw new InvalidOperationException());
-            var tokenUser = await tokenRepository.GetByPropertyAsync(t => t.UserId.ToString() == userId);
+
+            var tokenUser = await tokenRepository.GetByPropertyAsync(t => t.UserId == userId);
+
             var refreshToken = request.LogoutRequestDto.RefreshToken;
 
             if (tokenUser != null && tokenUser.RefreshToken == refreshToken)
             {
-                await tokenRepository.DeleteAsync(tokenUser.UserId);
+                await tokenRepository.DeleteAsync(tokenUser.TokenId);
                 response.StatusCode = 200;
                 response.Success = true;
                 response.Message = "Logout successfully.";
