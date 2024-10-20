@@ -24,15 +24,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
                 {
-                    b.Property<Guid>("CertificateId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("CertificateId")
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("CertificateTypeId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("CertificateTypeId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("ExpertProfileId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ExpertProfileId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
@@ -54,9 +55,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.CertificateType", b =>
                 {
-                    b.Property<Guid>("CertificateTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("CertificateTypeId")
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -75,9 +75,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.ExpertProfile", b =>
                 {
-                    b.Property<Guid>("ExpertProfileId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("ExpertProfileId")
+                        .HasColumnType("text");
 
                     b.Property<string>("Bio")
                         .HasColumnType("text");
@@ -94,8 +93,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ExpertProfileId");
 
