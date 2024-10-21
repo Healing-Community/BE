@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Commands.ReactionTypes.UpdateReactionType
 {
-    public record UpdateReactionTypeCommand(Guid reactionTypeId, ReactionTypeDto ReactionTypeDto) : IRequest<BaseResponse<string>>;
+    public record UpdateReactionTypeCommand(string reactionTypeId, ReactionTypeDto ReactionTypeDto) : IRequest<BaseResponse<string>>;
 }

@@ -2,7 +2,7 @@
 {
     public interface IDeleteRepository
     {
-        Task DeleteAsync(Guid id);
+        Task DeleteAsync(string id);
 
     }
 }

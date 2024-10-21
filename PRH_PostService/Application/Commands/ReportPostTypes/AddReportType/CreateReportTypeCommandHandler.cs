@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Commands.ReportPostTypes.AddReportType
@@ -14,13 +15,13 @@ namespace Application.Commands.ReportPostTypes.AddReportType
         {
             var response = new BaseResponse<string>
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
             var reportType = new ReportType
             {
-                ReportTypeId = NewId.NextSequentialGuid(),
+                ReportTypeId = Ulid.NewUlid().ToString(),
                 Name = request.ReportTypeDto.Name,
                 Description = request.ReportTypeDto.Description,
             };

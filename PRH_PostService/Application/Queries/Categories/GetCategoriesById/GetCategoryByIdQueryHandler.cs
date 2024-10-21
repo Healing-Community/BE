@@ -3,17 +3,19 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Queries.Categories.GetCategoriesById
 {
-    public class GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository) : IRequestHandler<GetCategoryByIdQuery, BaseResponse<Category>>
+    public class GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository) 
+        : IRequestHandler<GetCategoryByIdQuery, BaseResponse<Category>>
     {
         public async Task<BaseResponse<Category>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<Category>()
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };

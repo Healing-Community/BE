@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Queries.ReactionTypes.GetReactionTypesById
@@ -14,7 +15,7 @@ namespace Application.Queries.ReactionTypes.GetReactionTypesById
         {
             var response = new BaseResponse<ReactionType>()
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };

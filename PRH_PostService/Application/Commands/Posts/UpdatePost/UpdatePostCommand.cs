@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Commands.Posts.UpdatePost
 {
-    public record UpdatePostCommand(Guid postId, PostDto PostDto) : IRequest<BaseResponse<string>>;
+    public record UpdatePostCommand(string postId, PostDto PostDto) : IRequest<BaseResponse<string>>;
 }

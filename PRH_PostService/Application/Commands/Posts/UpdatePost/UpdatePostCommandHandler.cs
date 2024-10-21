@@ -43,7 +43,6 @@ namespace Application.Commands.Posts.UpdatePost
                 response.Message = "Lỗi !!! Cập nhật bài viết thất bại";
                 response.Errors.Add(ex.Message);
             }
-
             return response;
         }
     }
