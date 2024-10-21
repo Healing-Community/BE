@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_UserService_API;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "";
 });
 
+# region HealthChecks
 app.MapHealthChecks("/health/liveness", new HealthCheckOptions
 {
     Predicate = (check) => check.Tags.Contains("liveness"),  // Lọc chỉ liveness checks
@@ -84,6 +86,15 @@ app.MapHealthChecks("/health/readiness", new HealthCheckOptions
         await context.Response.WriteAsync(result);
     }
 });
+# endregion
+
+#region Prometheus
+
+app.UseHttpMetrics();
+
+app.UseMetricServer();
+
+#endregion
 
 app.UseHttpsRedirection();
 
