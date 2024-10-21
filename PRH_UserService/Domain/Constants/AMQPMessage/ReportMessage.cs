@@ -2,12 +2,12 @@
 
 public class ReportMessage
 {
-    public Guid UserId { get; set; }
-    public Guid TargetUserId { get; set; }
-    public Guid ExpertId { get; set; }
-    public Guid PostId { get; set; }
-    public Guid CommentId { get; set; }
+    public required string UserId { get; set; }
+    public string? TargetUserId { get; set; }
+    public string? ExpertId { get; set; }
+    public string? PostId { get; set; }
+    public string? CommentId { get; set; }
     public string? Description { get; set; }
-    
+
     public required string ReportTypeId { get; set; }
 }

@@ -3,6 +3,7 @@ using Infrastructure;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_ReportService_API;
+using Prometheus;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,8 +31,10 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "";
 });
 
-app.MapHealthChecks("/health", new HealthCheckOptions
+# region HealthChecks
+app.MapHealthChecks("/health/liveness", new HealthCheckOptions
 {
+    Predicate = (check) => check.Tags.Contains("liveness"),  // L?c ch? liveness checks
     ResponseWriter = async (context, report) =>
     {
         context.Response.ContentType = "application/json";
@@ -50,6 +53,37 @@ app.MapHealthChecks("/health", new HealthCheckOptions
         await context.Response.WriteAsync(result);
     }
 });
+
+app.MapHealthChecks("/health/readiness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("readiness"),  // L?c ch? readiness checks
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
+# endregion
+
+#region Prometheus
+
+app.UseHttpMetrics();
+
+app.UseMetricServer();
+
+#endregion
 
 app.UseHttpsRedirection();
 
