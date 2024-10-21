@@ -3,8 +3,9 @@
     public class ReactionRequestCreatedMessage
     {
         public required string ReactionRequestId { get; set; }
-        public required string UserId { get; set; }
-        public required string PostId { get; set; }
-        public required string ReactionTypeId { get; set; }
+        public string? UserId { get; set; }
+        public string? PostId { get; set; }
+        public string? ReactionTypeId { get; set; }
+        public DateTime ReactionDate { get; set; }
     }
 }
