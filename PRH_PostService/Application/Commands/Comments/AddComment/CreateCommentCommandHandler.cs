@@ -7,6 +7,7 @@ using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Commands.Comments.AddComment
@@ -18,7 +19,7 @@ namespace Application.Commands.Comments.AddComment
         {
             var response = new BaseResponse<string>
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
@@ -30,12 +31,11 @@ namespace Application.Commands.Comments.AddComment
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
-            var userGuid = Guid.Parse(userId);
             var comment = new Comment
             {
-                CommentId = NewId.NextSequentialGuid(),
+                CommentId = Ulid.NewUlid().ToString(),
                 PostId = request.CommentDto.PostId,
-                UserId = userGuid,
+                UserId = userId,
                 //ParentId = request.CommentDto.ParentId,
                 Content = request.CommentDto.Content,
                 CreatedAt = DateTime.UtcNow                  
@@ -49,9 +49,9 @@ namespace Application.Commands.Comments.AddComment
                 // Send the Request to the Queue for processing
                 var commentRequestCreatedMessage = new CommentRequestCreatedMessage
                 {
-                    CommentRequestId = NewId.NextSequentialGuid(),
+                    CommentRequestId = Ulid.NewUlid().ToString(),
                     PostId = comment.PostId,
-                    UserId = userGuid,
+                    UserId = comment.UserId,
                     Content = comment.Content,
                     CommentedDate = comment.CreatedAt
                 };

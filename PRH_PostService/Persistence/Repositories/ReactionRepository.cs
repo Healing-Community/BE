@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using NUlid;
 using System.Linq.Expressions;
 
 namespace Persistence.Repositories
@@ -14,7 +15,7 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(string id)
         {
             var reaction = await hFDBPostserviceContext.Reactions.FirstOrDefaultAsync(x => x.ReactionId == id);
             if (reaction == null) return;
@@ -22,14 +23,16 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task<Reaction> GetByIdAsync(Guid id)
+        public async Task<Reaction> GetByIdAsync(string id)
         {
             return await hFDBPostserviceContext.Reactions.FirstAsync(x => x.ReactionId == id);
         }
 
         public async Task<Reaction> GetByPropertyAsync(Expression<Func<Reaction, bool>> predicate)
         {
-            return await hFDBPostserviceContext.Reactions.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Reaction();
+            return await hFDBPostserviceContext.Reactions.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Reaction() { 
+                ReactionId = Ulid.Empty.ToString() 
+            };
         }
 
         public async Task<IEnumerable<Reaction>> GetsAsync()
@@ -37,7 +40,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Reactions.ToListAsync();
         }
 
-        public async Task Update(Guid id, Reaction entity)
+        public async Task Update(string id, Reaction entity)
         {
             var existingReaction = await hFDBPostserviceContext.Reactions.FirstOrDefaultAsync(x => x.ReactionId == id);
             if (existingReaction == null) return;

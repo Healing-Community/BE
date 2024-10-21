@@ -2,9 +2,9 @@
 {
     public class Post
     {
-        public Guid PostId { get; init; }
-        public Guid UserId { get; set; }
-        public Guid CategoryId { get; set; }
+        public required string PostId { get; init; }
+        public string? UserId { get; set; }
+        public string? CategoryId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string CoverImgUrl { get; set; } = string.Empty;
         public string VideoUrl { get; set; } = string.Empty;
