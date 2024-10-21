@@ -12,6 +12,11 @@ namespace PRH_NotificationService_API.Consumer
         {
             var reactionRequest = context.Message;
 
+            if (reactionRequest.UserId == null)
+            {
+                throw new ArgumentNullException(nameof(reactionRequest.UserId), "UserId cannot be null");
+            }
+
             var notificationType = await notificationTypeRepository.GetByIdAsync("10") ?? throw new Exception("Notification type not found");
             var notification = new Notification
             {
@@ -19,8 +24,8 @@ namespace PRH_NotificationService_API.Consumer
                 UserId = reactionRequest.UserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
                 Message = $"Người dùng {reactionRequest.UserId} đã phản ứng với bài viết {reactionRequest.PostId} bằng loại phản ứng {reactionRequest.ReactionTypeId}",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = reactionRequest.ReactionDate,
+                UpdatedAt = reactionRequest.ReactionDate,
                 IsRead = false
             };
 
