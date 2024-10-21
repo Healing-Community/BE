@@ -92,8 +92,8 @@ public static class DependencyInjection
             // Add MassTransit hosted service
             services.AddHostedService<MassTransitHostedService>();
         });
-        # endregion
-        
+        #endregion
+
         #region Authorization-Authentication
 
         var jwtSettings = configuration.GetSection("JwtSettings");
@@ -139,7 +139,8 @@ public static class DependencyInjection
         // Retrieve connection strings and settings from configuration
         string postgresConnectionString = configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
         services.AddHealthChecks()
-                .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: ["self"])
+                .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: ["liveness"])
+
                 //.AddNpgSql(
                 //    configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
                 //    name: "PostgresDb-check",
@@ -150,13 +151,13 @@ public static class DependencyInjection
                 .AddMongoDb(
                     configuration.GetConnectionString("MongoDb") ?? throw new NullReferenceException(),
                     name: "MongoDb-check",
-                    tags: ["db", "mongo"],
+                    tags: ["db", "mongo", "readiness"],
                     failureStatus: HealthStatus.Unhealthy
                 )
                 .AddRabbitMQ(
                     rabbitConnectionString: rabbitMq["Host"] ?? throw new NullReferenceException(),
                     name: "RabbitMq-check",
-                    tags: ["rabbitmq", "messaging"],
+                    tags: ["rabbitmq", "messaging", "readiness"],
                     failureStatus: HealthStatus.Unhealthy
                 );
         #endregion
