@@ -73,6 +73,10 @@
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[8.0.10, )"
+            },
+            "NUlid": {
+              "target": "Package",
+              "version": "[1.7.2, )"
             }
           },
           "imports": [
