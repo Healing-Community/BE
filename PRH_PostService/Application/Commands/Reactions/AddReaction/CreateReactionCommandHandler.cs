@@ -7,6 +7,7 @@ using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Commands.Reactions.AddReaction
@@ -18,7 +19,7 @@ namespace Application.Commands.Reactions.AddReaction
         {
             var response = new BaseResponse<string>
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
@@ -30,11 +31,10 @@ namespace Application.Commands.Reactions.AddReaction
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
-            var userGuid = Guid.Parse(userId);
             var reaction = new Reaction
             {
-                ReactionId = NewId.NextSequentialGuid(),
-                UserId = userGuid,
+                ReactionId = Ulid.NewUlid().ToString(),
+                UserId = userId,
                 PostId = request.ReactionDto.PostId,
                 ReactionTypeId = request.ReactionDto.ReactionTypeId,
                 CreateAt = DateTime.UtcNow,
@@ -48,7 +48,7 @@ namespace Application.Commands.Reactions.AddReaction
                 // Send the Request to the Queue for processing
                 var reactionRequestCreatedMessage = new ReactionRequestCreatedMessage
                 {
-                    ReactionRequestId = NewId.NextSequentialGuid(),
+                    ReactionRequestId = Ulid.NewUlid().ToString(),
                     UserId = reaction.UserId,
                     PostId = reaction.PostId,
                     ReactionTypeId= reaction.ReactionTypeId,

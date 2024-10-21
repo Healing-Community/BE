@@ -2,7 +2,7 @@
 {
     public class ReactionDto
     {
-        public Guid PostId { get; set; }
-        public Guid ReactionTypeId { get; set; }
+        public string? PostId { get; set; }
+        public string? ReactionTypeId { get; set; }
     }
 }

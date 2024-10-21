@@ -5,7 +5,7 @@ namespace Application.Interfaces.GenericRepository
     public interface IReadRepository<T>
     {
         Task<IEnumerable<T>> GetsAsync();
-        Task<T> GetByIdAsync(Guid id);
+        Task<T> GetByIdAsync(string id);
         Task<T> GetByPropertyAsync(Expression<Func<T, bool>> predicate);
     }
 }

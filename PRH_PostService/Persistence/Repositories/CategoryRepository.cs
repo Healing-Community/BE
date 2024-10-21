@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using NUlid;
 using System.Linq.Expressions;
 
 namespace Persistence.Repositories
@@ -14,7 +15,7 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(string id)
         {
             var category = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
             if (category == null) return;
@@ -22,14 +23,16 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task<Category> GetByIdAsync(Guid id)
+        public async Task<Category> GetByIdAsync(string id)
         {
             return await hFDBPostserviceContext.Categories.FirstAsync(x => x.CategoryId == id);
         }
 
         public async Task<Category> GetByPropertyAsync(Expression<Func<Category, bool>> predicate)
         {
-            return await hFDBPostserviceContext.Categories.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Category();
+            return await hFDBPostserviceContext.Categories.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Category() { 
+                    CategoryId = Ulid.Empty.ToString() 
+                };
         }
 
         public async Task<IEnumerable<Category>> GetsAsync()
@@ -37,7 +40,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Categories.ToListAsync();
         }
 
-        public async Task Update(Guid id, Category entity)
+        public async Task Update(string id, Category entity)
         {
             var existingCategory = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);
             if (existingCategory == null) return;

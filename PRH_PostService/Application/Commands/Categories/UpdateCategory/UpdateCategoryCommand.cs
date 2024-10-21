@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Commands.Categories.UpdateCategory
 {
-    public record UpdateCategoryCommand(Guid categoryId, CategoryDto CategoryDto) : IRequest<BaseResponse<string>>;
+    public record UpdateCategoryCommand(string categoryId, CategoryDto CategoryDto) : IRequest<BaseResponse<string>>;
 }

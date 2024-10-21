@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Commands.Categories.AddCategory
@@ -11,18 +12,18 @@ namespace Application.Commands.Categories.AddCategory
     {
         public async Task<BaseResponse<string>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var categoryId = NewId.NextSequentialGuid();
-            var category = new Category
-            {
-                CategoryId = categoryId,
-                Name = request.CategoryDto.Name,
-                CreateAt = DateTime.UtcNow,
-            };
+            var categoryId = Ulid.NewUlid().ToString();
             var response = new BaseResponse<string>
             {
                 Id = categoryId,
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
+            };
+            var category = new Category
+            {
+                CategoryId = categoryId,
+                Name = request.CategoryDto.Name,
+                CreateAt = DateTime.UtcNow,
             };
             try
             {

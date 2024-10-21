@@ -2,10 +2,10 @@
 {
     public class ReactionRequestCreatedMessage
     {
-        public Guid ReactionRequestId { get; set; }
-        public Guid UserId { get; set; }
-        public Guid PostId { get; set; }
-        public Guid ReactionTypeId { get; set; }
+        public required string ReactionRequestId { get; set; }
+        public string? UserId { get; set; }
+        public string? PostId { get; set; }
+        public string? ReactionTypeId { get; set; }
         public DateTime ReactionDate { get; set; }
     }
 }
