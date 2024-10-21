@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Commands.ReactionTypes.AddReactionType
@@ -12,7 +13,7 @@ namespace Application.Commands.ReactionTypes.AddReactionType
     {
         public async Task<BaseResponse<string>> Handle(CreateReactionTypeCommand request, CancellationToken cancellationToken)
         {
-            var reactionTypeId = NewId.NextSequentialGuid();
+            var reactionTypeId = Ulid.NewUlid().ToString();
             var reactionType = new ReactionType
             {
                 ReactionTypeId = reactionTypeId,

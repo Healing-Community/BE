@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Queries.Comments.GetComments
@@ -14,7 +15,7 @@ namespace Application.Queries.Comments.GetComments
         {
             var response = new BaseResponse<IEnumerable<Comment>>()
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };

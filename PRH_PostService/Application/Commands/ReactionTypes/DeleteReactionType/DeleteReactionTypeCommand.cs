@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.ReactionTypes.DeleteReactionType
 {
-    public record DeleteReactionTypeCommand(Guid Id) : IRequest<BaseResponse<string>>;
+    public record DeleteReactionTypeCommand(string Id) : IRequest<BaseResponse<string>>;
 }

@@ -7,6 +7,7 @@ using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 
@@ -19,7 +20,7 @@ namespace Application.Commands.Posts.AddPost
         {
             var response = new BaseResponse<string>
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
@@ -31,11 +32,10 @@ namespace Application.Commands.Posts.AddPost
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
-            var userGuid = Guid.Parse(userId);
             var post = new Post
             {
-                PostId = NewId.NextSequentialGuid(),
-                UserId = userGuid,
+                PostId = Ulid.NewUlid().ToString(),
+                UserId = userId,
                 CategoryId = request.PostDto.CategoryId,
                 Title = request.PostDto.Title,
                 CoverImgUrl = request.PostDto.CoverImgUrl,
@@ -53,7 +53,7 @@ namespace Application.Commands.Posts.AddPost
                 // Send the Request to the Queue for processing
                 var postingRequestCreatedMessage = new PostingRequestCreatedMessage
                 {
-                    PostingRequestId = NewId.NextSequentialGuid(),
+                    PostingRequestId = Ulid.NewUlid().ToString(),
                     UserId = post.UserId,
                     Tittle = post.Title,
                     PostedDate = post.CreateAt

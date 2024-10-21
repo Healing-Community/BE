@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Queries.Comments.GetCommentsById
 {
-    public record GetCommentsByIdQuery(Guid Id) : IRequest<BaseResponse<Comment>>;
+    public record GetCommentsByIdQuery(string Id) : IRequest<BaseResponse<Comment>>;
 }
