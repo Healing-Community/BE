@@ -223,3 +223,19 @@ C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_ReportS
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_ReportService\PRH_ReportService_API\obj\Debug\net8.0\PRH_ReportService_API.pdb
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_ReportService\PRH_ReportService_API\obj\Debug\net8.0\PRH_ReportService_API.genruntimeconfig.cache
 C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_ReportService\PRH_ReportService_API\obj\Debug\net8.0\ref\PRH_ReportService_API.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\HealthChecks.MongoDb.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\AWSSDK.Core.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\AWSSDK.SecurityToken.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\DnsClient.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\MongoDB.Bson.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\MongoDB.Driver.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\MongoDB.Driver.Core.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\MongoDB.Libmongocrypt.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\Prometheus.NetStandard.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\Prometheus.AspNetCore.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\SharpCompress.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\Snappier.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\ZstdSharp.dll
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\runtimes\linux\native\libmongocrypt.so
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\runtimes\osx\native\libmongocrypt.dylib
+D:\Repos\BE\PRH_ReportService\PRH_ReportService_API\bin\Debug\net8.0\runtimes\win\native\mongocrypt.dll
