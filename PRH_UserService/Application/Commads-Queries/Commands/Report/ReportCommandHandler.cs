@@ -39,7 +39,7 @@ namespace Application.Commands.Report
                 }
 
                 // Gán userId vào reportMessage
-                reportMessage.UserId = Guid.Parse(userId);
+                reportMessage.UserId = userId;
 
                 // Gửi thông báo report qua hàng đợi
                 await messagePublisher.PublishAsync(reportMessage, QueueName.ReportQueue, cancellationToken);

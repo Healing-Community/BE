@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PRH_ReportService_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b9625188f0d78ba709ec8fcde721bf8924af3742")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60af3858d76a20165c2ab33ed421614e4b3e620d")]
 [assembly: System.Reflection.AssemblyProductAttribute("PRH_ReportService_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PRH_ReportService_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

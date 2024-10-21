@@ -29,7 +29,7 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
 
     public async Task<Token> GetByPropertyAsync(Expression<Func<Token, bool>> predicate)
     {
-        return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate);
+        return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate) ?? throw new NullReferenceException();
     }
 
     public Task<IEnumerable<Token>> GetsAsync()
