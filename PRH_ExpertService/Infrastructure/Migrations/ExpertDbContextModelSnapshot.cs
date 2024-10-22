@@ -38,6 +38,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -78,6 +81,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ExpertProfileId")
                         .HasColumnType("text");
 
+                    b.Property<string>("BackIdCardUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("Bio")
                         .HasColumnType("text");
 
@@ -89,6 +95,15 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("ExpertiseAreas")
                         .HasColumnType("text");
+
+                    b.Property<string>("FrontIdCardUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

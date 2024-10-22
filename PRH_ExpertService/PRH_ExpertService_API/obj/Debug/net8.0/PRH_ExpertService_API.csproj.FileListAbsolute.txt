@@ -1,1 +1,0 @@
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_ExpertService\PRH_ExpertService_API\bin\Debug\net8.0\MassTransit.dll

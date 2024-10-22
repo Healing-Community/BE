@@ -6,6 +6,7 @@ namespace Domain.Entities
         public required string CertificateId { get; set; }
         public required string ExpertProfileId { get; set; }
         public required string CertificateTypeId { get; set; }
+        public string? FileUrl { get; set; }
         public DateTime IssueDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public int Status { get; set; }
