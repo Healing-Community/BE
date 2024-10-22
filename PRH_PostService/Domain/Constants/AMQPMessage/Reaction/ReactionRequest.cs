@@ -1,4 +1,4 @@
-﻿namespace Application.Commons.Request.Reaction
+﻿namespace Domain.Constants.AMQPMessage.Reaction
 {
     public class ReactionRequest
     {

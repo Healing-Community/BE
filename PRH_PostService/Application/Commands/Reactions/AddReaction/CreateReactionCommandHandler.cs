@@ -1,11 +1,10 @@
 ﻿using Application.Commons;
-using Application.Commons.Request.Reaction;
 using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
 using Domain.Constants;
+using Domain.Constants.AMQPMessage.Reaction;
 using Domain.Entities;
-using MassTransit;
 using MediatR;
 using NUlid;
 using System.Net;

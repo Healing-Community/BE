@@ -1,13 +1,13 @@
 ﻿using Application.Commons;
-using Application.Commons.Request.Report;
 using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
 using Domain.Constants;
+using Domain.Constants.AMQPMessage;
 using Domain.Entities;
-using MassTransit;
 using MediatR;
 using NUlid;
+using System.ComponentModel.Design;
 using System.Net;
 
 
@@ -48,14 +48,15 @@ namespace Application.Commands.ReportPosts.AddReport
                 response.Success = true;
                 response.Message = "Tạo thành công";
                 // Send the Request to the Queue for processing
-                var reportRequestCreatedMessage = new ReportRequestCreatedMessage
+                var reportRequestCreatedMessage = new ReportMessage
                 {
-                    ReportRequestId = Ulid.NewUlid().ToString(),
                     PostId = report.PostId,
                     UserId = report.UserId,
                     ReportTypeId = report.ReportTypeId,
-                    Status = report.Status,
-                    ReportedDate = report.CreatedAt
+                    TargetUserId = null,
+                    ExpertId = null,
+                    Description = "Report description",
+                    CommentId = null
                 };
                 await messagePublisher.PublishAsync(reportRequestCreatedMessage, QueueName.ReportQueue, cancellationToken);
             }

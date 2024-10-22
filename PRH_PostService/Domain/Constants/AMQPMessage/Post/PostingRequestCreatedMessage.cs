@@ -1,4 +1,4 @@
-﻿namespace Application.Commons.Request.Post
+﻿namespace Domain.Constants.AMQPMessage.Post
 {
     public class PostingRequestCreatedMessage
     {
