@@ -1,4 +1,4 @@
-﻿namespace Application.Commons.Request.Report
+﻿namespace Domain.Constants.AMQPMessage.Report
 {
     public class ReportRequestCreatedMessage
     {

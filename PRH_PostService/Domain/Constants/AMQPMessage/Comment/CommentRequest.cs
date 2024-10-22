@@ -1,4 +1,4 @@
-﻿namespace Application.Commons.Request.Comment
+﻿namespace Domain.Constants.AMQPMessage.Comment
 {
     public class CommentRequest
     {
