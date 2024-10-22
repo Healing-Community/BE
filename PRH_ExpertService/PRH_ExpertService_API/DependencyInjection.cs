@@ -4,6 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using MassTransit;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using PRH_ExpertService_API.FileUpload;
 
 namespace PRH_ExpertService_API;
 
@@ -55,6 +58,8 @@ public static class DependencyInjection
                     Array.Empty<string>()
                 }
             });
+
+            c.OperationFilter<FileUploadOperationFilter>();
         });
 
         #endregion
@@ -152,7 +157,27 @@ public static class DependencyInjection
                 );
         #endregion
 
-        return services;
+        #region Firebase
 
+        var firebaseSettings = configuration.GetSection("FirebaseSettings");
+        var credentialsPath = firebaseSettings["CredentialsPath"];
+        var storageBucket = firebaseSettings["StorageBucket"];
+
+        FirebaseApp? firebaseApp = FirebaseApp.DefaultInstance;
+
+        firebaseApp ??= FirebaseApp.Create(new AppOptions
+            {
+                Credential = GoogleCredential.FromFile(credentialsPath),
+                ProjectId = storageBucket
+            });
+
+        if (firebaseApp != null)
+        {
+            services.AddSingleton(firebaseApp);
+        }
+
+        #endregion
+
+        return services;
     }
 }

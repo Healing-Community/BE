@@ -3,6 +3,7 @@
   "WorkspaceRootPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\",
   "Documents": [
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -13,6 +14,22 @@
     {
       "AbsoluteMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\infrastructure\\context\\expertdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\expertdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\config\\healing-community-4d0b5-firebase-adminsdk-4g8sm-119c8ee613.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\config\\healing-community-4d0b5-firebase-adminsdk-4g8sm-119c8ee613.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\fileupload\\fileuploadmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\fileupload\\fileuploadmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\fileupload\\fileuploadoperationfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\fileupload\\fileuploadoperationfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\application\\commands\\uploadfile\\uploadfilecommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|solutionrelative:application\\commands\\uploadfile\\uploadfilecommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> Stashed changes
     }
   ],
   "DocumentGroupContainers": [
@@ -22,7 +39,69 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< Updated upstream
           "SelectedChildIndex": 1,
+=======
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FileUploadOperationFilter.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\FileUpload\\FileUploadOperationFilter.cs",
+              "RelativeDocumentMoniker": "PRH_ExpertService_API\\FileUpload\\FileUploadOperationFilter.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\FileUpload\\FileUploadOperationFilter.cs",
+              "RelativeToolTip": "PRH_ExpertService_API\\FileUpload\\FileUploadOperationFilter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-22T14:08:20.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "FileUploadModel.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\FileUpload\\FileUploadModel.cs",
+              "RelativeDocumentMoniker": "PRH_ExpertService_API\\FileUpload\\FileUploadModel.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\FileUpload\\FileUploadModel.cs",
+              "RelativeToolTip": "PRH_ExpertService_API\\FileUpload\\FileUploadModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-22T14:08:15.341Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UploadFileCommandHandler.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "RelativeDocumentMoniker": "Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "RelativeToolTip": "Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABYAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-22T12:55:02.008Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "healing-community-4d0b5-firebase-adminsdk-4g8sm-119c8ee613.json",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\Config\\healing-community-4d0b5-firebase-adminsdk-4g8sm-119c8ee613.json",
+              "RelativeDocumentMoniker": "PRH_ExpertService_API\\Config\\healing-community-4d0b5-firebase-adminsdk-4g8sm-119c8ee613.json",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\Config\\healing-community-4d0b5-firebase-adminsdk-4g8sm-119c8ee613.json",
+              "RelativeToolTip": "PRH_ExpertService_API\\Config\\healing-community-4d0b5-firebase-adminsdk-4g8sm-119c8ee613.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-10-22T14:09:39.655Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": -1,
+>>>>>>> Stashed changes
           "Children": [
             {
               "$type": "Bookmark",
