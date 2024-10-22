@@ -3,12 +3,8 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using NUlid;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.ReactionTypes.AddReactionType
 {
@@ -17,7 +13,7 @@ namespace Application.Commands.ReactionTypes.AddReactionType
     {
         public async Task<BaseResponse<string>> Handle(CreateReactionTypeCommand request, CancellationToken cancellationToken)
         {
-            var reactionTypeId = NewId.NextSequentialGuid();
+            var reactionTypeId = Ulid.NewUlid().ToString();
             var reactionType = new ReactionType
             {
                 ReactionTypeId = reactionTypeId,
@@ -34,13 +30,13 @@ namespace Application.Commands.ReactionTypes.AddReactionType
                 await reactionTypeRepository.Create(reactionType);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Reaction type created successfully";
+                response.Message = "Tạo thành công";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create reaction type";
+                response.Message = "Lỗi !!! Tạo thất bại";
                 response.Errors.Add(ex.Message);
             }
 

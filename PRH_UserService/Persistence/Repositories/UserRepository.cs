@@ -3,10 +3,11 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using NUlid;
 
 namespace Persistence.Repositories;
 
-public class UserRepository(HFDbContext hFDbContext) : IUserRepository
+public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
 {
     public async Task Create(User entity)
     {
@@ -14,7 +15,7 @@ public class UserRepository(HFDbContext hFDbContext) : IUserRepository
         await hFDbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(string id)
     {
         var user = await hFDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
         if (user == null) return;
@@ -22,17 +23,17 @@ public class UserRepository(HFDbContext hFDbContext) : IUserRepository
         await hFDbContext.SaveChangesAsync();
     }
 
-    public async Task<User> GetByIdAsync(Guid id)
+    public async Task<User> GetByIdAsync(string id)
     {
         return await hFDbContext.Users.FirstAsync(x => x.UserId == id);
     }
 
     public async Task<User> GetByPropertyAsync(Expression<Func<User, bool>> predicate)
     {
-        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new User();
+        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new User() { UserId = Ulid.Empty.ToString()};
     }
 
-    public async Task Update(Guid id, User entity)
+    public async Task Update(string id, User entity)
     {
         var existingUser = await hFDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
         if (existingUser == null) return;

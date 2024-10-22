@@ -1,7 +1,8 @@
-﻿using Application.Commons.Request;
+﻿using Application.Commons.Request.Post;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
+using NUlid;
 
 namespace PRH_NotificationService_API.Consumer
 {
@@ -11,13 +12,13 @@ namespace PRH_NotificationService_API.Consumer
         {
             var postingRequest = context.Message;
 
-            var notificationType = await notificationTypeRepository.GetByNameAsync("NewPostByFollowedUser") ?? throw new Exception("Notification type not found");
+            var notificationType = await notificationTypeRepository.GetByIdAsync("09") ?? throw new Exception("Notification type not found");
             var notification = new Notification
             {
-                NotificationId = Guid.NewGuid(),
+                NotificationId = Ulid.NewUlid().ToString(),
                 UserId = postingRequest.UserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
-                Message = postingRequest.Tittle ?? string.Empty,
+                Message = $"Người dùng {postingRequest.UserId} đã đăng bài viết với tiêu đề: {postingRequest.Tittle}",
                 CreatedAt = postingRequest.PostedDate,
                 UpdatedAt = postingRequest.PostedDate,
                 IsRead = false

@@ -2,7 +2,7 @@
 {
     public class Category
     {
-        public Guid Id { get; init; }
+        public required string CategoryId { get; init; }
         public string Name { get; set; } = string.Empty;
         public DateTime CreateAt { get; init; }
         public DateTime? UpdateAt { get; set; }

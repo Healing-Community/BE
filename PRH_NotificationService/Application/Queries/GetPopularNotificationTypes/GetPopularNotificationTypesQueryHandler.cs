@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.GetPopularNotificationTypes
 {
@@ -10,7 +11,7 @@ namespace Application.Queries.GetPopularNotificationTypes
         {
             var response = new BaseResponse<Dictionary<string, int>>
             {
-                Id = Guid.NewGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = []
             };

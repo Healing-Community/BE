@@ -4,7 +4,6 @@ using Application.Commands.Posts.UpdatePost;
 using Application.Commons.DTOs;
 using Application.Queries.Posts.GetPosts;
 using Application.Queries.Posts.GetPostsById;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,8 +24,8 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpGet("get-by-id/{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("get-by-id/{id}")]
+        public async Task<IActionResult> GetById(string id)
         {
             var response = await sender.Send(new GetPostsByIdQuery(id));
             return response.ToActionResult();
@@ -41,16 +40,16 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPut("update/{id:guid}")]
-        public async Task<IActionResult> UpdatePost(Guid id, PostDto post)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdatePost(string id, PostDto post)
         {
             var response = await sender.Send(new UpdatePostCommand(id, post));
             return response.ToActionResult();
         }
 
         [Authorize(Roles = "User")]
-        [HttpDelete("delete/{id:guid}")]
-        public async Task<IActionResult> DeletePost(Guid id)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeletePost(string id)
         {
             var response = await sender.Send(new DeletePostCommand(id));
             return response.ToActionResult();

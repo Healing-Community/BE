@@ -2,12 +2,8 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using NUlid;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence.Repositories
 {
@@ -19,7 +15,7 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(string id)
         {
             var report = await hFDBPostserviceContext.Reports.FirstOrDefaultAsync(x => x.ReportId == id);
             if (report == null) return;
@@ -27,7 +23,7 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task<Report> GetByIdAsync(Guid id)
+        public async Task<Report> GetByIdAsync(string id)
         {
             return await hFDBPostserviceContext.Reports.FirstAsync(x => x.ReportId == id);
         }
@@ -35,7 +31,9 @@ namespace Persistence.Repositories
         public async Task<Report> GetByPropertyAsync(Expression<Func<Report, bool>> predicate)
         {
             var report = await hFDBPostserviceContext.Reports.AsNoTracking().FirstOrDefaultAsync(predicate);
-            return report ?? new Report();
+            return report ?? new Report() { 
+                ReportId = Ulid.Empty.ToString() 
+            };
         }
 
         public async Task<IEnumerable<Report>> GetsAsync()
@@ -43,7 +41,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Reports.ToListAsync();
         }
 
-        public async Task Update(Guid id, Report entity)
+        public async Task Update(string id, Report entity)
         {
             var existingReport = await hFDBPostserviceContext.Reports.FirstOrDefaultAsync(x => x.ReportId == id);
             if (existingReport == null) return;

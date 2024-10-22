@@ -2,6 +2,7 @@
 using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.GetUserNotifications
 {
@@ -11,7 +12,7 @@ namespace Application.Queries.GetUserNotifications
         {
             var response = new BaseResponse<List<NotificationDto>>
             {
-                Id = Guid.NewGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = []
             };

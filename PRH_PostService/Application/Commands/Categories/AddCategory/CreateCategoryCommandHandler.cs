@@ -3,12 +3,8 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using NUlid;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Categories.AddCategory
 {
@@ -16,36 +12,33 @@ namespace Application.Commands.Categories.AddCategory
     {
         public async Task<BaseResponse<string>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var categoryId = NewId.NextSequentialGuid();
-            var category = new Category
-            {
-                Id = categoryId,
-                Name = request.CategoryDto.Name,
-                CreateAt = DateTime.UtcNow,
-            };
-
+            var categoryId = Ulid.NewUlid().ToString();
             var response = new BaseResponse<string>
             {
                 Id = categoryId,
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
-
+            var category = new Category
+            {
+                CategoryId = categoryId,
+                Name = request.CategoryDto.Name,
+                CreateAt = DateTime.UtcNow,
+            };
             try
             {
                 await categoryRepository.Create(category);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Category created successfully";
+                response.Message = "Tạo danh mục thành công!";
             }
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create category";
+                response.Message = "Lỗi !!! Không tạo được danh mục";
                 response.Errors.Add(ex.Message);
             }
-
             return response;
         }
     }

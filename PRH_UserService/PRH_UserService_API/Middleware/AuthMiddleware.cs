@@ -17,8 +17,8 @@ public class AuthMiddleware
     public async Task Invoke(HttpContext context)
     {
         var endpoint = context.GetEndpoint();
-        var allowAnonymousRefreshTokenAttribute = endpoint?.Metadata.GetMetadata<AllowAnonymousRefreshTokenAttribute>();
-        if (allowAnonymousRefreshTokenAttribute != null)
+        var allowAnonymous = endpoint?.Metadata.GetMetadata<AllowAnonymous>();
+        if (allowAnonymous != null)
         {
             await _next(context);
             return;

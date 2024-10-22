@@ -2,7 +2,8 @@
 
 public class Token
 {
-    public Guid UserId { get; init; }
+    public required string TokenId { get; set; }
+    public required string UserId { get; init; }
     public string RefreshToken { get; set; } = null!;
     public DateTime IssuedAt { get; init; }
     public DateTime ExpiresAt { get; set; }

@@ -1,5 +1,5 @@
 ﻿using Application.Commons;
-using Application.Commons.Request;
+using Application.Commons.Request.Report;
 using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
@@ -7,6 +7,7 @@ using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 
@@ -19,7 +20,7 @@ namespace Application.Commands.ReportPosts.AddReport
         {
             var response = new BaseResponse<string>
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
@@ -27,16 +28,15 @@ namespace Application.Commands.ReportPosts.AddReport
             if (userId == null)
             {
                 response.Success = false;
-                response.Message = "Unauthorized";
+                response.Message = "Không có quyền để truy cập";
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
-            var userGuid = Guid.Parse(userId);
             var report = new Report
             {
-                ReportId = NewId.NextSequentialGuid(),
+                ReportId = Ulid.NewUlid().ToString(),
                 PostId = request.reportDto.PostId,
-                UserId = userGuid,
+                UserId = userId,
                 ReportTypeId = request.reportDto.ReportTypeId,
                 Status = request.reportDto.Status,
                 CreatedAt = DateTime.UtcNow,
@@ -46,11 +46,11 @@ namespace Application.Commands.ReportPosts.AddReport
                 await reportRepository.Create(report);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Report created successfully";
+                response.Message = "Tạo thành công";
                 // Send the Request to the Queue for processing
                 var reportRequestCreatedMessage = new ReportRequestCreatedMessage
                 {
-                    ReportRequestId = NewId.NextSequentialGuid(),
+                    ReportRequestId = Ulid.NewUlid().ToString(),
                     PostId = report.PostId,
                     UserId = report.UserId,
                     ReportTypeId = report.ReportTypeId,
@@ -63,7 +63,7 @@ namespace Application.Commands.ReportPosts.AddReport
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create report";
+                response.Message = "Lỗi !!! Tạo thất bại";
                 response.Errors.Add(ex.Message);
             }
             return response;

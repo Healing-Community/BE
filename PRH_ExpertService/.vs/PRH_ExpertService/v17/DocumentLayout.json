@@ -3,20 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\infrastructure\\context\\expertdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\expertdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\domain\\entities\\certificate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\certificate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\domain\\entities\\certificatetype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\certificatetype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\domain\\entities\\expertprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\expertprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,51 +30,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Certificate.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Domain\\Entities\\Certificate.cs",
-              "RelativeDocumentMoniker": "Domain\\Entities\\Certificate.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Domain\\Entities\\Certificate.cs",
-              "RelativeToolTip": "Domain\\Entities\\Certificate.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "PRH_ExpertService_API\\DependencyInjection.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\DependencyInjection.cs",
+              "RelativeToolTip": "PRH_ExpertService_API\\DependencyInjection.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-18T10:13:48.507Z"
+              "WhenOpened": "2024-10-21T07:36:03.499Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\Program.cs",
+              "RelativeDocumentMoniker": "PRH_ExpertService_API\\Program.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\Program.cs",
+              "RelativeToolTip": "PRH_ExpertService_API\\Program.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAAAGUAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-21T05:32:14.47Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "CertificateType.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Domain\\Entities\\CertificateType.cs",
-              "RelativeDocumentMoniker": "Domain\\Entities\\CertificateType.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Domain\\Entities\\CertificateType.cs",
-              "RelativeToolTip": "Domain\\Entities\\CertificateType.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-18T10:13:10.507Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ExpertProfile.cs",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Domain\\Entities\\ExpertProfile.cs",
-              "RelativeDocumentMoniker": "Domain\\Entities\\ExpertProfile.cs",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Domain\\Entities\\ExpertProfile.cs",
-              "RelativeToolTip": "Domain\\Entities\\ExpertProfile.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-18T10:12:48.777Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
               "Title": "ExpertDbContext.cs",
               "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Infrastructure\\Context\\ExpertDbContext.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Context\\ExpertDbContext.cs",
               "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Infrastructure\\Context\\ExpertDbContext.cs",
               "RelativeToolTip": "Infrastructure\\Context\\ExpertDbContext.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAqwB8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-18T10:07:44.768Z",
+              "WhenOpened": "2024-10-20T11:15:28.893Z",
               "EditorCaption": ""
             }
           ]

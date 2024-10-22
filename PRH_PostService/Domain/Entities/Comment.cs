@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
     public class Comment
     {
-        public Guid CommentId { get; set; }
-        public Guid PostId { get; set; }
-        public Guid? ParentId { get; set; }
-        public Guid UserId { get; set; }
+        public required string CommentId { get; set; }
+        public string? PostId { get; set; }
+        public string? ParentId { get; set; }
+        public string? UserId { get; set; }
         public string Content { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

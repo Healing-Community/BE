@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using NUlid;
 using System.Linq.Expressions;
 
 
@@ -15,23 +16,23 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(string id)
         {
-            var post = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            var post = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.PostId == id);
             if (post == null) return;
             hFDBPostserviceContext.Posts.Remove(post);
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task<Post> GetByIdAsync(Guid id)
+        public async Task<Post> GetByIdAsync(string id)
         {
-            return await hFDBPostserviceContext.Posts.FirstAsync(x => x.Id == id);
+            return await hFDBPostserviceContext.Posts.FirstAsync(x => x.PostId == id);
         }
 
         public async Task<Post> GetByPropertyAsync(Expression<Func<Post, bool>> predicate)
         {
             var post = await hFDBPostserviceContext.Posts.AsNoTracking().FirstOrDefaultAsync(predicate);
-            return post ?? new Post();
+            return post ?? new Post() { PostId = Ulid.Empty.ToString() };
         }
 
         public async Task<IEnumerable<Post>> GetsAsync()
@@ -39,9 +40,9 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Posts.ToListAsync();
         }
 
-        public async Task Update(Guid id, Post entity)
+        public async Task Update(string id, Post entity)
         {
-            var existingPost = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            var existingPost = await hFDBPostserviceContext.Posts.FirstOrDefaultAsync(x => x.PostId == id);
             if (existingPost == null) return;
             hFDBPostserviceContext.Entry(existingPost).CurrentValues.SetValues(entity);
             hFDBPostserviceContext.Entry(existingPost).State = EntityState.Modified;

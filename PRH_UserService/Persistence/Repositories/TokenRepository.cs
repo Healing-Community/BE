@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class TokenRepository(HFDbContext hFDbContext) : ITokenRepository
+public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepository
 {
     public async Task Create(Token entity)
     {
@@ -14,7 +14,7 @@ public class TokenRepository(HFDbContext hFDbContext) : ITokenRepository
         await hFDbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(string id)
     {
         var token = await hFDbContext.Tokens.FindAsync(id) ??
                     throw new ArgumentException($"Token with ID {id} not found.");
@@ -22,14 +22,14 @@ public class TokenRepository(HFDbContext hFDbContext) : ITokenRepository
         await hFDbContext.SaveChangesAsync();
     }
 
-    public Task<Token> GetByIdAsync(Guid id)
+    public Task<Token> GetByIdAsync(string id)
     {
         throw new NotImplementedException();
     }
 
     public async Task<Token> GetByPropertyAsync(Expression<Func<Token, bool>> predicate)
     {
-        return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate);
+        return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate) ?? throw new NullReferenceException();
     }
 
     public Task<IEnumerable<Token>> GetsAsync()
@@ -37,7 +37,7 @@ public class TokenRepository(HFDbContext hFDbContext) : ITokenRepository
         throw new NotImplementedException();
     }
 
-    public async Task Update(Guid id, Token entity)
+    public async Task Update(string id, Token entity)
     {
         var existingToken = await hFDbContext.Tokens.FindAsync(id) ??
                             throw new ArgumentException($"Token with ID {id} not found.");

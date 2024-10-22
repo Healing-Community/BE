@@ -9,6 +9,6 @@ public interface ITokenService
     string GenerateRefreshToken();
     ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     string GenerateVerificationToken(User user);
-    bool ValidateRefreshToken(string refreshToken, out Guid userId);
-    bool ValidateToken(string token, out Guid userId);
+    bool ValidateRefreshToken(string refreshToken, out string userId);
+    bool ValidateToken(string token, out string userId);
 }

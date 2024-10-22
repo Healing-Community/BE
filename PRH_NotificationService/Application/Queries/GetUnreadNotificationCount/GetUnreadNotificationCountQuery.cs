@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Queries.GetUnreadNotificationCount
 {
-    public record GetUnreadNotificationCountQuery(Guid UserId) : IRequest<BaseResponse<int>>;
+    public record GetUnreadNotificationCountQuery(string UserId) : IRequest<BaseResponse<int>>;
 }

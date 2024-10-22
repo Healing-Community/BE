@@ -2,12 +2,8 @@
 using Domain.Entities;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using NUlid;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Persistence.Repositories
 {
@@ -19,7 +15,7 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(string id)
         {
             var reactionType = await hFDBPostserviceContext.ReactionTypes.FirstOrDefaultAsync(x => x.ReactionTypeId == id);
             if (reactionType == null) return;
@@ -27,14 +23,16 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
-        public async Task<ReactionType> GetByIdAsync(Guid id)
+        public async Task<ReactionType> GetByIdAsync(string id)
         {
             return await hFDBPostserviceContext.ReactionTypes.FirstAsync(x => x.ReactionTypeId == id);
         }
 
         public async Task<ReactionType> GetByPropertyAsync(Expression<Func<ReactionType, bool>> predicate)
         {
-            return await hFDBPostserviceContext.ReactionTypes.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new ReactionType();
+            return await hFDBPostserviceContext.ReactionTypes.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new ReactionType() { 
+                ReactionTypeId = Ulid.Empty.ToString() 
+            };
         }
 
         public async Task<IEnumerable<ReactionType>> GetsAsync()
@@ -42,7 +40,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.ReactionTypes.ToListAsync();
         }
 
-        public async Task Update(Guid id, ReactionType entity)
+        public async Task Update(string id, ReactionType entity)
         {
             var existingReactionType = await hFDBPostserviceContext.ReactionTypes.FirstOrDefaultAsync(x => x.ReactionTypeId == id);
             if (existingReactionType == null) return;

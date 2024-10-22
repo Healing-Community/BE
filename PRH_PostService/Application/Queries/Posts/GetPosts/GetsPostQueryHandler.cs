@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
+using NUlid;
 using System.Net;
 
 namespace Application.Queries.Posts.GetPosts
@@ -13,7 +14,7 @@ namespace Application.Queries.Posts.GetPosts
         {
             var response = new BaseResponse<IEnumerable<Post>>()
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
@@ -21,7 +22,7 @@ namespace Application.Queries.Posts.GetPosts
             {
                 var posts = await postRepository.GetsAsync();
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.Message = "Post retrieved successfully";
+                response.Message = "Lấy dữ liệu thành công";
                 response.Success = true;
                 response.Data = posts;
             }

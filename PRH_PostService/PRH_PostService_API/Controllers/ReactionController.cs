@@ -1,17 +1,11 @@
-﻿using Application.Commands.Posts.AddPost;
-using Application.Commands.Posts.DeletePost;
-using Application.Commands.Posts.UpdatePost;
-using Application.Commands.Reactions.AddReaction;
+﻿using Application.Commands.Reactions.AddReaction;
 using Application.Commands.Reactions.DeleteReaction;
 using Application.Commands.Reactions.UpdateReaction;
 using Application.Commons.DTOs;
-using Application.Queries.Posts.GetPosts;
-using Application.Queries.Posts.GetPostsById;
 using Application.Queries.Reactions.GetReactions;
 using Application.Queries.Reactions.GetReactionsById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_PostService_API.Extentions;
 
@@ -30,8 +24,8 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpGet("get-by-id/{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("get-by-id/{id}")]
+        public async Task<IActionResult> GetById(string id)
         {
             var response = await sender.Send(new GetReactionsByIdQuery(id));
             return response.ToActionResult();
@@ -46,16 +40,16 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPut("update/{id:guid}")]
-        public async Task<IActionResult> UpdateReaction(Guid id, ReactionDto reaction)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateReaction(string id, ReactionDto reaction)
         {
             var response = await sender.Send(new UpdateReactionCommand(id, reaction));
             return response.ToActionResult();
         }
 
         [Authorize(Roles = "User")]
-        [HttpDelete("delete/{id:guid}")]
-        public async Task<IActionResult> DeleteReaction(Guid id)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteReaction(string id)
         {
             var response = await sender.Send(new DeleteReactionCommand(id));
             return response.ToActionResult();

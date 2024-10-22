@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Commands.Comments.UpdateComment
 {
-    public record UpdateCommentCommand(Guid commentId, CommentDto CommentDto) : IRequest<BaseResponse<string>>;
+    public record UpdateCommentCommand(string commentId, CommentDto CommentDto) : IRequest<BaseResponse<string>>;
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class RoleRepository(HFDbContext hFDbContext) : IRoleRepository
+public class RoleRepository(UserServiceDbContext hFDbContext) : IRoleRepository
 {
     public async Task Create(Role entity)
     {
@@ -14,12 +14,12 @@ public class RoleRepository(HFDbContext hFDbContext) : IRoleRepository
         await hFDbContext.SaveChangesAsync();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task DeleteAsync(string id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Role> GetByIdAsync(Guid id)
+    public Task<Role> GetByIdAsync(string id)
     {
         throw new NotImplementedException();
     }
@@ -40,7 +40,7 @@ public class RoleRepository(HFDbContext hFDbContext) : IRoleRepository
         return await hFDbContext.Roles.ToListAsync();
     }
 
-    public Task Update(Guid id, Role entity)
+    public Task Update(string id, Role entity)
     {
         throw new NotImplementedException();
     }

@@ -25,9 +25,9 @@ namespace Infrastructure.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Primary key
-            modelBuilder.Entity<Post>().HasKey(p => p.Id);
+            modelBuilder.Entity<Post>().HasKey(p => p.PostId);
             modelBuilder.Entity<Post>().HasIndex(p => p.Title).IsUnique();
-            modelBuilder.Entity<Category>().HasKey(p => p.Id);
+            modelBuilder.Entity<Category>().HasKey(p => p.CategoryId);
             modelBuilder.Entity<Category>().HasIndex(c=>c.Name).IsUnique();
             // Relationship
             modelBuilder.Entity<Post>().HasOne(p => p.Category).WithMany(c => c.Posts).HasForeignKey(p => p.CategoryId);

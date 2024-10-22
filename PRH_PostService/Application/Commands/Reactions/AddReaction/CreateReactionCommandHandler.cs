@@ -1,5 +1,5 @@
 ﻿using Application.Commons;
-using Application.Commons.Request;
+using Application.Commons.Request.Reaction;
 using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
@@ -7,12 +7,8 @@ using Domain.Constants;
 using Domain.Entities;
 using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using NUlid;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Reactions.AddReaction
 {
@@ -23,7 +19,7 @@ namespace Application.Commands.Reactions.AddReaction
         {
             var response = new BaseResponse<string>
             {
-                Id = NewId.NextSequentialGuid(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
@@ -31,32 +27,32 @@ namespace Application.Commands.Reactions.AddReaction
             if (userId == null)
             {
                 response.Success = false;
-                response.Message = "Unauthorized";
+                response.Message = "Không có quyền để truy cập";
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return response;
             }
-            var userGuid = Guid.Parse(userId);
             var reaction = new Reaction
             {
-                ReactionId = NewId.NextSequentialGuid(),
-                UserId = userGuid,
+                ReactionId = Ulid.NewUlid().ToString(),
+                UserId = userId,
                 PostId = request.ReactionDto.PostId,
-                ReactionTypeId = request.ReactionDto.ReactionTypeId
+                ReactionTypeId = request.ReactionDto.ReactionTypeId,
+                CreateAt = DateTime.UtcNow,
             };
             try
             {
                 await reactionRepository.Create(reaction);
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Success = true;
-                response.Message = "Reaction created successfully";
-
+                response.Message = "Tạo thành công";
                 // Send the Request to the Queue for processing
                 var reactionRequestCreatedMessage = new ReactionRequestCreatedMessage
                 {
-                    ReactionRequestId = NewId.NextSequentialGuid(),
+                    ReactionRequestId = Ulid.NewUlid().ToString(),
                     UserId = reaction.UserId,
                     PostId = reaction.PostId,
-                    ReactionTypeId= reaction.ReactionTypeId
+                    ReactionTypeId= reaction.ReactionTypeId,
+                    ReactionDate = reaction.CreateAt,
                 };
                 await messagePublisher.PublishAsync(reactionRequestCreatedMessage, QueueName.ReactionQueue, cancellationToken);
             }
@@ -64,10 +60,9 @@ namespace Application.Commands.Reactions.AddReaction
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Failed to create reaction";
+                response.Message = "Lỗi !!! Tạo thất bại";
                 response.Errors.Add(ex.Message);
             }
-
             return response;
         }
     }

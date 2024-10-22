@@ -1,18 +1,11 @@
 ﻿using Application.Commands.Categories.AddCategory;
 using Application.Commands.Categories.DeleteCategory;
 using Application.Commands.Categories.UpdateCategory;
-using Application.Commands.Posts.AddPost;
-using Application.Commands.Posts.DeletePost;
-using Application.Commands.Posts.UpdatePost;
 using Application.Commons.DTOs;
 using Application.Queries.Categories.GetCategories;
 using Application.Queries.Categories.GetCategoriesById;
-using Application.Queries.Posts.GetPosts;
-using Application.Queries.Posts.GetPostsById;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_PostService_API.Extentions;
 
@@ -31,8 +24,8 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpGet("get-by-id/{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("get-by-id/{id}")]
+        public async Task<IActionResult> GetById(string id)
         {
             var response = await sender.Send(new GetCategoryByIdQuery(id));
             return response.ToActionResult();
@@ -47,16 +40,16 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPut("update/{id:guid}")]
-        public async Task<IActionResult> UpdateCategory(Guid id, CategoryDto category)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateCategory(string id, CategoryDto category)
         {
             var response = await sender.Send(new UpdateCategoryCommand(id, category));
             return response.ToActionResult();
         }
 
         [Authorize(Roles = "User")]
-        [HttpDelete("delete/{id:guid}")]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteCategory(string id)
         {
             var response = await sender.Send(new DeleteCategoryCommand(id));
             return response.ToActionResult();
