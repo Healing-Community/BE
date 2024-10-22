@@ -8,6 +8,9 @@ namespace Domain.Entities
         public int ExperienceYears { get; set; }
         public string? ExpertiseAreas { get; set; }
         public string? Bio { get; set; }
+        public string? FrontIdCardUrl { get; set; }
+        public string? BackIdCardUrl { get; set; }
+        public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
