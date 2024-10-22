@@ -3,8 +3,20 @@
   "WorkspaceRootPath": "D:\\Repos\\BE\\PRH_ReportService\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|d:\\repos\\be\\prh_reportservice\\domain\\constants\\amqpmessage\\reportmessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|solutionrelative:domain\\constants\\amqpmessage\\reportmessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|d:\\repos\\be\\prh_reportservice\\domain\\constants\\queuename.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|solutionrelative:domain\\constants\\queuename.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|d:\\repos\\be\\prh_reportservice\\application\\commons\\tools\\generator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|solutionrelative:application\\commons\\tools\\generator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|d:\\repos\\be\\prh_reportservice\\infrastructure\\context\\reportdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\reportdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{61057D4A-1685-484E-94D1-819087B5C445}|Infrastructure\\Infrastructure.csproj|d:\\repos\\be\\prh_reportservice\\infrastructure\\migrations\\20241014061030_init.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -21,10 +33,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|d:\\repos\\be\\prh_reportservice\\prh_reportservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|solutionrelative:prh_reportservice_api\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|d:\\repos\\be\\prh_reportservice\\domain\\constants\\amqpmessage\\reportmessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{28611219-2B62-45CC-B83B-89F8991A77CF}|Domain\\Domain.csproj|solutionrelative:domain\\constants\\amqpmessage\\reportmessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8FF60FAA-4F57-476F-9E14-CEC044DCF553}|PRH_ReportService_API\\PRH_ReportService_API.csproj|d:\\repos\\be\\prh_reportservice\\prh_reportservice_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,11 +58,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "QueueName.cs",
+              "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\Domain\\Constants\\QueueName.cs",
+              "RelativeDocumentMoniker": "Domain\\Constants\\QueueName.cs",
+              "ToolTip": "D:\\Repos\\BE\\PRH_ReportService\\Domain\\Constants\\QueueName.cs",
+              "RelativeToolTip": "Domain\\Constants\\QueueName.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-21T07:14:27.631Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ReportDbContext.cs",
+              "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\Infrastructure\\Context\\ReportDbContext.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Context\\ReportDbContext.cs",
+              "ToolTip": "D:\\Repos\\BE\\PRH_ReportService\\Infrastructure\\Context\\ReportDbContext.cs",
+              "RelativeToolTip": "Infrastructure\\Context\\ReportDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-21T07:13:54.335Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Generator.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\Application\\Commons\\Tools\\Generator.cs",
               "RelativeDocumentMoniker": "Application\\Commons\\Tools\\Generator.cs",
@@ -67,7 +101,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "20241014061030_init.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\Infrastructure\\Migrations\\20241014061030_init.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Migrations\\20241014061030_init.cs",
@@ -75,12 +109,11 @@
               "RelativeToolTip": "Infrastructure\\Migrations\\20241014061030_init.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T07:12:42.169Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T07:12:42.169Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "ReportDto.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\Application\\Commons\\DTOs\\ReportDto.cs",
               "RelativeDocumentMoniker": "Application\\Commons\\DTOs\\ReportDto.cs",
@@ -88,25 +121,24 @@
               "RelativeToolTip": "Application\\Commons\\DTOs\\ReportDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T07:12:09.297Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T07:12:09.297Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "ReportMessage.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\Domain\\Constants\\AMQPMessage\\ReportMessage.cs",
               "RelativeDocumentMoniker": "Domain\\Constants\\AMQPMessage\\ReportMessage.cs",
               "ToolTip": "D:\\Repos\\BE\\PRH_ReportService\\Domain\\Constants\\AMQPMessage\\ReportMessage.cs",
               "RelativeToolTip": "Domain\\Constants\\AMQPMessage\\ReportMessage.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-21T07:00:23.02Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "ReportConsumer.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\PRH_ReportService_API\\Consumer\\ReportConsumer.cs",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\Consumer\\ReportConsumer.cs",
@@ -114,25 +146,23 @@
               "RelativeToolTip": "PRH_ReportService_API\\Consumer\\ReportConsumer.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAAwwA0AAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T07:00:11.449Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T07:00:11.449Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "PRH_ReportService_API",
+              "DocumentIndex": 9,
+              "Title": "PRH_ReportService_API.csproj",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\PRH_ReportService_API\\PRH_ReportService_API.csproj",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\PRH_ReportService_API.csproj",
               "ToolTip": "D:\\Repos\\BE\\PRH_ReportService\\PRH_ReportService_API\\PRH_ReportService_API.csproj",
               "RelativeToolTip": "PRH_ReportService_API\\PRH_ReportService_API.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-10-21T06:58:09.887Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T06:58:09.887Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\PRH_ReportService_API\\Program.cs",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\Program.cs",
@@ -140,12 +170,11 @@
               "RelativeToolTip": "PRH_ReportService_API\\Program.cs",
               "ViewState": "AgIAADwAAAAAAAAAAAAswFEAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T06:57:37.273Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T06:57:37.273Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "ReportController.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\PRH_ReportService_API\\Controllers\\ReportController.cs",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\Controllers\\ReportController.cs",
@@ -153,12 +182,11 @@
               "RelativeToolTip": "PRH_ReportService_API\\Controllers\\ReportController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-17T16:22:57.309Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-17T16:22:57.309Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\PRH_ReportService_API\\appsettings.json",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\appsettings.json",
@@ -170,7 +198,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "DependencyInjection.cs",
               "DocumentMoniker": "D:\\Repos\\BE\\PRH_ReportService\\PRH_ReportService_API\\DependencyInjection.cs",
               "RelativeDocumentMoniker": "PRH_ReportService_API\\DependencyInjection.cs",
@@ -178,8 +206,7 @@
               "RelativeToolTip": "PRH_ReportService_API\\DependencyInjection.cs",
               "ViewState": "AgIAAGgAAAAAAAAAAAAAAKEAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-17T08:52:55.518Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-17T08:52:55.518Z"
             }
           ]
         }
