@@ -105,14 +105,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("ExpertProfileId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("ExpertProfiles");
                 });

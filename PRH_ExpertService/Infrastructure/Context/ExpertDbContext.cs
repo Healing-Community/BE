@@ -17,18 +17,14 @@ public partial class ExpertDbContext : DbContext
     public virtual DbSet<Certificate> Certificates { get; set; } = null!;
     public virtual DbSet<CertificateType> CertificateTypes { get; set; } = null!;
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.oqidsgyjsueapfermnfj; Password=ProjectHealing@1234");
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.oqidsgyjsueapfermnfj; Password=ProjectHealing@1234");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // ExpertProfile configuration
         modelBuilder.Entity<ExpertProfile>()
             .HasKey(ep => ep.ExpertProfileId);
-
-        modelBuilder.Entity<ExpertProfile>()
-            .HasIndex(ep => ep.UserId)
-            .IsUnique();
 
         // CertificateType configuration
         modelBuilder.Entity<CertificateType>()

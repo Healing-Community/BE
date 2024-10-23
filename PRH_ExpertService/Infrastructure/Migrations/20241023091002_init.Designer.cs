@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ExpertDbContext))]
-    [Migration("20241022145947_add-field")]
-    partial class addfield
+    [Migration("20241023091002_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,14 +108,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("ExpertProfileId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("ExpertProfiles");
                 });

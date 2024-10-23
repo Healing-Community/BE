@@ -1,5 +1,6 @@
 ﻿using Application.Commands.UploadFile;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_ExpertService_API.Extentions;
 using PRH_ExpertService_API.FileUpload;
@@ -10,6 +11,7 @@ namespace PRH_ExpertService_API.Controllers;
 [ApiController]
 public class ExpertController(ISender sender) : ControllerBase
 {
+    [Authorize(Roles = "Expert")]
     [HttpPost("upload-file/{expertId}")]
     public async Task<IActionResult> UploadFile(string expertId, [FromForm] FileUploadModel model)
     {

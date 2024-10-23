@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\prh_expertservice_api\\controllers\\expertcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}|PRH_ExpertService_API\\PRH_ExpertService_API.csproj|solutionrelative:prh_expertservice_api\\controllers\\expertcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|c:\\users\\nghia\\onedrive\\documents\\fpt fall 2024 semester 9\\sep490\\be\\prh_expertservice\\application\\commands\\uploadfile\\uploadfilecommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D4B2714-D305-4901-B940-F652D5F947AE}|Application\\Application.csproj|solutionrelative:application\\commands\\uploadfile\\uploadfilecommandhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,14 +27,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\appsettings.json",
-              "RelativeDocumentMoniker": "PRH_ExpertService_API\\appsettings.json",
-              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\appsettings.json",
-              "RelativeToolTip": "PRH_ExpertService_API\\appsettings.json",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-10-22T15:09:55.3Z",
+              "Title": "ExpertController.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\Controllers\\ExpertController.cs",
+              "RelativeDocumentMoniker": "PRH_ExpertService_API\\Controllers\\ExpertController.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\PRH_ExpertService_API\\Controllers\\ExpertController.cs",
+              "RelativeToolTip": "PRH_ExpertService_API\\Controllers\\ExpertController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-23T08:40:58.29Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UploadFileCommandHandler.cs",
+              "DocumentMoniker": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "RelativeDocumentMoniker": "Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "ToolTip": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_ExpertService\\Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "RelativeToolTip": "Application\\Commands\\UploadFile\\UploadFileCommandHandler.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAiwBgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-23T08:09:10.749Z",
               "EditorCaption": ""
             }
           ]

@@ -1,15 +1,18 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using MediatR;
 using NUlid;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.UploadFile
 {
     public class UploadFileCommandHandler(
         IFirebaseStorageService firebaseStorageService,
         ICertificateRepository certificateRepository,
-        IExpertProfileRepository expertProfileRepository) : IRequestHandler<UploadFileCommand, BaseResponse<string>>
+        IExpertProfileRepository expertProfileRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UploadFileCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
         {
@@ -22,11 +25,16 @@ namespace Application.Commands.UploadFile
 
             try
             {
+                var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("Context không hợp lệ.");
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertId);
+
                 if (expertProfile == null)
                 {
                     response.Success = false;
-                    response.Message = "Không tìm thấy chuyên gia với ID được cung cấp.";
+                    response.Message = "Không tìm thấy hồ sơ chuyên gia.";
                     response.StatusCode = 404;
                     return response;
                 }
@@ -40,8 +48,8 @@ namespace Application.Commands.UploadFile
                 }
 
                 var fileName = $"{Ulid.NewUlid()}_{request.File.FileName}";
-
                 string fileUrl;
+
                 using (var memoryStream = new MemoryStream())
                 {
                     await request.File.CopyToAsync(memoryStream, cancellationToken);

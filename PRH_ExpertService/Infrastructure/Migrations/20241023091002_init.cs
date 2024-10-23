@@ -29,10 +29,12 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     ExpertProfileId = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
                     ExperienceYears = table.Column<int>(type: "integer", nullable: false),
                     ExpertiseAreas = table.Column<string>(type: "text", nullable: true),
                     Bio = table.Column<string>(type: "text", nullable: true),
+                    FrontIdCardUrl = table.Column<string>(type: "text", nullable: true),
+                    BackIdCardUrl = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -48,6 +50,7 @@ namespace Infrastructure.Migrations
                     CertificateId = table.Column<string>(type: "text", nullable: false),
                     ExpertProfileId = table.Column<string>(type: "text", nullable: false),
                     CertificateTypeId = table.Column<string>(type: "text", nullable: false),
+                    FileUrl = table.Column<string>(type: "text", nullable: true),
                     IssueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false)
@@ -83,12 +86,6 @@ namespace Infrastructure.Migrations
                 name: "IX_CertificateTypes_Name",
                 table: "CertificateTypes",
                 column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExpertProfiles_UserId",
-                table: "ExpertProfiles",
-                column: "UserId",
                 unique: true);
         }
 
