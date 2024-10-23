@@ -124,7 +124,7 @@ public class LoginUserCommandHandler(
             response.StatusCode = (int)StatusCodes.Status500InternalServerError;
             response.Success = false;
             response.Message = "Đăng nhập không thành công.";
-            response.Errors = new List<string> { ex.Message };
+            response.Errors = new List<string> { ex.StackTrace };
         }
 
         return response;
