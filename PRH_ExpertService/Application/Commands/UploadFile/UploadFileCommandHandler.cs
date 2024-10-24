@@ -14,6 +14,9 @@ namespace Application.Commands.UploadFile
         IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<UploadFileCommand, BaseResponse<string>>
     {
+        private static readonly List<string> ValidFileExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
+        private const long MaxFileSize = 5 * 1024 * 1024; // 5MB
+
         public async Task<BaseResponse<string>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
@@ -25,12 +28,18 @@ namespace Application.Commands.UploadFile
 
             try
             {
-                var httpContext = httpContextAccessor.HttpContext ?? throw new InvalidOperationException("Context không hợp lệ.");
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Context không hợp lệ.";
+                    response.StatusCode = 400;
+                    return response;
+                }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
 
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertId);
-
                 if (expertProfile == null)
                 {
                     response.Success = false;
@@ -39,7 +48,8 @@ namespace Application.Commands.UploadFile
                     return response;
                 }
 
-                if (request.File == null || request.File.Length == 0)
+                var file = request.File;
+                if (file == null || file.Length == 0)
                 {
                     response.Success = false;
                     response.Message = "File không hợp lệ.";
@@ -47,15 +57,30 @@ namespace Application.Commands.UploadFile
                     return response;
                 }
 
-                var fileName = $"{Ulid.NewUlid()}_{request.File.FileName}";
-                string fileUrl;
-
-                using (var memoryStream = new MemoryStream())
+                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (!ValidFileExtensions.Contains(fileExtension))
                 {
-                    await request.File.CopyToAsync(memoryStream, cancellationToken);
-                    memoryStream.Position = 0;
-                    fileUrl = await firebaseStorageService.UploadFileAsync(memoryStream, fileName);
+                    response.Success = false;
+                    response.Message = $"Định dạng file không hợp lệ. Chỉ chấp nhận: {string.Join(", ", ValidFileExtensions)}.";
+                    response.StatusCode = 400;
+                    return response;
                 }
+
+                if (file.Length > MaxFileSize)
+                {
+                    response.Success = false;
+                    response.Message = "Kích thước file vượt quá giới hạn 5MB.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var fileName = $"{Ulid.NewUlid()}_{Path.GetFileName(file.FileName)}";
+
+                using var memoryStream = new MemoryStream();
+                await file.CopyToAsync(memoryStream, cancellationToken);
+                memoryStream.Position = 0;
+
+                string fileUrl = await firebaseStorageService.UploadFileAsync(memoryStream, fileName);
 
                 var certificate = new Domain.Entities.Certificate
                 {

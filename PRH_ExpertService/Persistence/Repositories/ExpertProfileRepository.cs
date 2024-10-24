@@ -16,21 +16,23 @@ namespace Persistence.Repositories
 
         public async Task DeleteAsync(string id)
         {
-            var expertProfiles = await expertDbContext.ExpertProfiles.FirstOrDefaultAsync(x => x.ExpertProfileId == id);
-            if (expertProfiles == null) return;
-            expertDbContext.ExpertProfiles.Remove(expertProfiles);
-            await expertDbContext.SaveChangesAsync();
+            var expertProfile = await expertDbContext.ExpertProfiles.FindAsync(id);
+            if (expertProfile != null)
+            {
+                expertDbContext.ExpertProfiles.Remove(expertProfile);
+                await expertDbContext.SaveChangesAsync();
+            }
         }
 
-        public async Task<ExpertProfile> GetByIdAsync(string id)
+        public async Task<ExpertProfile?> GetByIdAsync(string id)
         {
-            return await expertDbContext.ExpertProfiles.FirstAsync(x => x.ExpertProfileId == id);
+            return await expertDbContext.ExpertProfiles.FindAsync(id);
         }
 
-        public async Task<ExpertProfile> GetByPropertyAsync(Expression<Func<ExpertProfile, bool>> predicate)
+        public async Task<ExpertProfile?> GetByPropertyAsync(Expression<Func<ExpertProfile, bool>> predicate)
         {
-            return await expertDbContext.ExpertProfiles.AsNoTracking().FirstOrDefaultAsync(predicate)
-                               ?? throw new InvalidOperationException("Expert Profiles not found");
+            return await expertDbContext.ExpertProfiles
+                                         .FirstOrDefaultAsync(predicate);
         }
 
         public async Task<IEnumerable<ExpertProfile>> GetsAsync()
@@ -40,11 +42,12 @@ namespace Persistence.Repositories
 
         public async Task Update(string id, ExpertProfile entity)
         {
-            var existingExpertProfile = await expertDbContext.ExpertProfiles.FirstOrDefaultAsync(x => x.ExpertProfileId == id);
-            if (existingExpertProfile == null) return;
-            expertDbContext.Entry(existingExpertProfile).CurrentValues.SetValues(entity);
-            expertDbContext.Entry(existingExpertProfile).State = EntityState.Modified;
-            await expertDbContext.SaveChangesAsync();
+            var existingExpertProfile = await expertDbContext.ExpertProfiles.FindAsync(id);
+            if (existingExpertProfile != null)
+            {
+                expertDbContext.Entry(existingExpertProfile).CurrentValues.SetValues(entity);
+                await expertDbContext.SaveChangesAsync();
+            }
         }
     }
 }
