@@ -11,5 +11,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IExpertProfileRepository, ExpertProfileRepository>();
         services.AddScoped<ICertificateRepository, CertificateRepository>();
+        services.AddScoped<ICertificateTypeRepository, CertificateTypeRepository>();
     }
 }

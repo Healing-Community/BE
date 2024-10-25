@@ -40,13 +40,6 @@ namespace Persistence.Repositories
             return await expertDbContext.Certificates.ToListAsync();
         }
 
-        public async Task<IEnumerable<Certificate>> GetCertificatesByExpertIdAsync(string expertId)
-        {
-            return await expertDbContext.Certificates
-                                         .Where(c => c.ExpertProfileId == expertId)
-                                         .ToListAsync();
-        }
-
         public async Task Update(string id, Certificate entity)
         {
             var existingCertificate = await expertDbContext.Certificates.FindAsync(id);

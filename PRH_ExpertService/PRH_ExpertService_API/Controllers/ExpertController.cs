@@ -13,9 +13,9 @@ public class ExpertController(ISender sender) : ControllerBase
 {
     [Authorize(Roles = "Expert")]
     [HttpPost("upload-file/{expertId}")]
-    public async Task<IActionResult> UploadFile(string expertId, [FromForm] FileUploadModel model)
+    public async Task<IActionResult> UploadFile(string expertId, [FromForm] FileUploadModel model, string certificationTypeId)
     {
-        var response = await sender.Send(new UploadFileCommand(expertId, model.File));
+        var response = await sender.Send(new UploadFileCommand(expertId, model.File, certificationTypeId));
         return response.ToActionResult();
     }
 }
