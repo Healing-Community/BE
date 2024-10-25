@@ -27,8 +27,8 @@ namespace Application.Queries.GetUnreadNotificationCount
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi khi lấy số lượng thông báo chưa đọc.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Đã xảy ra lỗi khi lấy số lượng thông báo chưa đọc. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 

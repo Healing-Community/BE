@@ -21,14 +21,14 @@ namespace Application.Commands.ArchiveUnreadNotifications
                 await notificationRepository.ArchiveUnreadNotificationsAsync(request.UserId.ToString());
 
                 response.Success = true;
-                response.Message = "Thông báo chưa đọc đã được lưu trữ.";
+                response.Message = "Thông báo chưa đọc đã được lưu trữ thành công.";
                 response.StatusCode = 200;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Không thể lưu trữ thông báo chưa đọc.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Không thể lưu trữ thông báo chưa đọc. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 

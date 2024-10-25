@@ -35,8 +35,8 @@ namespace Application.Commands.CreateNotificationType
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Không thể tạo loại thông báo.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Không thể tạo loại thông báo. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 
