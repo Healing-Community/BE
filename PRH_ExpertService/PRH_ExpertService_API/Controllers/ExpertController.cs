@@ -1,4 +1,7 @@
-﻿using Application.Commands.UploadFile;
+﻿using Application.Commands.BookAppointment;
+using Application.Commands.CreateAvailability;
+using Application.Commands.UploadFile;
+using Application.Queries.GetAvailability;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +19,30 @@ public class ExpertController(ISender sender) : ControllerBase
     public async Task<IActionResult> UploadFile(string expertId, [FromForm] FileUploadModel model, string certificationTypeId)
     {
         var response = await sender.Send(new UploadFileCommand(expertId, model.File, certificationTypeId));
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "Expert")]
+    [HttpPost("create-availability")]
+    public async Task<IActionResult> CreateAvailability([FromBody] CreateAvailabilityCommand command)
+    {
+        var response = await sender.Send(command);
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "Expert")]
+    [HttpGet("availability/{expertProfileId}")]
+    public async Task<IActionResult> GetAvailability(string expertProfileId)
+    {
+        var response = await sender.Send(new GetAvailabilityQuery(expertProfileId));
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "Expert")]
+    [HttpPost("book-appointment")]
+    public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentCommand command)
+    {
+        var response = await sender.Send(command);
         return response.ToActionResult();
     }
 }

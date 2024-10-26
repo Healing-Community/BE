@@ -12,5 +12,7 @@ public static class DependencyInjection
         services.AddScoped<IExpertProfileRepository, ExpertProfileRepository>();
         services.AddScoped<ICertificateRepository, CertificateRepository>();
         services.AddScoped<ICertificateTypeRepository, CertificateTypeRepository>();
+        services.AddScoped<IExpertAvailabilityRepository, ExpertAvailabilityRepository>();
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
     }
 }
