@@ -1,6 +1,6 @@
 ﻿namespace Application.Commons;
 
-public class RegisterUserResponse<T>
+public class DetailBaseResponse<T>
 {
     public required string Id { get; set; }
     public int StatusCode { get; set; }

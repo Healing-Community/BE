@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
 using NUlid;
+using System.Net;
 
 namespace Application.Queries.Users.GetUsers;
 
@@ -21,11 +22,13 @@ public class GetUsersQueryHandler(IUserRepository userRepository)
         {
             var users = await userRepository.GetsAsync();
             response.Message = "Users retrieved successfully";
+            response.StatusCode = (int)HttpStatusCode.OK;
             response.Success = true;
             response.Data = (IEnumerable<User>?)users;
         }
         catch (Exception e)
         {
+            response.StatusCode = (int)HttpStatusCode.InternalServerError;
             response.Message = e.Message;
             response.Success = false;
         }

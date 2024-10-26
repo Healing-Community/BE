@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
+using Domain.Entities;
 using MediatR;
 using NUlid;
 
@@ -19,35 +20,49 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
 
         try
         {
-            if (!tokenService.ValidateToken(request.Token, out var userId))
-                return new BaseResponse<string>
+            
+            var (userId,isValidated) = tokenService.ValidateToken(request.Token);
+
+            if ((userId, isValidated) != default)
+            {
+                if (isValidated)
                 {
-                    Id = Ulid.NewUlid().ToString(),
-                    Success = false,
-                    Message = "Invalid or expired verification token.",
-                    Timestamp = DateTime.UtcNow
-                };
+                    // Tìm người dùng theo ID
+                    var user = await userRepository.GetByIdAsync(userId);
+                    if (user == null)
+                    {
+                        response.Success = false;
+                        response.Message = "Không tìm thấy người dùng.";
+                        response.StatusCode = 404;
+                        response.Errors = new List<string> { "Không tìm thấy người dùng." };
+                        return response;
+                    }
 
-            var user = await userRepository.GetByIdAsync(userId);
-            if (user == null)
-                return new BaseResponse<string>
+                    // Cập nhật trạng thái người dùng thành đã xác minh
+                    user.Status = 1;
+                    await userRepository.Update(user.UserId, user);
+
+                    // Thiết lập chi tiết phản hồi thành công
+                    response.Success = true;
+                    response.Message = $"Xác minh email thành công.";
+                    response.StatusCode = 200;
+                }
+                else
                 {
-                    Id = Ulid.NewUlid().ToString(),
-                    Success = false,
-                    Message = "User not found.",
-                    Timestamp = DateTime.UtcNow
-                };
-
-            user.Status = 1;
-            await userRepository.Update(user.UserId, user);
-
-            response.Success = true;
-            response.Message = "Email verified successfully.";
+                    response.Success = false;
+                    response.Message = "Xác minh email thất bại.";
+                    response.StatusCode = 400;
+                    response.Errors = ["Token không hợp lệ."];
+                    await userRepository.DeleteAsync(userId);
+                }
+            }
+           
         }
         catch (Exception ex)
         {
             response.Success = false;
-            response.Message = "Failed to verify email.";
+            response.Message = "Lỗi xác định.";
+            response.StatusCode = 500;
             response.Errors = new List<string> { ex.Message };
         }
 

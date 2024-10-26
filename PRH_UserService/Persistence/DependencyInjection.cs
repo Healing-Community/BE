@@ -13,7 +13,6 @@ public static class DependencyInjection
         services.AddScoped<IMessagePublisher, MessagePublisher>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
-        services.AddScoped<IJwtTokenRepository, JwtTokenRepository>();
         services.AddScoped<IEmailRepository, EmailRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
     }

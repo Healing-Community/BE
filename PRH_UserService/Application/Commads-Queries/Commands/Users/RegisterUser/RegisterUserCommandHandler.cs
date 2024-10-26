@@ -5,6 +5,7 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Commands.Users.RegisterUser;
@@ -13,11 +14,11 @@ public class RegisterUserCommandHandler(
     ITokenService tokenService,
     IUserRepository userRepository,
     IEmailRepository emailRepository)
-    : IRequestHandler<RegisterUserCommand, RegisterUserResponse<string>>
+    : IRequestHandler<RegisterUserCommand, DetailBaseResponse<string>>
 {
-    public async Task<RegisterUserResponse<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<DetailBaseResponse<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var response = new RegisterUserResponse<string>
+        var response = new DetailBaseResponse<string>
         {
             Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.UtcNow,
@@ -46,14 +47,23 @@ public class RegisterUserCommandHandler(
             }
 
             // Kiểm tra xem email đã được đăng ký hay chưa
-            var existingUserByEmail = await userRepository.GetUserByEmailAsync(request.RegisterUserDto.Email);
-            if (existingUserByEmail != null)
+            var existingUser = await userRepository.GetByPropertyAsync(u => u.Email == request.RegisterUserDto.Email);
+            if (existingUser != null)
             {
-                response.Errors.Add(new ErrorDetail
+                // Nếu tài khoản tồn tại nhưng chưa được xác minh, xóa tài khoản đó
+                if (existingUser.Status == 0)
                 {
-                    Message = "Email đã được đăng ký.",
-                    Field = "email"
-                });
+                    await userRepository.DeleteAsync(existingUser.UserId);
+                }
+                else
+                {
+                    // Nếu tài khoản đã được xác minh, thông báo lỗi
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Email đã được đăng ký.",
+                        Field = "email"
+                    });
+                }
             }
 
             // Kiểm tra xem tên người dùng đã tồn tại hay chưa
@@ -111,7 +121,7 @@ public class RegisterUserCommandHandler(
             // Nếu có bất kỳ lỗi nào, trả về BadRequest và hiển thị các lỗi
             if (response.Errors.Any())
             {
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                 response.Success = false;
                 response.Message = "Đã xảy ra lỗi trong quá trình đăng ký.";
                 return response;
