@@ -5,6 +5,7 @@ using Application.Interfaces.Services;
 using MediatR;
 using NUlid;
 using Microsoft.AspNetCore.Http;
+using Domain.Entities;
 
 namespace Application.Commands.UploadFile
 {
@@ -92,14 +93,16 @@ namespace Application.Commands.UploadFile
 
                 string fileUrl = await firebaseStorageService.UploadFileAsync(memoryStream, fileName);
 
-                var certificate = new Domain.Entities.Certificate
+                var certificate = new Certificate
                 {
                     CertificateId = Ulid.NewUlid().ToString(),
                     ExpertProfileId = request.ExpertId,
                     CertificateTypeId = request.CertificationTypeId,
                     FileUrl = fileUrl,
                     IssueDate = DateTime.UtcNow,
-                    Status = 1
+                    Status = 0,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 await certificateRepository.Create(certificate);
