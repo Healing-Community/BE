@@ -39,7 +39,7 @@ public class LoginUserCommandHandler(
                     Message = "Email hoặc mật khẩu không đúng.",
                     Errors = new List<string> { "Không tìm thấy người dùng." },
                     Timestamp = DateTime.UtcNow,
-                    StatusCode = (int)StatusCodes.Status401Unauthorized
+                    StatusCode = (int)StatusCodes.Status422UnprocessableEntity
                 };
 
             // Kiểm tra trạng thái người dùng
