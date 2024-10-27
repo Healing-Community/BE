@@ -11,6 +11,7 @@ namespace Application.Commands.BookAppointment
     public class BookAppointmentCommandHandler(
             IExpertAvailabilityRepository expertAvailabilityRepository,
             IAppointmentRepository appointmentRepository,
+            IExpertProfileRepository expertProfileRepository,
             IHttpContextAccessor httpContextAccessor) : IRequestHandler<BookAppointmentCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
@@ -21,6 +22,7 @@ namespace Application.Commands.BookAppointment
                 Timestamp = DateTime.UtcNow,
                 Errors = []
             };
+
             try
             {
                 var httpContext = httpContextAccessor.HttpContext;
@@ -33,6 +35,13 @@ namespace Application.Commands.BookAppointment
                 }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
 
                 var availability = await expertAvailabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
                 if (availability == null || availability.Status != 0)
@@ -43,18 +52,48 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
+                if (availability.AvailableDate < DateTime.UtcNow.Date ||
+                    (availability.AvailableDate == DateTime.UtcNow.Date && availability.EndTime <= DateTime.UtcNow.TimeOfDay))
+                {
+                    response.Success = false;
+                    response.Message = "Thời gian của lịch trống đã qua hoặc không hợp lệ.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var expertProfile = await expertProfileRepository.GetByIdAsync(availability.ExpertProfileId);
+                if (expertProfile == null)
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy thông tin chuyên gia.";
+                    response.StatusCode = 404;
+                    return response;
+                }
+
+                if (expertProfile.Status != 1)
+                {
+                    response.Success = false;
+                    response.Message = "Chuyên gia không khả dụng để đặt lịch.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
                 availability.Status = 1;
+                availability.UpdatedAt = DateTime.UtcNow;
                 await expertAvailabilityRepository.Update(availability.ExpertAvailabilityId, availability);
+
+                string meetingLink = $"https://meet.example.com/session/{Ulid.NewUlid()}";
 
                 var appointment = new Appointment
                 {
                     AppointmentId = Ulid.NewUlid().ToString(),
-                    UserId = request.UserId,
+                    UserId = userId,
                     ExpertProfileId = availability.ExpertProfileId,
                     ExpertAvailabilityId = availability.ExpertAvailabilityId,
                     AppointmentDate = availability.AvailableDate,
                     StartTime = availability.StartTime,
                     EndTime = availability.EndTime,
+                    MeetLink = meetingLink,
                     Status = 0,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow

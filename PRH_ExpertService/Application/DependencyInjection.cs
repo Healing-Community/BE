@@ -10,6 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplicationDependencies(this IServiceCollection services)
     {
         services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
         return services;

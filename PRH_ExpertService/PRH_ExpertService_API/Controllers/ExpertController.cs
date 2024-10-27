@@ -30,7 +30,7 @@ public class ExpertController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "Expert")]
+    [Authorize]
     [HttpGet("availability/{expertProfileId}")]
     public async Task<IActionResult> GetAvailability(string expertProfileId)
     {
@@ -38,7 +38,7 @@ public class ExpertController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "Expert")]
+    [Authorize(Roles = "User")]
     [HttpPost("book-appointment")]
     public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentCommand command)
     {

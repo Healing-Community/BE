@@ -18,6 +18,7 @@ namespace Application.Commands.UploadFile
     {
         private static readonly List<string> ValidFileExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
         private const long MaxFileSize = 5 * 1024 * 1024;
+        private static readonly List<string> AllowedMimeTypes = ["application/pdf", "image/jpeg", "image/png"];
 
         public async Task<BaseResponse<string>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
         {
@@ -73,6 +74,15 @@ namespace Application.Commands.UploadFile
                 {
                     response.Success = false;
                     response.Message = $"Định dạng file '{fileExtension}' không hợp lệ. Chỉ chấp nhận các định dạng: {string.Join(", ", ValidFileExtensions)}.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var mimeType = file.ContentType.ToLowerInvariant();
+                if (!AllowedMimeTypes.Contains(mimeType))
+                {
+                    response.Success = false;
+                    response.Message = "Định dạng MIME của tệp không được chấp nhận.";
                     response.StatusCode = 400;
                     return response;
                 }

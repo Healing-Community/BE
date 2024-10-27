@@ -44,13 +44,31 @@ namespace Application.Commands.CreateAvailability
                     return response;
                 }
 
-                var existingAvailability = await expertAvailabilityRepository.GetByDateAndTimeAsync(request.ExpertProfileId, request.AvailableDate, request.StartTime, request.EndTime);
-
-                if (existingAvailability != null)
+                if (request.EndTime <= request.StartTime)
                 {
                     response.Success = false;
-                    response.Message = "Đã có lịch trống cho ngày và giờ này. Vui lòng chọn thời gian khác.";
+                    response.Message = "Thời gian kết thúc phải sau thời gian bắt đầu.";
                     response.StatusCode = 400;
+                    return response;
+                }
+
+                if (request.AvailableDate < DateTime.UtcNow.Date ||
+                    (request.AvailableDate == DateTime.UtcNow.Date && request.EndTime <= DateTime.UtcNow.TimeOfDay))
+                {
+                    response.Success = false;
+                    response.Message = "Ngày và thời gian của lịch trống phải là trong tương lai.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var overlappingAvailability = await expertAvailabilityRepository.GetOverlappingAvailabilityAsync(
+                    request.ExpertProfileId, request.AvailableDate, request.StartTime, request.EndTime);
+
+                if (overlappingAvailability != null)
+                {
+                    response.Success = false;
+                    response.Message = "Khoảng thời gian này đã trùng với lịch trống hiện tại. Vui lòng chọn thời gian khác.";
+                    response.StatusCode = 409;
                     return response;
                 }
 
