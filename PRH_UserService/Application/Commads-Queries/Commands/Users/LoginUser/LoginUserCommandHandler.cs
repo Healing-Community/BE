@@ -75,7 +75,7 @@ public class LoginUserCommandHandler(
                         Message = "Email hoặc mật khẩu không đúng.",
                         Errors = new List<string> { "Mật khẩu không chính xác." },
                         Timestamp = DateTime.UtcNow,
-                        StatusCode = (int)StatusCodes.Status401Unauthorized
+                        StatusCode = (int)StatusCodes.Status422UnprocessableEntity
                     };
                 }
             }
