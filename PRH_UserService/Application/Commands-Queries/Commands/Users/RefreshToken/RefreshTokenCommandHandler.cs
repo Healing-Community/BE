@@ -1,10 +1,13 @@
-﻿using Application.Commons;
+﻿using Application.Commands_Queries.Commands.Users.RefreshToken;
+using Application.Commons;
 using Application.Commons.DTOs;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using NUlid;
+using System.Security.Claims;
 
 namespace Application.Commands.Users.RefreshToken;
 
@@ -12,7 +15,7 @@ public class RefreshTokenCommandHandler(
     IConfiguration configuration,
     ITokenRepository tokenRepository,
     IUserRepository userRepository,
-    ITokenService tokenService) : IRequestHandler<RefreshTokenCommand, BaseResponse<TokenDto>>
+    ITokenService tokenService, IRoleRepository roleRepository) : IRequestHandler<RefreshTokenCommand, BaseResponse<TokenDto>>
 {
     public async Task<BaseResponse<TokenDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
@@ -23,15 +26,13 @@ public class RefreshTokenCommandHandler(
         };
         try
         {
-            var accessToken = request.TokenDto.Token;
-            var refreshToken = request.TokenDto.RefreshToken;
+            var refreshToken = request.RefreshTokenDto.RefreshToken;
 
             // Lấy thông tin từ token hết hạn
-            var principal = tokenService.GetPrincipalFromExpiredToken(accessToken ?? "");
-            var username = principal?.Identity?.Name;
+            var userId = Authentication.GetUserIdFromHttpContext(request.HttpContext);
 
             // Kiểm tra tính hợp lệ của token và refresh token
-            if (string.IsNullOrEmpty(username) || refreshToken == null)
+            if (string.IsNullOrEmpty(userId) || refreshToken == null)
             {
                 response.Success = false;
                 response.Message = "Token không hợp lệ";
@@ -41,7 +42,7 @@ public class RefreshTokenCommandHandler(
             }
 
             // Tìm người dùng theo username
-            var user = await userRepository.GetByPropertyAsync(u => u.UserName == username);
+            var user = await userRepository.GetByPropertyAsync(u => u.UserId == userId);
             var token = await tokenRepository.GetByPropertyAsync(u => u.UserId == user.UserId);
 
             // Kiểm tra token của người dùng và refresh token có khớp không
@@ -56,8 +57,16 @@ public class RefreshTokenCommandHandler(
             }
             else
             {
+                var roleName = roleRepository.GetRoleNameById(user.RoleId);
+                var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Role, roleName.Result ?? "None")
+            };
                 // Tạo access token và refresh token mới
-                var newAccessToken = tokenService.GenerateAccessToken(principal?.Claims ?? []);
+                var newAccessToken = tokenService.GenerateAccessToken(claims ?? []);
                 var newRefreshToken = tokenService.GenerateRefreshToken();
 
                 // Cập nhật refresh token trong cơ sở dữ liệu
@@ -75,7 +84,8 @@ public class RefreshTokenCommandHandler(
                     Token = newAccessToken
                 };
             }
-        }catch(Exception e)
+        }
+        catch (Exception e)
         {
             response.Success = false;
             response.Message = "Có lỗi xảy ra";
