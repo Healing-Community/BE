@@ -40,7 +40,7 @@ public class RoleRepository(UserServiceDbContext hFDbContext) : IRoleRepository
         return await hFDbContext.Roles.ToListAsync();
     }
 
-    public Task Update(string id, Role entity)
+    public Task UpdateAsync(string id, Role entity)
     {
         throw new NotImplementedException();
     }

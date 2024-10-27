@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Commands.Users.ForgotPassword;
 
-public record ForgotPasswordCommand(ForgotPasswordDto ForgotPasswordDto) : IRequest<BaseResponse<string>>;
+public record ForgotPasswordCommand(SendForgotPasswordDto ForgotPasswordDto) : IRequest<BaseResponse<string>>;

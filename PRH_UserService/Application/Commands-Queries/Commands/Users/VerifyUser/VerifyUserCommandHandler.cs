@@ -40,7 +40,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
 
                     // Cập nhật trạng thái người dùng thành đã xác minh
                     user.Status = 1;
-                    await userRepository.Update(user.UserId, user);
+                    await userRepository.UpdateAsync(user.UserId, user);
 
                     // Thiết lập chi tiết phản hồi thành công
                     response.Success = true;

@@ -38,7 +38,7 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
         throw new NotImplementedException();
     }
 
-    public async Task Update(string id, Token entity)
+    public async Task UpdateAsync(string id, Token entity)
     {
         var existingToken = await hFDbContext.Tokens.FindAsync(id) ??
                             throw new ArgumentException($"Token with ID {id} not found.");

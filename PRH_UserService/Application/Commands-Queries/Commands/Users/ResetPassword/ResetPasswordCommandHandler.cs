@@ -77,7 +77,7 @@ public class ResetPasswordCommandHandler(IUserRepository userRepository, ITokenR
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.ResetPasswordDto.NewPassword);
             // Update user password 
-            await userRepository.Update(user.UserId,user);
+            await userRepository.UpdateAsync(user.UserId,user);
             // Delete user token
             var token = await tokenRepository.GetByPropertyAsync(t => t.UserId == userId);
             await tokenRepository.DeleteAsync(token.TokenId);

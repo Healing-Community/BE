@@ -1,6 +1,6 @@
 ﻿namespace Application.Commons.DTOs;
 
-public class ForgotPasswordDto
+public class SendForgotPasswordDto
 {
     public string Email { get; set; } = null!;
 }

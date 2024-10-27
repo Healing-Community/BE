@@ -63,7 +63,7 @@ public class LoginUserCommandHandler(
                 {
                     // Nếu mật khẩu cần được mã hóa lại
                     user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.LoginDto.Password);
-                    await userRepository.Update(user.UserId, user);
+                    await userRepository.UpdateAsync(user.UserId, user);
                     isPasswordValid = true;
                 }
                 else

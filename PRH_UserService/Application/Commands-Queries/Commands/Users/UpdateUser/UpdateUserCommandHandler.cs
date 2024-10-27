@@ -42,7 +42,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
                 RoleId = request.UserDto.RoleId
             };
 
-            await userRepository.Update(request.Id, updatedUser);
+            await userRepository.UpdateAsync(request.Id, updatedUser);
             response.Success = true;
             response.Message = "User updated successfully";
         }

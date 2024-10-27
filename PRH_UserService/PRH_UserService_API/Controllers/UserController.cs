@@ -95,13 +95,6 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new LogoutUserCommand(logoutRequestDto));
         return response.ToActionResult();
     }
-
-    [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
-    {
-        var response = await sender.Send(new ForgotPasswordCommand(forgotPasswordDto));
-        return response.ToActionResult();
-    }
     [Authorize(Roles = "User, Expert")]
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)

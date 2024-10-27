@@ -33,7 +33,7 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
         return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new User() { UserId = Ulid.Empty.ToString()};
     }
 
-    public async Task Update(string id, User entity)
+    public async Task UpdateAsync(string id, User entity)
     {
         var existingUser = await hFDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
         if (existingUser == null) return;
