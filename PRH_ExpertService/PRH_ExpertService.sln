@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "Persistence\Persistence.csproj", "{A8641B5A-434E-48FC-B5E4-E5DF6CB64BDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRH_ExpertService_API", "PRH_ExpertService_API\PRH_ExpertService_API.csproj", "{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRH_ExpertService_API", "PRH_ExpertService_API\PRH_ExpertService_API.csproj", "{96D0C486-D8D7-404D-98BC-B604B3BDE7E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

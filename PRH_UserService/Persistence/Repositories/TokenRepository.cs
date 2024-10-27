@@ -27,10 +27,11 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
         throw new NotImplementedException();
     }
 
-    public async Task<Token> GetByPropertyAsync(Expression<Func<Token, bool>> predicate)
+    public async Task<Token?> GetByPropertyAsync(Expression<Func<Token, bool>> predicate)
     {
-        return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate) ?? throw new NullReferenceException();
+        return await hFDbContext.Tokens.AsNoTracking().FirstOrDefaultAsync(predicate);
     }
+
 
     public Task<IEnumerable<Token>> GetsAsync()
     {

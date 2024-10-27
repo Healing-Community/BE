@@ -27,8 +27,8 @@ namespace Application.Queries.GetPopularNotificationTypes
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Không thể lấy các loại thông báo phổ biến.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Không thể lấy các loại thông báo phổ biến. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 

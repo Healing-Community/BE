@@ -28,7 +28,7 @@ namespace Application.Commands.UpdateNotificationPreference
                 if (notificationType == null)
                 {
                     response.Success = false;
-                    response.Message = "Không tìm thấy loại thông báo.";
+                    response.Message = $"Không tìm thấy loại thông báo với ID '{request.NotificationTypeId}'. Vui lòng kiểm tra lại.";
                     response.StatusCode = 404;
                     return response;
                 }
@@ -58,8 +58,8 @@ namespace Application.Commands.UpdateNotificationPreference
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Không thể cập nhật thông báo.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Không thể cập nhật thông báo. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 

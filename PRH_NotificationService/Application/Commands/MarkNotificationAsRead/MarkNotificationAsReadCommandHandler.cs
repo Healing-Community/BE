@@ -22,7 +22,7 @@ namespace Application.Commands.MarkNotificationAsRead
                 if (notification == null)
                 {
                     response.Success = false;
-                    response.Message = "Không tìm thấy thông báo.";
+                    response.Message = $"Không tìm thấy thông báo với ID '{request.NotificationId}'. Vui lòng kiểm tra lại.";
                     response.StatusCode = 404;
                     return response;
                 }
@@ -39,8 +39,8 @@ namespace Application.Commands.MarkNotificationAsRead
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Không thể đánh dấu thông báo là đã đọc.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Không thể đánh dấu thông báo là đã đọc. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 

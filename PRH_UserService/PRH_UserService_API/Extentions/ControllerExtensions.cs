@@ -12,7 +12,7 @@ public static class ControllerExtensions
             StatusCode = response.StatusCode
         };
     }
-    public static IActionResult ToActionResult<T>(this RegisterUserResponse<T> response)
+    public static IActionResult ToActionResult<T>(this DetailBaseResponse<T> response)
     {
         return new ObjectResult(response)
         {

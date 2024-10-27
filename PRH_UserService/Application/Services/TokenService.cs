@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -39,28 +39,6 @@ public class TokenService(IConfiguration configuration) : ITokenService
         }
     }
 
-    public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-    {
-        var tokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = false,
-            ValidateIssuer = false,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey =
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"] ?? "")),
-            ValidateLifetime = false
-        };
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-        if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-                StringComparison.InvariantCultureIgnoreCase))
-            throw new SecurityTokenException("Invalid token");
-
-        return principal;
-    }
-
     public bool ValidateRefreshToken(string refreshToken, out string userId)
     {
         userId = Ulid.NewUlid().ToString();
@@ -91,35 +69,44 @@ public class TokenService(IConfiguration configuration) : ITokenService
             return false;
         }
     }
-
-    public bool ValidateToken(string token, out string userId)
+    public (string?, bool) ValidateToken(string token)
     {
-        userId = Ulid.NewUlid().ToString();
+        var userId = Ulid.NewUlid().ToString();
+        // Đặt userId thành null ban đầu để chỉ định không có giá trị
         var jwtSettings = configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Secret key is not configured.");
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(secretKey);
 
-        tokenHandler.ValidateToken(token, new TokenValidationParameters
+        try
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ClockSkew = TimeSpan.Zero
-        }, out var validatedToken);
-
-        var jwtToken = (JwtSecurityToken)validatedToken;
-        var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
-
-        if (userIdClaim != null)
-        {
-            userId = userIdClaim.Value;
-            return true;
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true, // Kiểm tra thời gian sống của token
+                ClockSkew = TimeSpan.Zero // Không có sai số thời gian
+            }, out SecurityToken validatedToken);
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
+            if (userIdClaim != null)
+            {
+                //xác thực thành công
+                userId = userIdClaim.Value;
+                return (userId, true);
+            }
         }
-
-        return false;
+        catch
+        {
+            //xác thực thất bại
+            var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            var subClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
+            return (subClaim?.Value, false);
+        }
+        return default;
     }
 
     public string GenerateVerificationToken(User user)
@@ -142,9 +129,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
             jwtSettings["Issuer"],
             jwtSettings["Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpiryMinutes"] ??
-                                                          throw new InvalidOperationException(
-                                                              "Secret key is not configured."))),
+            expires: DateTime.UtcNow.AddMinutes(5), // 1 minute for verification
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

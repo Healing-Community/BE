@@ -36,8 +36,8 @@ namespace Application.Queries.GetUserNotifications
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi khi lấy thông báo.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Đã xảy ra lỗi khi lấy thông báo. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 

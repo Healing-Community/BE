@@ -27,8 +27,8 @@ namespace Application.Queries.GetReadNotificationRate
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Không thể lấy tỷ lệ thông báo đã đọc.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Không thể lấy tỷ lệ thông báo đã đọc. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 

@@ -80,7 +80,11 @@ public class UserController(ISender sender) : ControllerBase
     {
         //var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var response = await sender.Send(new VerifyUserCommand(token));
-        return Redirect("https://magenta-virginie-55.tiiny.site/");
+        if (!response.Success)
+        {
+            return Redirect("https://nghia46.github.io/Static-Page-Healing-community/verification-failed");
+        }
+        return Redirect("https://nghia46.github.io/Static-Page-Healing-community/success-verification");
     }
 
     [Authorize(Roles = "User")]
@@ -98,11 +102,11 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new ForgotPasswordCommand(forgotPasswordDto));
         return response.ToActionResult();
     }
-
+    [Authorize(Roles = "User, Expert")]
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {
-        var response = await sender.Send(new ResetPasswordCommand(resetPasswordDto));
+        var response = await sender.Send(new ResetPasswordCommand(resetPasswordDto, HttpContext));
         return response.ToActionResult();
     }
 }

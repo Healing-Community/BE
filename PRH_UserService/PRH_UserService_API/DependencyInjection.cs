@@ -136,8 +136,9 @@ public static class DependencyInjection
 
         // Retrieve connection strings and settings from configuration
         string postgresConnectionString = configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
+        string redisConnectionString = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException();
         services.AddHealthChecks()
-                .AddCheck("Self", () => HealthCheckResult.Healthy(),tags: ["liveness"])
+                .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: ["liveness"])
                 .AddNpgSql(
                     configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
                     name: "PostgresDb-check",
@@ -149,6 +150,12 @@ public static class DependencyInjection
                     rabbitConnectionString: rabbitMq["Host"] ?? throw new NullReferenceException(),
                     name: "RabbitMq-check",
                     tags: ["rabbitmq", "messaging", "readiness"],
+                    failureStatus: HealthStatus.Unhealthy
+                )
+                .AddRedis(
+                    redisConnectionString, 
+                    name: "Redis-check", 
+                    tags: ["cache", "redis", "readiness"], 
                     failureStatus: HealthStatus.Unhealthy
                 );
         #endregion

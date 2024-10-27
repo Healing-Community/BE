@@ -22,6 +22,56 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Entities.Appointment", b =>
+                {
+                    b.Property<string>("AppointmentId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("AppointmentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("ExpertAvailabilityId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExpertProfileId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MeetLink")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RecordingLink")
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("AppointmentId");
+
+                    b.HasIndex("ExpertAvailabilityId");
+
+                    b.HasIndex("ExpertProfileId");
+
+                    b.ToTable("Appointments");
+                });
+
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
                 {
                     b.Property<string>("CertificateId")
@@ -31,18 +81,34 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ExpertProfileId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ExpirationDate")
+                    b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("IssueDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("VerifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("VerifiedByAdminId")
+                        .HasColumnType("text");
 
                     b.HasKey("CertificateId");
 
@@ -59,7 +125,11 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -67,10 +137,41 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CertificateTypeId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("CertificateTypes");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ExpertAvailability", b =>
+                {
+                    b.Property<string>("ExpertAvailabilityId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("AvailableDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("ExpertProfileId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ExpertAvailabilityId");
+
+                    b.HasIndex("ExpertProfileId");
+
+                    b.ToTable("ExpertAvailabilities");
                 });
 
             modelBuilder.Entity("Domain.Entities.ExpertProfile", b =>
@@ -78,17 +179,42 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ExpertProfileId")
                         .HasColumnType("text");
 
+                    b.Property<decimal>("AverageRating")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("BackIdCardUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Bio")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ExperienceYears")
-                        .HasColumnType("integer");
-
                     b.Property<string>("ExpertiseAreas")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("FrontIdCardUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RejectionReason")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -99,10 +225,66 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("ExpertProfileId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
                     b.ToTable("ExpertProfiles");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WorkExperience", b =>
+                {
+                    b.Property<string>("WorkExperienceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExpertProfileId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PositionTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("WorkExperienceId");
+
+                    b.HasIndex("ExpertProfileId");
+
+                    b.ToTable("WorkExperiences");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Appointment", b =>
+                {
+                    b.HasOne("Domain.Entities.ExpertAvailability", "ExpertAvailability")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ExpertAvailabilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.ExpertProfile", "ExpertProfile")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ExpertProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExpertAvailability");
+
+                    b.Navigation("ExpertProfile");
                 });
 
             modelBuilder.Entity("Domain.Entities.Certificate", b =>
@@ -110,7 +292,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.CertificateType", "CertificateType")
                         .WithMany("Certificates")
                         .HasForeignKey("CertificateTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.ExpertProfile", "ExpertProfile")
@@ -124,14 +306,47 @@ namespace Infrastructure.Migrations
                     b.Navigation("ExpertProfile");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ExpertAvailability", b =>
+                {
+                    b.HasOne("Domain.Entities.ExpertProfile", "ExpertProfile")
+                        .WithMany("ExpertAvailabilities")
+                        .HasForeignKey("ExpertProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExpertProfile");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WorkExperience", b =>
+                {
+                    b.HasOne("Domain.Entities.ExpertProfile", "ExpertProfile")
+                        .WithMany("WorkExperiences")
+                        .HasForeignKey("ExpertProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExpertProfile");
+                });
+
             modelBuilder.Entity("Domain.Entities.CertificateType", b =>
                 {
                     b.Navigation("Certificates");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ExpertAvailability", b =>
+                {
+                    b.Navigation("Appointments");
+                });
+
             modelBuilder.Entity("Domain.Entities.ExpertProfile", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("Certificates");
+
+                    b.Navigation("ExpertAvailabilities");
+
+                    b.Navigation("WorkExperiences");
                 });
 #pragma warning restore 612, 618
         }

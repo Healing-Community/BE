@@ -20,15 +20,14 @@ namespace Application.Commands.DeleteNotification
             {
                 await notificationRepository.DeleteAsync(request.NotificationId);
                 response.Success = true;
-                response.Data = "Xóa thông báo thành công";
-                response.StatusCode = 200;
                 response.Message = "Thông báo đã được xóa thành công.";
+                response.StatusCode = 200;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi khi xóa thông báo.";
-                response.Errors.Add(ex.Message);
+                response.Message = "Đã xảy ra lỗi khi xóa thông báo. Vui lòng thử lại sau.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.StatusCode = 500;
             }
 
