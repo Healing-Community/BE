@@ -1,5 +1,7 @@
 ﻿using Application.Commands.BookAppointment;
 using Application.Commands.CreateAvailability;
+using Application.Commands.DeleteAvailability;
+using Application.Commands.UpdateAvailability;
 using Application.Commands.UploadFile;
 using Application.Queries.GetAvailability;
 using MediatR;
@@ -15,14 +17,6 @@ namespace PRH_ExpertService_API.Controllers;
 public class ExpertController(ISender sender) : ControllerBase
 {
     [Authorize(Roles = "Expert")]
-    [HttpPost("upload-file/{expertId}")]
-    public async Task<IActionResult> UploadFile(string expertId, [FromForm] FileUploadModel model, string certificationTypeId)
-    {
-        var response = await sender.Send(new UploadFileCommand(expertId, model.File, certificationTypeId));
-        return response.ToActionResult();
-    }
-
-    [Authorize(Roles = "Expert")]
     [HttpPost("create-availability")]
     public async Task<IActionResult> CreateAvailability([FromBody] CreateAvailabilityCommand command)
     {
@@ -31,10 +25,34 @@ public class ExpertController(ISender sender) : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("availability/{expertProfileId}")]
+    [HttpGet("get-availability/{expertProfileId}")]
     public async Task<IActionResult> GetAvailability(string expertProfileId)
     {
         var response = await sender.Send(new GetAvailabilityQuery(expertProfileId));
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "Expert")]
+    [HttpPut("update-availability")]
+    public async Task<IActionResult> UpdateAvailability([FromBody] UpdateAvailabilityCommand command)
+    {
+        var response = await sender.Send(command);
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "Expert")]
+    [HttpDelete("delete-availability/{availabilityId}")]
+    public async Task<IActionResult> DeleteAvailability(string availabilityId)
+    {
+        var response = await sender.Send(new DeleteAvailabilityCommand(availabilityId));
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "Expert")]
+    [HttpPost("upload-file/{expertId}")]
+    public async Task<IActionResult> UploadFile(string expertId, [FromForm] FileUploadModel model, string certificationTypeId)
+    {
+        var response = await sender.Send(new UploadFileCommand(expertId, model.File, certificationTypeId));
         return response.ToActionResult();
     }
 
