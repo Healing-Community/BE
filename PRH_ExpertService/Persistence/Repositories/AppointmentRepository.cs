@@ -49,5 +49,23 @@ namespace Persistence.Repositories
                 await context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<Appointment>> GetByExpertProfileIdAsync(string expertProfileId)
+        {
+            return await context.Appointments
+                .Where(a => a.ExpertProfileId == expertProfileId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Appointment>> GetOverlappingAppointmentsAsync(string expertProfileId, DateTime appointmentDate, TimeSpan startTime, TimeSpan endTime)
+        {
+            return await context.Appointments
+                .Where(a => a.ExpertProfileId == expertProfileId &&
+                            a.AppointmentDate == appointmentDate &&
+                            ((startTime >= a.StartTime && startTime < a.EndTime) ||
+                             (endTime > a.StartTime && endTime <= a.EndTime) ||
+                             (startTime <= a.StartTime && endTime >= a.EndTime)))
+                .ToListAsync();
+        }
     }
 }
