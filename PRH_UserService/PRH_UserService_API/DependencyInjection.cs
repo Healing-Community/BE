@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace PRH_UserService_API;
@@ -15,7 +16,25 @@ public static class DependencyInjection
     {
         #region Base-configuration
 
-        services.AddControllers();
+        services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            // Tạo đối tượng ProblemDetails để tự động trả về thông tin lỗi chuẩn
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "One or more validation errors occurred.",
+                Detail = "Please refer to the errors property for additional details."
+            };
+
+            return new ObjectResult(problemDetails)
+            {
+                StatusCode = StatusCodes.Status422UnprocessableEntity
+            };
+        };
+    });
         services.AddEndpointsApiExplorer();
         services.AddRouting(options => { options.LowercaseUrls = true; });
 

@@ -1,7 +1,6 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Domain.Entities;
-using MassTransit;
 using MediatR;
 using NUlid;
 

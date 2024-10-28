@@ -25,7 +25,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
 
             if ((userId, isValidated) != default)
             {
-                if (isValidated)
+                if (isValidated && userId != null)
                 {
                     // Tìm người dùng theo ID
                     var user = await userRepository.GetByIdAsync(userId);
@@ -34,7 +34,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
                         response.Success = false;
                         response.Message = "Không tìm thấy người dùng.";
                         response.StatusCode = 404;
-                        response.Errors = new List<string> { "Không tìm thấy người dùng." };
+                        response.Errors = ["Không tìm thấy người dùng."];
                         return response;
                     }
 
@@ -47,7 +47,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
                     response.Message = $"Xác minh email thành công.";
                     response.StatusCode = 200;
                 }
-                else
+                else if (!isValidated && userId != null)
                 {
                     response.Success = false;
                     response.Message = "Xác minh email thất bại.";
@@ -63,7 +63,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
             response.Success = false;
             response.Message = "Lỗi xác định.";
             response.StatusCode = 500;
-            response.Errors = new List<string> { ex.Message };
+            response.Errors = [ex.Message];
         }
 
         return response;
