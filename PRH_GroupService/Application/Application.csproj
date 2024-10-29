@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
-    <Folder Include="Commons\DTOs\" />
+    <Folder Include="Commands\Groups\DeleteGroup\" />
+    <Folder Include="Commands\Groups\UpdateGroup\" />
     <Folder Include="Queries\" />
   </ItemGroup>
 
