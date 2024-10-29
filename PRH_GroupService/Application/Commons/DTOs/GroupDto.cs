@@ -1,12 +1,10 @@
-﻿namespace Domain.Entities
+﻿namespace Application.Commons.DTOs
 {
-    public class Group
+    public class GroupDto
     {
-        public required string GroupId { get; set; }
         public string GroupName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime CreatedAt { get; init; }
         public DateTime? UpdatedAt { get; set; }
-        public required string CreatedByUserId { get; set; }
     }
 }
