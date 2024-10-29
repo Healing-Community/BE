@@ -5,6 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Application.Commons;
 
 
 namespace PRH_UserService_API;
@@ -17,24 +18,42 @@ public static class DependencyInjection
         #region Base-configuration
 
         services.AddControllers()
-    .ConfigureApiBehaviorOptions(options =>
-    {
-        options.InvalidModelStateResponseFactory = context =>
-        {
-            // Tạo đối tượng ProblemDetails để tự động trả về thông tin lỗi chuẩn
-            var problemDetails = new ValidationProblemDetails(context.ModelState)
-            {
-                Status = StatusCodes.Status422UnprocessableEntity,
-                Title = "One or more validation errors occurred.",
-                Detail = "Please refer to the errors property for additional details."
-            };
+   .ConfigureApiBehaviorOptions(options =>
+   {
+       options.InvalidModelStateResponseFactory = context =>
+       {
+           // Create a list of ErrorDetail instances based on model state errors
 
-            return new ObjectResult(problemDetails)
-            {
-                StatusCode = StatusCodes.Status422UnprocessableEntity
-            };
-        };
-    });
+           var errorDetails = context.ModelState
+               .Where(ms => ms.Value.Errors.Count > 0)
+               .SelectMany(ms => ms.Value.Errors
+                   .Select(e => new ErrorDetail
+                   {
+                       Message = e.ErrorMessage,
+                       Field = ms.Key
+                   }))
+               .ToList();
+
+           // Create an instance of DetailBaseResponse to structure the response
+           var response = new DetailBaseResponse<object>
+           {
+               Id = Guid.NewGuid().ToString(),
+               StatusCode = StatusCodes.Status422UnprocessableEntity,
+               Message = "One or more validation errors occurred.",
+               Success = false,
+               Data = null,
+               Errors = errorDetails,
+               Timestamp = DateTime.UtcNow
+           };
+
+           // Return the structured response with a 422 status code
+           return new ObjectResult(response)
+           {
+               StatusCode = StatusCodes.Status422UnprocessableEntity
+           };
+       };
+   });
+
         services.AddEndpointsApiExplorer();
         services.AddRouting(options => { options.LowercaseUrls = true; });
 
@@ -172,9 +191,9 @@ public static class DependencyInjection
                     failureStatus: HealthStatus.Unhealthy
                 )
                 .AddRedis(
-                    redisConnectionString, 
-                    name: "Redis-check", 
-                    tags: ["cache", "redis", "readiness"], 
+                    redisConnectionString,
+                    name: "Redis-check",
+                    tags: ["cache", "redis", "readiness"],
                     failureStatus: HealthStatus.Unhealthy
                 );
         #endregion
