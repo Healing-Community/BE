@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Application.Commons;
+using NUlid;
 
 
 namespace PRH_UserService_API;
@@ -37,7 +38,7 @@ public static class DependencyInjection
            // Create an instance of DetailBaseResponse to structure the response
            var response = new DetailBaseResponse<object>
            {
-               Id = Guid.NewGuid().ToString(),
+               Id = Ulid.NewUlid().ToString(),
                StatusCode = StatusCodes.Status422UnprocessableEntity,
                Message = "One or more validation errors occurred.",
                Success = false,
