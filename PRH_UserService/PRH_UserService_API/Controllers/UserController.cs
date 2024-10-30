@@ -1,6 +1,5 @@
 using Application.Commands.Users.AddUser;
 using Application.Commands.Users.DeleteUser;
-using Application.Commands.Users.ForgotPassword;
 using Application.Commands.Users.LoginUser;
 using Application.Commands.Users.Logout;
 using Application.Commands.Users.RegisterUser;
@@ -28,7 +27,7 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new GetUsersQuery());
         return response.ToActionResult();
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("get-by-id/{id}")]
     public async Task<IActionResult> GetById(string id)
     {
