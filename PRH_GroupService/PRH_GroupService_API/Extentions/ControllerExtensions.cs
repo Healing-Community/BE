@@ -1,7 +1,7 @@
 ﻿using Application.Commons;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PRH_PostService_API.Extentions;
+namespace PRH_GroupService_API.Extentions;
 
 public static class ControllerExtensions
 {
