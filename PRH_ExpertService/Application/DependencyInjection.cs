@@ -11,7 +11,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
         services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IPaymentService, MockPaymentService>();
 
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
         return services;

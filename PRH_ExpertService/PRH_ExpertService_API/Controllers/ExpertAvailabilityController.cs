@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_ExpertService_API.Extentions;
+using Application.Queries.GetAllExpertAvailabilities;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -13,6 +14,14 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class ExpertAvailabilityController(ISender sender) : ControllerBase
     {
+        [Authorize]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllExpertAvailabilities()
+        {
+            var response = await sender.Send(new GetAllExpertAvailabilitiesQuery());
+            return response.ToActionResult();
+        }
+
         [Authorize(Roles = "Expert")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAvailability([FromBody] CreateAvailabilityCommand command)
