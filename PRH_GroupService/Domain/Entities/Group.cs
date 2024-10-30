@@ -7,6 +7,6 @@
         public string Description { get; set; } = string.Empty;
         public DateTime CreatedAt { get; init; }
         public DateTime? UpdatedAt { get; set; }
-        public required string CreatedByUserId { get; set; }
+        public string? CreatedByUserId { get; set; }
     }
 }

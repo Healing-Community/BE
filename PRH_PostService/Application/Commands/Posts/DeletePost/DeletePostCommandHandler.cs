@@ -27,7 +27,7 @@ namespace Application.Commands.Posts.DeletePost
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Lỗi !!! Tạo bài viết thất bại";
+                response.Message = "Lỗi !!! Xoá bài viết thất bại";
                 response.Errors.Add(ex.Message);
             }
             return response;

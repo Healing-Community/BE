@@ -18,31 +18,35 @@ namespace Application.Commands.Groups.AddGroup
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
-            var userId = Authentication.GetUserIdFromHttpContext(request.httpContext);
-            if (userId == null)
-            {
-                response.Success = false;
-                response.Message = "Không có quyền để truy cập";
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                return response;
-            }
-            var group = new Group
-            {
-                GroupId = Ulid.NewUlid().ToString(),
-                GroupName = request.groupDto.GroupName,
-                CreatedAt = DateTime.UtcNow,
-                CreatedByUserId = userId,
-            };
+
             try
             {
+                var userId = Authentication.GetUserIdFromHttpContext(request.httpContext);
+                if (userId == null)
+                {
+                    response.Success = false;
+                    response.Message = "Không có quyền để truy cập";
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    return response;
+                }
+                var group = new Group
+                {
+                    GroupId = Ulid.NewUlid().ToString(),
+                    GroupName = request.groupDto.GroupName,
+                    Description = request.groupDto.Description,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    CreatedByUserId = userId,
+                };
+
                 await groupRepository.Create(group);
-                response.StatusCode = (int)HttpStatusCode.OK;
+                response.StatusCode = 200;
                 response.Success = true;
                 response.Message = "Tạo nhóm thành công";
             }
             catch (Exception ex)
             {
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                response.StatusCode = 500;
                 response.Success = false;
                 response.Message = "Lỗi !!! Tạo nhóm thất bại";
                 response.Errors.Add(ex.Message);

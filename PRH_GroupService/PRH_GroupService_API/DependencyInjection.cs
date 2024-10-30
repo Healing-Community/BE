@@ -5,7 +5,7 @@ using Microsoft.OpenApi.Models;
 using MassTransit;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace PRH_PostService_API;
+namespace PRH_GroupService_API;
 
 public static class DependencyInjection
 {
