@@ -3,7 +3,8 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
-using PRH_PostService_API;
+using PRH_GroupService_API;
+using PRH_GroupService_API.Middleware;
 using Prometheus;
 using System.Text.Json;
 
