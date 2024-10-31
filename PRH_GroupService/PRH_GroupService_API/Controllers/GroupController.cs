@@ -1,6 +1,7 @@
 ﻿using Application.Commands.Groups.AddGroup;
 using Application.Commands.Groups.DeleteGroup;
 using Application.Commands.Groups.UpdateGroup;
+using Application.Commands.JoinGroups;
 using Application.Commons.DTOs;
 using Application.Queries.Groups.GetGroups;
 using Application.Queries.Groups.GetGroupsById;
