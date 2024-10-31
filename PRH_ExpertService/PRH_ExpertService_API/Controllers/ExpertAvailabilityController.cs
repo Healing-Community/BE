@@ -14,7 +14,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class ExpertAvailabilityController(ISender sender) : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin,Expert")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllExpertAvailabilities()
         {
@@ -30,7 +30,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize]
+        [Authorize(Roles = "User,Expert")]
         [HttpGet("get/{expertProfileId}")]
         public async Task<IActionResult> GetAvailability(string expertProfileId)
         {

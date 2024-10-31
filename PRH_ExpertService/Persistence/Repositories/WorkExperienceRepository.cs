@@ -50,13 +50,6 @@ namespace Persistence.Repositories
             }
         }
 
-        public async Task<IEnumerable<WorkExperience>> GetByExpertProfileIdAsync(string expertProfileId)
-        {
-            return await expertDbContext.WorkExperiences
-                .Where(w => w.ExpertProfileId == expertProfileId)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<WorkExperience>> GetWorkExperiencesByExpertIdAsync(string expertProfileId)
         {
             return await expertDbContext.WorkExperiences

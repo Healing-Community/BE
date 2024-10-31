@@ -1,5 +1,7 @@
 ﻿using Application.Commons;
+using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using NUlid;
@@ -8,8 +10,7 @@ namespace Application.Queries.GetExpertProfile
 {
     public class GetExpertProfileQueryHandler(
         IExpertProfileRepository expertProfileRepository,
-        ICertificateRepository certificateRepository,
-        IWorkExperienceRepository workExperienceRepository) : IRequestHandler<GetExpertProfileQuery, BaseResponse<ExpertProfile>>
+        IMapper mapper) : IRequestHandler<GetExpertProfileQuery, BaseResponse<ExpertProfile>>
     {
         public async Task<BaseResponse<ExpertProfile>> Handle(GetExpertProfileQuery request, CancellationToken cancellationToken)
         {
@@ -31,8 +32,7 @@ namespace Application.Queries.GetExpertProfile
                     return response;
                 }
 
-                expertProfile.Certificates = (await certificateRepository.GetCertificatesByExpertIdAsync(request.ExpertProfileId)).ToList();
-                expertProfile.WorkExperiences = (await workExperienceRepository.GetWorkExperiencesByExpertIdAsync(request.ExpertProfileId)).ToList();
+                var expertProfileDto = mapper.Map<ExpertProfileDTO>(expertProfile);
 
                 response.Success = true;
                 response.Data = expertProfile;

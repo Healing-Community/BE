@@ -15,7 +15,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class CertificateController(ISender sender) : ControllerBase
     {
-        [Authorize]
+        [Authorize(Roles = "Admin,Expert")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllCertificates()
         {
@@ -31,7 +31,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Expert,User")]
+        [Authorize(Roles = "User,Expert")]
         [HttpGet("{certificateId}")]
         public async Task<IActionResult> GetCertificate([FromRoute] string certificateId)
         {
