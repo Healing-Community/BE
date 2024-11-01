@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Commons.Tools;
 using Application.Interfaces.Repository;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using NUlid;
@@ -8,7 +9,8 @@ using NUlid;
 namespace Application.Commands.BookAppointment
 {
     public class BookAppointmentCommandHandler(
-        IExpertAvailabilityRepository expertAvailabilityRepository,
+        IExpertAvailabilityRepository availabilityRepository,
+        IAppointmentRepository appointmentRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<BookAppointmentCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
@@ -40,7 +42,7 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
-                var availability = await expertAvailabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
+                var availability = await availabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
                 if (availability == null || availability.Status != 0)
                 {
                     response.Success = false;
@@ -49,16 +51,33 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
-                // Cập nhật trạng thái của lịch trống sang "Chờ thanh toán"
-                availability.Status = 1; // Đang chờ thanh toán
+                // Cập nhật trạng thái lịch trống sang "Chờ thanh toán"
+                availability.Status = 1;
                 availability.UpdatedAt = DateTime.UtcNow;
-                await expertAvailabilityRepository.Update(availability.ExpertAvailabilityId, availability);
+                await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
 
-                // Trả về thông báo tạm thời
+                // Tạo mới một bản ghi Appointment
+                var appointment = new Appointment
+                {
+                    AppointmentId = Ulid.NewUlid().ToString(),
+                    UserId = userId,
+                    ExpertProfileId = availability.ExpertProfileId,
+                    ExpertAvailabilityId = availability.ExpertAvailabilityId,
+                    AppointmentDate = availability.AvailableDate,
+                    StartTime = availability.StartTime,
+                    EndTime = availability.EndTime,
+                    Status = 1, // Chờ thanh toán
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                await appointmentRepository.Create(appointment);
+
+                // Trả về thông tin để tiếp tục thanh toán
                 response.Success = true;
-                response.Data = "Yêu cầu đặt lịch của bạn đã được ghi nhận. Vui lòng chờ thanh toán.";
+                response.Data = appointment.AppointmentId;
                 response.StatusCode = 200;
-                response.Message = "Đặt lịch thành công, chờ xử lý thanh toán.";
+                response.Message = "Yêu cầu đặt lịch đã được ghi nhận, vui lòng thanh toán để hoàn tất.";
             }
             catch (Exception ex)
             {
