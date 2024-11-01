@@ -7,19 +7,20 @@ using NUlid;
 using Microsoft.AspNetCore.Http;
 using Domain.Entities;
 
-namespace Application.Commands.UploadFile
+namespace Application.Commands.UploadCertificate
 {
-    public class UploadFileCommandHandler(
+    public class UploadCertificateCommandHandler(
         IFirebaseStorageService firebaseStorageService,
         ICertificateRepository certificateRepository,
         IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor,
-        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<UploadFileCommand, BaseResponse<string>>
+        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<UploadCertificateCommand, BaseResponse<string>>
     {
         private static readonly List<string> ValidFileExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
         private const long MaxFileSize = 5 * 1024 * 1024;
+        private static readonly List<string> AllowedMimeTypes = ["application/pdf", "image/jpeg", "image/png"];
 
-        public async Task<BaseResponse<string>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(UploadCertificateCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
@@ -77,6 +78,15 @@ namespace Application.Commands.UploadFile
                     return response;
                 }
 
+                var mimeType = file.ContentType.ToLowerInvariant();
+                if (!AllowedMimeTypes.Contains(mimeType))
+                {
+                    response.Success = false;
+                    response.Message = "Định dạng MIME của tệp không được chấp nhận.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
                 if (file.Length > MaxFileSize)
                 {
                     response.Success = false;
@@ -85,7 +95,7 @@ namespace Application.Commands.UploadFile
                     return response;
                 }
 
-                var fileName = $"{Ulid.NewUlid()}_{Path.GetFileName(file.FileName)}";
+                var fileName = $"{Path.GetFileName(file.FileName)}";
 
                 using var memoryStream = new MemoryStream();
                 await file.CopyToAsync(memoryStream, cancellationToken);

@@ -7,5 +7,6 @@ namespace Application.Interfaces.Repository
     {
         Task<ExpertAvailability?> GetByDateAndTimeAsync(string expertProfileId, DateTime availableDate, TimeSpan startTime, TimeSpan endTime);
         Task<IEnumerable<ExpertAvailability>> GetByExpertProfileIdAsync(string expertProfileId);
+        Task<ExpertAvailability?> GetOverlappingAvailabilityAsync(string expertProfileId, DateTime availableDate, TimeSpan startTime, TimeSpan endTime);
     }
 }
