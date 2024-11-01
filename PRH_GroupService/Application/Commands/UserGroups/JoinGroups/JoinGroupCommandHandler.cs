@@ -6,7 +6,7 @@ using MediatR;
 using NUlid;
 using System.Net;
 
-namespace Application.Commands.JoinGroups
+namespace Application.Commands.UserGroups.JoinGroups
 {
     public class JoinGroupCommandHandler(IGroupRepository groupRepository, IUserGroupRepository userGroupRepository)
         : IRequestHandler<JoinGroupCommand, BaseResponse<string>>

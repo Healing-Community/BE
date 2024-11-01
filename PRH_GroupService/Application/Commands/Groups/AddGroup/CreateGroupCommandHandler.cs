@@ -8,7 +8,8 @@ using System.Net;
 
 namespace Application.Commands.Groups.AddGroup
 {
-    public class CreateGroupCommandHandler(IGroupRepository groupRepository) : IRequestHandler<CreateGroupCommand, BaseResponse<string>>
+    public class CreateGroupCommandHandler(IGroupRepository groupRepository, IUserGroupRepository userGroupRepository) 
+        : IRequestHandler<CreateGroupCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreateGroupCommand request, CancellationToken cancellationToken)
         {
@@ -40,6 +41,16 @@ namespace Application.Commands.Groups.AddGroup
                 };
 
                 await groupRepository.Create(group);
+
+                // Thêm record vào UserGroup để chủ nhóm là thành viên mặc định
+                var userGroup = new UserGroup
+                {
+                    GroupId = group.GroupId,
+                    UserId = userId,
+                    JoinedAt = DateTime.UtcNow
+                };
+                await userGroupRepository.Create(userGroup);
+
                 response.StatusCode = 200;
                 response.Success = true;
                 response.Message = "Tạo nhóm thành công";

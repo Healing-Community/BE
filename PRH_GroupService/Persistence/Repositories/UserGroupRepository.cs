@@ -23,6 +23,14 @@ namespace Persistence.Repositories
             await hFDBGroupServiceContext.SaveChangesAsync();
         }
 
+        public async Task DeleteAsyncV2(string groupId, string userId)
+        {
+            var userGroup = await hFDBGroupServiceContext.UserGroups.FirstOrDefaultAsync(x => x.GroupId == groupId && x.UserId == userId);
+            if (userGroup == null) return;
+            hFDBGroupServiceContext.UserGroups.Remove(userGroup);
+            await hFDBGroupServiceContext.SaveChangesAsync();
+        }
+
         public async Task<UserGroup?> GetByGroupAndUserIdAsync(string groupId, string userId)
         {
             return await hFDBGroupServiceContext.UserGroups.FirstOrDefaultAsync(ug => ug.GroupId == groupId && ug.UserId == userId);
