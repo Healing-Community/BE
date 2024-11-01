@@ -240,3 +240,41 @@ jobs:
 
     # - name: Push Docker image for Expert Service to Docker Hub
     #   run: docker push ${{ secrets.DOCKER_USERNAME }}/expert-service:latest
+  build-group-service:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'
+
+    - name: Build Group Service
+      working-directory: ./PRH_GroupService  
+      run: dotnet build --configuration Release
+
+    - name: Publish Group Service
+      working-directory: ./PRH_GroupService
+      run: dotnet publish --configuration Release --output ./publish
+
+    - name: Upload Group Service artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: group-service-publish
+        path: ./PRH_GroupService/publish
+
+    
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build Docker image for Group Service
+      working-directory: ./PRH_GroupService  
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/group-service:latest -f Dockerfile .
+
+    - name: List Docker images
+      run: docker images
+
+    - name: Push Docker image for Group Service to Docker Hub
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/group-service:latest
