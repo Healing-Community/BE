@@ -1,4 +1,7 @@
-﻿using Application.Queries.UserGroups.GetUserGroups;
+﻿using Application.Commands.UserGroups.JoinGroups;
+using Application.Commands.UserGroups.LeaveGroups;
+using Application.Commons.DTOs;
+using Application.Queries.UserGroups.GetUserGroups;
 using Application.Queries.UserGroups.GetUserGroupsById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +34,22 @@ namespace PRH_GroupService_API.Controllers
         public async Task<IActionResult> GetUserGroupById(string groupId, string userId)
         {
             var response = await _sender.Send(new GetUserGroupByIdQuery(groupId, userId));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPost("join")]
+        public async Task<IActionResult> JoinGroup([FromBody] UserGroupDto userGroupDto)
+        {
+            var response = await _sender.Send(new JoinGroupCommand(userGroupDto, HttpContext));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPost("leave")]
+        public async Task<IActionResult> LeaveGroup(string groupId)
+        {
+            var response = await _sender.Send(new LeaveGroupCommand(groupId, HttpContext));
             return response.ToActionResult();
         }
     }

@@ -7,5 +7,6 @@ namespace Application.Interfaces.Repository
     {
         Task<UserGroup?> GetByGroupAndUserIdAsync(string groupId, string userId);
         Task<UserGroup?> GetByIdInGroupAsync(string groupId, string userId);
+        Task DeleteAsyncV2(string groupId, string userId);
     }
 }
