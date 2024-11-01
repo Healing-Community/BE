@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Groups.AddGroup;
 using Application.Commands.Groups.DeleteGroup;
+using Application.Commands.Groups.RemoveMember;
 using Application.Commands.Groups.UpdateGroup;
-using Application.Commands.JoinGroups;
 using Application.Commons.DTOs;
 using Application.Queries.Groups.GetGroups;
 using Application.Queries.Groups.GetGroupsById;
@@ -49,10 +49,18 @@ namespace PRH_GroupService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("delete-group/{id}")]
         public async Task<IActionResult> DeleteGroup(string id)
         {
             var response = await sender.Send(new DeleteGroupCommand(id));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpDelete("remove-member")]
+        public async Task<IActionResult> RemoveMember(string groupId, string memberUserId)
+        {
+            var response = await sender.Send(new RemoveMemberCommand(groupId, memberUserId, HttpContext));
             return response.ToActionResult();
         }
     }
