@@ -14,18 +14,19 @@ namespace Application.Commands.UploadCertificate
         ICertificateRepository certificateRepository,
         IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor,
-        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<UploadCertificateCommand, BaseResponse<string>>
+        ICertificateTypeRepository certificateTypeRepository)
+        : IRequestHandler<UploadCertificateCommand, DetailBaseResponse<string>>
     {
         private static readonly List<string> ValidFileExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
         private const long MaxFileSize = 5 * 1024 * 1024;
         private static readonly List<string> AllowedMimeTypes = ["application/pdf", "image/jpeg", "image/png"];
 
-        public async Task<BaseResponse<string>> Handle(UploadCertificateCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<string>> Handle(UploadCertificateCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<string>
+            var response = new DetailBaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -45,63 +46,77 @@ namespace Application.Commands.UploadCertificate
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertId);
                 if (expertProfile == null)
                 {
-                    response.Success = false;
-                    response.Message = $"Không tìm thấy hồ sơ của chuyên gia với ID: {request.ExpertId}. Vui lòng kiểm tra lại ID.";
-                    response.StatusCode = 404;
-                    return response;
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = $"Không tìm thấy hồ sơ của chuyên gia với ID: {request.ExpertId}.",
+                        Field = "ExpertId"
+                    });
                 }
 
                 var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificationTypeId);
                 if (certificateType == null)
                 {
-                    response.Success = false;
-                    response.Message = $"Loại chứng chỉ với ID '{request.CertificationTypeId}' không hợp lệ. Vui lòng kiểm tra và thử lại.";
-                    response.StatusCode = 400;
-                    return response;
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = $"Loại chứng chỉ với ID '{request.CertificationTypeId}' không hợp lệ.",
+                        Field = "CertificationTypeId"
+                    });
                 }
 
                 var file = request.File;
                 if (file == null || file.Length == 0)
                 {
-                    response.Success = false;
-                    response.Message = "File không hợp lệ. Vui lòng chọn một file hợp lệ để tải lên.";
-                    response.StatusCode = 400;
-                    return response;
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "File không hợp lệ. Vui lòng chọn một file hợp lệ để tải lên.",
+                        Field = "File"
+                    });
                 }
-
-                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-                if (!ValidFileExtensions.Contains(fileExtension))
+                else
                 {
-                    response.Success = false;
-                    response.Message = $"Định dạng file '{fileExtension}' không hợp lệ. Chỉ chấp nhận các định dạng: {string.Join(", ", ValidFileExtensions)}.";
-                    response.StatusCode = 400;
-                    return response;
+                    var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                    if (!ValidFileExtensions.Contains(fileExtension))
+                    {
+                        response.Errors.Add(new ErrorDetail
+                        {
+                            Message = $"Định dạng file '{fileExtension}' không hợp lệ. Chỉ chấp nhận các định dạng: {string.Join(", ", ValidFileExtensions)}.",
+                            Field = "FileExtension"
+                        });
+                    }
+
+                    var mimeType = file.ContentType.ToLowerInvariant();
+                    if (!AllowedMimeTypes.Contains(mimeType))
+                    {
+                        response.Errors.Add(new ErrorDetail
+                        {
+                            Message = "Định dạng MIME của tệp không được chấp nhận.",
+                            Field = "MimeType"
+                        });
+                    }
+
+                    if (file.Length > MaxFileSize)
+                    {
+                        response.Errors.Add(new ErrorDetail
+                        {
+                            Message = $"Kích thước file hiện tại là {file.Length / 1024 / 1024}MB, vượt quá giới hạn cho phép là 5MB.",
+                            Field = "FileSize"
+                        });
+                    }
                 }
 
-                var mimeType = file.ContentType.ToLowerInvariant();
-                if (!AllowedMimeTypes.Contains(mimeType))
+                if (response.Errors.Count != 0)
                 {
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     response.Success = false;
-                    response.Message = "Định dạng MIME của tệp không được chấp nhận.";
-                    response.StatusCode = 400;
+                    response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
                     return response;
                 }
-
-                if (file.Length > MaxFileSize)
-                {
-                    response.Success = false;
-                    response.Message = $"Kích thước file hiện tại là {file.Length / 1024 / 1024}MB, vượt quá giới hạn cho phép là 5MB. Vui lòng chọn file nhỏ hơn.";
-                    response.StatusCode = 400;
-                    return response;
-                }
-
-                var fileName = $"{Path.GetFileName(file.FileName)}";
 
                 using var memoryStream = new MemoryStream();
                 await file.CopyToAsync(memoryStream, cancellationToken);
                 memoryStream.Position = 0;
 
-                string fileUrl = await firebaseStorageService.UploadFileAsync(memoryStream, fileName);
+                string fileUrl = await firebaseStorageService.UploadFileAsync(memoryStream, file.FileName);
 
                 var certificate = new Certificate
                 {
@@ -111,8 +126,8 @@ namespace Application.Commands.UploadCertificate
                     FileUrl = fileUrl,
                     IssueDate = DateTime.UtcNow,
                     Status = 0,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddDays(7)
                 };
 
                 await certificateRepository.Create(certificate);
@@ -124,10 +139,14 @@ namespace Application.Commands.UploadCertificate
             }
             catch (Exception ex)
             {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu. Vui lòng thử lại sau.";
-                response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu.";
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "exception"
+                });
             }
 
             return response;

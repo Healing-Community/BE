@@ -9,14 +9,14 @@ namespace Application.Commands.UpdateAvailability
 {
     public class UpdateAvailabilityCommandHandler(
         IExpertAvailabilityRepository expertAvailabilityRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateAvailabilityCommand, BaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateAvailabilityCommand, DetailBaseResponse<bool>>
     {
-        public async Task<BaseResponse<bool>> Handle(UpdateAvailabilityCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<bool>> Handle(UpdateAvailabilityCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
+            var response = new DetailBaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -25,8 +25,12 @@ namespace Application.Commands.UpdateAvailability
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
+                        Field = "HttpContext"
+                    });
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -36,16 +40,24 @@ namespace Application.Commands.UpdateAvailability
                 var availability = await expertAvailabilityRepository.GetByIdAsync(request.AvailabilityId);
                 if (availability == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Lịch trống không tồn tại.",
+                        Field = "AvailabilityId"
+                    });
                     response.Success = false;
-                    response.Message = "Lịch trống không tồn tại.";
                     response.StatusCode = 404;
                     return response;
                 }
 
                 if (request.NewEndTime <= request.NewStartTime)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Thời gian kết thúc phải sau thời gian bắt đầu.",
+                        Field = "EndTime"
+                    });
                     response.Success = false;
-                    response.Message = "Thời gian kết thúc phải sau thời gian bắt đầu.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -53,8 +65,12 @@ namespace Application.Commands.UpdateAvailability
                 if (request.NewAvailableDate < DateTime.UtcNow.Date ||
                    (request.NewAvailableDate == DateTime.UtcNow.Date && request.NewEndTime <= DateTime.UtcNow.TimeOfDay))
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Ngày và thời gian của lịch trống phải là trong tương lai.",
+                        Field = "AvailableDate"
+                    });
                     response.Success = false;
-                    response.Message = "Ngày và thời gian của lịch trống phải là trong tương lai.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -64,8 +80,12 @@ namespace Application.Commands.UpdateAvailability
 
                 if (overlapping != null && overlapping.ExpertAvailabilityId != availability.ExpertAvailabilityId)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Thời gian trống bị trùng lặp với một lịch trống khác.",
+                        Field = "TimeRange"
+                    });
                     response.Success = false;
-                    response.Message = "Thời gian trống bị trùng lặp với một lịch trống khác.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -73,7 +93,7 @@ namespace Application.Commands.UpdateAvailability
                 availability.AvailableDate = request.NewAvailableDate;
                 availability.StartTime = request.NewStartTime;
                 availability.EndTime = request.NewEndTime;
-                availability.UpdatedAt = DateTime.UtcNow;
+                availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await expertAvailabilityRepository.Update(availability.ExpertAvailabilityId, availability);
 
@@ -84,10 +104,14 @@ namespace Application.Commands.UpdateAvailability
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật lịch trống.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

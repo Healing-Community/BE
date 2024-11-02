@@ -11,14 +11,15 @@ namespace Application.Commands.CreateAvailability
     public class CreateAvailabilityCommandHandler(
         IExpertAvailabilityRepository expertAvailabilityRepository,
         IExpertProfileRepository expertProfileRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreateAvailabilityCommand, BaseResponse<string>>
+        IHttpContextAccessor httpContextAccessor)
+        : IRequestHandler<CreateAvailabilityCommand, DetailBaseResponse<string>>
     {
-        public async Task<BaseResponse<string>> Handle(CreateAvailabilityCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<string>> Handle(CreateAvailabilityCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<string>
+            var response = new DetailBaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -38,16 +39,24 @@ namespace Application.Commands.CreateAvailability
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
                 if (expertProfile == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = $"Không tìm thấy hồ sơ của chuyên gia với ID: {request.ExpertProfileId}.",
+                        Field = "ExpertProfileId"
+                    });
                     response.Success = false;
-                    response.Message = $"Không tìm thấy hồ sơ của chuyên gia với ID: {request.ExpertProfileId}.";
                     response.StatusCode = 404;
                     return response;
                 }
 
                 if (request.EndTime <= request.StartTime)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Thời gian kết thúc phải sau thời gian bắt đầu.",
+                        Field = "EndTime"
+                    });
                     response.Success = false;
-                    response.Message = "Thời gian kết thúc phải sau thời gian bắt đầu.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -55,8 +64,12 @@ namespace Application.Commands.CreateAvailability
                 if (request.AvailableDate < DateTime.UtcNow.Date ||
                     (request.AvailableDate == DateTime.UtcNow.Date && request.EndTime <= DateTime.UtcNow.TimeOfDay))
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Ngày và thời gian của lịch trống phải là trong tương lai.",
+                        Field = "AvailableDate"
+                    });
                     response.Success = false;
-                    response.Message = "Ngày và thời gian của lịch trống phải là trong tương lai.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -66,8 +79,12 @@ namespace Application.Commands.CreateAvailability
 
                 if (overlappingAvailability != null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Khoảng thời gian này đã trùng với lịch trống hiện tại. Vui lòng chọn thời gian khác.",
+                        Field = "TimeRange"
+                    });
                     response.Success = false;
-                    response.Message = "Khoảng thời gian này đã trùng với lịch trống hiện tại. Vui lòng chọn thời gian khác.";
                     response.StatusCode = 409;
                     return response;
                 }
@@ -80,8 +97,8 @@ namespace Application.Commands.CreateAvailability
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
                     Status = 0,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
 
                 await expertAvailabilityRepository.Create(newAvailability);
@@ -93,10 +110,14 @@ namespace Application.Commands.CreateAvailability
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

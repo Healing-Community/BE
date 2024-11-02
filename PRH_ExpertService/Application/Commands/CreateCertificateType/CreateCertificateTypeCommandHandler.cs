@@ -7,14 +7,14 @@ using Domain.Entities;
 namespace Application.Commands.CreateCertificateType
 {
     public class CreateCertificateTypeCommandHandler(
-        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<CreateCertificateTypeCommand, BaseResponse<string>>
+        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<CreateCertificateTypeCommand, DetailBaseResponse<string>>
     {
-        public async Task<BaseResponse<string>> Handle(CreateCertificateTypeCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<string>> Handle(CreateCertificateTypeCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<string>
+            var response = new DetailBaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -22,8 +22,12 @@ namespace Application.Commands.CreateCertificateType
             {
                 if (string.IsNullOrWhiteSpace(request.Name))
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Tên chứng chỉ không được để trống.",
+                        Field = "Name"
+                    });
                     response.Success = false;
-                    response.Message = "Tên chứng chỉ không được để trống.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -45,10 +49,14 @@ namespace Application.Commands.CreateCertificateType
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra trong quá trình tạo loại chứng chỉ.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

@@ -10,14 +10,14 @@ namespace Application.Commands.CreateExpertProfile
 {
     public class CreateExpertProfileCommandHandler(
         IExpertProfileRepository expertProfileRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreateExpertProfileCommand, BaseResponse<string>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreateExpertProfileCommand, DetailBaseResponse<string>>
     {
-        public async Task<BaseResponse<string>> Handle(CreateExpertProfileCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<string>> Handle(CreateExpertProfileCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<string>
+            var response = new DetailBaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -26,8 +26,12 @@ namespace Application.Commands.CreateExpertProfile
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
+                        Field = "HttpContext"
+                    });
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -35,8 +39,12 @@ namespace Application.Commands.CreateExpertProfile
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Không xác định được người dùng hiện tại.",
+                        Field = "UserId"
+                    });
                     response.Success = false;
-                    response.Message = "Không xác định được người dùng hiện tại.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -49,8 +57,8 @@ namespace Application.Commands.CreateExpertProfile
                     ExpertiseAreas = request.ExpertiseAreas,
                     Bio = request.Bio,
                     Status = 1,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
 
                 await expertProfileRepository.Create(newExpertProfile);
@@ -62,10 +70,14 @@ namespace Application.Commands.CreateExpertProfile
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Đã xảy ra lỗi trong quá trình tạo hồ sơ chuyên gia.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

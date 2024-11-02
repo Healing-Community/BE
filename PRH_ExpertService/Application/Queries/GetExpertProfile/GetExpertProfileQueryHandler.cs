@@ -17,7 +17,7 @@ namespace Application.Queries.GetExpertProfile
             var response = new BaseResponse<ExpertProfile>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 

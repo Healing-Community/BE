@@ -7,14 +7,14 @@ using NUlid;
 namespace Application.Commands.UpdateWorkExperience
 {
     public class UpdateWorkExperienceCommandHandler(
-        IWorkExperienceRepository workExperienceRepository) : IRequestHandler<UpdateWorkExperienceCommand, BaseResponse<bool>>
+        IWorkExperienceRepository workExperienceRepository) : IRequestHandler<UpdateWorkExperienceCommand, DetailBaseResponse<bool>>
     {
-        public async Task<BaseResponse<bool>> Handle(UpdateWorkExperienceCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<bool>> Handle(UpdateWorkExperienceCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
+            var response = new DetailBaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -23,8 +23,12 @@ namespace Application.Commands.UpdateWorkExperience
                 var workExperience = await workExperienceRepository.GetByIdAsync(request.WorkExperienceId);
                 if (workExperience == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Kinh nghiệm làm việc không tồn tại.",
+                        Field = "WorkExperienceId"
+                    });
                     response.Success = false;
-                    response.Message = "Kinh nghiệm làm việc không tồn tại.";
                     response.StatusCode = 404;
                     return response;
                 }
@@ -34,7 +38,7 @@ namespace Application.Commands.UpdateWorkExperience
                 workExperience.StartDate = request.StartDate;
                 workExperience.EndDate = request.EndDate;
                 workExperience.Description = request.Description;
-                workExperience.UpdatedAt = DateTime.UtcNow;
+                workExperience.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await workExperienceRepository.Update(request.WorkExperienceId, workExperience);
 
@@ -45,10 +49,14 @@ namespace Application.Commands.UpdateWorkExperience
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật kinh nghiệm làm việc.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

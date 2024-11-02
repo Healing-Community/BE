@@ -16,7 +16,6 @@ builder.Services.AddPresentationDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
-builder.Services.AddHttpContextAccessor();
 
 # endregion
 
