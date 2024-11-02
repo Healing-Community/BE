@@ -75,7 +75,7 @@ public class LoginUserCommandHandler(
                         Success = false,
                         Message = "Email hoặc mật khẩu không đúng.",
                         Errors = ["Email hoặc mật khẩu không đúng."],
-                        Timestamp = DateTimeOffset.UtcNow,
+                        Timestamp = DateTime.UtcNow.AddHours(7),
                         StatusCode = StatusCodes.Status422UnprocessableEntity
                     };
                 }
@@ -121,9 +121,10 @@ public class LoginUserCommandHandler(
             {
                 TokenId = Ulid.NewUlid().ToString(),
                 UserId = user.UserId,
+                IssuedAt = DateTime.UtcNow.AddHours(7),
                 RefreshToken = tokenData.RefreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(60 * 7 +
-                                                       int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60"))
+                                                       int.Parse(configuration["JwtSettings:RefreshTokenExpiryMinutes"] ?? "60"))
             };
             await tokenRepository.Create(token);
             response.StatusCode = StatusCodes.Status200OK;

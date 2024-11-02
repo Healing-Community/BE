@@ -83,6 +83,7 @@ public class RefreshTokenCommandHandler(
 
             // Cập nhật refresh token trong cơ sở dữ liệu
             token.RefreshToken = newRefreshToken;
+            token.IssuedAt = DateTime.UtcNow.AddHours(7);
             token.ExpiresAt =
                 DateTime.UtcNow.AddMinutes(60 * 7 + int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? ""));
             await tokenRepository.UpdateAsync(token.TokenId, token);
