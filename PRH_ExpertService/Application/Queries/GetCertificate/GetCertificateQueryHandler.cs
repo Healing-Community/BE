@@ -14,7 +14,7 @@ namespace Application.Queries.GetCertificate
             var response = new BaseResponse<Certificate>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 

@@ -3,20 +3,19 @@ using Application.Interfaces.Repository;
 using MediatR;
 using NUlid;
 using Domain.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Application.Commands.CreateWorkExperience
 {
     public class CreateWorkExperienceCommandHandler(
         IWorkExperienceRepository workExperienceRepository,
-        IExpertProfileRepository expertProfileRepository) : IRequestHandler<CreateWorkExperienceCommand, BaseResponse<string>>
+        IExpertProfileRepository expertProfileRepository) : IRequestHandler<CreateWorkExperienceCommand, DetailBaseResponse<string>>
     {
-        public async Task<BaseResponse<string>> Handle(CreateWorkExperienceCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<string>> Handle(CreateWorkExperienceCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<string>
+            var response = new DetailBaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -25,16 +24,29 @@ namespace Application.Commands.CreateWorkExperience
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
                 if (expertProfile == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Không tìm thấy hồ sơ chuyên gia.",
+                        Field = "ExpertProfileId"
+                    });
                     response.Success = false;
-                    response.Message = "Không tìm thấy hồ sơ chuyên gia.";
                     response.StatusCode = 404;
                     return response;
                 }
 
                 if (string.IsNullOrWhiteSpace(request.CompanyName) || string.IsNullOrWhiteSpace(request.PositionTitle))
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Tên công ty không được để trống.",
+                        Field = "CompanyName"
+                    });
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Chức danh không được để trống.",
+                        Field = "PositionTitle"
+                    });
                     response.Success = false;
-                    response.Message = "Tên công ty và chức danh không được để trống.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -48,8 +60,8 @@ namespace Application.Commands.CreateWorkExperience
                     StartDate = request.StartDate,
                     EndDate = request.EndDate,
                     Description = request.Description,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
 
                 await workExperienceRepository.Create(workExperience);
@@ -61,10 +73,14 @@ namespace Application.Commands.CreateWorkExperience
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra trong quá trình tạo kinh nghiệm làm việc.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

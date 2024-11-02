@@ -10,14 +10,14 @@ namespace Application.Commands.UpdateExpertProfile
 {
     public class UpdateExpertProfileCommandHandler(
         IExpertProfileRepository expertProfileRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateExpertProfileCommand, BaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateExpertProfileCommand, DetailBaseResponse<bool>>
     {
-        public async Task<BaseResponse<bool>> Handle(UpdateExpertProfileCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<bool>> Handle(UpdateExpertProfileCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
+            var response = new DetailBaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -26,8 +26,12 @@ namespace Application.Commands.UpdateExpertProfile
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
+                        Field = "HttpContext"
+                    });
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -37,8 +41,12 @@ namespace Application.Commands.UpdateExpertProfile
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
                 if (expertProfile == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Không tìm thấy hồ sơ chuyên gia.",
+                        Field = "ExpertProfileId"
+                    });
                     response.Success = false;
-                    response.Message = "Không tìm thấy hồ sơ chuyên gia.";
                     response.StatusCode = 404;
                     return response;
                 }
@@ -47,7 +55,7 @@ namespace Application.Commands.UpdateExpertProfile
                 expertProfile.ExpertiseAreas = request.ExpertiseAreas ?? expertProfile.ExpertiseAreas;
                 expertProfile.Bio = request.Bio ?? expertProfile.Bio;
                 expertProfile.Status = request.Status ?? expertProfile.Status;
-                expertProfile.UpdatedAt = DateTime.UtcNow;
+                expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
 
@@ -58,10 +66,14 @@ namespace Application.Commands.UpdateExpertProfile
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật hồ sơ chuyên gia.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

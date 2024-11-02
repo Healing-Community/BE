@@ -13,6 +13,9 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
 
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
+
+        services.AddHttpContextAccessor();
+
         return services;
     }
 }

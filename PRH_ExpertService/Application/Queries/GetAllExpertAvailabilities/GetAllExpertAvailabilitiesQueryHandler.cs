@@ -14,7 +14,7 @@ namespace Application.Queries.GetAllExpertAvailabilities
             var response = new BaseResponse<IEnumerable<ExpertAvailability>>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 

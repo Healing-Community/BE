@@ -7,14 +7,14 @@ using NUlid;
 namespace Application.Commands.UpdateCertificateType
 {
     public class UpdateCertificateTypeCommandHandler(
-        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<UpdateCertificateTypeCommand, BaseResponse<bool>>
+        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<UpdateCertificateTypeCommand, DetailBaseResponse<bool>>
     {
-        public async Task<BaseResponse<bool>> Handle(UpdateCertificateTypeCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<bool>> Handle(UpdateCertificateTypeCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
+            var response = new DetailBaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -23,8 +23,12 @@ namespace Application.Commands.UpdateCertificateType
                 var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificateTypeId);
                 if (certificateType == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Loại chứng chỉ không tồn tại.",
+                        Field = "CertificateTypeId"
+                    });
                     response.Success = false;
-                    response.Message = "Loại chứng chỉ không tồn tại.";
                     response.StatusCode = 404;
                     return response;
                 }
@@ -42,10 +46,14 @@ namespace Application.Commands.UpdateCertificateType
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật loại chứng chỉ.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

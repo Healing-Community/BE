@@ -10,14 +10,14 @@ namespace Application.Commands.UpdateCertificate
     public class UpdateCertificateCommandHandler(
         ICertificateRepository certificateRepository,
         ICertificateTypeRepository certificateTypeRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateCertificateCommand, BaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateCertificateCommand, DetailBaseResponse<bool>>
     {
-        public async Task<BaseResponse<bool>> Handle(UpdateCertificateCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<bool>> Handle(UpdateCertificateCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
+            var response = new DetailBaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -26,8 +26,12 @@ namespace Application.Commands.UpdateCertificate
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
+                        Field = "HttpContext"
+                    });
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
                     response.StatusCode = 400;
                     return response;
                 }
@@ -37,8 +41,12 @@ namespace Application.Commands.UpdateCertificate
                 var certificate = await certificateRepository.GetByIdAsync(request.CertificateId);
                 if (certificate == null)
                 {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Chứng chỉ không tồn tại.",
+                        Field = "CertificateId"
+                    });
                     response.Success = false;
-                    response.Message = "Chứng chỉ không tồn tại.";
                     response.StatusCode = 404;
                     return response;
                 }
@@ -48,8 +56,12 @@ namespace Application.Commands.UpdateCertificate
                     var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificateTypeId);
                     if (certificateType == null)
                     {
+                        response.Errors.Add(new ErrorDetail
+                        {
+                            Message = "Loại chứng chỉ không hợp lệ.",
+                            Field = "CertificateTypeId"
+                        });
                         response.Success = false;
-                        response.Message = "Loại chứng chỉ không hợp lệ.";
                         response.StatusCode = 400;
                         return response;
                     }
@@ -58,7 +70,7 @@ namespace Application.Commands.UpdateCertificate
 
                 certificate.IssueDate = request.IssueDate ?? certificate.IssueDate;
                 certificate.ExpirationDate = request.ExpirationDate ?? certificate.ExpirationDate;
-                certificate.UpdatedAt = DateTime.UtcNow;
+                certificate.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await certificateRepository.Update(certificate.CertificateId, certificate);
 
@@ -69,10 +81,14 @@ namespace Application.Commands.UpdateCertificate
             }
             catch (Exception ex)
             {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật chứng chỉ.";
                 response.StatusCode = 500;
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

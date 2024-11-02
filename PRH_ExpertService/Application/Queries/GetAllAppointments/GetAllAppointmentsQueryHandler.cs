@@ -14,7 +14,7 @@ namespace Application.Queries.GetAllAppointments
             var response = new BaseResponse<IEnumerable<Appointment>>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
