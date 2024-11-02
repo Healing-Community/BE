@@ -8,5 +8,5 @@ public class BaseResponse<T>
     public bool Success { get; set; }
     public T? Data { get; set; }
     public List<string>? Errors { get; set; }
-    public DateTime Timestamp { get; set; }
+    public DateTimeOffset Timestamp { get; set; }
 }

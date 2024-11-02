@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Context;
 using Infrastructure.Interface;
 using Infrastructure.Mapper;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +18,7 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("PostgresDb"));
         });
         // Add Redis
-        string? redisConnectionString = configuration.GetConnectionString("Redis");
+        var redisConnectionString = configuration.GetConnectionString("Redis");
         var redis = ConnectionMultiplexer.Connect(redisConnectionString ?? throw new NullReferenceException());
         services.AddScoped<IRedisContext, RedisContext>();
         services.AddSingleton<IConnectionMultiplexer>(redis);

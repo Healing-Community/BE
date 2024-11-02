@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using NUlid;
 
-namespace Application.Commands.Users.LoginUser;
+namespace Application.Commands_Queries.Commands.Users.LoginUser;
 
 public class LoginUserCommandHandler(
     IConfiguration configuration,
@@ -24,9 +25,8 @@ public class LoginUserCommandHandler(
         var response = new BaseResponse<TokenDto>
         {
             Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow.AddHours(7)
         };
-
         try
         {
             // Tìm kiếm người dùng bằng email
@@ -37,9 +37,10 @@ public class LoginUserCommandHandler(
                     Id = Ulid.NewUlid().ToString(),
                     Success = false,
                     Message = "Email hoặc mật khẩu không đúng.",
-                    Errors = new List<string> { "Không tìm thấy người dùng." },
-                    Timestamp = DateTime.UtcNow,
-                    StatusCode = (int)StatusCodes.Status422UnprocessableEntity
+                    Errors = ["Email hoặc mật khẩu không đúng."],
+                    Timestamp = DateTime.UtcNow.AddHours(7),
+
+                    StatusCode = StatusCodes.Status422UnprocessableEntity
                 };
 
             // Kiểm tra trạng thái người dùng
@@ -49,9 +50,9 @@ public class LoginUserCommandHandler(
                     Id = Ulid.NewUlid().ToString(),
                     Success = false,
                     Message = "Tài khoản người dùng đã bị vô hiệu hóa.",
-                    Errors = new List<string> { "Tài khoản đã bị vô hiệu hóa." },
-                    Timestamp = DateTime.UtcNow,
-                    StatusCode = (int)StatusCodes.Status401Unauthorized
+                    Errors = ["Tài khoản đã bị vô hiệu hóa."],
+                    Timestamp = DateTime.UtcNow.AddHours(7),
+                    StatusCode = StatusCodes.Status401Unauthorized
                 };
 
             // Xác thực mật khẩu
@@ -73,32 +74,40 @@ public class LoginUserCommandHandler(
                         Id = Ulid.NewUlid().ToString(),
                         Success = false,
                         Message = "Email hoặc mật khẩu không đúng.",
-                        Errors = new List<string> { "Mật khẩu không chính xác." },
-                        Timestamp = DateTime.UtcNow,
-                        StatusCode = (int)StatusCodes.Status422UnprocessableEntity
+                        Errors = ["Email hoặc mật khẩu không đúng."],
+                        Timestamp = DateTimeOffset.UtcNow,
+                        StatusCode = StatusCodes.Status422UnprocessableEntity
                     };
                 }
             }
 
             // Lấy vai trò của người dùng
             var roleName = roleRepository.GetRoleNameById(user.RoleId);
-            var claims = new List<Claim>
+            var accessTokenClaims = new List<Claim>
             {
+                new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                    ClaimValueTypes.Integer64),
                 new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new(ClaimTypes.NameIdentifier, user.UserId),
                 new(ClaimTypes.Email, user.Email),
                 new(ClaimTypes.Role, roleName.Result ?? "None")
             };
 
             // Tạo Access token
-            var accessToken = tokenService.GenerateAccessToken(claims);
+            var accessToken = tokenService.GenerateAccessToken(accessTokenClaims);
             response.Success = true;
             response.Message = "Đăng nhập thành công.";
+
+            var refreshTokenClaims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                    ClaimValueTypes.Integer64)
+            };
 
             var tokenData = new TokenDto
             {
                 Token = accessToken,
-                RefreshToken = tokenService.GenerateRefreshToken()
+                RefreshToken = tokenService.GenerateRefreshToken(refreshTokenClaims)
             };
 
             response.Data = tokenData;
@@ -113,15 +122,16 @@ public class LoginUserCommandHandler(
                 TokenId = Ulid.NewUlid().ToString(),
                 UserId = user.UserId,
                 RefreshToken = tokenData.RefreshToken,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60"))
+                ExpiresAt = DateTime.UtcNow.AddMinutes(60 * 7 +
+                                                       int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? "60"))
             };
             await tokenRepository.Create(token);
-            response.StatusCode = (int)StatusCodes.Status200OK;
+            response.StatusCode = StatusCodes.Status200OK;
         }
         catch (Exception ex)
         {
             // Xử lý lỗi
-            response.StatusCode = (int)StatusCodes.Status500InternalServerError;
+            response.StatusCode = StatusCodes.Status500InternalServerError;
             response.Success = false;
             response.Message = "Đăng nhập không thành công.";
             response.Errors = [ex.StackTrace];

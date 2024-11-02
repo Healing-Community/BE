@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_UserService_API;
+using PRH_UserService_API.Middleware;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,9 +45,10 @@ app.UseSwaggerUI(c =>
 });
 
 # region HealthChecks
+
 app.MapHealthChecks("/health/liveness", new HealthCheckOptions
 {
-    Predicate = (check) => check.Tags.Contains("liveness"),  // Lọc chỉ liveness checks
+    Predicate = check => check.Tags.Contains("liveness"), // Lọc chỉ liveness checks
     ResponseWriter = async (context, report) =>
     {
         context.Response.ContentType = "application/json";
@@ -68,7 +70,7 @@ app.MapHealthChecks("/health/liveness", new HealthCheckOptions
 
 app.MapHealthChecks("/health/readiness", new HealthCheckOptions
 {
-    Predicate = (check) => check.Tags.Contains("readiness"),  // Lọc chỉ readiness checks
+    Predicate = check => check.Tags.Contains("readiness"), // Lọc chỉ readiness checks
     ResponseWriter = async (context, report) =>
     {
         context.Response.ContentType = "application/json";
@@ -87,6 +89,7 @@ app.MapHealthChecks("/health/readiness", new HealthCheckOptions
         await context.Response.WriteAsync(result);
     }
 });
+
 # endregion
 
 #region Prometheus-Metrics

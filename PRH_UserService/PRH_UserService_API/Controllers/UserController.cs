@@ -1,18 +1,19 @@
-using Application.Commands.Users.AddUser;
-using Application.Commands.Users.DeleteUser;
-using Application.Commands.Users.LoginUser;
-using Application.Commands.Users.Logout;
-using Application.Commands.Users.RegisterUser;
-using Application.Commands.Users.ResetPassword;
-using Application.Commands.Users.UpdateUser;
-using Application.Commands.Users.VerifyUser;
+using Application.Commands_Queries.Commands.Users.AddUser;
+using Application.Commands_Queries.Commands.Users.DeleteUser;
+using Application.Commands_Queries.Commands.Users.LoginUser;
+using Application.Commands_Queries.Commands.Users.Logout;
+using Application.Commands_Queries.Commands.Users.RegisterUser;
+using Application.Commands_Queries.Commands.Users.ResetPassword;
+using Application.Commands_Queries.Commands.Users.UpdateUser;
+using Application.Commands_Queries.Commands.Users.VerifyUser;
+using Application.Commands_Queries.Queries.Users.GetUsers;
+using Application.Commands_Queries.Queries.Users.GetUsersById;
 using Application.Commons.DTOs;
-using Application.Queries.Users.GetUsers;
-using Application.Queries.Users.GetUsersById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_UserService_API.Extentions;
+using PRH_UserService_API.Middleware;
 
 namespace PRH_UserService_API.Controllers;
 
@@ -27,6 +28,7 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new GetUsersQuery());
         return response.ToActionResult();
     }
+
     [Authorize(Roles = "Admin")]
     [HttpGet("get-by-id/{id}")]
     public async Task<IActionResult> GetById(string id)
@@ -80,9 +82,7 @@ public class UserController(ISender sender) : ControllerBase
         //var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var response = await sender.Send(new VerifyUserCommand(token));
         if (!response.Success)
-        {
             return Redirect("https://nghia46.github.io/Static-Page-Healing-community/verification-failed");
-        }
         return Redirect("https://nghia46.github.io/Static-Page-Healing-community/success-verification");
     }
 
@@ -94,6 +94,7 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new LogoutUserCommand(logoutRequestDto));
         return response.ToActionResult();
     }
+
     [Authorize(Roles = "User, Expert")]
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)

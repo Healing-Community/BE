@@ -1,11 +1,11 @@
-﻿using Application.Commons;
+﻿using System.Net;
+using Application.Commons;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
 using NUlid;
-using System.Net;
 
-namespace Application.Queries.Users.GetUsers;
+namespace Application.Commands_Queries.Queries.Users.GetUsers;
 
 public class GetUsersQueryHandler(IUserRepository userRepository)
     : IRequestHandler<GetUsersQuery, BaseResponse<IEnumerable<User>>>

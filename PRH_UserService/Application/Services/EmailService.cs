@@ -1,14 +1,13 @@
-
-using Application.Interfaces.Services;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 
-namespace Application.Services
+namespace Application.Services;
+
+public class EmailService(IEmailRepository emailRepository) : IEmailService
 {
-    public class EmailService(IEmailRepository emailRepository) : IEmailService
+    public async Task SendOtpEmailAsync(string toEmail, string otp)
     {
-        public async Task SendOtpEmailAsync(string toEmail, string otp)
-        {
-            string emailContent = $@"
+        var emailContent = $@"
                 <html>
                 <body style=""margin: 0; padding: 0; font-family: 'Verdana', sans-serif; background-color: #f0f4f8;"">
                     <div style=""max-width: 650px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);"">
@@ -24,13 +23,13 @@ namespace Application.Services
                 </body>
                 </html>
                 ";
-            await emailRepository.SendEmailAsync(toEmail, "Mã OTP của bạn", emailContent);
-        }
+        await emailRepository.SendEmailAsync(toEmail, "Mã OTP của bạn", emailContent);
+    }
 
-        public async Task SendVerificationEmailAsync(string toEmail, string verificationLink)
-        {
-            // Nội dung email
-            string emailContent = $@"
+    public async Task SendVerificationEmailAsync(string toEmail, string verificationLink)
+    {
+        // Nội dung email
+        var emailContent = $@"
                 <html>
                 <body style=""margin: 0; padding: 0; font-family: 'Verdana', sans-serif; background-color: #f0f4f8;"">
                     <div style=""max-width: 650px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);"">
@@ -49,8 +48,7 @@ namespace Application.Services
                 </html>
                 ";
 
-            // Gửi email xác minh
-            await emailRepository.SendEmailAsync(toEmail, "Xác thực email của bạn", emailContent);
-        }
+        // Gửi email xác minh
+        await emailRepository.SendEmailAsync(toEmail, "Xác thực email của bạn", emailContent);
     }
 }

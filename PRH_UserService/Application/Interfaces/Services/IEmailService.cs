@@ -1,10 +1,7 @@
-using System.Threading.Tasks;
+namespace Application.Interfaces.Services;
 
-namespace Application.Interfaces.Services
+public interface IEmailService
 {
-    public interface IEmailService
-    {
-        Task SendVerificationEmailAsync(string toEmail, string verificationLink);
-        Task SendOtpEmailAsync(string toEmail, string otp);
-    }
+    Task SendVerificationEmailAsync(string toEmail, string verificationLink);
+    Task SendOtpEmailAsync(string toEmail, string otp);
 }

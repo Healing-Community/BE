@@ -5,13 +5,14 @@ using Application.Interfaces.Services;
 using MediatR;
 using NUlid;
 
-namespace Application.Commands.Users.ForgotPassword;
+namespace Application.Commands_Queries.Commands.Users.ForgotPassword.SendOtpToEmail;
 
-public class ForgotPasswordCommandHandler(IOtpCache otpCache, IEmailService emailService) : IRequestHandler<ForgotPasswordCommand, BaseResponse<string>>
+public class ForgotPasswordCommandHandler(IOtpCache otpCache, IEmailService emailService)
+    : IRequestHandler<ForgotPasswordCommand, BaseResponse<string>>
 {
     public async Task<BaseResponse<string>> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<string>()
+        var response = new BaseResponse<string>
         {
             Id = Ulid.NewUlid().ToString(),
             Timestamp = DateTime.Now
@@ -24,7 +25,7 @@ public class ForgotPasswordCommandHandler(IOtpCache otpCache, IEmailService emai
             var isOtpExists = await otpCache.OtpExistsAsync(request.ForgotPasswordDto.Email);
             if (isOtpExists)
             {
-                bool isDeleted = await otpCache.DeleteOtpAsync(request.ForgotPasswordDto.Email);
+                var isDeleted = await otpCache.DeleteOtpAsync(request.ForgotPasswordDto.Email);
                 if (!isDeleted)
                 {
                     response.Message = "Có lỗi xảy ra khi xóa OTP cũ.";
@@ -33,6 +34,7 @@ public class ForgotPasswordCommandHandler(IOtpCache otpCache, IEmailService emai
                     return response;
                 }
             }
+
             await otpCache.SaveOtpAsync(request.ForgotPasswordDto.Email, otp, expriredTime);
             await emailService.SendOtpEmailAsync(request.ForgotPasswordDto.Email, otp);
 
@@ -46,6 +48,7 @@ public class ForgotPasswordCommandHandler(IOtpCache otpCache, IEmailService emai
             response.Success = false;
             response.Message = e.Message;
         }
+
         return response;
     }
 }

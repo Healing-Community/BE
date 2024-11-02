@@ -1,9 +1,8 @@
 ﻿using Domain.Constants;
 
-namespace Application.Interfaces.AMQP
+namespace Application.Interfaces.AMQP;
+
+public interface IMessagePublisher
 {
-    public interface IMessagePublisher
-    {
-        Task PublishAsync<T>(T message, QueueName queueName, CancellationToken cancellationToken);
-    }
+    Task PublishAsync<T>(T message, QueueName queueName, CancellationToken cancellationToken);
 }

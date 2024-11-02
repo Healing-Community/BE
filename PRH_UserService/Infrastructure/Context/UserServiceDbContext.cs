@@ -24,7 +24,7 @@ public partial class UserServiceDbContext : DbContext
     {
         // User configuration
         modelBuilder.Entity<User>()
-            .HasKey(u => u.UserId);  // Assuming UserId is Guid or string
+            .HasKey(u => u.UserId); // Assuming UserId is Guid or string
         modelBuilder.Entity<User>()
             .HasIndex(u => u.UserName)
             .IsUnique();
@@ -52,7 +52,7 @@ public partial class UserServiceDbContext : DbContext
 
         // Token configuration
         modelBuilder.Entity<Token>()
-            .HasKey(t => t.TokenId);  // Use TokenId as primary key
+            .HasKey(t => t.TokenId); // Use TokenId as primary key
         modelBuilder.Entity<Token>()
             .HasOne(t => t.User)
             .WithMany(u => u.Tokens)

@@ -1,13 +1,12 @@
 ﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.OpenApi.Models;
-using MassTransit;
-using Microsoft.AspNetCore.Mvc;
 using Application.Commons;
+using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NUlid;
-
 
 namespace PRH_UserService_API;
 
@@ -19,41 +18,41 @@ public static class DependencyInjection
         #region Base-configuration
 
         services.AddControllers()
-   .ConfigureApiBehaviorOptions(options =>
-   {
-       options.InvalidModelStateResponseFactory = context =>
-       {
-           // Create a list of ErrorDetail instances based on model state errors
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    // Create a list of ErrorDetail instances based on model state errors
 
-           var errorDetails = context.ModelState
-               .Where(ms => ms.Value.Errors.Count > 0)
-               .SelectMany(ms => ms.Value.Errors
-                   .Select(e => new ErrorDetail
-                   {
-                       Message = e.ErrorMessage,
-                       Field = ms.Key
-                   }))
-               .ToList();
+                    var errorDetails = context.ModelState
+                        .Where(ms => ms.Value.Errors.Count > 0)
+                        .SelectMany(ms => ms.Value.Errors
+                            .Select(e => new ErrorDetail
+                            {
+                                Message = e.ErrorMessage,
+                                Field = ms.Key
+                            }))
+                        .ToList();
 
-           // Create an instance of DetailBaseResponse to structure the response
-           var response = new DetailBaseResponse<object>
-           {
-               Id = Ulid.NewUlid().ToString(),
-               StatusCode = StatusCodes.Status422UnprocessableEntity,
-               Message = "One or more validation errors occurred.",
-               Success = false,
-               Data = null,
-               Errors = errorDetails,
-               Timestamp = DateTime.UtcNow
-           };
+                    // Create an instance of DetailBaseResponse to structure the response
+                    var response = new DetailBaseResponse<object>
+                    {
+                        Id = Ulid.NewUlid().ToString(),
+                        StatusCode = StatusCodes.Status422UnprocessableEntity,
+                        Message = "One or more validation errors occurred.",
+                        Success = false,
+                        Data = null,
+                        Errors = errorDetails,
+                        Timestamp = DateTime.UtcNow
+                    };
 
-           // Return the structured response with a 422 status code
-           return new ObjectResult(response)
-           {
-               StatusCode = StatusCodes.Status422UnprocessableEntity
-           };
-       };
-   });
+                    // Return the structured response with a 422 status code
+                    return new ObjectResult(response)
+                    {
+                        StatusCode = StatusCodes.Status422UnprocessableEntity
+                    };
+                };
+            });
 
         services.AddEndpointsApiExplorer();
         services.AddRouting(options => { options.LowercaseUrls = true; });
@@ -100,6 +99,7 @@ public static class DependencyInjection
         #endregion
 
         #region AMQP
+
         var rabbitMq = configuration.GetSection("RabbitMq");
 
         services.AddMassTransit(x =>
@@ -174,32 +174,33 @@ public static class DependencyInjection
         #region HealthCheck
 
         // Retrieve connection strings and settings from configuration
-        string postgresConnectionString = configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
-        string redisConnectionString = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException();
+        var postgresConnectionString =
+            configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
+        var redisConnectionString = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException();
         services.AddHealthChecks()
-                .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: ["liveness"])
-                .AddNpgSql(
-                    configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
-                    name: "PostgresDb-check",
-                    tags: ["db", "postgres", "readiness"],
-                    healthQuery: "SELECT 1;",
-                    failureStatus: HealthStatus.Unhealthy
-                )
-                .AddRabbitMQ(
-                    rabbitConnectionString: rabbitMq["Host"] ?? throw new NullReferenceException(),
-                    name: "RabbitMq-check",
-                    tags: ["rabbitmq", "messaging", "readiness"],
-                    failureStatus: HealthStatus.Unhealthy
-                )
-                .AddRedis(
-                    redisConnectionString,
-                    name: "Redis-check",
-                    tags: ["cache", "redis", "readiness"],
-                    failureStatus: HealthStatus.Unhealthy
-                );
+            .AddCheck("Self", () => HealthCheckResult.Healthy(), ["liveness"])
+            .AddNpgSql(
+                configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
+                name: "PostgresDb-check",
+                tags: ["db", "postgres", "readiness"],
+                healthQuery: "SELECT 1;",
+                failureStatus: HealthStatus.Unhealthy
+            )
+            .AddRabbitMQ(
+                rabbitMq["Host"] ?? throw new NullReferenceException(),
+                name: "RabbitMq-check",
+                tags: ["rabbitmq", "messaging", "readiness"],
+                failureStatus: HealthStatus.Unhealthy
+            )
+            .AddRedis(
+                redisConnectionString,
+                "Redis-check",
+                tags: ["cache", "redis", "readiness"],
+                failureStatus: HealthStatus.Unhealthy
+            );
+
         #endregion
 
         return services;
-
     }
 }

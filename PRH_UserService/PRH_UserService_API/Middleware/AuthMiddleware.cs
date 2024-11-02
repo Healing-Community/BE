@@ -3,16 +3,12 @@ using System.Net;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-public class AuthMiddleware
-{
-    private readonly RequestDelegate _next;
-    private readonly IConfiguration _configuration;
+namespace PRH_UserService_API.Middleware;
 
-    public AuthMiddleware(RequestDelegate next, IConfiguration configuration)
-    {
-        _next = next;
-        _configuration = configuration;
-    }
+public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
+{
+    private readonly IConfiguration _configuration = configuration;
+    private readonly RequestDelegate _next = next;
 
     public async Task Invoke(HttpContext context)
     {

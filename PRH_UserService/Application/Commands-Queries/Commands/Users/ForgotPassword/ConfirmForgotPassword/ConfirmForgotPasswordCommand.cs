@@ -4,4 +4,5 @@ using MediatR;
 
 namespace Application.Commands_Queries.Commands.Users.ForgotPassword.ConfirmForgotPassword;
 
-public record ConfirmForgotPasswordCommand(ConfirmForgotPasswordDto ConfirmForgotPasswordDto) : IRequest<DetailBaseResponse<string>>;
+public record ConfirmForgotPasswordCommand(ConfirmForgotPasswordDto ConfirmForgotPasswordDto)
+    : IRequest<DetailBaseResponse<string>>;

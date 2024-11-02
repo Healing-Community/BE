@@ -2,6 +2,6 @@
 using Domain.Entities;
 using MediatR;
 
-namespace Application.Queries.Roles.GetRoles;
+namespace Application.Commands_Queries.Queries.Roles.GetRoles;
 
 public record GetRolesQuery : IRequest<BaseResponse<IEnumerable<Role>>>;

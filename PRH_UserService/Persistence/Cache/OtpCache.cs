@@ -1,4 +1,3 @@
-using System;
 using Application.Interfaces.Redis;
 using Infrastructure.Interface;
 
@@ -6,7 +5,8 @@ namespace Persistence.Cache;
 
 public class OtpCache(IRedisContext redisContext) : IOtpCache
 {
-    readonly string OtpColection = "otp:Email";
+    private readonly string OtpColection = "otp:Email";
+
     public async Task<bool> DeleteOtpAsync(string key)
     {
         key = $"{OtpColection}:{key}";

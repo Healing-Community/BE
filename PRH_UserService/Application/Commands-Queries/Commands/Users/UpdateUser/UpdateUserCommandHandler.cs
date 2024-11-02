@@ -4,7 +4,7 @@ using Domain.Entities;
 using MediatR;
 using NUlid;
 
-namespace Application.Commands.Users.UpdateUser;
+namespace Application.Commands_Queries.Commands.Users.UpdateUser;
 
 public class UpdateUserCommandHandler(IUserRepository userRepository)
     : IRequestHandler<UpdateUserCommand, BaseResponse<string>>

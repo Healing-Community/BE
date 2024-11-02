@@ -2,7 +2,7 @@
 using Application.Interfaces.Repository;
 using MediatR;
 
-namespace Application.Commands.Users.DeleteUser;
+namespace Application.Commands_Queries.Commands.Users.DeleteUser;
 
 public class DeleteUserCommandHandler(IUserRepository userRepository)
     : IRequestHandler<DeleteUserCommand, BaseResponse<string>>

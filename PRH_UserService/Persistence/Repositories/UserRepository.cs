@@ -28,9 +28,10 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
         return await hFDbContext.Users.FirstAsync(x => x.UserId == id);
     }
 
-    public async Task<User> GetByPropertyAsync(Expression<Func<User, bool>> predicate)
+    public async Task<User?> GetByPropertyAsync(Expression<Func<User, bool>> predicate)
     {
-        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new User() { UserId = Ulid.Empty.ToString()};
+        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ??
+               new User { UserId = Ulid.Empty.ToString() };
     }
 
     public async Task UpdateAsync(string id, User entity)

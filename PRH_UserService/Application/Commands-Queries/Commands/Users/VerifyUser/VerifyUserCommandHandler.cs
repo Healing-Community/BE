@@ -1,11 +1,10 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
-using Domain.Entities;
 using MediatR;
 using NUlid;
 
-namespace Application.Commands.Users.VerifyUser;
+namespace Application.Commands_Queries.Commands.Users.VerifyUser;
 
 public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepository userRepository)
     : IRequestHandler<VerifyUserCommand, BaseResponse<string>>
@@ -15,13 +14,12 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
         var response = new BaseResponse<string>
         {
             Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow.AddHours(7)
         };
 
         try
         {
-            
-            var (userId,isValidated) = tokenService.ValidateToken(request.Token);
+            var (userId, isValidated) = tokenService.ValidateToken(request.Token);
 
             if ((userId, isValidated) != default)
             {
@@ -44,7 +42,7 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
 
                     // Thiết lập chi tiết phản hồi thành công
                     response.Success = true;
-                    response.Message = $"Xác minh email thành công.";
+                    response.Message = "Xác minh email thành công.";
                     response.StatusCode = 200;
                 }
                 else if (!isValidated && userId != null)
@@ -56,12 +54,11 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
                     await userRepository.DeleteAsync(userId);
                 }
             }
-           
         }
         catch (Exception ex)
         {
             response.Success = false;
-            response.Message = "Lỗi xác định.";
+            response.Message = "Lỗi không xác định.";
             response.StatusCode = 500;
             response.Errors = [ex.Message];
         }

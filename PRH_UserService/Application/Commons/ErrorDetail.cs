@@ -1,9 +1,7 @@
-﻿
-namespace Application.Commons
+﻿namespace Application.Commons;
+
+public class ErrorDetail
 {
-    public class ErrorDetail
-    {
-        public string? Message { get; set; }
-        public string? Field { get; set; }
-    }
+    public string? Message { get; set; }
+    public string? Field { get; set; }
 }

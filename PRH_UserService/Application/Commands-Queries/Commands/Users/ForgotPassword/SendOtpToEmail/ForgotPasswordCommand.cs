@@ -2,6 +2,6 @@
 using Application.Commons.DTOs;
 using MediatR;
 
-namespace Application.Commands.Users.ForgotPassword;
+namespace Application.Commands_Queries.Commands.Users.ForgotPassword.SendOtpToEmail;
 
 public record ForgotPasswordCommand(SendForgotPasswordDto ForgotPasswordDto) : IRequest<BaseResponse<string>>;
