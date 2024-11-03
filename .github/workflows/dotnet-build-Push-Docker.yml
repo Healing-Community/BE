@@ -279,7 +279,7 @@ jobs:
     - name: Push Docker image for Group Service to Docker Hub
       run: docker push ${{ secrets.DOCKER_USERNAME }}/group-service:latest
 
-    build-payment-service:
+  build-payment-service:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
