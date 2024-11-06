@@ -21,7 +21,7 @@ namespace Application.Commands.ReportPosts.AddReport
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             var userId = Authentication.GetUserIdFromHttpContext(request.HttpContext);
@@ -39,7 +39,8 @@ namespace Application.Commands.ReportPosts.AddReport
                 UserId = userId,
                 ReportTypeId = request.reportDto.ReportTypeId,
                 Status = request.reportDto.Status,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow.AddHours(7),
+                UpdatedAt = DateTime.UtcNow.AddHours(7)
             };
             try
             {

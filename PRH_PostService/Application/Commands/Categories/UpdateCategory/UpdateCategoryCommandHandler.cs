@@ -13,7 +13,7 @@ namespace Application.Commands.Categories.UpdateCategory
             var response = new BaseResponse<string>
             {
                 Id = request.categoryId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try
@@ -23,7 +23,8 @@ namespace Application.Commands.Categories.UpdateCategory
                 {
                     CategoryId = request.categoryId,
                     Name = request.CategoryDto.Name,
-                    UpdateAt = DateTime.UtcNow,
+                    CreateAt = existingCategory.CreateAt,
+                    UpdateAt = DateTime.UtcNow.AddHours(7)
                 };
                 await categoryRepository.Update(request.categoryId, updatedCategory);
                 response.StatusCode = (int)HttpStatusCode.OK;

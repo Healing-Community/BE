@@ -14,7 +14,7 @@ namespace Application.Commands.Posts.UpdatePost
             var response = new BaseResponse<string>
             {
                 Id = request.postId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try
@@ -29,7 +29,8 @@ namespace Application.Commands.Posts.UpdatePost
                     VideoUrl = request.PostDto.VideoUrl,
                     Description = request.PostDto.Description,
                     Status = request.PostDto.Status,
-                    UpdateAt = DateTime.UtcNow,
+                    CreateAt = existingPost.CreateAt,
+                    UpdateAt = DateTime.UtcNow.AddHours(7)
                 };
                 await postRepository.Update(request.postId, updatedPost);
                 response.StatusCode = (int)HttpStatusCode.OK;

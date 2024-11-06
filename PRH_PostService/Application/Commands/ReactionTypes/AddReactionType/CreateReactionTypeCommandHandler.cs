@@ -22,7 +22,7 @@ namespace Application.Commands.ReactionTypes.AddReactionType
             var response = new BaseResponse<string>
             {
                 Id = reactionTypeId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try
