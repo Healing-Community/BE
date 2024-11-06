@@ -13,7 +13,7 @@ namespace Application.Commands.Categories.DeleteCategory
             var response = new BaseResponse<string>
             {
                 Id = request.categoryId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try

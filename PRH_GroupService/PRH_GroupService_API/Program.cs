@@ -2,6 +2,7 @@
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Persistence;
 using PRH_GroupService_API;
 using PRH_GroupService_API.Middleware;
@@ -18,6 +19,18 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 
 # endregion
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Cấu hình lắng nghe HTTP/1.1 và HTTP/2 trên cổng 7098 với HTTPS
+    options.ListenLocalhost(7098, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+        listenOptions.UseHttps(); // Sử dụng HTTPS
+    });
+});
+// Cấu hình gRPC Service
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 #region Middleware
@@ -102,6 +115,11 @@ app.UseCors();
 app.UseAuthentication();
 
 app.UseAuthorization();
+// Map các service gRPC
+app.MapGrpcService<GroupGrpcService>(); // Đăng ký GroupGrpcService cho gRPC
+// Thêm endpoint để phục vụ các tệp tĩnh như index.html
+app.UseStaticFiles();
+app.MapFallbackToFile("index.html"); // Phục vụ index.html nếu truy cập từ URL
 
 app.MapControllers();
 

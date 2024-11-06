@@ -6,6 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Commands\PostRequest\**" />
+    <EmbeddedResource Remove="Commands\PostRequest\**" />
+    <None Remove="Commands\PostRequest\**" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
@@ -13,14 +19,12 @@
 		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
 		<PackageReference Include="NUlid" Version="1.7.2" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Domain\Domain.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Commands\PostRequest\" />
+		
 	</ItemGroup>
 
 

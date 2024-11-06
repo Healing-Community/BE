@@ -19,7 +19,7 @@ namespace Application.Commands.Comments.AddComment
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             var userId = Authentication.GetUserIdFromHttpContext(request.HttpContext);
@@ -37,7 +37,8 @@ namespace Application.Commands.Comments.AddComment
                 UserId = userId,
                 //ParentId = request.CommentDto.ParentId,
                 Content = request.CommentDto.Content,
-                CreatedAt = DateTime.UtcNow                  
+                CreatedAt = DateTime.UtcNow.AddHours(7),
+                UpdatedAt = DateTime.UtcNow.AddHours(7)
             };
             try
             {

@@ -9,6 +9,7 @@
   <ItemGroup>
 	  <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.2" />
 	  <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="8.0.2" />
+	  <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
 	  <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.5" />
 	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
@@ -20,5 +21,8 @@
 	<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	<ProjectReference Include="..\Persistence\Persistence.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="Protos\group.proto" GrpcServices="Server" />
+	</ItemGroup>
 
 </Project>

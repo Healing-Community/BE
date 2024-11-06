@@ -1,4 +1,5 @@
 ﻿using Application;
+using Application.Interfaces.Repository;
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -9,6 +10,9 @@ using Prometheus;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<GroupGrpcClient>();
+builder.Services.AddScoped<IGroupGrpcClient, GroupGrpcClient>();
 
 #region Add-layer-dependencies
 
