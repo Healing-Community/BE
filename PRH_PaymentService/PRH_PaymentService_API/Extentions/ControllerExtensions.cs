@@ -1,8 +1,6 @@
 ﻿using Application.Commons;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PRH_ExpertService_API.Extentions;
-
 public static class ControllerExtensions
 {
     public static IActionResult ToActionResult<T>(this BaseResponse<T> response)

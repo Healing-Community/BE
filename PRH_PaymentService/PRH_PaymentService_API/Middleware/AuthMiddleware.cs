@@ -4,8 +4,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
-namespace PRH_ExpertService_API.Middleware
-{
     public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
     {
         public async Task Invoke(HttpContext context)
@@ -72,4 +70,3 @@ namespace PRH_ExpertService_API.Middleware
             await next(context);
         }
     }
-}
