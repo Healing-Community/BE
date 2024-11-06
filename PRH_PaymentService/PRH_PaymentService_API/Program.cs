@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 #region Add-layer-dependencies
 
 builder.Services.AddPresentationDependencies(builder.Configuration);
-builder.Services.AddApplicationDependencies();
+builder.Services.AddApplicationDependencies(builder.Configuration);
 builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 

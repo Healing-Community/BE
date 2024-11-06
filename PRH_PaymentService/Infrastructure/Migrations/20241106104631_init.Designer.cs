@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(PaymentDbContext))]
-    [Migration("20241104075332_init")]
+    [Migration("20241106104631_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -36,6 +36,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("AppointmentId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<long>("OrderCode")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("timestamp with time zone");

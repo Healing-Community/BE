@@ -18,6 +18,7 @@ namespace Infrastructure.Migrations
                     PaymentId = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     AppointmentId = table.Column<string>(type: "text", nullable: false),
+                    OrderCode = table.Column<long>(type: "bigint", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

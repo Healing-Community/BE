@@ -7,8 +7,6 @@ using MassTransit;
 using Application.Commons;
 using Microsoft.AspNetCore.Mvc;
 using NUlid;
-using Application.Interfaces.Services;
-using Application.Services;
 
 public static class DependencyInjection
 {
@@ -189,19 +187,6 @@ public static class DependencyInjection
                     tags: ["rabbitmq", "messaging", "readiness"],
                     failureStatus: HealthStatus.Unhealthy
                 );
-        #endregion
-
-        #region PayOS
-
-        services.AddHttpClient<IPayOSService, PayOSService>(client =>
-        {
-            var payOsConfig = configuration.GetSection("PayOS");
-            var apiBaseUrl = "https://api.payos.com"; // Thay bằng URL thực tế
-            client.BaseAddress = new Uri(apiBaseUrl);
-            client.DefaultRequestHeaders.Add("ClientId", payOsConfig["ClientId"]);
-            client.DefaultRequestHeaders.Add("ApiKey", payOsConfig["ApiKey"]);
-        });
-
         #endregion
 
         return services;

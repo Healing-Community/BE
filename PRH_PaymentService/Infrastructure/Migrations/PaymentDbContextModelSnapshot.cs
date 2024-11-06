@@ -34,6 +34,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<long>("OrderCode")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("timestamp with time zone");
 
