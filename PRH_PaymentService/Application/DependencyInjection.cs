@@ -21,7 +21,10 @@ public static class DependencyInjection
         );
 
         services.AddSingleton(payOS);
+
         services.AddScoped<IPayOSService, PayOSService>();
+
+        services.AddHostedService<PaymentStatusPollingService>();
 
         services.AddHttpContextAccessor();
 

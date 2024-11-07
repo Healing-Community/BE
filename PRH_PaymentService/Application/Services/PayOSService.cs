@@ -22,7 +22,7 @@ namespace Application.Services
 
             if (createPaymentResult == null)
             {
-                throw new InvalidOperationException("Failed to create payment link.");
+                throw new InvalidOperationException("Không tạo được liên kết thanh toán.");
             }
 
             return new CreatePaymentResponse
@@ -30,5 +30,43 @@ namespace Application.Services
                 PaymentUrl = createPaymentResult.checkoutUrl
             };
         }
-    }
+
+        public async Task<PaymentStatusResponse> GetPaymentStatus(long orderCode)
+        {
+            var paymentLinkInformation = await payOS.getPaymentLinkInformation(orderCode);
+
+            if (paymentLinkInformation == null)
+            {
+                throw new InvalidOperationException("Không thể lấy thông tin trạng thái thanh toán.");
+            }
+
+            return new PaymentStatusResponse
+            {
+                Status = paymentLinkInformation.status,
+            };
+        }
+
+        public async Task<PaymentStatusResponse> CancelPaymentLink(long orderCode, string? reason = null)
+        {
+            PaymentLinkInformation cancelledPaymentLinkInfo;
+
+            if (string.IsNullOrEmpty(reason))
+            {
+                cancelledPaymentLinkInfo = await payOS.cancelPaymentLink(orderCode);
+            }
+            else
+            {
+                cancelledPaymentLinkInfo = await payOS.cancelPaymentLink(orderCode, reason);
+            }
+
+            if (cancelledPaymentLinkInfo == null)
+            {
+                throw new InvalidOperationException("Không thể hủy liên kết thanh toán.");
+            }
+
+            return new PaymentStatusResponse
+            {
+                Status = cancelledPaymentLinkInfo.status
+            };
+        }    }
 }

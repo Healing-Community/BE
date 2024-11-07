@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Repositories;
 using Domain.Entities;
+using Domain.Enum;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -51,6 +52,17 @@ namespace Persistence.Repositories
             if (existingPayment != null)
             {
                 context.Entry(existingPayment).CurrentValues.SetValues(entity);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateStatus(long orderCode, PaymentStatus status)
+        {
+            var payment = await context.Payments.FirstOrDefaultAsync(p => p.OrderCode == orderCode);
+            if (payment != null)
+            {
+                payment.Status = (int)status;
+                payment.UpdatedAt = DateTime.UtcNow;
                 await context.SaveChangesAsync();
             }
         }

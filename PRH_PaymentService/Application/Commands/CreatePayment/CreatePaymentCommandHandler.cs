@@ -76,7 +76,6 @@ namespace Application.Commands.CreatePayment
                 };
                 await paymentRepository.Create(payment);
 
-                // Trả về URL thanh toán
                 response.Success = true;
                 response.Data = payOSResponse.PaymentUrl;
                 response.StatusCode = 200;
