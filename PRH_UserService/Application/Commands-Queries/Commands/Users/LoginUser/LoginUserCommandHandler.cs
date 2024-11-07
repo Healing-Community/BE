@@ -82,7 +82,7 @@ public class LoginUserCommandHandler(
             }
 
             // Lấy vai trò của người dùng
-            var roleName = roleRepository.GetRoleNameById(user.RoleId);
+            var role = await roleRepository.GetByPropertyAsync(r => r.RoleId == user.RoleId);
             var accessTokenClaims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
@@ -90,7 +90,7 @@ public class LoginUserCommandHandler(
                 new(ClaimTypes.Name, user.UserName),
                 new(ClaimTypes.NameIdentifier, user.UserId),
                 new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.Role, roleName.Result ?? "None")
+                new(ClaimTypes.Role, role?.RoleName ?? "Unknown")
             };
 
             // Tạo Access token
@@ -107,7 +107,7 @@ public class LoginUserCommandHandler(
             var tokenData = new TokenDto
             {
                 Token = accessToken,
-                RefreshToken = tokenService.GenerateRefreshToken(refreshTokenClaims)
+                RefreshToken = tokenService.GenerateRefreshToken(string.Empty, refreshTokenClaims)
             };
 
             response.Data = tokenData;

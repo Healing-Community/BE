@@ -4,6 +4,7 @@ using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
+using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using NUlid;
@@ -62,7 +63,7 @@ public class RefreshTokenCommandHandler(
                 return response;
             }
 
-            var roleName = roleRepository.GetRoleNameById(user.RoleId);
+            var role = await roleRepository.GetByPropertyAsync(r => r.RoleId == user.RoleId) ?? new Role();
             var accessTokenClaims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
@@ -70,8 +71,9 @@ public class RefreshTokenCommandHandler(
                 new(ClaimTypes.Name, user.UserName),
                 new(ClaimTypes.NameIdentifier, user.UserId),
                 new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.Role, roleName.Result ?? "None")
+                new(ClaimTypes.Role, role.RoleName ?? "Unknown")
             };
+            // Tạo claims cho refresh token
             var refreshTokenClaims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
@@ -79,15 +81,11 @@ public class RefreshTokenCommandHandler(
             };
             // Tạo access token và refresh token mới
             var newAccessToken = tokenService.GenerateAccessToken(accessTokenClaims);
-            var newRefreshToken = tokenService.GenerateRefreshToken(refreshTokenClaims);
+            // Tạo refresh token mới
+            var newRefreshToken = tokenService.GenerateRefreshToken(token.RefreshToken,refreshTokenClaims);
 
             // Cập nhật refresh token trong cơ sở dữ liệu
-            token.RefreshToken = newRefreshToken;
-            token.IssuedAt = DateTime.UtcNow.AddHours(7);
-            token.ExpiresAt =
-                DateTime.UtcNow.AddMinutes(60 * 7 + int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? ""));
-            await tokenRepository.UpdateAsync(token.TokenId, token);
-
+            UpdateRefreshToken(token, newRefreshToken).Wait();
             // Thiết lập chi tiết phản hồi
             response.Success = true;
             response.Message = "Tạo mới token thành công";
@@ -107,5 +105,14 @@ public class RefreshTokenCommandHandler(
         }
 
         return response;
+    }
+
+    private async Task UpdateRefreshToken(Token token, string newRefreshToken)
+    {
+        token.RefreshToken = newRefreshToken;
+        token.IssuedAt = DateTime.UtcNow.AddHours(7);
+        token.ExpiresAt =
+            DateTime.UtcNow.AddMinutes(60 * 7 + int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? ""));
+        await tokenRepository.UpdateAsync(token.TokenId, token);
     }
 }

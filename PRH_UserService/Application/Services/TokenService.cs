@@ -28,24 +28,43 @@ public class TokenService(IConfiguration configuration) : ITokenService
         return tokenString;
     }
 
-    public string GenerateRefreshToken(IEnumerable<Claim> claims)
+    public string GenerateRefreshToken(string oldRefreshToken, IEnumerable<Claim> claims)
     {
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"] ?? ""));
         var signInCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
+        // Set default expiration time
+        var exp = DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:RefreshTokenExpiryMinutes"] ?? "10080"));
+
+        // Step 1: If oldRefreshToken is provided, retrieve the `exp` claim and use it as the expiration time for the new token
+        if (!string.IsNullOrEmpty(oldRefreshToken))
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(oldRefreshToken) as JwtSecurityToken;
+
+            // Extract the `exp` claim if it exists
+            var expiresAt = jwtToken?.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Exp)?.Value;
+
+            if (expiresAt != null && long.TryParse(expiresAt, out var expUnix))
+            {
+                // Convert the `exp` claim from Unix timestamp to DateTime
+                exp = DateTimeOffset.FromUnixTimeSeconds(expUnix).UtcDateTime;
+            }
+        }
 
         var tokeOptions = new JwtSecurityToken(
             configuration["JwtSettings:Issuer"],
             configuration["JwtSettings:Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(int.Parse(configuration["JwtSettings:RefreshTokenExpiryMinutes"] ??
-                                                          "10080")),
+            expires: exp,  // Use the old token's expiration time
             signingCredentials: signInCredentials
         );
 
         var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
         return tokenString;
     }
+
+
 
     public bool IsRefreshTokenExpired(string? refreshToken)
     {

@@ -22,7 +22,7 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
         await hFDbContext.SaveChangesAsync();
     }
 
-    public Task<Token> GetByIdAsync(string id)
+    public Task<Token?> GetByIdAsync(string id)
     {
         throw new NotImplementedException();
     }
@@ -33,7 +33,7 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
     }
 
 
-    public Task<IEnumerable<Token>> GetsAsync()
+    public Task<IEnumerable<Token>?> GetsAsync()
     {
         throw new NotImplementedException();
     }

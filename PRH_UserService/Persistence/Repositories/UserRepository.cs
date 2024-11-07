@@ -23,7 +23,7 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
         await hFDbContext.SaveChangesAsync();
     }
 
-    public async Task<User> GetByIdAsync(string id)
+    public async Task<User?> GetByIdAsync(string id)
     {
         return await hFDbContext.Users.FirstAsync(x => x.UserId == id);
     }
@@ -53,7 +53,7 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
         return await hFDbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<IEnumerable<User>> GetsAsync()
+    public async Task<IEnumerable<User>?> GetsAsync()
     {
         return await hFDbContext.Users.ToListAsync();
     }

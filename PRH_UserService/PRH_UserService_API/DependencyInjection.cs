@@ -23,10 +23,9 @@ public static class DependencyInjection
                 options.InvalidModelStateResponseFactory = context =>
                 {
                     // Create a list of ErrorDetail instances based on model state errors
-
                     var errorDetails = context.ModelState
-                        .Where(ms => ms.Value.Errors.Count > 0)
-                        .SelectMany(ms => ms.Value.Errors
+                        .Where(ms => ms.Value?.Errors != null && ms.Value.Errors.Count > 0)
+                        .SelectMany(ms => ms.Value!.Errors!
                             .Select(e => new ErrorDetail
                             {
                                 Message = e.ErrorMessage,
@@ -58,7 +57,6 @@ public static class DependencyInjection
         services.AddRouting(options => { options.LowercaseUrls = true; });
 
         #endregion
-
         #region Swagger
 
         var generalSettings = configuration.GetSection("GeneralSettings");
