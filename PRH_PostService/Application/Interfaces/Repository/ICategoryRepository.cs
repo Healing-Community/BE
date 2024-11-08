@@ -4,5 +4,6 @@ namespace Application.Interfaces.Repository
 {
     public interface ICategoryRepository : ICreateRepository<Category>, IReadRepository<Category>, IUpdateRepository<Category>, IDeleteRepository
     {
+        Task<bool> ExistsAsync(string categoryId);
     }
 }
