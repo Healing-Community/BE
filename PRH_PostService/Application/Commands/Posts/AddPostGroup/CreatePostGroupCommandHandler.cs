@@ -9,12 +9,16 @@ using MediatR;
 using NUlid;
 using System.Net;
 
-namespace Application.Commands.Posts.AddPost
+namespace Application.Commands.Posts.AddPostGroup
 {
-    public class CreatePostCommandHandler(IMessagePublisher messagePublisher, IPostRepository postRepository, ICategoryRepository categoryRepository)
-        : IRequestHandler<CreatePostCommand, BaseResponse<string>>
+    public class CreatePostGroupCommandHandler(
+        IMessagePublisher messagePublisher, 
+        IPostRepository postRepository, 
+        IGroupGrpcClient groupGrpcClient, 
+        ICategoryRepository categoryRepository)
+        : IRequestHandler<CreatePostGroupCommand, BaseResponse<string>>
     {
-        public async Task<BaseResponse<string>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(CreatePostGroupCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
@@ -36,7 +40,7 @@ namespace Application.Commands.Posts.AddPost
                 }
 
                 // Validate CategoryId
-                if (string.IsNullOrEmpty(request.PostDto.CategoryId))
+                if (string.IsNullOrEmpty(request.PostGroupDto.CategoryId))
                 {
                     response.Success = false;
                     response.Message = "CategoryId không được bỏ trống.";
@@ -45,7 +49,7 @@ namespace Application.Commands.Posts.AddPost
                 }
 
                 // Kiểm tra sự tồn tại của Category
-                var categoryExists = await categoryRepository.ExistsAsync(request.PostDto.CategoryId);
+                var categoryExists = await categoryRepository.ExistsAsync(request.PostGroupDto.CategoryId);
                 if (!categoryExists)
                 {
                     response.Success = false;
@@ -53,9 +57,21 @@ namespace Application.Commands.Posts.AddPost
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
                 }
+                // Kiểm tra sự tồn tại của Group nếu GroupId được cung cấp
+                if (!string.IsNullOrEmpty(request.PostGroupDto.GroupId))
+                {
+                    var groupExists = await groupGrpcClient.CheckGroupExistsAsync(request.PostGroupDto.GroupId);
+                    if (!groupExists)
+                    {
+                        response.Success = false;
+                        response.Message = "Nhóm không tồn tại.";
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return response;
+                    }
+                }
 
                 // Validate Title
-                if (string.IsNullOrEmpty(request.PostDto.Title))
+                if (string.IsNullOrEmpty(request.PostGroupDto.Title))
                 {
                     response.Success = false;
                     response.Message = "Tiêu đề không được bỏ trống.";
@@ -68,12 +84,13 @@ namespace Application.Commands.Posts.AddPost
                 {
                     PostId = Ulid.NewUlid().ToString(),
                     UserId = userId,
-                    CategoryId = request.PostDto.CategoryId,
-                    Title = request.PostDto.Title,
-                    CoverImgUrl = request.PostDto.CoverImgUrl,
-                    VideoUrl = request.PostDto.VideoUrl,
-                    Description = request.PostDto.Description,
-                    Status = request.PostDto.Status,
+                    GroupId = request.PostGroupDto.GroupId, 
+                    CategoryId = request.PostGroupDto.CategoryId,
+                    Title = request.PostGroupDto.Title,
+                    CoverImgUrl = request.PostGroupDto.CoverImgUrl,
+                    VideoUrl = request.PostGroupDto.VideoUrl,
+                    Description = request.PostGroupDto.Description,
+                    Status = request.PostGroupDto.Status,
                     CreateAt = DateTime.UtcNow.AddHours(7),
                     UpdateAt = DateTime.UtcNow.AddHours(7)
                 };
@@ -93,6 +110,13 @@ namespace Application.Commands.Posts.AddPost
                     PostedDate = post.CreateAt
                 };
                 await messagePublisher.PublishAsync(postingRequestCreatedMessage, QueueName.PostQueue, cancellationToken);
+            }
+            catch (Grpc.Core.RpcException grpcEx)
+            {
+                response.StatusCode = (int)HttpStatusCode.BadGateway;
+                response.Success = false;
+                response.Message = "Lỗi kết nối với Group Service";
+                response.Errors.Add(grpcEx.Message);
             }
             catch (Exception ex)
             {
