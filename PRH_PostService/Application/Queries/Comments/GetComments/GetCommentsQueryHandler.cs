@@ -1,7 +1,7 @@
 ﻿using Application.Commons;
+using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using Domain.Entities;
-using MassTransit;
 using MediatR;
 using NUlid;
 using System.Net;
@@ -9,23 +9,28 @@ using System.Net;
 namespace Application.Queries.Comments.GetComments
 {
     public class GetCommentsQueryHandler(ICommentRepository commentRepository)
-        : IRequestHandler<GetCommentsQuery, BaseResponse<IEnumerable<Comment>>>
+        : IRequestHandler<GetCommentsQuery, BaseResponse<IEnumerable<CommentDtoResponse>>>
     {
-        public async Task<BaseResponse<IEnumerable<Comment>>> Handle(GetCommentsQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<CommentDtoResponse>>> Handle(GetCommentsQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<IEnumerable<Comment>>()
+            var response = new BaseResponse<IEnumerable<CommentDtoResponse>>()
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
+
             try
             {
                 var comments = await commentRepository.GetsAsync();
+
+                // Map Comments to CommentDtoResponse to avoid circular references
+                var mappedComments = comments.Select(c => MapToDto(c)).ToList();
+
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.Message = "Lấy dữ liệu thành công";
                 response.Success = true;
-                response.Data = comments;
+                response.Data = mappedComments;
             }
             catch (Exception e)
             {
@@ -34,6 +39,22 @@ namespace Application.Queries.Comments.GetComments
                 response.Success = false;
             }
             return response;
+        }
+        private CommentDtoResponse MapToDto(Comment comment)
+        {
+            var dto = new CommentDtoResponse
+            {
+                CommentId = comment.CommentId,
+                PostId = comment.PostId,
+                ParentId = comment.ParentId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                CreatedAt = comment.CreatedAt,
+                UpdatedAt = comment.UpdatedAt
+            };
+
+            dto.Replies = comment.Replies?.Select(MapToDto).ToList() ?? new List<CommentDtoResponse>();
+            return dto;
         }
     }
 }
