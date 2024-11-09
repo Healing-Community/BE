@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_ExpertService_API;
 using PRH_ExpertService_API.Middleware;
+using PRH_ExpertService_API.Services;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
+
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 
@@ -105,5 +108,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGrpcService<ExpertServiceImpl>();
+
+app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.Run();

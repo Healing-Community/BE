@@ -14,7 +14,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class ExpertAvailabilityController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Admin,Expert")]
+        [Authorize(Roles = "Admin,Expert,User")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllExpertAvailabilities()
         {
