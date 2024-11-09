@@ -11,8 +11,7 @@ namespace PRH_ExpertService_API.Services
         {
             try
             {
-                // Logic xử lý yêu cầu PaymentSuccess
-                await Task.CompletedTask; // Placeholder for actual async logic
+                await Task.CompletedTask;
 
                 return new PaymentSuccessResponse
                 {
@@ -22,7 +21,6 @@ namespace PRH_ExpertService_API.Services
             }
             catch (Exception ex)
             {
-                // Xử lý ngoại lệ và trả về phản hồi thất bại
                 return new PaymentSuccessResponse
                 {
                     Success = false,

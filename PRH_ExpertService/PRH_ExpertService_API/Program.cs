@@ -3,6 +3,7 @@ using Application;
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Persistence;
 using PRH_ExpertService_API;
 using PRH_ExpertService_API.Middleware;
@@ -21,6 +22,16 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 # endregion
 
 builder.Services.AddGrpc();
+
+// Cấu hình Kestrel
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5005, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+        listenOptions.UseHttps(); // Nếu dịch vụ của bạn yêu cầu HTTPS
+    });
+});
 
 var app = builder.Build();
 
