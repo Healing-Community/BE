@@ -28,7 +28,6 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new GetUsersQuery());
         return response.ToActionResult();
     }
-
     [HttpGet("get-by-id/{id}")]
     public async Task<IActionResult> GetById(string id)
     {
