@@ -66,5 +66,13 @@ namespace Persistence.Repositories
                 await context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<Payment>> GetPendingPaymentsAsync()
+        {
+            return await context.Payments
+                .AsNoTracking()
+                .Where(p => p.Status == (int)PaymentStatus.Pending)
+                .ToListAsync();
+        }
     }
 }
