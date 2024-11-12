@@ -17,7 +17,7 @@ public partial class UserServiceDbContext : DbContext
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Token> Tokens { get; set; } = null!;
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

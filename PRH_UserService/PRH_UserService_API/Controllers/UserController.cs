@@ -21,19 +21,26 @@ namespace PRH_UserService_API.Controllers;
 [ApiController]
 public class UserController(ISender sender) : ControllerBase
 {
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
         var response = await sender.Send(new GetUsersQuery());
         return response.ToActionResult();
     }
-
-    [Authorize(Roles = "Admin")]
-    [HttpGet("get-by-id/{id}")]
-    public async Task<IActionResult> GetById(string id)
+    [Obsolete("This method is deprecated, please use get-user-profile method instead.")]
+    [Authorize(Roles="User, Expert, Admin, Moderator")]
+    [HttpGet("get-by-id/{userId}")]
+    public async Task<IActionResult> GetById(string userId)
     {
-        var response = await sender.Send(new GetUsersByIdQuery(id));
+        var response = await sender.Send(new GetUsersByIdQuery(userId));
+        return response.ToActionResult();
+    }
+   // [Authorize(Roles="User, Expert, Admin, Moderator")]
+    [HttpGet("get-user-profile/{userId}")]
+    public async Task<IActionResult> GetUserProfile(string userId)
+    {
+        var response = await sender.Send(new GetUserProfileQuery(userId));
         return response.ToActionResult();
     }
 
