@@ -14,7 +14,7 @@ namespace Application.Commands.Reactions.UpdateReaction
             var response = new BaseResponse<string>
             {
                 Id = request.reactionId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try
@@ -24,7 +24,8 @@ namespace Application.Commands.Reactions.UpdateReaction
                 {
                     ReactionId = request.reactionId,
                     ReactionTypeId = request.ReactionDto.ReactionTypeId,
-                    UpdateAt = DateTime.UtcNow,
+                    CreateAt = existingReaction.CreateAt,
+                    UpdateAt = DateTime.UtcNow.AddHours(7),
                 };
                 await reactionRepository.Update(request.reactionId, updatedReaction);
                 response.StatusCode = (int)HttpStatusCode.OK;

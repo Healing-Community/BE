@@ -22,7 +22,7 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
         await hFDbContext.SaveChangesAsync();
     }
 
-    public Task<Token> GetByIdAsync(string id)
+    public Task<Token?> GetByIdAsync(string id)
     {
         throw new NotImplementedException();
     }
@@ -33,12 +33,12 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
     }
 
 
-    public Task<IEnumerable<Token>> GetsAsync()
+    public Task<IEnumerable<Token>?> GetsAsync()
     {
         throw new NotImplementedException();
     }
 
-    public async Task Update(string id, Token entity)
+    public async Task UpdateAsync(string id, Token entity)
     {
         var existingToken = await hFDbContext.Tokens.FindAsync(id) ??
                             throw new ArgumentException($"Token with ID {id} not found.");

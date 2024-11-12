@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Posts.AddPost;
+using Application.Commands.Posts.AddPostGroup;
 using Application.Commands.Posts.DeletePost;
 using Application.Commands.Posts.UpdatePost;
 using Application.Commons.DTOs;
@@ -32,7 +33,7 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPost("create")]
+        [HttpPost("create-post")]
         public async Task<IActionResult> CreatePost(PostDto post)
         {
             var response = await sender.Send(new CreatePostCommand(post, HttpContext));
@@ -40,7 +41,15 @@ namespace PRH_PostService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPut("update/{id}")]
+        [HttpPost("create-post-group")]
+        public async Task<IActionResult> CreatePostInGroup(PostGroupDto postGroup)
+        {
+            var response = await sender.Send(new CreatePostGroupCommand(postGroup, HttpContext));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPut("update-post/{id}")]
         public async Task<IActionResult> UpdatePost(string id, PostDto post)
         {
             var response = await sender.Send(new UpdatePostCommand(id, post));

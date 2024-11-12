@@ -4,7 +4,7 @@ using Application.Interfaces.Repository;
 using MediatR;
 using NUlid;
 
-namespace Application.Commands.Users.Logout;
+namespace Application.Commands_Queries.Commands.Users.Logout;
 
 public class LogoutUserCommandHandler(ITokenRepository tokenRepository)
     : IRequestHandler<LogoutUserCommand, BaseResponse<string>>
@@ -14,7 +14,7 @@ public class LogoutUserCommandHandler(ITokenRepository tokenRepository)
         var response = new BaseResponse<string>
         {
             Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow,
+            Timestamp = DateTime.UtcNow.AddHours(7),
             Errors = new List<string>() // Khởi tạo danh sách lỗi
         };
 

@@ -5,5 +5,7 @@ namespace Application.Interfaces.Repository
 {
     public interface IAppointmentRepository : IReadRepository<Appointment>, ICreateRepository<Appointment>, IUpdateRepository<Appointment>, IDeleteRepository
     {
+        Task<IEnumerable<Appointment>> GetByExpertProfileIdAsync(string expertProfileId);
+        Task<IEnumerable<Appointment>> GetOverlappingAppointmentsAsync(string expertProfileId, DateTime appointmentDate, TimeSpan startTime, TimeSpan endTime);
     }
 }

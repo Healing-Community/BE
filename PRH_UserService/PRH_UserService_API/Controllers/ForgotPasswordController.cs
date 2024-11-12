@@ -1,33 +1,27 @@
-﻿using Application.Commons;
-using Infrastructure.Context;
-using Infrastructure.Interface;
-using Microsoft.AspNetCore.Http;
+﻿using Application.Commands_Queries.Commands.Users.ForgotPassword.ConfirmForgotPassword;
+using Application.Commands_Queries.Commands.Users.ForgotPassword.SendOtpToEmail;
+using Application.Commons.DTOs;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NUlid;
-using System.Runtime.CompilerServices;
+using PRH_UserService_API.Extentions;
 
-namespace PRH_UserService_API.Controllers
+namespace PRH_UserService_API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class ForgotPasswordController(ISender sender) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ForgotPasswordController(IRedisContext redisContext) : ControllerBase
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(SendForgotPasswordDto forgotPasswordDto)
     {
-        [HttpGet("set-value")]
-        public async Task<IActionResult> SetValue(string value)
-        {
-            var response = new BaseResponse<string>()
-            {
-                Id = Ulid.NewUlid().ToString(),
-                Data = value,
-                Message = "Set value successfully",
-                Success = true,
-                Errors = null,
-                StatusCode = StatusCodes.Status200OK,
-                Timestamp = DateTime.UtcNow
-            };
-            TimeSpan expiry = TimeSpan.FromMinutes(1);
-            bool result = await redisContext.SaveEntityToHashAsync("DemoResponse",response, expiry);
-            return Ok(result);
-        }
+        var response = await sender.Send(new ForgotPasswordCommand(forgotPasswordDto));
+        return response.ToActionResult();
+    }
+
+    [HttpPost("confirm-forgot-password")]
+    public async Task<IActionResult> ConfirmForgotPassword(ConfirmForgotPasswordDto confirmForgotPasswordDto)
+    {
+        var response = await sender.Send(new ConfirmForgotPasswordCommand(confirmForgotPasswordDto));
+        return response.ToActionResult();
     }
 }

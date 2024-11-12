@@ -1,11 +1,10 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Domain.Entities;
-using MassTransit;
 using MediatR;
 using NUlid;
 
-namespace Application.Queries.Roles.GetRoles;
+namespace Application.Commands_Queries.Queries.Roles.GetRoles;
 
 public class GetRolesQueryHandler(IRoleRepository roleRepository)
     : IRequestHandler<GetRolesQuery, BaseResponse<IEnumerable<Role>>>

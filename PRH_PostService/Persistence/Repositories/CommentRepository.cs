@@ -48,5 +48,13 @@ namespace Persistence.Repositories
             hFDBPostserviceContext.Entry(existingComment).State = EntityState.Modified;
             await hFDBPostserviceContext.SaveChangesAsync();
         }
+        public async Task<bool> ExistsAsync(string id)
+        {
+            return await hFDBPostserviceContext.Comments.AnyAsync(c => c.CommentId == id);
+        }
+        public IQueryable<Comment> GetQueryable()
+        {
+            return hFDBPostserviceContext.Comments.AsQueryable();
+        }
     }
 }

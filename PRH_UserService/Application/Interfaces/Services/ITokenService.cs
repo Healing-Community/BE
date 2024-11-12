@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Domain.Entities;
 
@@ -6,9 +7,8 @@ namespace Application.Interfaces.Services;
 public interface ITokenService
 {
     string GenerateAccessToken(IEnumerable<Claim> claims);
-    string GenerateRefreshToken();
+    string GenerateRefreshToken(string oldRefreshToken,IEnumerable<Claim> claims);
     string GenerateVerificationToken(User user);
-    bool ValidateRefreshToken(string refreshToken, out string userId);
+    bool IsRefreshTokenExpired(string? refreshToken);
     (string?, bool) ValidateToken(string token);
-
 }

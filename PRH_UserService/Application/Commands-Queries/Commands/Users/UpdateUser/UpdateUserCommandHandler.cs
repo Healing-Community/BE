@@ -4,7 +4,7 @@ using Domain.Entities;
 using MediatR;
 using NUlid;
 
-namespace Application.Commands.Users.UpdateUser;
+namespace Application.Commands_Queries.Commands.Users.UpdateUser;
 
 public class UpdateUserCommandHandler(IUserRepository userRepository)
     : IRequestHandler<UpdateUserCommand, BaseResponse<string>>
@@ -42,7 +42,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
                 RoleId = request.UserDto.RoleId
             };
 
-            await userRepository.Update(request.Id, updatedUser);
+            await userRepository.UpdateAsync(request.Id, updatedUser);
             response.Success = true;
             response.Message = "User updated successfully";
         }

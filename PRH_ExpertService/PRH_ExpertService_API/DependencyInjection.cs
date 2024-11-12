@@ -7,6 +7,9 @@ using MassTransit;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using PRH_ExpertService_API.FileUpload;
+using Application.Commons;
+using Microsoft.AspNetCore.Mvc;
+using NUlid;
 
 namespace PRH_ExpertService_API;
 
@@ -17,7 +20,43 @@ public static class DependencyInjection
     {
         #region Base-configuration
 
-        services.AddControllers();
+        services.AddControllers()
+   .ConfigureApiBehaviorOptions(options =>
+   {
+       options.InvalidModelStateResponseFactory = context =>
+       {
+           // Create a list of ErrorDetail instances based on model state errors
+
+           var errorDetails = context.ModelState
+               .Where(ms => ms.Value.Errors.Count > 0)
+               .SelectMany(ms => ms.Value.Errors
+                   .Select(e => new ErrorDetail
+                   {
+                       Message = e.ErrorMessage,
+                       Field = ms.Key
+                   }))
+               .ToList();
+
+           // Create an instance of DetailBaseResponse to structure the response
+           var response = new DetailBaseResponse<object>
+           {
+               Id = Ulid.NewUlid().ToString(),
+               StatusCode = StatusCodes.Status422UnprocessableEntity,
+               Message = "One or more validation errors occurred.",
+               Success = false,
+               Data = null,
+               Errors = errorDetails,
+               Timestamp = DateTime.UtcNow
+           };
+
+           // Return the structured response with a 422 status code
+           return new ObjectResult(response)
+           {
+               StatusCode = StatusCodes.Status422UnprocessableEntity
+           };
+       };
+   });
+
         services.AddEndpointsApiExplorer();
         services.AddRouting(options => { options.LowercaseUrls = true; });
 

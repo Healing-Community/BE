@@ -4,7 +4,7 @@ using Domain.Entities;
 using MediatR;
 using NUlid;
 
-namespace Application.Commands.Users.AddUser;
+namespace Application.Commands_Queries.Commands.Users.AddUser;
 
 public class CreateUserCommandHandler(IUserRepository userRepository)
     : IRequestHandler<CreateUserCommand, BaseResponse<string>>
@@ -21,8 +21,8 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             Status = request.UserDto.Status,
             UserName = request.UserDto.UserName,
             PasswordHash = request.UserDto.PasswordHash,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow.AddHours(7), // Fixed UTC time to UTC+7
+            UpdatedAt = DateTime.UtcNow.AddHours(7) // Fixed UTC time to UTC+7
         };
 
         var response = new BaseResponse<string>

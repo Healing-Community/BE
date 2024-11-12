@@ -23,17 +23,18 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
         await hFDbContext.SaveChangesAsync();
     }
 
-    public async Task<User> GetByIdAsync(string id)
+    public async Task<User?> GetByIdAsync(string id)
     {
         return await hFDbContext.Users.FirstAsync(x => x.UserId == id);
     }
 
-    public async Task<User> GetByPropertyAsync(Expression<Func<User, bool>> predicate)
+    public async Task<User?> GetByPropertyAsync(Expression<Func<User, bool>> predicate)
     {
-        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new User() { UserId = Ulid.Empty.ToString()};
+        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ??
+               new User { UserId = Ulid.Empty.ToString() };
     }
 
-    public async Task Update(string id, User entity)
+    public async Task UpdateAsync(string id, User entity)
     {
         var existingUser = await hFDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
         if (existingUser == null) return;
@@ -52,7 +53,7 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
         return await hFDbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<IEnumerable<User>> GetsAsync()
+    public async Task<IEnumerable<User>?> GetsAsync()
     {
         return await hFDbContext.Users.ToListAsync();
     }

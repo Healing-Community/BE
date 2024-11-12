@@ -3,16 +3,12 @@ using System.Net;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-public class AuthMiddleware
-{
-    private readonly RequestDelegate _next;
-    private readonly IConfiguration _configuration;
+namespace PRH_UserService_API.Middleware;
 
-    public AuthMiddleware(RequestDelegate next, IConfiguration configuration)
-    {
-        _next = next;
-        _configuration = configuration;
-    }
+public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
+{
+    private readonly IConfiguration _configuration = configuration;
+    private readonly RequestDelegate _next = next;
 
     public async Task Invoke(HttpContext context)
     {
@@ -32,27 +28,33 @@ public class AuthMiddleware
                 var tokenHandler = new JwtSecurityTokenHandler();
                 try
                 {
-                    // Retrieve the secret key from appsettings.json
                     var jwtSettings = _configuration.GetSection("JwtSettings");
-
-
-                    // Set up token validation parameters
                     var validationParameters = new TokenValidationParameters
                     {
                         ValidIssuer = jwtSettings["Issuer"],
                         ValidAudience = jwtSettings["Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException())),
+                            (Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException())),
                         ValidateIssuer = true,
                         ValidateAudience = true,
-                        ValidateLifetime = false,
-                        ValidateIssuerSigningKey = true
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = false // Disable automatic lifetime validation
                     };
 
-                    // Validate the token
-                    tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+                    // Validate the token without lifetime check
+                    var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+                    var jwtToken = validatedToken as JwtSecurityToken;
 
-                    // You can further inspect the validatedToken if needed
+                    // Extract expiration time and compare with current time
+                    var expiration = jwtToken?.ValidTo;
+                    if (expiration.HasValue && expiration.Value < DateTime.UtcNow)
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        await context.Response.WriteAsync("Token has expired");
+                        return;
+                    }
+
+                    // Proceed if token is valid and not expired
                 }
                 catch (SecurityTokenException)
                 {
