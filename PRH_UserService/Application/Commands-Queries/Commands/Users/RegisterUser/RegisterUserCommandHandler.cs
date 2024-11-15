@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Application.Commons;
+using Application.Commons.Enum;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using Domain.Entities;
@@ -59,8 +60,6 @@ public class RegisterUserCommandHandler(
                 response.Message = "Đã xảy ra lỗi trong quá trình đăng ký.";
                 return response;
             }
-
-            // Tạo người dùng mới nếu không có lỗi
             var user = new User
             {
                 UserId = Ulid.NewUlid().ToString(),
@@ -70,7 +69,8 @@ public class RegisterUserCommandHandler(
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 Status = 0,
-                RoleId = 1
+                // Mặc định là người dùng thường (role = 1), nếu đăng ký là chuyên gia thì role = 2
+                RoleId = request.RegisterUserDto.IsExpert ? (int)EnumRole.Expert : (int)EnumRole.User
             };
 
             await userRepository.Create(user);

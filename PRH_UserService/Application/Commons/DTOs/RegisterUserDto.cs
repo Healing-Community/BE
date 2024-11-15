@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Commons.DTOs;
 
@@ -20,4 +21,7 @@ public class RegisterUserDto
     [Required(ErrorMessage = "Xác nhận mật khẩu không được để trống")]
     [Compare("Password", ErrorMessage = "Mật khẩu xác nhận không khớp")]
     public string ConfirmPassword { get; set; } = null!;
+
+    [DefaultValue(false)]
+    public bool IsExpert { get; set; } = false;
 }
