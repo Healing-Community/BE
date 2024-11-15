@@ -5,6 +5,10 @@ using Application.Commands_Queries.Commands.Users.Logout;
 using Application.Commands_Queries.Commands.Users.RegisterUser;
 using Application.Commands_Queries.Commands.Users.ResetPassword;
 using Application.Commands_Queries.Commands.Users.UpdateUser;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile.DeleteUserSocialLink;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateProfilePicture;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateSocialMediaLink;
 using Application.Commands_Queries.Commands.Users.VerifyUser;
 using Application.Commands_Queries.Queries.Users.GetUsers;
 using Application.Commands_Queries.Queries.Users.GetUsersById;
@@ -43,21 +47,60 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new GetUserProfileQuery(userId));
         return response.ToActionResult();
     }
-
+    [Obsolete]
     [HttpPost("create")]
     public async Task<IActionResult> AddUser(UserDto user)
     {
         var response = await sender.Send(new CreateUserCommand(user));
         return response.ToActionResult();
     }
-
+    [HttpPut("update-user-profile")]
+    public async Task<IActionResult> UpdateUserProfile(UpdateUserDto user)
+    {
+        var response = await sender.Send(new UpdateUserProfileCommand(user));
+        return response.ToActionResult();
+    }
+    /// <summary>
+    /// Cập nhật link mạng xã hội của người dùng nếu nhập mới sẽ thêm mới, nếu trùng tên nền tảng sẽ cập nhật link mới
+    /// </summary>
+    /// <param name="socialLinkDtos"></param>
+    /// <returns></returns>
+    [HttpPut("update-social-media-link")]
+    public async Task<IActionResult> UpdateSocialMediaLink(List<SocialLinkDto> socialLinkDtos)
+    {
+        var response = await sender.Send(new UpdateUserSocialMediaLinkCommand(socialLinkDtos));
+        return response.ToActionResult();
+    }
+    /// <summary>
+    /// Xóa link mạng xã hội dựa vào tên nền tảng. Ví dụ: [Facebook, Instagram, Twitter]
+    /// </summary>
+    /// <returns>Trạng thái</returns>
+    /// <response code="200">Xóa thành công</response>
+    /// <response code="404">Không tìm thấy link mạng xã hội</response>
+    [HttpDelete("delete-social-media-link")]
+    public async Task<IActionResult> DeleteSocialMediaLink(string[] platformNames)
+    {
+        var response = await sender.Send(new DeleteUserSocialLinkCommand(platformNames));
+        return response.ToActionResult();
+    }
+    /// <summary>
+    /// Cập nhật ảnh đại diện của người dùng dựa vào file ảnh được upload
+    /// </summary>
+    /// <param name="formFile"></param>
+    /// <returns></returns>
+    [HttpPut("update-profile-picture")]
+    public async Task<IActionResult> UpdateProfilePicture(IFormFile formFile)
+    {
+        var response = await sender.Send(new UpdateProfilePictureCommand(formFile));
+        return response.ToActionResult();
+    }
+    [Obsolete]
     [HttpPut("update/{id}")]
     public async Task<IActionResult> UpdateUser(string id, UserDto user)
     {
         var response = await sender.Send(new UpdateUserCommand(id, user));
         return response.ToActionResult();
     }
-
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUser(string id)
     {

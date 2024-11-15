@@ -1,4 +1,7 @@
-﻿namespace Application.Commons;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Http;
+
+namespace Application.Commons;
 
 public class DetailBaseResponse<T>
 {
@@ -9,4 +12,17 @@ public class DetailBaseResponse<T>
     public T? Data { get; set; }
     public List<ErrorDetail>? Errors { get; set; }
     public DateTime Timestamp { get; set; }
+
+    internal static DetailBaseResponse<T> SuccessReturn(string Message,T classInstance)
+    {
+        return new DetailBaseResponse<T>
+        {
+            Id = NewId.NextSequentialGuid().ToString(),
+            StatusCode = StatusCodes.Status200OK,
+            Message = Message,
+            Success = true,
+            Data = classInstance,
+            Timestamp = DateTime.UtcNow
+        };
+    }
 }
