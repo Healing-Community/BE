@@ -14,4 +14,5 @@ public class User
     public int Status { get; set; }
     public Role Role { get; set; } = null!;
     public ICollection<Token> Tokens { get; set; } = [];
+    public ICollection<SocialLink> SocialLinks { get; set; } = [];
 }
