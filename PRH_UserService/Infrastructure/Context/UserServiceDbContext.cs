@@ -5,20 +5,12 @@ namespace Infrastructure.Context;
 
 public partial class UserServiceDbContext : DbContext
 {
-    public UserServiceDbContext()
-    {
-    }
-
-    public UserServiceDbContext(DbContextOptions<UserServiceDbContext> options) : base(options)
-    {
-    }
-
-    public virtual DbSet<User> Users { get; set; }
-    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<User> Users { get; set; } = null!;
+    public virtual DbSet<Role> Roles { get; set; } = null!;
     public virtual DbSet<Token> Tokens { get; set; } = null!;
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+       => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,6 +53,15 @@ public partial class UserServiceDbContext : DbContext
         modelBuilder.Entity<Token>()
             .HasIndex(t => t.RefreshToken)
             .IsUnique();
+
+        // SocialLink configuration
+        modelBuilder.Entity<SocialLink>()
+            .HasKey(sl => sl.LinkId);
+        modelBuilder.Entity<SocialLink>()
+            .HasOne(sl => sl.User)
+            .WithMany(u => u.SocialLinks)
+            .HasForeignKey(sl => sl.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         OnModelCreatingPartial(modelBuilder);
     }
