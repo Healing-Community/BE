@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -12,11 +10,12 @@ namespace Application.Commons.Tools
     public static class Tools
     {
         public static string ConvertImageToBase64(
-            IFormFile formFile, 
-            int maxWidth = 500, 
-            int maxHeight = 500, 
-            int compressionLevel = 9, 
-            string outputFormat = "png")
+            IFormFile formFile,
+            int maxWidth = 500,
+            int maxHeight = 500,
+            int compressionLevel = 9,
+            int quality = 30,
+            string outputFormat = "jpeg")
         {
             if (formFile == null || formFile.Length == 0)
             {
@@ -27,47 +26,55 @@ namespace Application.Commons.Tools
             {
                 using (var memoryStream = new MemoryStream())
                 {
-                    // Copy the file to a memory stream
                     formFile.CopyTo(memoryStream);
-
-                    // Load the image using ImageSharp
                     memoryStream.Seek(0, SeekOrigin.Begin);
+
                     using (var image = Image.Load(memoryStream))
                     {
-                        // Determine the size for cropping (square based on the shortest dimension)
+                        // Cắt phần vuông giữa ảnh
                         int squareSize = Math.Min(image.Width, image.Height);
+                        int xOffset = (image.Width - squareSize) / 2;
+                        int yOffset = (image.Height - squareSize) / 2;
 
-                        // Crop the image to a square, centering on the middle of the image
-                        image.Mutate(x => x.Crop(new Rectangle(
-                            (image.Width - squareSize) / 2, 
-                            (image.Height - squareSize) / 2, 
-                            squareSize, 
-                            squareSize
-                        )));
+                        // Cắt ảnh vuông từ giữa
+                        var croppedImage = image.Clone(ctx => ctx.Crop(new Rectangle(xOffset, yOffset, squareSize, squareSize)));
 
-                        // Resize the image to the maximum dimensions
-                        image.Mutate(x => x.Resize(new ResizeOptions
+                        // Giảm kích thước ảnh vuông xuống để giảm dung lượng
+                        int newMaxWidth = Math.Min(maxWidth, 800);
+                        int newMaxHeight = Math.Min(maxHeight, 800);
+
+                        // Tính toán kích thước mới giữ nguyên tỷ lệ
+                        double scale = Math.Min(
+                            (double)newMaxWidth / croppedImage.Width,
+                            (double)newMaxHeight / croppedImage.Height
+                        );
+                        int newWidth = (int)(croppedImage.Width * scale);
+                        int newHeight = (int)(croppedImage.Height * scale);
+
+                        // Resize ảnh với kích thước mới
+                        croppedImage.Mutate(x => x.Resize(new ResizeOptions
                         {
-                            Size = new Size(maxWidth, maxHeight),
-                            Mode = ResizeMode.Max
+                            Size = new Size(newWidth, newHeight),
+                            Mode = ResizeMode.Max,
+                            Sampler = KnownResamplers.Lanczos3
                         }));
 
                         using (var compressedStream = new MemoryStream())
                         {
-                            // Configure the encoder based on the output format
                             IImageEncoder encoder;
                             if (outputFormat.ToLower() == "png")
                             {
                                 encoder = new PngEncoder
                                 {
-                                    CompressionLevel = (PngCompressionLevel)compressionLevel
+                                    CompressionLevel = PngCompressionLevel.BestCompression,
+                                    FilterMethod = PngFilterMethod.Adaptive
                                 };
                             }
                             else if (outputFormat.ToLower() == "jpeg")
                             {
                                 encoder = new JpegEncoder
                                 {
-                                    Quality = 100 - compressionLevel * 10 // Map compression level to JPEG quality
+                                    Quality = quality
                                 };
                             }
                             else
@@ -75,13 +82,8 @@ namespace Application.Commons.Tools
                                 throw new ArgumentException("Invalid output format. Supported formats: png, jpeg.");
                             }
 
-                            // Save the processed image to the compressed stream
-                            image.Save(compressedStream, encoder);
-
-                            // Convert the compressed image to a Base64 string
+                            croppedImage.Save(compressedStream, encoder);
                             string base64ImageRepresentation = Convert.ToBase64String(compressedStream.ToArray());
-
-                            // Add the MIME type for the output format
                             string mimeType = outputFormat.ToLower() == "png" ? "image/png" : "image/jpeg";
                             return $"data:{mimeType};base64,{base64ImageRepresentation}";
                         }

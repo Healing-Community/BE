@@ -90,7 +90,7 @@ public class UserController(ISender sender) : ControllerBase
     /// <param name="formFile"></param>
     /// <returns></returns>
     [HttpPut("update-profile-picture")]
-    private async Task<IActionResult> UpdateProfilePicture(IFormFile formFile)
+    public async Task<IActionResult> UpdateProfilePicture(IFormFile formFile)
     {
         var response = await sender.Send(new UpdateProfilePictureCommand(formFile));
         return response.ToActionResult();
