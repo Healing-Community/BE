@@ -1,4 +1,4 @@
-﻿using Application.Commands_Queries.Commands.Users.ForgotPassword.ConfirmForgotPassword;
+using Application.Commands_Queries.Commands.Users.ForgotPassword.ConfirmForgotPassword;
 using Application.Commands_Queries.Commands.Users.ForgotPassword.SendOtpToEmail;
 using Application.Commons.DTOs;
 using MediatR;
