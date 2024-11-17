@@ -8,10 +8,7 @@ public class UserProfileDto
     public string FullName { get; set; } = string.Empty;
     public string ProfilePicture { get; set; } = string.Empty;
     public string Descrtiption { get; set; } = string.Empty;
-
-
-    public IEnumerable<SocialLinkDto> SocialLinks { get; set; } = [];
-
+    public SocialLinkDto SocialLink { get; set; } = new SocialLinkDto();
     public string CreatedAt { get; set; } = string.Empty;
     public string UpdatedAt { get; set; } = string.Empty;
 }

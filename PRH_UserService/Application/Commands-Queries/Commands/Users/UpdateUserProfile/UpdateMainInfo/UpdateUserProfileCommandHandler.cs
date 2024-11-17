@@ -33,25 +33,55 @@ public class UpdateUserProfileCommandHandler(ISocialLinkRepository socialLinkRep
             user.Descrtiption = request.UserDto.Descrtiption;
             await userRepository.UpdateAsync(userId, user);
             // Update social link
-            foreach (var item in request.UserDto.SocialLinks)
+            var socialLinks = await socialLinkRepository.GetsByPropertyAsync(p => p.UserId == userId);
+            var dtoSocialLinks = new Dictionary<string, string>
             {
-                var link = await socialLinkRepository.GetByPropertyAsync(u => u.UserId == userId && u.PlatformName == item.PlatformName);
-                if (item.PlatformName == link?.PlatformName)
+                { "Facebook", request.UserDto.SocialLink.Facebook },
+                { "Instagram", request.UserDto.SocialLink.Instagram },
+                { "Twitter", request.UserDto.SocialLink.Twitter },
+                { "LinkedIn", request.UserDto.SocialLink.LinkedIn }
+            };
+
+            // Process each platform in the DTO
+            foreach (var dtoLink in dtoSocialLinks)
+            {
+                var platformName = dtoLink.Key;
+                var newUrl = dtoLink.Value;
+
+                var existingSocialLink = socialLinks.FirstOrDefault(p => p.PlatformName == platformName);
+
+                // Add new social link if it doesn't exist and the URL is not empty
+                if (existingSocialLink == null && !string.IsNullOrWhiteSpace(newUrl))
                 {
-                    link.Url = item.Url;
-                    await socialLinkRepository.UpdateAsync(link.LinkId, link);
-                }
-                else
-                {
-                    var socialLink = new SocialLink
+                    await socialLinkRepository.Create(new SocialLink
                     {
                         LinkId = Ulid.NewUlid().ToString(),
-                        PlatformName = item.PlatformName,
-                        Url = item.Url,
+                        PlatformName = platformName,
+                        Url = newUrl,
                         UserId = userId
-                    };
-                    await socialLinkRepository.Create(socialLink);
+                    });
                 }
+                // Update existing social link if the URL has changed
+                else if (existingSocialLink != null && existingSocialLink.Url != newUrl)
+                {
+                    existingSocialLink.Url = newUrl;
+                    await socialLinkRepository.UpdateAsync(existingSocialLink.LinkId, existingSocialLink);
+                }
+            }
+
+            // Optional: Delete links for platforms not in the DTO or with empty URLs
+            var platformsToKeep = dtoSocialLinks
+                .Where(dto => !string.IsNullOrWhiteSpace(dto.Value))
+                .Select(dto => dto.Key)
+                .ToHashSet();
+
+            var linksToDelete = socialLinks
+                .Where(link => !platformsToKeep.Contains(link.PlatformName))
+                .ToList();
+
+            foreach (var linkToDelete in linksToDelete)
+            {
+                await socialLinkRepository.DeleteAsync(linkToDelete.LinkId);
             }
         }
         catch

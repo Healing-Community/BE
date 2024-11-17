@@ -37,7 +37,7 @@ public class SocialLinkRepository(UserServiceDbContext context) : ISocialLinkRep
         throw new NotImplementedException();
     }
 
-    public async Task<IEnumerable<SocialLink>?> GetsByPropertyAsync(Expression<Func<SocialLink, bool>> predicate)
+    public async Task<IList<SocialLink>?> GetsByPropertyAsync(Expression<Func<SocialLink, bool>> predicate)
     {
         return await context.SocialLinks.AsNoTracking().Where(predicate).ToListAsync();
     }

@@ -9,5 +9,5 @@ public class UpdateUserDto
     public string PhoneNumber { get; set; } = null!;
     public string Descrtiption { get; set; } = null!;
     public string ProfilePictureUrl { get; set; } = null!;
-    public IList<SocialLinkDto> SocialLinks { get; set; } = null!;
+    public SocialLinkDto SocialLink { get; set; } = null!;
 }

@@ -7,5 +7,5 @@ namespace Application.Interfaces.Repository;
 
 public interface ISocialLinkRepository : IReadRepository<SocialLink>, ICreateRepository<SocialLink>, IUpdateRepository<SocialLink>, IDeleteRepository
 {
-    public Task<IEnumerable<SocialLink>?> GetsByPropertyAsync(Expression<Func<SocialLink, bool>> predicate);
+    public Task<IList<SocialLink>?> GetsByPropertyAsync(Expression<Func<SocialLink, bool>> predicate);
 }

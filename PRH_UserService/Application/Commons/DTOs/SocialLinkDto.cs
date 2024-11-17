@@ -1,9 +1,9 @@
-using System;
-
 namespace Application.Commons.DTOs;
 
 public class SocialLinkDto
 {
-    public required string PlatformName { get; set; }
-    public required string Url { get; set; }
+    public string Facebook { get; set; } = string.Empty;
+    public string Instagram { get; set; } = string.Empty;
+    public string Twitter { get; set; } = string.Empty;
+    public string LinkedIn { get; set; } = string.Empty;
 }
