@@ -5,6 +5,4 @@ namespace Application.Interfaces.Repository;
 
 public interface IRoleRepository : IReadRepository<Role>, ICreateRepository<Role>, IUpdateRepository<Role>,
     IDeleteRepository
-{
-    public Task<string> GetRoleNameById(int roleId);
-}
+{}

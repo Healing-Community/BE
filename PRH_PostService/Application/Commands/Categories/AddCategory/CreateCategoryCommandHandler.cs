@@ -4,6 +4,7 @@ using Domain.Entities;
 using MassTransit;
 using MediatR;
 using NUlid;
+using System;
 using System.Net;
 
 namespace Application.Commands.Categories.AddCategory
@@ -16,14 +17,15 @@ namespace Application.Commands.Categories.AddCategory
             var response = new BaseResponse<string>
             {
                 Id = categoryId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             var category = new Category
             {
                 CategoryId = categoryId,
                 Name = request.CategoryDto.Name,
-                CreateAt = DateTime.UtcNow,
+                CreateAt = DateTime.UtcNow.AddHours(7),
+                UpdateAt = DateTime.UtcNow.AddHours(7)
             };
             try
             {

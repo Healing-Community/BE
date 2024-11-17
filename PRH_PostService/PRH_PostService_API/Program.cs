@@ -1,13 +1,18 @@
 ﻿using Application;
+using Application.Interfaces.Repository;
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_PostService_API;
+using PRH_PostService_API.Middleware;
 using Prometheus;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<GroupGrpcClient>();
+builder.Services.AddScoped<IGroupGrpcClient, GroupGrpcClient>();
 
 #region Add-layer-dependencies
 

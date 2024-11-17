@@ -2,6 +2,7 @@
 using Application.Commons.DTOs;
 using MediatR;
 
-namespace Application.Commands.Users.RegisterUser;
+namespace Application.Commands_Queries.Commands.Users.RegisterUser;
 
-public record RegisterUserCommand(RegisterUserDto RegisterUserDto, string BaseUrl) : IRequest<DetailBaseResponse<string>>;
+public record RegisterUserCommand(RegisterUserDto RegisterUserDto, string BaseUrl)
+    : IRequest<DetailBaseResponse<string>>;

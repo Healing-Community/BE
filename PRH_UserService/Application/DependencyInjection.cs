@@ -9,8 +9,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationDependencies(this IServiceCollection services)
     {
+        services.AddHttpContextAccessor();
         services.AddScoped<ITokenService, TokenService>();
-
+        services.AddScoped<IEmailService, EmailService>();
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
         return services;
     }

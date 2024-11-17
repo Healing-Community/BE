@@ -9,7 +9,9 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<SocialLink, SocialLinkDto>();
         CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<User, UserProfileDto>();
         CreateMap<ReportMessageDto, ReportMessage>().ReverseMap();
     }
 }

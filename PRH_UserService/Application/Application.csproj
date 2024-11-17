@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Commads-Queries\Commands\Roles\**" />
-      <EmbeddedResource Remove="Commads-Queries\Commands\Roles\**" />
-      <None Remove="Commads-Queries\Commands\Roles\**" />
+        <Compile Remove="Commads-Queries\Commands\Roles\**" />
+        <EmbeddedResource Remove="Commads-Queries\Commands\Roles\**" />
+        <None Remove="Commads-Queries\Commands\Roles\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -21,7 +21,9 @@
         <PackageReference Include="MediatR" Version="12.4.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
         <PackageReference Include="NUlid" Version="1.7.2" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
         <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>

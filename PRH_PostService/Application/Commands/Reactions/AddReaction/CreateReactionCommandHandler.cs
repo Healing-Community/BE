@@ -19,7 +19,7 @@ namespace Application.Commands.Reactions.AddReaction
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             var userId = Authentication.GetUserIdFromHttpContext(request.HttpContext);
@@ -36,7 +36,8 @@ namespace Application.Commands.Reactions.AddReaction
                 UserId = userId,
                 PostId = request.ReactionDto.PostId,
                 ReactionTypeId = request.ReactionDto.ReactionTypeId,
-                CreateAt = DateTime.UtcNow,
+                CreateAt = DateTime.UtcNow.AddHours(7),
+                UpdateAt = DateTime.UtcNow.AddHours(7)
             };
             try
             {

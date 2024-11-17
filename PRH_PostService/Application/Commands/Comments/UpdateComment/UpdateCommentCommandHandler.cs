@@ -14,7 +14,7 @@ namespace Application.Commands.Comments.UpdateComment
             var response = new BaseResponse<string>
             {
                 Id = request.commentId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try
@@ -24,7 +24,8 @@ namespace Application.Commands.Comments.UpdateComment
                 {
                     CommentId = request.commentId,
                     Content = request.CommentDto.Content,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = existingComment.CreatedAt,
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
                 await commentRepository.Update(request.commentId, updatedComment);
                 response.StatusCode = (int)HttpStatusCode.OK;

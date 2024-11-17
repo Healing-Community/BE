@@ -2,6 +2,7 @@
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using Infrastructure.Context;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories
@@ -65,6 +66,17 @@ namespace Persistence.Repositories
             return await expertDbContext.ExpertAvailabilities
                 .Where(ea => ea.ExpertProfileId == expertProfileId && ea.Status == 0)
                 .ToListAsync();
+        }
+
+        public async Task<ExpertAvailability?> GetOverlappingAvailabilityAsync(string expertProfileId, DateTime availableDate, TimeSpan startTime, TimeSpan endTime)
+        {
+            return await expertDbContext.ExpertAvailabilities
+                .Where(a => a.ExpertProfileId == expertProfileId &&
+                            a.AvailableDate == availableDate &&
+                            ((startTime >= a.StartTime && startTime < a.EndTime) ||
+                             (endTime > a.StartTime && endTime <= a.EndTime) ||
+                             (startTime <= a.StartTime && endTime >= a.EndTime)))
+                .FirstOrDefaultAsync();
         }
     }
 }

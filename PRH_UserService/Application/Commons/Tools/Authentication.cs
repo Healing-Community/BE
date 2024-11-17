@@ -5,6 +5,20 @@ namespace Application.Commons.Tools;
 
 public static class Authentication
 {
+    public static string GenerateOtp(int length = 6)
+    {
+        // Tạo một instance của Random để tạo số ngẫu nhiên
+        var random = new Random();
+
+        // Tạo chuỗi OTP với các ký tự số (0-9)
+        var otp = string.Empty;
+        for (var i = 0; i < length; i++)
+            // Tạo số ngẫu nhiên từ 0 đến 9 và thêm vào chuỗi OTP
+            otp += random.Next(0, 10).ToString();
+
+        return otp;
+    }
+
     public static string? GetUserIdFromHttpContext(HttpContext httpContext)
     {
         // Check if the Authorization header exists

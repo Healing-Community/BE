@@ -14,7 +14,7 @@ namespace Application.Commands.ReactionTypes.UpdateReactionType
             var response = new BaseResponse<string>
             {
                 Id = request.reactionTypeId,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try

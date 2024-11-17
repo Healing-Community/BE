@@ -2,6 +2,6 @@
 using Application.Commons.DTOs;
 using MediatR;
 
-namespace Application.Commands.Users.AddUser;
+namespace Application.Commands_Queries.Commands.Users.AddUser;
 
 public record CreateUserCommand(UserDto UserDto) : IRequest<BaseResponse<string>>;

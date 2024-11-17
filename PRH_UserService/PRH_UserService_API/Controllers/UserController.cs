@@ -1,19 +1,23 @@
-using Application.Commands.Users.AddUser;
-using Application.Commands.Users.DeleteUser;
-using Application.Commands.Users.ForgotPassword;
-using Application.Commands.Users.LoginUser;
-using Application.Commands.Users.Logout;
-using Application.Commands.Users.RegisterUser;
-using Application.Commands.Users.ResetPassword;
-using Application.Commands.Users.UpdateUser;
-using Application.Commands.Users.VerifyUser;
+using Application.Commands_Queries.Commands.Users.AddUser;
+using Application.Commands_Queries.Commands.Users.DeleteUser;
+using Application.Commands_Queries.Commands.Users.LoginUser;
+using Application.Commands_Queries.Commands.Users.Logout;
+using Application.Commands_Queries.Commands.Users.RegisterUser;
+using Application.Commands_Queries.Commands.Users.ResetPassword;
+using Application.Commands_Queries.Commands.Users.UpdateUser;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile.DeleteUserSocialLink;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateProfilePicture;
+using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateSocialMediaLink;
+using Application.Commands_Queries.Commands.Users.VerifyUser;
+using Application.Commands_Queries.Queries.Users.GetUsers;
+using Application.Commands_Queries.Queries.Users.GetUsersById;
 using Application.Commons.DTOs;
-using Application.Queries.Users.GetUsers;
-using Application.Queries.Users.GetUsersById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_UserService_API.Extentions;
+using PRH_UserService_API.Middleware;
 
 namespace PRH_UserService_API.Controllers;
 
@@ -21,35 +25,83 @@ namespace PRH_UserService_API.Controllers;
 [ApiController]
 public class UserController(ISender sender) : ControllerBase
 {
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
         var response = await sender.Send(new GetUsersQuery());
         return response.ToActionResult();
     }
-
-    [HttpGet("get-by-id/{id}")]
-    public async Task<IActionResult> GetById(string id)
+    [Obsolete("This method is deprecated, please use get-user-profile method instead.")]
+    [Authorize(Roles = "User, Expert, Admin, Moderator")]
+    [HttpGet("get-by-id/{userId}")]
+    private async Task<IActionResult> GetById(string userId)
     {
-        var response = await sender.Send(new GetUsersByIdQuery(id));
+        var response = await sender.Send(new GetUsersByIdQuery(userId));
         return response.ToActionResult();
     }
-
+    // [Authorize(Roles="User, Expert, Admin, Moderator")]
+    [HttpGet("get-user-profile/{userId}")]
+    public async Task<IActionResult> GetUserProfile(string userId)
+    {
+        var response = await sender.Send(new GetUserProfileQuery(userId));
+        return response.ToActionResult();
+    }
+    [Obsolete]
     [HttpPost("create")]
-    public async Task<IActionResult> AddUser(UserDto user)
+    private async Task<IActionResult> AddUser(UserDto user)
     {
         var response = await sender.Send(new CreateUserCommand(user));
         return response.ToActionResult();
     }
-
+    [Authorize(Roles = "User, Expert, Admin, Moderator")]
+    [HttpPut("update-user-profile")]
+    public async Task<IActionResult> UpdateUserProfile(UpdateUserDto user)
+    {
+        var response = await sender.Send(new UpdateUserProfileCommand(user));
+        return response.ToActionResult();
+    }
+    /// <summary>
+    /// Cập nhật link mạng xã hội của người dùng nếu nhập mới sẽ thêm mới, nếu trùng tên nền tảng sẽ cập nhật link mới
+    /// </summary>
+    /// <param name="socialLinkDtos"></param>
+    /// <returns></returns>
+    [HttpPut("update-social-media-link")]
+    private async Task<IActionResult> UpdateSocialMediaLink(List<SocialLinkDto> socialLinkDtos)
+    {
+        var response = await sender.Send(new UpdateUserSocialMediaLinkCommand(socialLinkDtos));
+        return response.ToActionResult();
+    }
+    /// <summary>
+    /// Xóa link mạng xã hội dựa vào tên nền tảng. Ví dụ: [Facebook, Instagram, Twitter]
+    /// </summary>
+    /// <returns>Trạng thái</returns>
+    /// <response code="200">Xóa thành công</response>
+    /// <response code="404">Không tìm thấy link mạng xã hội</response>
+    [HttpDelete("delete-social-media-link")]
+    private async Task<IActionResult> DeleteSocialMediaLink(string[] platformNames)
+    {
+        var response = await sender.Send(new DeleteUserSocialLinkCommand(platformNames));
+        return response.ToActionResult();
+    }
+    /// <summary>
+    /// Cập nhật ảnh đại diện của người dùng dựa vào file ảnh được upload
+    /// </summary>
+    /// <param name="formFile"></param>
+    /// <returns></returns>
+    [HttpPut("update-profile-picture")]
+    public async Task<IActionResult> UpdateProfilePicture(IFormFile formFile)
+    {
+        var response = await sender.Send(new UpdateProfilePictureCommand(formFile));
+        return response.ToActionResult();
+    }
+    [Obsolete]
     [HttpPut("update/{id}")]
-    public async Task<IActionResult> UpdateUser(string id, UserDto user)
+    private async Task<IActionResult> UpdateUser(string id, UserDto user)
     {
         var response = await sender.Send(new UpdateUserCommand(id, user));
         return response.ToActionResult();
     }
-
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUser(string id)
     {
@@ -81,9 +133,7 @@ public class UserController(ISender sender) : ControllerBase
         //var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var response = await sender.Send(new VerifyUserCommand(token));
         if (!response.Success)
-        {
             return Redirect("https://nghia46.github.io/Static-Page-Healing-community/verification-failed");
-        }
         return Redirect("https://nghia46.github.io/Static-Page-Healing-community/success-verification");
     }
 
@@ -96,12 +146,6 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
-    {
-        var response = await sender.Send(new ForgotPasswordCommand(forgotPasswordDto));
-        return response.ToActionResult();
-    }
     [Authorize(Roles = "User, Expert")]
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)

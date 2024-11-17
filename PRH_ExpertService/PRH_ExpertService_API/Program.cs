@@ -5,6 +5,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_ExpertService_API;
+using PRH_ExpertService_API.Middleware;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,6 @@ builder.Services.AddPresentationDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
-builder.Services.AddHttpContextAccessor();
 
 # endregion
 

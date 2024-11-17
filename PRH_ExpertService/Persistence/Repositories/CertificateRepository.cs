@@ -49,5 +49,13 @@ namespace Persistence.Repositories
                 await expertDbContext.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<Certificate>> GetCertificatesByExpertIdAsync(string expertProfileId)
+        {
+            return await expertDbContext.Certificates
+                .Where(c => c.ExpertProfileId == expertProfileId)
+                .ToListAsync();
+        }
+
     }
 }

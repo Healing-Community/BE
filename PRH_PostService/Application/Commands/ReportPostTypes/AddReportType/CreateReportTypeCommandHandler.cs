@@ -16,7 +16,7 @@ namespace Application.Commands.ReportPostTypes.AddReportType
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             var reportType = new ReportType

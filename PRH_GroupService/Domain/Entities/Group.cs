@@ -4,7 +4,9 @@
     {
         public required string GroupId { get; set; }
         public string GroupName { get; set; } = string.Empty;
-        public DateTime CreateAt { get; init; }
-        public DateTime? UpdateAt { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; init; }
+        public DateTime? UpdatedAt { get; set; }
+        public string? CreatedByUserId { get; set; }
     }
 }

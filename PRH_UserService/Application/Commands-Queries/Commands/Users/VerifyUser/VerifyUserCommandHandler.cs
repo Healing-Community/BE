@@ -1,11 +1,10 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
-using Domain.Entities;
 using MediatR;
 using NUlid;
 
-namespace Application.Commands.Users.VerifyUser;
+namespace Application.Commands_Queries.Commands.Users.VerifyUser;
 
 public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepository userRepository)
     : IRequestHandler<VerifyUserCommand, BaseResponse<string>>
@@ -15,17 +14,16 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
         var response = new BaseResponse<string>
         {
             Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow.AddHours(7)
         };
 
         try
         {
-            
-            var (userId,isValidated) = tokenService.ValidateToken(request.Token);
+            var (userId, isValidated) = tokenService.ValidateToken(request.Token);
 
             if ((userId, isValidated) != default)
             {
-                if (isValidated)
+                if (isValidated && userId != null)
                 {
                     // Tìm người dùng theo ID
                     var user = await userRepository.GetByIdAsync(userId);
@@ -34,20 +32,20 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
                         response.Success = false;
                         response.Message = "Không tìm thấy người dùng.";
                         response.StatusCode = 404;
-                        response.Errors = new List<string> { "Không tìm thấy người dùng." };
+                        response.Errors = ["Không tìm thấy người dùng."];
                         return response;
                     }
 
                     // Cập nhật trạng thái người dùng thành đã xác minh
                     user.Status = 1;
-                    await userRepository.Update(user.UserId, user);
+                    await userRepository.UpdateAsync(user.UserId, user);
 
                     // Thiết lập chi tiết phản hồi thành công
                     response.Success = true;
-                    response.Message = $"Xác minh email thành công.";
+                    response.Message = "Xác minh email thành công.";
                     response.StatusCode = 200;
                 }
-                else
+                else if (!isValidated && userId != null)
                 {
                     response.Success = false;
                     response.Message = "Xác minh email thất bại.";
@@ -56,14 +54,13 @@ public class VerifyUserCommandHandler(ITokenService tokenService, IUserRepositor
                     await userRepository.DeleteAsync(userId);
                 }
             }
-           
         }
         catch (Exception ex)
         {
             response.Success = false;
-            response.Message = "Lỗi xác định.";
+            response.Message = "Lỗi không xác định.";
             response.StatusCode = 500;
-            response.Errors = new List<string> { ex.Message };
+            response.Errors = [ex.Message];
         }
 
         return response;

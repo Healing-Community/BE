@@ -13,7 +13,7 @@ namespace Application.Commands.Comments.DeleteComment
             var response = new BaseResponse<string>
             {
                 Id = request.Id,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try

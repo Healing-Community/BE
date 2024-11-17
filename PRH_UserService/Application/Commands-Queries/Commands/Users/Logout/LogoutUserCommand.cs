@@ -2,6 +2,6 @@
 using Application.Commons.DTOs;
 using MediatR;
 
-namespace Application.Commands.Users.Logout;
+namespace Application.Commands_Queries.Commands.Users.Logout;
 
 public record LogoutUserCommand(LogoutRequestDto LogoutRequestDto) : IRequest<BaseResponse<string>>;
