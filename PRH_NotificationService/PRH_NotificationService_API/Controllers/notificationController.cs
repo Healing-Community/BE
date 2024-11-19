@@ -37,10 +37,10 @@ namespace PRH_NotificationService_API.Controllers
         }
 
         [Authorize]
-        [HttpPost("archive-unread/{userId}")]
-        public async Task<IActionResult> ArchiveUnread(string userId)
+        [HttpPost("archive-unread")]
+        public async Task<IActionResult> ArchiveUnread()
         {
-            var response = await sender.Send(new ArchiveUnreadNotificationsCommand(userId));
+            var response = await sender.Send(new ArchiveUnreadNotificationsCommand());
             return response.ToActionResult();
         }
 
@@ -69,18 +69,18 @@ namespace PRH_NotificationService_API.Controllers
         }
 
         [Authorize]
-        [HttpGet("unread-count/{userId}")]
-        public async Task<IActionResult> GetUnreadNotificationCount(string userId)
+        [HttpGet("unread-count")]
+        public async Task<IActionResult> GetUnreadNotificationCount()
         {
-            var response = await sender.Send(new GetUnreadNotificationCountQuery(userId));
+            var response = await sender.Send(new GetUnreadNotificationCountQuery());
             return response.ToActionResult();
         }
 
         [Authorize]
-        [HttpGet("notifications/{userId}")]
-        public async Task<IActionResult> GetUserNotifications(string userId, [FromQuery] bool includeRead = false)
+        [HttpGet("notifications")]
+        public async Task<IActionResult> GetUserNotifications([FromQuery] bool includeRead = false)
         {
-            var response = await sender.Send(new GetUserNotificationsQuery(userId, includeRead));
+            var response = await sender.Send(new GetUserNotificationsQuery(includeRead));
             return response.ToActionResult();
         }
 

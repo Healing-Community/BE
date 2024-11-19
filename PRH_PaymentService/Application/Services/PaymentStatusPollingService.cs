@@ -4,54 +4,90 @@ using AutoMapper;
 using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
     public class PaymentStatusPollingService(
         IServiceScopeFactory serviceScopeFactory,
-        IMapper mapper,
-        ILogger<PaymentStatusPollingService> logger) : BackgroundService
+        IMapper mapper) : BackgroundService
     {
+        private const int MaxDegreeOfParallelism = 5;
+        private static readonly TimeSpan PollingInterval = TimeSpan.FromMinutes(5);
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("Starting Payment Status Polling Service...");
-
             while (!stoppingToken.IsCancellationRequested)
             {
+                var startTime = DateTime.UtcNow;
+
                 try
                 {
                     using var scope = serviceScopeFactory.CreateScope();
                     var paymentRepository = scope.ServiceProvider.GetRequiredService<IPaymentRepository>();
-                    var payOSService = scope.ServiceProvider.GetRequiredService<IPayOSService>();
 
-                    var pendingPayments = await paymentRepository.GetsAsync();
+                    var pendingPayments = await paymentRepository.GetPendingPaymentsAsync();
 
-                    foreach (var payment in pendingPayments)
+                    await Parallel.ForEachAsync(pendingPayments, new ParallelOptions
                     {
-                        if ((PaymentStatus)payment.Status == PaymentStatus.Pending)
+                        MaxDegreeOfParallelism = MaxDegreeOfParallelism,
+                        CancellationToken = stoppingToken
+                    }, async (payment, token) =>
+                    {
+                        try
                         {
-                            var payOSResponse = await payOSService.GetPaymentStatus(payment.OrderCode);
+                            using var innerScope = serviceScopeFactory.CreateScope();
+                            var innerPaymentRepository = innerScope.ServiceProvider.GetRequiredService<IPaymentRepository>();
+                            var payOSService = innerScope.ServiceProvider.GetRequiredService<IPayOSService>();
 
-                            if (payOSResponse != null)
+                            if ((PaymentStatus)payment.Status == PaymentStatus.Pending)
                             {
-                                var paymentStatus = mapper.Map<PaymentStatus>(payOSResponse.Status);
-                                if (paymentStatus != (PaymentStatus)payment.Status)
+                                var payOSResponse = await payOSService.GetPaymentStatus(payment.OrderCode);
+
+                                if (payOSResponse != null)
                                 {
-                                    await paymentRepository.UpdateStatus(payment.OrderCode, paymentStatus);
-                                    logger.LogInformation($"Updated order {payment.OrderCode} to status {paymentStatus}");
+                                    var paymentStatus = mapper.Map<PaymentStatus>(payOSResponse.Status);
+
+                                    if (paymentStatus != (PaymentStatus)payment.Status)
+                                    {
+                                        await innerPaymentRepository.UpdateStatus(payment.OrderCode, paymentStatus);
+                                    }
                                 }
                             }
                         }
-                    }
-
-                    await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                        catch (Exception ex)
+                        {
+                            // Log or handle individual payment errors as needed
+                            HandleIndividualError(payment.OrderCode, ex);
+                        }
+                    });
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Error occurred while polling payment status.");
+                    // Log or handle overall polling errors as needed
+                    HandlePollingError(ex);
+                }
+
+                // Calculate the remaining time until the next polling interval
+                var elapsedTime = DateTime.UtcNow - startTime;
+                var delayTime = PollingInterval - elapsedTime;
+
+                if (delayTime > TimeSpan.Zero)
+                {
+                    await Task.Delay(delayTime, stoppingToken);
                 }
             }
+        }
+
+        private void HandleIndividualError(long orderCode, Exception exception)
+        {
+            // Handle individual payment error (e.g., log or rethrow)
+            throw new ApplicationException($"Error updating payment with OrderCode {orderCode}.", exception);
+        }
+
+        private void HandlePollingError(Exception exception)
+        {
+            // Handle polling-wide errors (e.g., log or rethrow)
+            throw new ApplicationException("Error occurred while polling payment status.", exception);
         }
     }
 }
