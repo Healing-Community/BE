@@ -74,5 +74,14 @@ namespace Persistence.Repositories
                 .Where(p => p.Status == (int)PaymentStatus.Pending)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Payment>> GetPaymentsByUserIdAsync(string userId)
+        {
+            return await context.Payments
+                .AsNoTracking()
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+        }
+
     }
 }

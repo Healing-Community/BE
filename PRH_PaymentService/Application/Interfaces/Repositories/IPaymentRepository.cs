@@ -9,6 +9,6 @@ namespace Application.Interfaces.Repositories
         Task<Payment?> GetByOrderCodeAsync(string orderCode);
         Task UpdateStatus(long orderCode, PaymentStatus status);
         Task<IEnumerable<Payment>> GetPendingPaymentsAsync();
-
+        Task<IEnumerable<Payment>> GetPaymentsByUserIdAsync(string userId);
     }
 }
