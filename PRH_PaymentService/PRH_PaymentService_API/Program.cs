@@ -4,6 +4,7 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
+using PRH_PaymentService_API.Services;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
+
+builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient("https://localhost:5005")); // URL của Expert Service
 
 var app = builder.Build();
 

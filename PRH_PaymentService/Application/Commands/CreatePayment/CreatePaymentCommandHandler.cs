@@ -22,7 +22,7 @@ namespace Application.Commands.CreatePayment
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<string>()
             };
 
             try
@@ -45,11 +45,16 @@ namespace Application.Commands.CreatePayment
                     return response;
                 }
 
-                long timestampPart = long.Parse(DateTimeOffset.Now.ToString("ffffff")); // 6 chữ số microseconds
-                int userIdPart = Math.Abs(userId.GetHashCode() % 1000); // Lấy 3 chữ số cuối của hash
-                int randomPart = new Random().Next(100, 999); // Thêm 3 chữ số ngẫu nhiên
+                long timestampPart = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                int randomPart = new Random().Next(1000, 9999);
 
-                long orderCode = long.Parse($"{timestampPart}{userIdPart}{randomPart}");
+                string orderCodeString = $"{timestampPart}{randomPart}";
+                if (orderCodeString.Length > 15)
+                {
+                    orderCodeString = orderCodeString.Substring(0, 15);
+                }
+
+                long orderCode = long.Parse(orderCodeString);
 
                 var paymentRequest = new PaymentRequest
                 {
@@ -62,6 +67,14 @@ namespace Application.Commands.CreatePayment
                 };
 
                 var payOSResponse = await payOSService.CreatePaymentLink(paymentRequest);
+
+                if (payOSResponse == null)
+                {
+                    response.Success = false;
+                    response.Message = "Không thể tạo liên kết thanh toán.";
+                    response.StatusCode = 500;
+                    return response;
+                }
 
                 var payment = new Payment
                 {

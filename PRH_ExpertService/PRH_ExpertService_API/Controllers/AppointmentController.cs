@@ -14,7 +14,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class AppointmentController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Admin,Expert")]
+        [Authorize(Roles = "Admin,User,Expert")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAppointments()
         {
@@ -30,7 +30,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Expert")]
+        [Authorize(Roles = "Admin,User,Expert")]
         [HttpGet("get/{expertProfileId}")]
         public async Task<IActionResult> GetAppointments(string expertProfileId)
         {
@@ -38,7 +38,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Expert")]
+        [Authorize(Roles = "User,Expert")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateAppointment([FromBody] UpdateAppointmentCommand command)
         {

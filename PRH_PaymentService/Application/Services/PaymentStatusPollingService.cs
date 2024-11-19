@@ -4,18 +4,16 @@ using AutoMapper;
 using Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
     public class PaymentStatusPollingService(
         IServiceScopeFactory serviceScopeFactory,
-        IMapper mapper,
-        ILogger<PaymentStatusPollingService> logger) : BackgroundService
+        IMapper mapper) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("Starting Payment Status Polling Service...");
+            Console.WriteLine("Starting Payment Status Polling Service...");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -25,7 +23,7 @@ namespace Application.Services
                     var paymentRepository = scope.ServiceProvider.GetRequiredService<IPaymentRepository>();
                     var payOSService = scope.ServiceProvider.GetRequiredService<IPayOSService>();
 
-                    var pendingPayments = await paymentRepository.GetsAsync();
+                    var pendingPayments = await paymentRepository.GetPendingPaymentsAsync();
 
                     foreach (var payment in pendingPayments)
                     {
@@ -39,7 +37,12 @@ namespace Application.Services
                                 if (paymentStatus != (PaymentStatus)payment.Status)
                                 {
                                     await paymentRepository.UpdateStatus(payment.OrderCode, paymentStatus);
-                                    logger.LogInformation($"Updated order {payment.OrderCode} to status {paymentStatus}");
+                                    Console.WriteLine($"Updated order {payment.OrderCode} to status {paymentStatus}");
+
+                                    if (paymentStatus == PaymentStatus.Paid)
+                                    {
+                                        Console.WriteLine($"Payment for AppointmentId {payment.AppointmentId} has been completed successfully.");
+                                    }
                                 }
                             }
                         }
@@ -49,7 +52,7 @@ namespace Application.Services
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Error occurred while polling payment status.");
+                    Console.WriteLine($"Error occurred while polling payment status: {ex.Message}");
                 }
             }
         }

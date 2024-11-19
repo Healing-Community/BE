@@ -4,6 +4,7 @@
     {
         public required string ExpertProfileId { get; set; }
         public required string UserId { get; set; }
+        public string Email { get; set; } = string.Empty;
         public string Specialization { get; set; } = string.Empty;
         public string ExpertiseAreas { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;

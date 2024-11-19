@@ -3,9 +3,11 @@ using Application;
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Persistence;
 using PRH_ExpertService_API;
 using PRH_ExpertService_API.Middleware;
+using PRH_ExpertService_API.Services;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,18 @@ builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
+
+builder.Services.AddGrpc();
+
+// Cấu hình Kestrel
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5005, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+        listenOptions.UseHttps(); // Nếu dịch vụ của bạn yêu cầu HTTPS
+    });
+});
 
 var app = builder.Build();
 
@@ -105,5 +119,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGrpcService<ExpertServiceImpl>();
+
+app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.Run();
