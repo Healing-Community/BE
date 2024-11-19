@@ -12,7 +12,7 @@ namespace Application.Queries.GetReadNotificationRate
             var response = new BaseResponse<double>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 

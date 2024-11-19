@@ -12,7 +12,7 @@ namespace Application.Queries.GetPopularNotificationTypes
             var response = new BaseResponse<Dictionary<string, int>>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 

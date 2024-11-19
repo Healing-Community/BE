@@ -1,23 +1,45 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Commands.CreateNotification
 {
-    public class CreateNotificationCommandHandler(INotificationRepository notificationRepository, INotificationTypeRepository notificationTypeRepository) : IRequestHandler<CreateNotificationCommand, BaseResponse<string>>
+    public class CreateNotificationCommandHandler(INotificationRepository notificationRepository,
+        INotificationTypeRepository notificationTypeRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreateNotificationCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
             try
             {
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
                 var notificationType = await notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
                 if (notificationType == null)
                 {
@@ -27,7 +49,7 @@ namespace Application.Commands.CreateNotification
                     return response;
                 }
 
-                var isSubscribed = await notificationRepository.GetUserNotificationPreferenceAsync(request.UserId, notificationType.NotificationTypeId);
+                var isSubscribed = await notificationRepository.GetUserNotificationPreferenceAsync(userId, notificationType.NotificationTypeId);
                 if (!isSubscribed)
                 {
                     response.Success = false;
@@ -39,7 +61,7 @@ namespace Application.Commands.CreateNotification
                 var notification = new Domain.Entities.Notification
                 {
                     NotificationId = Ulid.NewUlid().ToString(),
-                    UserId = request.UserId,
+                    UserId = userId,
                     NotificationTypeId = notificationType.NotificationTypeId,
                     Message = request.Message,
                     CreatedAt = DateTime.UtcNow,
