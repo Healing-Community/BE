@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Queries.GetUserNotifications
 {
-    public record GetUserNotificationsQuery(string UserId, bool IncludeRead) : IRequest<BaseResponse<List<NotificationDto>>>;
+    public record GetUserNotificationsQuery(bool IncludeRead) : IRequest<BaseResponse<List<NotificationDto>>>;
 }

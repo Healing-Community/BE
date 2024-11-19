@@ -1,24 +1,45 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Queries.GetUnreadNotificationCount
 {
-    public class GetUnreadNotificationCountQueryHandler(INotificationRepository notificationRepository) : IRequestHandler<GetUnreadNotificationCountQuery, BaseResponse<int>>
+    public class GetUnreadNotificationCountQueryHandler(INotificationRepository notificationRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<GetUnreadNotificationCountQuery, BaseResponse<int>>
     {
         public async Task<BaseResponse<int>> Handle(GetUnreadNotificationCountQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<int>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
             try
             {
-                var unreadCount = await notificationRepository.GetUnreadCountAsync(request.UserId.ToString());
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var unreadCount = await notificationRepository.GetUnreadCountAsync(userId);
                 response.Success = true;
                 response.Data = unreadCount;
                 response.StatusCode = 200;

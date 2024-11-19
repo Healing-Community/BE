@@ -37,10 +37,10 @@ namespace PRH_PaymentService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpGet("history/{userId}")]
-        public async Task<IActionResult> GetTransactionHistory(string userId)
+        [HttpGet("history")]
+        public async Task<IActionResult> GetTransactionHistory()
         {
-            var response = await sender.Send(new GetTransactionHistoryQuery(userId));
+            var response = await sender.Send(new GetTransactionHistoryQuery());
             return Ok(response);
         }
     }
