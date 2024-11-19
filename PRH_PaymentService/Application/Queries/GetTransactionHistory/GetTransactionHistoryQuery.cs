@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Queries.GetTransactionHistory
 {
-    public record GetTransactionHistoryQuery(string UserId) : IRequest<BaseResponse<IEnumerable<Payment>>>;
+    public record GetTransactionHistoryQuery() : IRequest<BaseResponse<IEnumerable<Payment>>>;
 }

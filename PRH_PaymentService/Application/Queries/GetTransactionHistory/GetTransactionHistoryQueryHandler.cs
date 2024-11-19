@@ -1,13 +1,17 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repositories;
 using Domain.Contracts;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Queries.GetTransactionHistory
 {
-    public class GetTransactionHistoryQueryHandler(IPaymentRepository paymentRepository) : IRequestHandler<GetTransactionHistoryQuery, BaseResponse<IEnumerable<Payment>>>
+    public class GetTransactionHistoryQueryHandler(
+        IPaymentRepository paymentRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<GetTransactionHistoryQuery, BaseResponse<IEnumerable<Payment>>>
     {
         public async Task<BaseResponse<IEnumerable<Payment>>> Handle(GetTransactionHistoryQuery request, CancellationToken cancellationToken)
         {
@@ -20,7 +24,25 @@ namespace Application.Queries.GetTransactionHistory
 
             try
             {
-                var payments = await paymentRepository.GetPaymentsByUserIdAsync(request.UserId);
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var payments = await paymentRepository.GetPaymentsByUserIdAsync(userId);
                 response.Success = true;
                 response.Data = payments;
                 response.StatusCode = 200;
