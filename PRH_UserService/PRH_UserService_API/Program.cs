@@ -1,12 +1,9 @@
-using System.Text.Json;
 using Application;
 using Infrastructure;
 using MassTransit;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_UserService_API;
 using PRH_UserService_API.Middleware;
-using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -57,6 +57,7 @@ public static class DependencyInjection
         services.AddRouting(options => { options.LowercaseUrls = true; });
 
         #endregion
+
         #region Swagger
 
         var generalSettings = configuration.GetSection("GeneralSettings");
