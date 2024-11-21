@@ -7,6 +7,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Application.Commons;
 using Microsoft.AspNetCore.Mvc;
 using NUlid;
+using Application.Services;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin;
 
 namespace PRH_PostService_API;
 
@@ -189,6 +192,33 @@ public static class DependencyInjection
                     tags: ["rabbitmq", "messaging", "readiness"],
                     failureStatus: HealthStatus.Unhealthy
                 );
+        #endregion
+
+        #region Firebase Configuration
+
+        var firebaseSettings = configuration.GetSection("FirebaseSettings");
+        var credentialsPath = Path.Combine(AppContext.BaseDirectory, firebaseSettings["CredentialsPath"]);
+        var storageBucket = firebaseSettings["StorageBucket"];
+
+        FirebaseApp firebaseApp;
+
+        // Kiểm tra nếu FirebaseApp đã được khởi tạo chưa
+        if (FirebaseApp.DefaultInstance == null)
+        {
+            firebaseApp = FirebaseApp.Create(new AppOptions
+            {
+                Credential = GoogleCredential.FromFile(credentialsPath),
+                ProjectId = storageBucket
+            });
+        }
+        else
+        {
+            firebaseApp = FirebaseApp.DefaultInstance;
+        }
+
+        services.AddSingleton(firebaseApp);
+        services.AddSingleton<FirebaseService>();
+
         #endregion
 
         return services;
