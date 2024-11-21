@@ -35,6 +35,11 @@ namespace Persistence.Repositories
             return post ?? new Post() { PostId = Ulid.Empty.ToString() };
         }
 
+        public async Task<IEnumerable<Post>> GetByUserIdAsync(string userId)
+        {
+            return await hFDBPostserviceContext.Posts.Where(post => post.UserId == userId).ToListAsync();
+        }
+
         public async Task<IEnumerable<Post>> GetsAsync()
         {
             return await hFDBPostserviceContext.Posts.ToListAsync();

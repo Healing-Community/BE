@@ -5,6 +5,7 @@ using Application.Commands.Posts.UpdatePost;
 using Application.Commons.DTOs;
 using Application.Queries.Posts.GetPosts;
 using Application.Queries.Posts.GetPostsById;
+using Application.Queries.Posts.GetPostsByUserId;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class postController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "User")]
+
         [HttpGet("get-all")]
         public async Task<IActionResult> GetsPost()
         {
@@ -24,11 +25,17 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
-        [HttpGet("get-by-id/{id}")]
-        public async Task<IActionResult> GetById(string id)
+        [HttpGet("get-by-post-id/{postId}")]
+        public async Task<IActionResult> GetById(string postId)
         {
-            var response = await sender.Send(new GetPostsByIdQuery(id));
+            var response = await sender.Send(new GetPostsByIdQuery(postId));
+            return response.ToActionResult();
+        }
+
+        [HttpGet("get-by-user-id/{userId}")]
+        public async Task<IActionResult> GetByUserId(string userId)
+        {
+            var response = await sender.Send(new GetPostsByUserIdQuery(userId));
             return response.ToActionResult();
         }
 
