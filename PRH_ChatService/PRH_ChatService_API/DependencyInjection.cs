@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Application.Commons;
 using MassTransit;
@@ -7,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NUlid;
 
-namespace PRH_UserService_API;
+namespace PRH_ChatService_API;
 
 public static class DependencyInjection
 {
@@ -56,6 +57,7 @@ public static class DependencyInjection
         services.AddRouting(options => { options.LowercaseUrls = true; });
 
         #endregion
+
         #region Swagger
 
         var generalSettings = configuration.GetSection("GeneralSettings");
@@ -91,7 +93,7 @@ public static class DependencyInjection
                     Array.Empty<string>()
                 }
             });
-            var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
 

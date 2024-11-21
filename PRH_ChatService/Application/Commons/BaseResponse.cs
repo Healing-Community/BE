@@ -13,6 +13,7 @@ public class BaseResponse<T>
     public T? Data { get; set; }
     public List<string>? Errors { get; set; }
     public DateTimeOffset Timestamp { get; set; }
+
     internal static BaseResponse<T> NotFound(string message = "Không tìm thấy dữ liệu")
     {
         return new BaseResponse<T>
@@ -37,6 +38,7 @@ public class BaseResponse<T>
             Timestamp = DateTimeOffset.UtcNow
         };
     }
+
     internal static BaseResponse<T> InternalServerError(string message)
     {
         return new BaseResponse<T>

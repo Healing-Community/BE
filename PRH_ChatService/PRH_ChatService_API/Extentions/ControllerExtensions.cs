@@ -1,7 +1,7 @@
 ﻿using Application.Commons;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PRH_UserService_API.Extentions;
+namespace PRH_ChatService_API.Extentions;
 
 public static class ControllerExtensions
 {

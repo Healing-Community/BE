@@ -1,5 +1,3 @@
-using System;
-
 namespace Application.Commons.Enum;
 
 public enum EnumRole

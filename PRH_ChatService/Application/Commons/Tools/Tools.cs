@@ -1,6 +1,5 @@
-namespace Application.Commons.Tools
+namespace Application.Commons.Tools;
+
+public static class Tools
 {
-    public static class Tools
-    {
-    }
 }

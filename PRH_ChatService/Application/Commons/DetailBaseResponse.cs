@@ -25,6 +25,7 @@ public class DetailBaseResponse<T>
             Timestamp = DateTime.UtcNow
         };
     }
+
     internal static DetailBaseResponse<T> InternalServerError(string message)
     {
         return new DetailBaseResponse<T>
@@ -36,6 +37,7 @@ public class DetailBaseResponse<T>
             Timestamp = DateTime.UtcNow
         };
     }
+
     internal static DetailBaseResponse<string> Unauthorized()
     {
         return new DetailBaseResponse<string>
@@ -47,6 +49,7 @@ public class DetailBaseResponse<T>
             Timestamp = DateTime.UtcNow
         };
     }
+
     internal static DetailBaseResponse<T> NotFound(string message = "Không tìm thấy dữ liệu")
     {
         return new DetailBaseResponse<T>
@@ -58,5 +61,4 @@ public class DetailBaseResponse<T>
             Timestamp = DateTime.UtcNow
         };
     }
-
 }

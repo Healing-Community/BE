@@ -3,7 +3,7 @@ using System.Net;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace PRH_UserService_API.Middleware;
+namespace PRH_ChatService_API.Middleware;
 
 public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
 {
