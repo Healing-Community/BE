@@ -1,45 +1,60 @@
 ﻿using Application.Commons;
+using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
-using Domain.Entities;
-using MassTransit;
 using MediatR;
-using NUlid;
-using System.Net;
 
 namespace Application.Queries.Posts.GetPostsById
 {
-    public class GetPostsByIdQueryHandler(IPostRepository postRepository) : IRequestHandler<GetPostsByIdQuery, BaseResponse<Post>>
+    public class GetPostsByIdQueryHandler(IPostRepository postRepository)
+        : IRequestHandler<GetPostsByIdQuery, BaseResponse<PostDto>>
     {
-        public async Task<BaseResponse<Post>> Handle(GetPostsByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<PostDto>> Handle(GetPostsByIdQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<Post>()
+            var response = new BaseResponse<PostDto>
             {
-                Id = Ulid.NewUlid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow,
                 Errors = new List<string>()
             };
+
             try
             {
-                var post = await postRepository.GetByIdAsync(request.id);
+                var post = await postRepository.GetByIdAsync(request.Id);
                 if (post == null)
                 {
                     response.Success = false;
-                    response.Message = "Không tìm thấy";
-                    response.Errors.Add("Không tìm thấy dữ liệu nào có ID được cung cấp.");
+                    response.Message = "Không tìm thấy bài viết.";
+                    response.StatusCode = 404;
                     return response;
                 }
-                response.StatusCode = (int)HttpStatusCode.OK;
-                response.Data = post;
+
+                response.Data = new PostDto
+                {
+                    PostId = post.PostId,
+                    UserId = post.UserId,
+                    GroupId = post.GroupId,
+                    CategoryId = post.CategoryId,
+                    Title = post.Title,
+                    CoverImgUrl = post.CoverImgUrl,
+                    VideoUrl = post.VideoUrl,
+                    Description = post.Description,
+                    Status = post.Status,
+                    CreateAt = post.CreateAt,
+                    UpdateAt = post.UpdateAt
+                };
+
                 response.Success = true;
-                response.Message = "Lấy dữ liệu thành công";
+                response.Message = "Lấy bài viết thành công.";
+                response.StatusCode = 200;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra";
-                response.Errors.Add(e.Message);
+                response.Message = "Đã xảy ra lỗi.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = 500;
             }
+
             return response;
         }
     }
