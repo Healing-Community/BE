@@ -318,7 +318,7 @@ jobs:
       - name: Push Docker image for Payment Service to Docker Hub
         run: docker push ${{ secrets.DOCKER_USERNAME }}/payment-service:latest
         
-  build-chat-service:
+  build-payment-service:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -329,29 +329,71 @@ jobs:
         with:
           dotnet-version: '8.0'
 
-      - name: Build Chat Service
-        working-directory: ./PRH_ChatService  # Navigate to ChatService directory
+      - name: Build Payment Service
+        working-directory: ./PRH_PaymentService  # Navigate to PaymentService directory
         run: dotnet build --configuration Release
 
-      - name: Publish Chat Service
-        working-directory: ./PRH_ChatService
+      - name: Publish Payment Service
+        working-directory: ./PRH_PaymentService
         run: dotnet publish --configuration Release --output ./publish
 
-      - name: Upload Chat Service artifacts
+      - name: Upload Payment Service artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: chat-service-publish
+          name: payment-service-publish
+          path: ./PRH_PaymentService/publish
 
-      # Docker Steps for Chat Service
+      # Docker Steps for Payment Service
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      
-      - name: Build Docker image for Chat Service
-        working-directory: ./PRH_ChatService  # Adjust if Dockerfile is in another directory
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/chat-service:latest -f Dockerfile .
-      
+
+      - name: Build Docker image for Payment Service
+        working-directory: ./PRH_PaymentService  # Adjust if Dockerfile is in another directory
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/payment-service:latest -f Dockerfile .
+
       - name: List Docker images
         run: docker images
+
+      - name: Push Docker image for Payment Service to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/payment-service:latest
+        
+        build-chat-service:
+          runs-on: ubuntu-latest
+          steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
       
-      - name: Push Docker image for Chat Service to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/chat-service:latest
+            - name: Set up .NET SDK
+              uses: actions/setup-dotnet@v3
+              with:
+                dotnet-version: '8.0'
+      
+            - name: Build Chat Service
+              working-directory: ./PRH_ChatService  # Navigate to PaymentService directory
+              run: dotnet build --configuration Release
+      
+            - name: Publish Payment Service
+              working-directory: ./PRH_ChatService
+              run: dotnet publish --configuration Release --output ./publish
+      
+            - name: Upload Chat Service artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                name: chat-service-publish
+                path: ./PRH_ChatService/publish
+      
+            # Docker Steps for Chat Service
+            - name: Log in to Docker Hub
+              run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      
+            - name: Build Docker image for Chat Service
+              working-directory: ./PRH_ChatService  # Adjust if Dockerfile is in another directory
+              run: docker build -t ${{ secrets.DOCKER_USERNAME }}/chat-service:latest -f Dockerfile .
+      
+            - name: List Docker images
+              run: docker images
+      
+            - name: Push Docker image for Chat Service to Docker Hub
+              run: docker push ${{ secrets.DOCKER_USERNAME }}/chat-service:latest
+              
+      
