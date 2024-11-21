@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using Application.Interfaces.GenericRepository;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using Infrastructure.Context;
@@ -48,5 +49,10 @@ public class SocialLinkRepository(UserServiceDbContext context) : ISocialLinkRep
                         throw new ArgumentException($" SocialLink with ID {id} not found.");
         context.Entry(existingSocicalLink).CurrentValues.SetValues(entity);
         await context.SaveChangesAsync();
+    }
+
+    Task<IEnumerable<SocialLink>?> IReadRepository<SocialLink>.GetsByPropertyAsync(Expression<Func<SocialLink, bool>> predicate)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -57,4 +57,14 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
     {
         return await hFDbContext.Users.ToListAsync();
     }
+
+    public async Task<bool> IsUserExistAsync(string userId)
+    {
+        return await hFDbContext.Users.AnyAsync(u => u.UserId == userId);
+    }
+
+    public async Task<IEnumerable<User>?> GetsByPropertyAsync(Expression<Func<User, bool>> predicate)
+    {
+        return await hFDbContext.Users.Where(predicate).ToListAsync();
+    }
 }
