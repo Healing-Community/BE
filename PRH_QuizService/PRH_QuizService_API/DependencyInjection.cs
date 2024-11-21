@@ -137,9 +137,9 @@ public static class DependencyInjection
         #region HealthCheck
 
         // Retrieve connection strings and settings from configuration
-        string postgresConnectionString = configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
-        services.AddHealthChecks()
-                .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: ["liveness"])
+        // string postgresConnectionString = configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
+        // services.AddHealthChecks()
+        //         .AddCheck("Self", () => HealthCheckResult.Healthy(), tags: ["liveness"])
 
                 //.AddNpgSql(
                 //    configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
@@ -148,18 +148,18 @@ public static class DependencyInjection
                 //    healthQuery: "SELECT 1;",
                 //    failureStatus: HealthStatus.Unhealthy
                 //)
-                .AddMongoDb(
-                    configuration.GetConnectionString("MongoDb") ?? throw new NullReferenceException(),
-                    name: "MongoDb-check",
-                    tags: ["db", "mongo", "readiness"],
-                    failureStatus: HealthStatus.Unhealthy
-                )
-                .AddRabbitMQ(
-                    rabbitConnectionString: rabbitMq["Host"] ?? throw new NullReferenceException(),
-                    name: "RabbitMq-check",
-                    tags: ["rabbitmq", "messaging", "readiness"],
-                    failureStatus: HealthStatus.Unhealthy
-                );
+                // .AddMongoDb(
+                //     configuration.GetConnectionString("MongoDb") ?? throw new NullReferenceException(),
+                //     name: "MongoDb-check",
+                //     tags: ["db", "mongo", "readiness"],
+                //     failureStatus: HealthStatus.Unhealthy
+                // )
+                // .AddRabbitMQ(
+                //     rabbitConnectionString: rabbitMq["Host"] ?? throw new NullReferenceException(),
+                //     name: "RabbitMq-check",
+                //     tags: ["rabbitmq", "messaging", "readiness"],
+                //     failureStatus: HealthStatus.Unhealthy
+                // );
         #endregion
 
         return services;

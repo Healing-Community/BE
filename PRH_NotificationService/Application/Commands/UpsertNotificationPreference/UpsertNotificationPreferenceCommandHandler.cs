@@ -1,7 +1,9 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 using System;
 using System.Collections.Generic;
@@ -11,19 +13,38 @@ using System.Threading.Tasks;
 namespace Application.Commands.UpdateNotificationPreference
 {
     public class UpsertNotificationPreferenceCommandHandler(IUserNotificationPreferenceRepository userNotificationPreferenceRepository,
-        INotificationTypeRepository notificationTypeRepository) : IRequestHandler<UpsertNotificationPreferenceCommand, BaseResponse<string>>
+        INotificationTypeRepository notificationTypeRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpsertNotificationPreferenceCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(UpsertNotificationPreferenceCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
             try
             {
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
                 var notificationType = await notificationTypeRepository.GetByIdAsync(request.NotificationTypeId);
                 if (notificationType == null)
                 {
@@ -33,13 +54,13 @@ namespace Application.Commands.UpdateNotificationPreference
                     return response;
                 }
 
-                var preference = await userNotificationPreferenceRepository.GetByUserIdAndNotificationTypeIdAsync(request.UserId, notificationType.NotificationTypeId);
+                var preference = await userNotificationPreferenceRepository.GetByUserIdAndNotificationTypeIdAsync(userId, notificationType.NotificationTypeId);
 
                 if (preference == null)
                 {
                     preference = new UserNotificationPreference
                     {
-                        UserId = request.UserId,
+                        UserId = userId,
                         NotificationTypeId = notificationType.NotificationTypeId,
                         IsSubscribed = request.IsSubscribed
                     };

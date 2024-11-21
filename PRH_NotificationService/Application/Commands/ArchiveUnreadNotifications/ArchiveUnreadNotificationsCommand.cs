@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.ArchiveUnreadNotifications
 {
-    public record ArchiveUnreadNotificationsCommand(string UserId) : IRequest<BaseResponse<string>>;
+    public record ArchiveUnreadNotificationsCommand() : IRequest<BaseResponse<string>>;
 }

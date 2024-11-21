@@ -22,12 +22,13 @@ namespace Application.Services
 
             if (createPaymentResult == null)
             {
-                throw new InvalidOperationException("Không tạo được liên kết thanh toán.");
+                throw new InvalidOperationException("Unable to create payment link.");
             }
 
             return new CreatePaymentResponse
             {
-                PaymentUrl = createPaymentResult.checkoutUrl
+                PaymentUrl = createPaymentResult.checkoutUrl,
+                Status = createPaymentResult.status
             };
         }
 
@@ -37,12 +38,12 @@ namespace Application.Services
 
             if (paymentLinkInformation == null)
             {
-                throw new InvalidOperationException("Không thể lấy thông tin trạng thái thanh toán.");
+                throw new InvalidOperationException("Unable to fetch payment status.");
             }
 
             return new PaymentStatusResponse
             {
-                Status = paymentLinkInformation.status,
+                Status = paymentLinkInformation.status
             };
         }
 
@@ -61,12 +62,13 @@ namespace Application.Services
 
             if (cancelledPaymentLinkInfo == null)
             {
-                throw new InvalidOperationException("Không thể hủy liên kết thanh toán.");
+                throw new InvalidOperationException("Unable to cancel payment link.");
             }
 
             return new PaymentStatusResponse
             {
                 Status = cancelledPaymentLinkInfo.status
             };
-        }    }
+        }
+    }
 }

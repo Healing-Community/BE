@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Services;
 using MediatR;
+using NUlid;
 
 namespace Application.Commands.CancelPaymentLink
 {
@@ -10,8 +11,8 @@ namespace Application.Commands.CancelPaymentLink
         {
             var response = new BaseResponse<string>
             {
-                Id = request.OrderCode.ToString(),
-                Timestamp = DateTime.UtcNow,
+                Id = Ulid.NewUlid().ToString(),
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 

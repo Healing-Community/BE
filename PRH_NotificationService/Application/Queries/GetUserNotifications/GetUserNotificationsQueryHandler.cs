@@ -3,10 +3,13 @@ using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
 using NUlid;
+using Microsoft.AspNetCore.Http;
+using Application.Commons.Tools;
 
 namespace Application.Queries.GetUserNotifications
 {
-    public class GetUserNotificationsQueryHandler(INotificationRepository notificationRepository) : IRequestHandler<GetUserNotificationsQuery, BaseResponse<List<NotificationDto>>>
+    public class GetUserNotificationsQueryHandler(INotificationRepository notificationRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<GetUserNotificationsQuery, BaseResponse<List<NotificationDto>>>
     {
         public async Task<BaseResponse<List<NotificationDto>>> Handle(GetUserNotificationsQuery request, CancellationToken cancellationToken)
         {
@@ -19,7 +22,25 @@ namespace Application.Queries.GetUserNotifications
 
             try
             {
-                var notifications = await notificationRepository.GetNotificationsByUserAsync(request.UserId, request.IncludeRead);
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var notifications = await notificationRepository.GetNotificationsByUserAsync(userId, request.IncludeRead);
 
                 response.Success = true;
                 response.Data = notifications.Select(n => new NotificationDto

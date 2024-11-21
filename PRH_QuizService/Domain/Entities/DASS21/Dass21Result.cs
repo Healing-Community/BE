@@ -8,8 +8,8 @@ namespace Domain.Entities.DASS21
 {
     public class Dass21Result
     {
-        public Guid Id { get; set; }
-        public Guid UserId { get; set; }
+        public required string Id { get; set; }
+        public required string UserId { get; set; }
         public DateTime DateTaken { get; set; }
 
         public int StressScore { get; set; }
@@ -20,5 +20,8 @@ namespace Domain.Entities.DASS21
         public string? AnxietyDescription { get; set; }
         public string? DepressionDescription { get; set; }
         public string? OverallComment { get; set; }
+        public List<string>? Factors { get; set; }
+        public List<string>? ShortTermEffects { get; set; } // Tác động ngắn hạn
+        public List<string>? LongTermEffects { get; set; } // Tác động dài hạn
     }
 }

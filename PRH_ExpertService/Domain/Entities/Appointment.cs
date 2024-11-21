@@ -4,7 +4,9 @@
     {
         public required string AppointmentId { get; set; }
         public required string UserId { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
         public required string ExpertProfileId { get; set; }
+        public string ExpertEmail { get; set; } = string.Empty;
         public required string ExpertAvailabilityId { get; set; }
         public DateTime AppointmentDate { get; set; }
         public TimeSpan StartTime { get; set; }

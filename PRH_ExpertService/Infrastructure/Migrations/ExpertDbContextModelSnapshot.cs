@@ -40,6 +40,10 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ExpertEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ExpertProfileId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -58,6 +62,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -192,6 +200,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("ExpertiseAreas")
                         .IsRequired()
