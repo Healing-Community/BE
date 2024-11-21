@@ -3,14 +3,14 @@ using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using MediatR;
 
-namespace Application.Queries.Posts.GetPostsById
+namespace Application.Queries.Posts.GetPostsByUserId
 {
-    public class GetPostsByIdQueryHandler(IPostRepository postRepository)
-        : IRequestHandler<GetPostsByIdQuery, BaseResponse<PostDto>>
+    public class GetPostsByUserIdQueryHandler(IPostRepository postRepository)
+        : IRequestHandler<GetPostsByUserIdQuery, BaseResponse<IEnumerable<PostDto>>>
     {
-        public async Task<BaseResponse<PostDto>> Handle(GetPostsByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<PostDto>>> Handle(GetPostsByUserIdQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<PostDto>
+            var response = new BaseResponse<IEnumerable<PostDto>>
             {
                 Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow,
@@ -19,30 +19,31 @@ namespace Application.Queries.Posts.GetPostsById
 
             try
             {
-                var post = await postRepository.GetByIdAsync(request.Id);
-                if (post == null)
+                // Lấy danh sách bài viết theo UserId
+                var posts = await postRepository.GetByUserIdAsync(request.UserId);
+
+                if (!posts.Any())
                 {
                     response.Success = false;
-                    response.Message = "Không tìm thấy bài viết.";
+                    response.Message = "Không tìm thấy bài viết nào.";
                     response.StatusCode = 404;
                     return response;
                 }
 
-                response.Data = new PostDto
+                response.Data = posts.Select(post => new PostDto
                 {
-                    PostId = post.PostId,
-                    UserId = post.UserId,
-                    GroupId = post.GroupId,
+                    PostId = post.PostId,         
+                    UserId = post.UserId,         
+                    GroupId = post.GroupId,        
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
                     VideoUrl = post.VideoUrl,
                     Description = post.Description,
                     Status = post.Status,
-                    CreateAt = post.CreateAt,
-                    UpdateAt = post.UpdateAt
-                };
-
+                    CreateAt = post.CreateAt,   
+                    UpdateAt = post.UpdateAt    
+                });
                 response.Success = true;
                 response.Message = "Lấy bài viết thành công.";
                 response.StatusCode = 200;
