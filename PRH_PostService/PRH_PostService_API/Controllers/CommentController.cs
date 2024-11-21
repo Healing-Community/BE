@@ -4,6 +4,7 @@ using Application.Commands.Comments.UpdateComment;
 using Application.Commons.DTOs;
 using Application.Queries.Comments.GetComments;
 using Application.Queries.Comments.GetCommentsById;
+using Application.Queries.Comments.GetCommentsByPostId;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,6 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class CommentController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "User")]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetComment()
         {
@@ -23,11 +23,17 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
-        [HttpGet("get-by-id/{id}")]
-        public async Task<IActionResult> GetById(string id)
+        [HttpGet("get-by-comment-id/{commentId}")]
+        public async Task<IActionResult> GetById(string commentId)
         {
-            var response = await sender.Send(new GetCommentsByIdQuery(id));
+            var response = await sender.Send(new GetCommentsByIdQuery(commentId));
+            return response.ToActionResult();
+        }
+
+        [HttpGet("get-by-post-id/{postId}")]
+        public async Task<IActionResult> GetCommentsByPostId(string postId)
+        {
+            var response = await sender.Send(new GetCommentsByPostIdQuery(postId));
             return response.ToActionResult();
         }
 
