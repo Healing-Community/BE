@@ -3,6 +3,7 @@ using Application.Commands_Queries.Commands.Users.UserFollower.UnfollowUser;
 using Application.Commands_Queries.Queries.Users.GetUserProfile;
 using Application.Commons.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_UserService_API.Extentions;
@@ -13,12 +14,14 @@ namespace PRH_UserService_API.Controllers
     [ApiController]
     public class FollowerController(ISender sender) : ControllerBase
     {
+        [Authorize]
         [HttpGet("get-following")]
         public async Task<IActionResult> GetUserFollowing()
         {
             var response = await sender.Send(new GetUserFollowingQuery());
             return response.ToActionResult();
         }
+        [Authorize]
         [HttpPost("follow-user")]
         public async Task<IActionResult> FollowUser(FollowUserDto followUserDto)
         {
@@ -26,6 +29,7 @@ namespace PRH_UserService_API.Controllers
             return response.ToActionResult();
         }
 
+        [Authorize]
         [HttpDelete("unfollow-user")]
         public async Task<IActionResult> UnfollowUser(string userId)
         {

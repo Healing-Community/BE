@@ -19,6 +19,12 @@ public class ConfirmForgotPasswordCommandHandler(IUserRepository userRepository,
             Timestamp = DateTime.UtcNow,
             Errors = []
         };
+        var exitingUser = await userRepository.GetByPropertyAsync(u => u.Email == request.ConfirmForgotPasswordDto.Email);
+        if (exitingUser == null)
+        {
+            return DetailBaseResponse<string>.NotFound("Email không tồn tại");
+        }
+
         var otpExists = await otpCache.OtpExistsAsync(request.ConfirmForgotPasswordDto.Email);
         if (!otpExists)
         {
