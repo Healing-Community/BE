@@ -320,8 +320,8 @@ jobs:
         run: docker push ${{ secrets.DOCKER_USERNAME }}/payment-service:latest
         
   build-chat-service:
-        runs-on: ubuntu-latest
-        steps:
+          runs-on: ubuntu-latest
+          steps:
             - name: Checkout code
               uses: actions/checkout@v3
       
