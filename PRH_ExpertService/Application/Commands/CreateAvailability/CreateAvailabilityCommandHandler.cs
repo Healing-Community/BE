@@ -10,7 +10,6 @@ namespace Application.Commands.CreateAvailability
 {
     public class CreateAvailabilityCommandHandler(
         IExpertAvailabilityRepository expertAvailabilityRepository,
-        IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor)
         : IRequestHandler<CreateAvailabilityCommand, DetailBaseResponse<string>>
     {
@@ -35,17 +34,11 @@ namespace Application.Commands.CreateAvailability
                 }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
-
-                var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
-                if (expertProfile == null)
+                if (string.IsNullOrEmpty(userId))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = $"Không tìm thấy hồ sơ của chuyên gia với ID: {request.ExpertProfileId}.",
-                        Field = "ExpertProfileId"
-                    });
                     response.Success = false;
-                    response.StatusCode = 404;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.StatusCode = 401;
                     return response;
                 }
 
@@ -75,7 +68,7 @@ namespace Application.Commands.CreateAvailability
                 }
 
                 var overlappingAvailability = await expertAvailabilityRepository.GetOverlappingAvailabilityAsync(
-                    request.ExpertProfileId, request.AvailableDate, request.StartTime, request.EndTime);
+                    userId, request.AvailableDate, request.StartTime, request.EndTime);
 
                 if (overlappingAvailability != null)
                 {
@@ -92,7 +85,7 @@ namespace Application.Commands.CreateAvailability
                 var newAvailability = new ExpertAvailability
                 {
                     ExpertAvailabilityId = Ulid.NewUlid().ToString(),
-                    ExpertProfileId = request.ExpertProfileId,
+                    ExpertProfileId = userId,
                     AvailableDate = request.AvailableDate,
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,

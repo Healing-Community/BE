@@ -24,8 +24,6 @@ public static class DependencyInjection
 
         services.AddScoped<IPayOSService, PayOSService>();
 
-        services.AddHostedService<PaymentStatusPollingService>();
-
         services.AddHttpContextAccessor();
 
         return services;
