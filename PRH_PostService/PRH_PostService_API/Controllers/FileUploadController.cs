@@ -1,6 +1,6 @@
-﻿using Application.Services;
+﻿using Application.Interfaces.Services;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace PRH_PostService_API.Controllers
 {
@@ -18,8 +18,13 @@ namespace PRH_PostService_API.Controllers
         [HttpPost("upload")]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {
+            // Kiểm tra file null hoặc rỗng
             if (file == null || file.Length == 0)
                 return BadRequest("File không hợp lệ.");
+
+            // Kiểm tra định dạng file
+            if (!IsImageFile(file.FileName))
+                return BadRequest("Chỉ cho phép upload các file hình ảnh (.jpg, .jpeg, .png, .gif, .bmp, .webp).");
 
             await using var stream = file.OpenReadStream();
             var fileName = file.FileName;
@@ -28,6 +33,14 @@ namespace PRH_PostService_API.Controllers
             var fileUrl = await _firebaseService.UploadFileAsync(stream, fileName);
 
             return Ok(new { Url = fileUrl });
+        }
+
+        private bool IsImageFile(string fileName)
+        {
+            // Các phần mở rộng file được phép
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+            var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
+            return allowedExtensions.Contains(fileExtension);
         }
     }
 }
