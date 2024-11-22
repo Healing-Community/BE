@@ -9,6 +9,9 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Nạp cấu hình từ appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
 #region Add-layer-dependencies
 
 builder.Services.AddPresentationDependencies(builder.Configuration);
@@ -18,7 +21,14 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
 
-builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient("https://localhost:5005")); // URL của Expert Service
+// Lấy URL từ cấu hình và đăng ký ExpertServiceGrpcClient
+var expertServiceUrl = builder.Configuration["ExpertServiceUrl"];
+if (string.IsNullOrEmpty(expertServiceUrl))
+{
+    throw new ArgumentException("ExpertServiceUrl không được cấu hình trong appsettings.json.");
+}
+Console.WriteLine($"ExpertServiceUrl: {expertServiceUrl}");
+builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient(expertServiceUrl));
 
 var app = builder.Build();
 

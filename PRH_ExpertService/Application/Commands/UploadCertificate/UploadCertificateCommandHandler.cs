@@ -12,7 +12,6 @@ namespace Application.Commands.UploadCertificate
     public class UploadCertificateCommandHandler(
         IFirebaseStorageService firebaseStorageService,
         ICertificateRepository certificateRepository,
-        IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor,
         ICertificateTypeRepository certificateTypeRepository)
         : IRequestHandler<UploadCertificateCommand, DetailBaseResponse<string>>
@@ -42,15 +41,12 @@ namespace Application.Commands.UploadCertificate
                 }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
-
-                var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertId);
-                if (expertProfile == null)
+                if (string.IsNullOrEmpty(userId))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = $"Không tìm thấy hồ sơ của chuyên gia với ID: {request.ExpertId}.",
-                        Field = "ExpertId"
-                    });
+                    response.Success = false;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.StatusCode = 401;
+                    return response;
                 }
 
                 var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificationTypeId);
@@ -116,18 +112,22 @@ namespace Application.Commands.UploadCertificate
                 await file.CopyToAsync(memoryStream, cancellationToken);
                 memoryStream.Position = 0;
 
-                string fileUrl = await firebaseStorageService.UploadFileAsync(memoryStream, file.FileName);
+                string fileUrl = await firebaseStorageService.UploadFileAsync(
+                    memoryStream,
+                    file.FileName,
+                    file.ContentType
+                );
 
                 var certificate = new Certificate
                 {
                     CertificateId = Ulid.NewUlid().ToString(),
-                    ExpertProfileId = request.ExpertId,
+                    ExpertProfileId = userId,
                     CertificateTypeId = request.CertificationTypeId,
                     FileUrl = fileUrl,
                     IssueDate = DateTime.UtcNow,
                     Status = 0,
                     CreatedAt = DateTime.UtcNow.AddHours(7),
-                    UpdatedAt = DateTime.UtcNow.AddDays(7)
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
 
                 await certificateRepository.Create(certificate);

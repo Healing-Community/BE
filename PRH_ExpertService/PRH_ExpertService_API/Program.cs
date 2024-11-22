@@ -12,6 +12,9 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Nạp cấu hình từ appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
 #region Add-layer-dependencies
 
 builder.Services.AddPresentationDependencies(builder.Configuration);
@@ -20,8 +23,6 @@ builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
-
-builder.Services.AddGrpc();
 
 // Cấu hình Kestrel
 builder.WebHost.ConfigureKestrel(options =>
@@ -32,6 +33,9 @@ builder.WebHost.ConfigureKestrel(options =>
         listenOptions.UseHttps(); // Nếu dịch vụ của bạn yêu cầu HTTPS
     });
 });
+
+// Thêm dịch vụ gRPC
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 
@@ -121,7 +125,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGrpcService<ExpertServiceImpl>();
-
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.Run();
