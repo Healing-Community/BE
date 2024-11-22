@@ -5,5 +5,6 @@ namespace Application.Interfaces.Repository
 {
     public interface IPostRepository : IReadRepository<Post>, ICreateRepository<Post>, IUpdateRepository<Post>, IDeleteRepository
     {
+        Task<IEnumerable<Post>> GetByUserIdAsync(string userId);
     }
 }

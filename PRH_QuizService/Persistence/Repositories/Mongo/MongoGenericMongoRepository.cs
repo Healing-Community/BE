@@ -19,7 +19,7 @@ public class MongoGenericMongoRepository<T> : IMongoRepository<T>
         return await _collection.Find(FilterDefinition<T>.Empty).ToListAsync();
     }
 
-    public async Task<T> GetByIdAsync(Guid id)
+    public async Task<T> GetByIdAsync(string id)
     {
         return await _collection.Find(Builders<T>.Filter.Eq("_id", id)).FirstOrDefaultAsync();
     }
@@ -34,12 +34,12 @@ public class MongoGenericMongoRepository<T> : IMongoRepository<T>
         await _collection.InsertOneAsync(entity);
     }
 
-    public async Task Update(Guid id, T entity)
+    public async Task Update(string id, T entity)
     {
         await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq("_id", id), entity);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(string id)
     {
         await _collection.DeleteOneAsync(Builders<T>.Filter.Eq("_id", id));
     }

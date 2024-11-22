@@ -34,6 +34,11 @@ public class RoleRepository(UserServiceDbContext hFDbContext) : IRoleRepository
         return await hFDbContext.Roles.ToListAsync();
     }
 
+    public Task<IEnumerable<Role>?> GetsByPropertyAsync(Expression<Func<Role, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task UpdateAsync(string id, Role entity)
     {
         throw new NotImplementedException();

@@ -15,7 +15,7 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class ReactionController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "User")]
+
         [HttpGet("get-all")]
         public async Task<IActionResult> GetReaction()
         {
@@ -23,7 +23,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+
         [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> GetById(string id)
         {

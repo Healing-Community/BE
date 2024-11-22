@@ -21,20 +21,20 @@ public class BaseResponse<T>
             StatusCode = StatusCodes.Status404NotFound,
             Message = message,
             Success = false,
-            Timestamp = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
         };
     }
 
-    internal static BaseResponse<T> SuccessReturn(T classInstance)
+    internal static BaseResponse<T> SuccessReturn(T classInstance = default, string message = "Thành công")
     {
         return new BaseResponse<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status200OK,
-            Message = "thành công",
+            Message = message,
             Success = true,
             Data = classInstance,
-            Timestamp = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
         };
     }
     internal static BaseResponse<T> InternalServerError(string message)
@@ -45,7 +45,7 @@ public class BaseResponse<T>
             StatusCode = StatusCodes.Status500InternalServerError,
             Message = message,
             Success = false,
-            Timestamp = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
         };
     }
 
@@ -57,7 +57,19 @@ public class BaseResponse<T>
             StatusCode = StatusCodes.Status401Unauthorized,
             Message = "Không có quyền truy cập, chưa đăng nhập hoặc phiên làm việc hết hạn",
             Success = false,
-            Timestamp = DateTimeOffset.UtcNow
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
+
+    internal static BaseResponse<string> BadRequest(string message)
+    {
+        return new BaseResponse<string>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = StatusCodes.Status400BadRequest,
+            Message = message,
+            Success = false,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
         };
     }
 }

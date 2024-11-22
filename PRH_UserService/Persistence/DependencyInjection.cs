@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailRepository, EmailRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
         services.AddScoped<ISocialLinkRepository, SocialLinkRepository>();
+        services.AddScoped<IFollowerRepository, FollowerRepository>();
         // Cache repositories
         services.AddScoped<IOtpCache, OtpCache>();
     }

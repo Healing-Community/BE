@@ -10,6 +10,7 @@ using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NUlid;
 
 namespace PRH_QuizService_API.Controllers;
 
@@ -21,7 +22,7 @@ public class QuizController(ISender sender) : ControllerBase
     [HttpPost("create-dass21-quizz")]
     public async Task<IActionResult> Get()
     {
-        var response = await sender.Send(new CreateDASS21Command(new Dass21() { Id = NewId.NextSequentialGuid() }));
+        var response = await sender.Send(new CreateDASS21Command(new Dass21() { Id = Ulid.NewUlid().ToString() }));
         return response.ToActionResult();
     }
     [HttpGet("get_dass21_quizz")]

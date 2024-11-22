@@ -2,5 +2,5 @@
 
 public interface IUpdateRepository<in T> where T : class
 {
-    Task Update(Guid id, T entity);
+    Task Update(string id, T entity);
 }
