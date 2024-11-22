@@ -7,6 +7,7 @@
         public string? ParentId { get; set; }
         public string? UserId { get; set; }
         public string Content { get; set; } = null!;
+        public string? CoverImgUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public Post Post { get; set; } = null!;

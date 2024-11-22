@@ -4,7 +4,7 @@
     {
         public required string CommentRequestId { get; set; }
         public required string PostId { get; set; }
-        //public required string ParentId { get; set; }
+        public string? ParentId { get; set; }
         public required string UserId { get; set; }
         public string? Content { get; set; }
         public DateTime CommentedDate { get; set; }

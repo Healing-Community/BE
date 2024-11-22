@@ -2,9 +2,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.Configuration;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
+using System.IO;
 
 namespace Application.Services
 {
@@ -16,75 +14,54 @@ namespace Application.Services
         public FirebaseService(IConfiguration configuration)
         {
             _bucketName = configuration["FirebaseSettings:StorageBucket"]
-                          ?? throw new InvalidOperationException("Firebase StorageBucket is not configured.");
+                              ?? throw new InvalidOperationException("Firebase StorageBucket is not configured.");
 
             var credentialsPath = configuration["FirebaseSettings:CredentialsPath"]
                                   ?? throw new InvalidOperationException("Firebase CredentialsPath is not configured.");
 
             var googleCredential = GoogleCredential.FromFile(credentialsPath);
-
             _storageClient = StorageClient.Create(googleCredential);
         }
 
         public async Task<string> UploadFileAsync(Stream fileStream, string fileName)
         {
-            // Nén hình ảnh trước khi upload
-            using var compressedStream = new MemoryStream();
-            CompressImage(fileStream, compressedStream);
-            // Đặt lại con trỏ stream về đầu trước khi upload
-            compressedStream.Position = 0;
+            // Đảm bảo folderName chỉ thêm một lần và không bị lặp
+            string folderName = "upload/";
+            string sanitizedFileName = Path.GetFileName(fileName); // Loại bỏ các đường dẫn không cần thiết
+            string objectName = $"{folderName}{sanitizedFileName}";
 
-            string filePath = $"upload/{fileName}";
-
-            // Tự động xác định MIME type
-            string contentType = GetContentType(fileName);
+            // Thiết lập metadata để tệp có thể hiển thị đúng định dạng trên Firebase
             var storageObject = await _storageClient.UploadObjectAsync(new Google.Apis.Storage.v1.Data.Object
             {
                 Bucket = _bucketName,
-                Name = filePath,
-                ContentType = contentType
-            }, compressedStream);
+                Name = objectName,
+                ContentType = GetContentType(sanitizedFileName),
+            }, fileStream);
 
-            return $"https://storage.googleapis.com/{_bucketName}/{storageObject.Name}";
-        }
-
-        private void CompressImage(Stream inputStream, Stream outputStream)
-        {
-            using var image = Image.Load(inputStream);
-
-            // Tùy chỉnh kích thước và chất lượng ảnh
-            int maxWidth = 1920; 
-            int maxHeight = 1080; 
-            var resizeOptions = new ResizeOptions
+            // Tạo token truy cập công khai (để hiển thị hình ảnh)
+            string token = Guid.NewGuid().ToString();
+            if (storageObject.Metadata == null)
             {
-                Mode = ResizeMode.Max,
-                Size = new Size(maxWidth, maxHeight)
-            };
+                storageObject.Metadata = new Dictionary<string, string>();
+            }
+            storageObject.Metadata["firebaseStorageDownloadTokens"] = token;
+            await _storageClient.UpdateObjectAsync(storageObject);
 
-            image.Mutate(x => x.Resize(resizeOptions));
-
-            // Lưu ảnh đã nén với mức chất lượng
-            var encoder = new PngEncoder
-            {
-                CompressionLevel = PngCompressionLevel.Level6, // Mức độ nén (Level1 đến Level9)
-            };
-            image.Save(outputStream, encoder);
+            // Trả về URL công khai của hình ảnh
+            return $"https://firebasestorage.googleapis.com/v0/b/{_bucketName}/o/{Uri.EscapeDataString(objectName)}?alt=media&token={token}";
         }
 
         private string GetContentType(string fileName)
         {
-            var contentTypes = new Dictionary<string, string>
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            return extension switch
             {
-                { ".jpg", "image/jpeg" },
-                { ".jpeg", "image/jpeg" },
-                { ".png", "image/png" },
-                { ".gif", "image/gif" },
-                { ".bmp", "image/bmp" },
-                { ".webp", "image/webp" }
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream",
             };
-
-            var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
-            return contentTypes.TryGetValue(fileExtension, out var contentType) ? contentType : "application/octet-stream";
         }
     }
 }
