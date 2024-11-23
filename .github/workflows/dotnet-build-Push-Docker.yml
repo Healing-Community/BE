@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -27,6 +28,16 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0'
+
+    - name: Install jq
+      run: |
+        if ! command -v jq &> /dev/null; then
+          echo "jq not found. Installing jq..."
+          sudo apt-get update
+          sudo apt-get install -y jq
+        else
+          echo "jq is already installed."
+        fi
 
     - name: Generate Docker tag
       id: docker_tag
@@ -76,3 +87,20 @@ jobs:
         echo "Service: ${{ matrix.service.name }}"
         echo "Version Tag: ${{ steps.docker_tag.outputs.TAG }}"
         echo "Docker Image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}"
+
+    - name: Cleanup old Docker images
+      run: |
+        REPO=${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service
+        echo "Fetching tags for $REPO"
+
+        # Fetch all tags, sort by creation time, and remove all except the 5 most recent
+        tags=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
+          "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | \
+          jq -r '.results | sort_by(.last_updated) | .[:-5] | .[].name')
+
+        # Delete tags older than the 5 most recent
+        for tag in $tags; do
+          echo "Deleting old tag: $tag"
+          curl -s -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
+            "https://hub.docker.com/v2/repositories/$REPO/tags/$tag/"
+        done
