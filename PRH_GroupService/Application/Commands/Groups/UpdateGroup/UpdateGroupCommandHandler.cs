@@ -43,6 +43,7 @@ namespace Application.Commands.Groups.UpdateGroup
 
                 existingGroup.GroupName = request.GroupDto.GroupName;
                 existingGroup.Description = request.GroupDto.Description;
+                existingGroup.AvatarGroup = request.GroupDto.AvatarGroup;
                 existingGroup.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await groupRepository.Update(request.Id, existingGroup);

@@ -13,8 +13,8 @@ namespace Infrastructure.Context
         public virtual DbSet<ApprovalQueue> ApprovalQueues { get; set; }
         public HFDBGroupServiceContext(DbContextOptions<HFDBGroupServiceContext> options) : base(options) { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.xbclwyxnkwbpcnumpwzc; Password=ProjectHealing@1234");
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.xbclwyxnkwbpcnumpwzc; Password=ProjectHealing@1234");
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //    => optionsBuilder.UseNpgsql("Host=localhost; Database=HFDB_GroupService; Username=postgres; Password=Abcd1234");

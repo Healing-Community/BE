@@ -7,6 +7,7 @@ namespace Application.Commons.DTOs
         [Required(ErrorMessage = "Tên nhóm không được bỏ trống.")]
         public string GroupName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string? AvatarGroup { get; set; }
         public DateTime CreatedAt { get; init; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsAutoApprove { get; set; }
