@@ -14,7 +14,7 @@ namespace Application.Queries.Groups.GetGroups
             var response = new BaseResponse<IEnumerable<Group>>()
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try

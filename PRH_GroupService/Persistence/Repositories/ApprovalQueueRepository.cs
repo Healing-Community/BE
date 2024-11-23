@@ -30,6 +30,11 @@ namespace Persistence.Repositories
             }
         }
 
+        public async Task<IEnumerable<ApprovalQueue>> GetAllByGroupIdAsync(string groupId)
+        {
+            return await context.ApprovalQueues.Where(aq => aq.GroupId == groupId).ToListAsync();
+        }
+
         public async Task<ApprovalQueue?> GetByIdAsync(string id)
         {
             return await context.ApprovalQueues.FirstOrDefaultAsync(a => a.QueueId == id);

@@ -13,7 +13,7 @@ namespace Application.Queries.Groups.GetGroupsById
             var response = new BaseResponse<Group>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>() 
             };
 

@@ -69,10 +69,9 @@ namespace Application.Commands.ManageGroup.ApproveUser
                 if (group.CreatedByUserId != userId)
                 {
                     var userGroup = await _userGroupRepository.GetByGroupAndUserIdAsync(group.GroupId, userId);
-                    // Kiểm tra nếu người dùng không thuộc nhóm hoặc không có quyền Owner/Moderator
                     if (userGroup == null ||
-                        userGroup.RoleInGroup != RoleInGroup.Owner.ToString() &&
-                         userGroup.RoleInGroup != RoleInGroup.Moderator.ToString())
+                        (userGroup.RoleInGroup != RoleInGroup.Owner.ToString() &&
+                         userGroup.RoleInGroup != RoleInGroup.Moderator.ToString()))
                     {
                         response.Success = false;
                         response.Message = "Bạn không có quyền phê duyệt thành viên.";
@@ -83,7 +82,7 @@ namespace Application.Commands.ManageGroup.ApproveUser
 
                 if (request.IsApproved)
                 {
-                    // Thêm người dùng vào nhóm
+                    // Chỉ thêm thành viên và tăng CurrentMemberCount khi phê duyệt
                     var userGroup = new UserGroup
                     {
                         GroupId = queueEntry.GroupId,
@@ -101,6 +100,7 @@ namespace Application.Commands.ManageGroup.ApproveUser
                 }
                 else
                 {
+                    // Không làm gì nếu từ chối, giữ nguyên CurrentMemberCount
                     response.Message = "Yêu cầu phê duyệt thành viên đã bị từ chối.";
                 }
 
