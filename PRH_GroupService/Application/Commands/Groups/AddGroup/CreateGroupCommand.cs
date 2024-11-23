@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.Groups.AddGroup
 {
-    public record CreateGroupCommand(GroupDto groupDto, HttpContext httpContext) : IRequest<BaseResponse<string>>
+    public record CreateGroupCommand(GroupDto GroupDto, HttpContext HttpContext) : IRequest<BaseResponse<string>>
     {
     }
 }

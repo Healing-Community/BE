@@ -32,7 +32,12 @@ namespace Persistence.Repositories
         {
             return await hFDBGroupServiceContext.Groups.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Group() { GroupId = Ulid.Empty.ToString() };
         }
-         
+
+        public async Task<IEnumerable<Group>> GetPublicGroupsAsync()
+        {
+            return await hFDBGroupServiceContext.Groups.Where(g => g.GroupVisibility == 0).ToListAsync();
+        }
+
         public async Task<IEnumerable<Group>> GetsAsync()
         {
             return await hFDBGroupServiceContext.Groups.ToListAsync();

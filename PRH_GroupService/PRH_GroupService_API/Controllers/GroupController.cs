@@ -3,6 +3,7 @@ using Application.Commands.Groups.DeleteGroup;
 using Application.Commands.Groups.RemoveMember;
 using Application.Commands.Groups.UpdateGroup;
 using Application.Commons.DTOs;
+using Application.Commons.Tools;
 using Application.Queries.Groups.GetGroups;
 using Application.Queries.Groups.GetGroupsById;
 using MediatR;
@@ -16,50 +17,68 @@ namespace PRH_GroupService_API.Controllers
     [ApiController]
     public class GroupController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "User")]
+
         [HttpGet("get-all")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var response = await sender.Send(new GetGroupsQuery());
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
-        [HttpGet("get-by-id/{id}")]
-        public async Task<IActionResult> GetById(string id)
+        [HttpGet("get-by-group-id/{groupId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(string groupId)
         {
-            var response = await sender.Send(new GetGroupsByIdQuery(id));
+            var response = await sender.Send(new GetGroupsByIdQuery(groupId));
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
-        [HttpPost("create")]
+        [HttpPost("create-group")]
+        [Authorize]
         public async Task<IActionResult> CreateGroup(GroupDto group)
         {
+            if (!Authentication.IsUserInRole(HttpContext, "Admin", "Moderator"))
+            {
+                return Forbid("Chỉ Admin hoặc Moderator mới có quyền tạo nhóm.");
+            }
             var response = await sender.Send(new CreateGroupCommand(group, HttpContext));
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateGroup(string id, GroupDto group)
+        
+        [HttpPut("update-group/{groupId}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateGroup(string groupId, GroupDto group)
         {
-            var response = await sender.Send(new UpdateGroupCommand(id, group));
+            if (!Authentication.IsUserInRole(HttpContext, "Admin", "Moderator"))
+            {
+                return Forbid("Chỉ Admin hoặc Moderator mới có quyền cập nhật nhóm.");
+            }
+            var response = await sender.Send(new UpdateGroupCommand(groupId, group));
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
-        [HttpDelete("delete-group/{id}")]
-        public async Task<IActionResult> DeleteGroup(string id)
+        [HttpDelete("delete-group/{groupId}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteGroup(string groupId)
         {
-            var response = await sender.Send(new DeleteGroupCommand(id));
+            if (!Authentication.IsUserInRole(HttpContext, "Admin", "Moderator"))
+            {
+                return Forbid("Chỉ Admin hoặc Moderator mới có quyền xóa nhóm.");
+            }
+            var response = await sender.Send(new DeleteGroupCommand(groupId));
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
         [HttpDelete("remove-member")]
+        [Authorize]
         public async Task<IActionResult> RemoveMember(string groupId, string memberUserId)
         {
+            if (!Authentication.IsUserInRole(HttpContext, "Admin", "Moderator"))
+            {
+                return Forbid("Chỉ Admin hoặc Moderator mới có quyền loại bỏ thành viên.");
+            }
             var response = await sender.Send(new RemoveMemberCommand(groupId, memberUserId, HttpContext));
             return response.ToActionResult();
         }

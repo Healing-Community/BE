@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<IMessagePublisher, MessagePublisher>();
         services.AddScoped<IUserGroupRepository, UserGroupRepository>();
+        services.AddScoped<IApprovalQueueRepository, ApprovalQueueRepository>();
 
         //#region MongoDB
 

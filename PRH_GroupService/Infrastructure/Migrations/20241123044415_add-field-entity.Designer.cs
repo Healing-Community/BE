@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(HFDBGroupServiceContext))]
-    partial class HFDBGroupServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20241123044415_add-field-entity")]
+    partial class addfieldentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,34 +24,6 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Domain.Entities.ApprovalQueue", b =>
-                {
-                    b.Property<string>("QueueId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("GroupId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsApproved")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("RequestedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("QueueId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("ApprovalQueues");
-                });
 
             modelBuilder.Entity("Domain.Entities.Group", b =>
                 {
@@ -110,15 +85,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("GroupId", "UserId");
 
                     b.ToTable("UserGroups");
-                });
-
-            modelBuilder.Entity("Domain.Entities.ApprovalQueue", b =>
-                {
-                    b.HasOne("Domain.Entities.Group", null)
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.UserGroup", b =>
