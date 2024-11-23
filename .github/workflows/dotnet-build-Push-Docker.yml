@@ -30,6 +30,14 @@ jobs:
       with:
         dotnet-version: '8.0'
 
+    - name: Generate Docker tag
+      id: docker_tag
+      run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        SHORT_SHA=$(git rev-parse --short HEAD)
+        echo "TAG=${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+        echo "Created tag: ${BRANCH_NAME}-${SHORT_SHA}"
+
     - name: Build ${{ matrix.service.name }} Service
       working-directory: ./${{ matrix.service.dir }}
       run: dotnet build --configuration Release
@@ -47,12 +55,26 @@ jobs:
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Build Docker image for ${{ matrix.service.name }} Service
+    - name: Build and tag Docker images
       working-directory: ./${{ matrix.service.dir }}
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest -f Dockerfile .
+      run: |
+        # Build with version tag
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} -f Dockerfile .
+        # Tag as latest
+        docker tag ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
 
     - name: List Docker images
       run: docker images
 
-    - name: Push Docker image for ${{ matrix.service.name }} Service to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
+    - name: Push Docker images
+      run: |
+        # Push version tag
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}
+        # Push latest tag
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
+
+    - name: Echo deployment info
+      run: |
+        echo "Service: ${{ matrix.service.name }}"
+        echo "Version Tag: ${{ steps.docker_tag.outputs.TAG }}"
+        echo "Docker Image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}"
