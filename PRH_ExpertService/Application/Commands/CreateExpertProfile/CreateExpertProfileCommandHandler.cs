@@ -88,7 +88,7 @@ namespace Application.Commands.CreateExpertProfile
                     Specialization = request.Specialization,
                     ExpertiseAreas = request.ExpertiseAreas,
                     Bio = request.Bio,
-                    Status = 1,
+                    Status = 0, // PendingApproval
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };

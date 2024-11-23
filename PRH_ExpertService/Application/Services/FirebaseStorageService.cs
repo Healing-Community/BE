@@ -13,36 +13,35 @@ namespace Application.Services
         public FirebaseStorageService(IConfiguration configuration)
         {
             _bucketName = configuration["FirebaseSettings:StorageBucket"]
-                              ?? throw new InvalidOperationException("Firebase StorageBucket is not configured.");
+                ?? throw new InvalidOperationException("Firebase StorageBucket is not configured.");
 
             var credentialsPath = configuration["FirebaseSettings:CredentialsPath"]
-                                  ?? throw new InvalidOperationException("Firebase CredentialsPath is not configured.");
+                ?? throw new InvalidOperationException("Firebase CredentialsPath is not configured.");
 
             var googleCredential = GoogleCredential.FromFile(credentialsPath);
-
             _storageClient = StorageClient.Create(googleCredential);
         }
 
         public async Task<string> UploadFileAsync(Stream fileStream, string fileName, string contentType)
         {
-            try
-            {
-                var storageObject = await _storageClient.UploadObjectAsync(
-                    bucket: _bucketName,
-                    objectName: fileName,
-                    contentType: contentType,
-                    source: fileStream,
-                    options: new UploadObjectOptions
-                    {
-                        PredefinedAcl = PredefinedObjectAcl.PublicRead
-                    });
+            string folderName = "upload_certificate/";
+            string sanitizedFileName = Path.GetFileName(fileName);
+            string objectName = $"{folderName}{sanitizedFileName}";
 
-                return $"https://storage.googleapis.com/{_bucketName}/{fileName}";
-            }
-            catch (Exception ex)
+            var storageObject = await _storageClient.UploadObjectAsync(new Google.Apis.Storage.v1.Data.Object
             {
-                throw new Exception("Error uploading file to Firebase: " + ex.Message);
-            }
+                Bucket = _bucketName,
+                Name = objectName,
+                ContentType = contentType,
+            }, fileStream);
+
+            string token = Guid.NewGuid().ToString();
+            storageObject.Metadata ??= new Dictionary<string, string>();
+            storageObject.Metadata["firebaseStorageDownloadTokens"] = token;
+
+            await _storageClient.UpdateObjectAsync(storageObject);
+
+            return $"https://firebasestorage.googleapis.com/v0/b/{_bucketName}/o/{Uri.EscapeDataString(objectName)}?alt=media&token={token}";
         }
     }
 }

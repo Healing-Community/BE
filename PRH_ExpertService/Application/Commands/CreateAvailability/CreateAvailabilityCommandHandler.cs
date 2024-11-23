@@ -54,8 +54,9 @@ namespace Application.Commands.CreateAvailability
                     return response;
                 }
 
-                if (request.AvailableDate < DateTime.UtcNow.Date ||
-                    (request.AvailableDate == DateTime.UtcNow.Date && request.EndTime <= DateTime.UtcNow.TimeOfDay))
+                if (request.AvailableDate < DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) ||
+                    (request.AvailableDate == DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) &&
+                     request.EndTime <= TimeOnly.FromDateTime(DateTime.UtcNow.AddHours(7))))
                 {
                     response.Errors.Add(new ErrorDetail
                     {
@@ -89,7 +90,7 @@ namespace Application.Commands.CreateAvailability
                     AvailableDate = request.AvailableDate,
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
-                    Status = 0,
+                    Status = 0, // Available
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };

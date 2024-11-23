@@ -51,12 +51,12 @@ namespace Persistence.Repositories
             }
         }
 
-        public async Task<ExpertAvailability?> GetByDateAndTimeAsync(string expertProfileId, DateTime availableDate, TimeSpan startTime, TimeSpan endTime)
+        public async Task<ExpertAvailability?> GetByDateAndTimeAsync(string expertProfileId, DateOnly availableDate, TimeOnly startTime, TimeOnly endTime)
         {
             return await expertDbContext.ExpertAvailabilities
                 .FirstOrDefaultAsync(ea =>
                     ea.ExpertProfileId == expertProfileId &&
-                    ea.AvailableDate.Date == availableDate.Date &&
+                    ea.AvailableDate == availableDate &&
                     ea.StartTime == startTime &&
                     ea.EndTime == endTime);
         }
@@ -68,7 +68,7 @@ namespace Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ExpertAvailability?> GetOverlappingAvailabilityAsync(string expertProfileId, DateTime availableDate, TimeSpan startTime, TimeSpan endTime)
+        public async Task<ExpertAvailability?> GetOverlappingAvailabilityAsync(string expertProfileId, DateOnly availableDate, TimeOnly startTime, TimeOnly endTime)
         {
             return await expertDbContext.ExpertAvailabilities
                 .Where(a => a.ExpertProfileId == expertProfileId &&
@@ -78,5 +78,6 @@ namespace Persistence.Repositories
                              (startTime <= a.StartTime && endTime >= a.EndTime)))
                 .FirstOrDefaultAsync();
         }
+
     }
 }
