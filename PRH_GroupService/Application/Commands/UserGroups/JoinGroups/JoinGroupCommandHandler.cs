@@ -45,7 +45,7 @@ namespace Application.Commands.UserGroups.JoinGroups
                     return response;
                 }
 
-                // Check if the group has reached its member limit
+                // Kiểm tra xem nhóm có đạt giới hạn thành viên chưa
                 if (group.CurrentMemberCount >= group.MemberLimit)
                 {
                     response.Success = false;
