@@ -8,53 +8,51 @@ on:
       - BK3
 
 jobs:
-  build-services:
+  build-and-publish:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service_name: [notification-service, user-service, report-service, quizz-service, group-service, payment-service, chat-service]
-        service_path: [PRH_NotificationService, PRH_UserService, PRH_ReportService, PRH_QuizService, PRH_GroupService, PRH_PaymentService, PRH_ChatService]
-        exclude:
-          - service_name: notification-service
-            service_path: user-service # Example exclusion to avoid mismatch
+        service:
+          - { name: notification, dir: PRH_NotificationService }
+          - { name: user, dir: PRH_UserService }
+          - { name: report, dir: PRH_ReportService }
+          - { name: quiz, dir: PRH_QuizService }
+          - { name: group, dir: PRH_GroupService }
+          - { name: payment, dir: PRH_PaymentService }
+          - { name: chat, dir: PRH_ChatService }
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Extract short Git SHA
-      id: vars
-      run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0'
 
-    - name: Build ${{ matrix.service_name }}
-      working-directory: ./${{ matrix.service_path[matrix.index] }}
+    - name: Build ${{ matrix.service.name }} Service
+      working-directory: ./${{ matrix.service.dir }}
       run: dotnet build --configuration Release
 
-    - name: Publish ${{ matrix.service_name }}
-      working-directory: ./${{ matrix.service_path[matrix.index] }}
+    - name: Publish ${{ matrix.service.name }} Service
+      working-directory: ./${{ matrix.service.dir }}
       run: dotnet publish --configuration Release --output ./publish
 
-    - name: Upload ${{ matrix.service_name }} artifacts
+    - name: Upload ${{ matrix.service.name }} Service artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.service_name }}-publish
-        path: ./${{ matrix.service_path[matrix.index] }}/publish
+        name: ${{ matrix.service.name }}-service-publish
+        path: ./${{ matrix.service.dir }}/publish
 
-    # Docker Steps for each service
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Build Docker image for ${{ matrix.service_name }}
-      working-directory: ./${{ matrix.service_path[matrix.index] }}
-      run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service_name }}:${{ env.sha }} \
-                     -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service_name }}:latest -f Dockerfile .
+    - name: Build Docker image for ${{ matrix.service.name }} Service
+      working-directory: ./${{ matrix.service.dir }}
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest -f Dockerfile .
 
-    - name: Push Docker images for ${{ matrix.service_name }}
-      run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service_name }}:${{ env.sha }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service_name }}:latest
+    - name: List Docker images
+      run: docker images
+
+    - name: Push Docker image for ${{ matrix.service.name }} Service to Docker Hub
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
