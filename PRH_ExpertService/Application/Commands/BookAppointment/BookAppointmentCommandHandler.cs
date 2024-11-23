@@ -54,7 +54,7 @@ namespace Application.Commands.BookAppointment
                 }
 
                 var availability = await availabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
-                if (availability == null || availability.Status != 0)
+                if (availability == null || availability.Status != 0) // Check trạng thái Available
                 {
                     response.Success = false;
                     response.Message = "Lịch trống không tồn tại hoặc không khả dụng.";
@@ -73,8 +73,8 @@ namespace Application.Commands.BookAppointment
                 }
                 var expertEmail = expertProfile.Email;
 
-                // Đổi trạng thái của lịch trống sang "Chờ thanh toán"
-                availability.Status = 1; // Chờ thanh toán
+                // Đổi trạng thái của lịch trống sang PendingPayment
+                availability.Status = 1; // PendingPayment
                 availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
 
@@ -94,7 +94,7 @@ namespace Application.Commands.BookAppointment
                     AppointmentDate = availability.AvailableDate,
                     StartTime = availability.StartTime,
                     EndTime = availability.EndTime,
-                    Status = 1, // Chờ thanh toán
+                    Status = 1, // PendingPayment
                     MeetLink = meetingUrl,
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)

@@ -29,16 +29,16 @@ namespace PRH_ExpertService_API.Services
                 if (request.IsSuccess)
                 {
                     // Xử lý khi thanh toán thành công
-                    // 2. Cập nhật trạng thái lịch hẹn thành 'Đã thanh toán'
-                    appointment.Status = 2; // Đã thanh toán
+                    // 2. Cập nhật trạng thái lịch hẹn thành Paid
+                    appointment.Status = 2; // Paid
                     appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
                     await appointmentRepository.Update(appointment.AppointmentId, appointment);
 
-                    // 3. Cập nhật trạng thái lịch trống thành 'Đã đặt hẹn'
+                    // 3. Cập nhật trạng thái lịch trống thành Booked
                     var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
                     if (availability != null)
                     {
-                        availability.Status = 2; // Đã đặt hẹn
+                        availability.Status = 2; // Booked
                         availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
                         await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
                     }
@@ -73,16 +73,16 @@ namespace PRH_ExpertService_API.Services
                 else
                 {
                     // Xử lý khi thanh toán thất bại hoặc bị hủy
-                    // 2. Cập nhật trạng thái lịch hẹn thành 'Đã hủy'
-                    appointment.Status = 3; // Đã hủy
+                    // 2. Cập nhật trạng thái lịch hẹn thành Cancelled
+                    appointment.Status = 4; // Cancelled
                     appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
                     await appointmentRepository.Update(appointment.AppointmentId, appointment);
 
-                    // 3. Cập nhật trạng thái lịch trống thành 'Còn trống'
+                    // 3. Cập nhật trạng thái lịch trống thành Available
                     var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
                     if (availability != null)
                     {
-                        availability.Status = 1; // Còn trống
+                        availability.Status = 0; // Available
                         availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
                         await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
                     }

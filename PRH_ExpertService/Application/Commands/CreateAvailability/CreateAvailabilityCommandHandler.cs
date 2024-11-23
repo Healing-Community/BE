@@ -90,7 +90,7 @@ namespace Application.Commands.CreateAvailability
                     AvailableDate = request.AvailableDate,
                     StartTime = request.StartTime,
                     EndTime = request.EndTime,
-                    Status = 0,
+                    Status = 0, // Available
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };

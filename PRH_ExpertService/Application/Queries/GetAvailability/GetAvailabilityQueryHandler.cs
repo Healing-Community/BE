@@ -22,25 +22,7 @@ namespace Application.Queries.GetAvailability
 
             try
             {
-                var httpContext = httpContextAccessor.HttpContext;
-                if (httpContext == null)
-                {
-                    response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
-                    response.StatusCode = 400;
-                    return response;
-                }
-
-                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
-                if (string.IsNullOrEmpty(userId))
-                {
-                    response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
-                    response.StatusCode = 401;
-                    return response;
-                }
-
-                var availabilityList = await expertAvailabilityRepository.GetByExpertProfileIdAsync(userId);
+                var availabilityList = await expertAvailabilityRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
 
                 response.Success = true;
                 response.Data = availabilityList;
