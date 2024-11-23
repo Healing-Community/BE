@@ -1,4 +1,5 @@
 ﻿using Application.Commons;
+using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MassTransit;
@@ -8,11 +9,11 @@ using System.Net;
 
 namespace Application.Queries.Posts.GetPosts
 {
-    public class GetsPostQueryHandler(IPostRepository postRepository) : IRequestHandler<GetsPostQuery, BaseResponse<IEnumerable<Post>>>
+    public class GetsPostQueryHandler(IPostRepository postRepository) : IRequestHandler<GetsPostQuery, BaseResponse<IEnumerable<PostDto>>>
     {
-        public async Task<BaseResponse<IEnumerable<Post>>> Handle(GetsPostQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<PostDto>>> Handle(GetsPostQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<IEnumerable<Post>>()
+            var response = new BaseResponse<IEnumerable<PostDto>>()
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
@@ -21,17 +22,41 @@ namespace Application.Queries.Posts.GetPosts
             try
             {
                 var posts = await postRepository.GetsAsync();
-                response.StatusCode = (int)HttpStatusCode.OK;
-                response.Message = "Lấy dữ liệu thành công";
+
+                if (!posts.Any())
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy bài viết nào.";
+                    response.StatusCode = 404;
+                    return response;
+                }
+
+                response.Data = posts.Select(post => new PostDto
+                {
+                    PostId = post.PostId,
+                    UserId = post.UserId,
+                    GroupId = post.GroupId,
+                    CategoryId = post.CategoryId,
+                    Title = post.Title,
+                    CoverImgUrl = post.CoverImgUrl,
+                    VideoUrl = post.VideoUrl,
+                    Description = post.Description,
+                    Status = post.Status,
+                    CreateAt = post.CreateAt,
+                    UpdateAt = post.UpdateAt
+                });
                 response.Success = true;
-                response.Data = posts;
+                response.Message = "Lấy bài viết thành công.";
+                response.StatusCode = 200;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.Message = e.Message;
                 response.Success = false;
+                response.Message = "Đã xảy ra lỗi.";
+                response.Errors.Add(ex.Message);
+                response.StatusCode = 500;
             }
+
             return response;
         }
     }

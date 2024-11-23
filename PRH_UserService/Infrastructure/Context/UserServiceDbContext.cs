@@ -15,6 +15,7 @@ public partial class UserServiceDbContext : DbContext
     public virtual DbSet<User> Users { get; set; } = null!;
     public virtual DbSet<Role> Roles { get; set; } = null!;
     public virtual DbSet<Token> Tokens { get; set; } = null!;
+    public virtual DbSet<Follower> Followers { get; set; } = null!;
     public virtual DbSet<SocialLink> SocialLinks { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -71,7 +72,19 @@ public partial class UserServiceDbContext : DbContext
             .WithMany(u => u.SocialLinks)
             .HasForeignKey(sl => sl.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-
+        // Follower configuration
+        modelBuilder.Entity<Follower>()
+            .HasKey(f => f.Id);
+        modelBuilder.Entity<Follower>()
+            .HasOne(f => f.User)
+            .WithMany(u => u.Followers)
+            .HasForeignKey(f => f.UserId)
+            .HasForeignKey(f => f.FollowerId)
+            .OnDelete(DeleteBehavior.Cascade);
+        // Add unique constraint to prevent duplicate follows
+        modelBuilder.Entity<Follower>()
+            .HasIndex(f => new { f.FollowerId, f.UserId })
+            .IsUnique();
         OnModelCreatingPartial(modelBuilder);
     }
 

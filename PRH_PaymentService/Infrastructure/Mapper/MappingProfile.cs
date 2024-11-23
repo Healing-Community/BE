@@ -19,7 +19,7 @@ namespace Infrastructure.Mapper
                 "PAID" => PaymentStatus.Paid,
                 "FAILED" => PaymentStatus.Failed,
                 "CANCELLED" => PaymentStatus.Cancelled,
-                _ => throw new ArgumentException("Unknown payOS status")
+                _ => PaymentStatus.Unknown
             };
         }
     }

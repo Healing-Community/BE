@@ -23,14 +23,14 @@ namespace Application.Services
             _storageClient = StorageClient.Create(googleCredential);
         }
 
-        public async Task<string> UploadFileAsync(Stream fileStream, string fileName)
+        public async Task<string> UploadFileAsync(Stream fileStream, string fileName, string contentType)
         {
             try
             {
                 var storageObject = await _storageClient.UploadObjectAsync(
                     bucket: _bucketName,
                     objectName: fileName,
-                    contentType: null,
+                    contentType: contentType,
                     source: fileStream,
                     options: new UploadObjectOptions
                     {

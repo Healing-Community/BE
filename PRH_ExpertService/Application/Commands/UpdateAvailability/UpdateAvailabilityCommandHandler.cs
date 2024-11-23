@@ -37,7 +37,7 @@ namespace Application.Commands.UpdateAvailability
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
 
-                var availability = await expertAvailabilityRepository.GetByIdAsync(request.AvailabilityId);
+                var availability = await expertAvailabilityRepository.GetByIdAsync(request.expertAvailabilityId);
                 if (availability == null)
                 {
                     response.Errors.Add(new ErrorDetail

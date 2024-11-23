@@ -8,4 +8,5 @@ public interface IUserRepository : IReadRepository<User>, ICreateRepository<User
 {
     Task<User?> GetUserByEmailAsync(string email);
     Task<User?> GetUserByUserNameAsync(string userName);
+    Task<bool> IsUserExistAsync(string userId);
 }

@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "ExpertService.gRPC";
+
+package expert_service;
+
+service ExpertService {
+  rpc PaymentSuccess(PaymentSuccessRequest) returns (PaymentSuccessResponse);
+}
+
+message PaymentSuccessRequest {
+  string appointmentId = 1;
+  string paymentId = 2;
+  bool isSuccess = 3;
+}
+
+message PaymentSuccessResponse {
+  bool success = 1;
+  string message = 2;
+}

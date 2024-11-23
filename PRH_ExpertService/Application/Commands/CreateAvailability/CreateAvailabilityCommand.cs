@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.CreateAvailability
 {
-    public record CreateAvailabilityCommand(string ExpertProfileId, DateTime AvailableDate, TimeSpan StartTime, TimeSpan EndTime) : IRequest<DetailBaseResponse<string>>;
+    public record CreateAvailabilityCommand(DateTime AvailableDate, TimeSpan StartTime, TimeSpan EndTime) : IRequest<DetailBaseResponse<string>>;
 }

@@ -14,7 +14,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class CertificateTypeController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Moderate")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllCertificateTypes()
         {
@@ -22,7 +22,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Moderate")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateCertificateType([FromBody] CreateCertificateTypeCommand command)
         {
@@ -30,7 +30,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Moderate")]
         [HttpGet("get/{certificateTypeId}")]
         public async Task<IActionResult> GetCertificateType(string certificateTypeId)
         {
@@ -38,7 +38,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Moderate")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateCertificateType([FromBody] UpdateCertificateTypeCommand command)
         {
@@ -46,7 +46,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Moderate")]
         [HttpDelete("delete/{certificateTypeId}")]
         public async Task<IActionResult> DeleteCertificateType(string certificateTypeId)
         {

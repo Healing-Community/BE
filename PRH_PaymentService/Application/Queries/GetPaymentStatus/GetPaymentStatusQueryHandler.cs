@@ -2,6 +2,7 @@
 using Application.Interfaces.Services;
 using Domain.Contracts;
 using MediatR;
+using NUlid;
 
 namespace Application.Queries.GetPaymentStatus
 {
@@ -11,8 +12,8 @@ namespace Application.Queries.GetPaymentStatus
         {
             var response = new BaseResponse<PaymentStatusResponse>
             {
-                Id = request.OrderCode.ToString(),
-                Timestamp = DateTime.UtcNow,
+                Id = Ulid.NewUlid().ToString(),
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 

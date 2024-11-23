@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using Application.Commons;
 using Application.Commons.Tools;
@@ -27,7 +26,7 @@ public class UpdateProfilePictureCommandHandler(IUserRepository userRepository, 
             }
             var profilePicture = request.ProfilePicture;
             // profilePicture to base64 string
-            base64Picture = Tools.ConvertImageToBase64(profilePicture,200,200,9);
+            base64Picture = Tools.ConvertImageToBase64(profilePicture, 200, 200, 9, quality: 10);
 
             if (profilePicture == null)
             {
@@ -36,7 +35,7 @@ public class UpdateProfilePictureCommandHandler(IUserRepository userRepository, 
             else
             {
                 user.ProfilePicture = base64Picture;
-                await userRepository.UpdateAsync(userId,user);
+                await userRepository.UpdateAsync(userId, user);
             }
 
         }

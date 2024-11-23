@@ -15,7 +15,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class CertificateController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Admin,Expert")]
+        [Authorize(Roles = "Admin,Expert,User")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllCertificates()
         {
@@ -24,14 +24,14 @@ namespace PRH_ExpertService_API.Controllers
         }
 
         [Authorize(Roles = "Expert")]
-        [HttpPost("upload/{expertId}")]
-        public async Task<IActionResult> UploadCertificate(string expertId, [FromForm] FileUploadModel model, string certificationTypeId)
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadCertificate([FromForm] FileUploadModel model, string certificationTypeId)
         {
-            var response = await sender.Send(new UploadCertificateCommand(expertId, model.File, certificationTypeId));
+            var response = await sender.Send(new UploadCertificateCommand(model.File, certificationTypeId));
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User,Expert")]
+        [Authorize(Roles = "Admin,User,Expert")]
         [HttpGet("{certificateId}")]
         public async Task<IActionResult> GetCertificate([FromRoute] string certificateId)
         {

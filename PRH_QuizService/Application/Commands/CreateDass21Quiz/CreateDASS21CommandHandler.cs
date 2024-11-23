@@ -1,37 +1,21 @@
 ﻿using Application.Commons;
 using Domain.Entities.DASS21;
-using MassTransit;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using NUlid;
 
 namespace Application.Commands.CreateDass21Quiz
 {
-    public class CreateDASS21CommandHandler : IRequestHandler<CreateDASS21Command, BaseResponse<bool>>
+    public class CreateDASS21CommandHandler(IMongoRepository<Dass21> mongoRepository) : IRequestHandler<CreateDASS21Command, BaseResponse<bool>>
     {
-        private readonly IMongoRepository<Dass21> _mongoRepository;
-
-        public CreateDASS21CommandHandler(IMongoRepository<Dass21> mongoRepository)
-        {
-            _mongoRepository = mongoRepository ?? throw new ArgumentNullException(nameof(mongoRepository));
-        }
 
         public async Task<BaseResponse<bool>> Handle(CreateDASS21Command request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
-            {
-                Id = NewId.NextSequentialGuid(),
-                Timestamp = DateTime.UtcNow
-            };
-
             try
             {
                 // Tạo dữ liệu DASS-21 thêm cứng (hardcoded)
                 var dass21 = new Dass21
                 {
-                    Id = NewId.NextSequentialGuid(),
+                    Id = Ulid.NewUlid().ToString(),
                     Dass21Categories = new List<Category>
                     {
                         new Category
@@ -185,20 +169,14 @@ namespace Application.Commands.CreateDass21Quiz
                 };
 
                 // Lưu dữ liệu vào MongoDB
-                await _mongoRepository.Create(dass21);
-
+                await mongoRepository.Create(dass21);
                 // Thiết lập phản hồi thành công
-                response.Data = true;
-                response.Message = "DASS-21 dữ liệu đã được lưu trữ thành công.";
+                return BaseResponse<bool>.SuccessReturn(true);
             }
             catch (Exception ex)
             {
-                // Xử lý lỗi và trả về thông báo thất bại
-                response.Data = false;
-                response.Message = $"Có lỗi xảy ra khi lưu trữ DASS-21 dữ liệu: {ex.Message}";
+                return BaseResponse<bool>.InternalServerError(ex.Message);
             }
-
-            return response;
         }
     }
 }

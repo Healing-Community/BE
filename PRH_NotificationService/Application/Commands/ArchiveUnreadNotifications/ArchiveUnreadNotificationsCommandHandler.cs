@@ -1,24 +1,45 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Commands.ArchiveUnreadNotifications
 {
-    public class ArchiveUnreadNotificationsCommandHandler(INotificationRepository notificationRepository) : IRequestHandler<ArchiveUnreadNotificationsCommand, BaseResponse<string>>
+    public class ArchiveUnreadNotificationsCommandHandler(INotificationRepository notificationRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<ArchiveUnreadNotificationsCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(ArchiveUnreadNotificationsCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
             try
             {
-                await notificationRepository.ArchiveUnreadNotificationsAsync(request.UserId.ToString());
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                await notificationRepository.ArchiveUnreadNotificationsAsync(userId);
 
                 response.Success = true;
                 response.Message = "Thông báo chưa đọc đã được lưu trữ thành công.";

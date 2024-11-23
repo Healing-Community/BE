@@ -33,14 +33,14 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
     [Obsolete("This method is deprecated, please use get-user-profile method instead.")]
-    [Authorize(Roles="User, Expert, Admin, Moderator")]
+    [Authorize(Roles = "User, Expert, Admin, Moderator")]
     [HttpGet("get-by-id/{userId}")]
-    public async Task<IActionResult> GetById(string userId)
+    private async Task<IActionResult> GetById(string userId)
     {
         var response = await sender.Send(new GetUsersByIdQuery(userId));
         return response.ToActionResult();
     }
-   // [Authorize(Roles="User, Expert, Admin, Moderator")]
+    // [Authorize(Roles="User, Expert, Admin, Moderator")]
     [HttpGet("get-user-profile/{userId}")]
     public async Task<IActionResult> GetUserProfile(string userId)
     {
@@ -49,11 +49,12 @@ public class UserController(ISender sender) : ControllerBase
     }
     [Obsolete]
     [HttpPost("create")]
-    public async Task<IActionResult> AddUser(UserDto user)
+    private async Task<IActionResult> AddUser(UserDto user)
     {
         var response = await sender.Send(new CreateUserCommand(user));
         return response.ToActionResult();
     }
+    [Authorize(Roles = "User, Expert, Admin, Moderator")]
     [HttpPut("update-user-profile")]
     public async Task<IActionResult> UpdateUserProfile(UpdateUserDto user)
     {
@@ -66,7 +67,7 @@ public class UserController(ISender sender) : ControllerBase
     /// <param name="socialLinkDtos"></param>
     /// <returns></returns>
     [HttpPut("update-social-media-link")]
-    public async Task<IActionResult> UpdateSocialMediaLink(List<SocialLinkDto> socialLinkDtos)
+    private async Task<IActionResult> UpdateSocialMediaLink(List<SocialLinkDto> socialLinkDtos)
     {
         var response = await sender.Send(new UpdateUserSocialMediaLinkCommand(socialLinkDtos));
         return response.ToActionResult();
@@ -78,7 +79,7 @@ public class UserController(ISender sender) : ControllerBase
     /// <response code="200">Xóa thành công</response>
     /// <response code="404">Không tìm thấy link mạng xã hội</response>
     [HttpDelete("delete-social-media-link")]
-    public async Task<IActionResult> DeleteSocialMediaLink(string[] platformNames)
+    private async Task<IActionResult> DeleteSocialMediaLink(string[] platformNames)
     {
         var response = await sender.Send(new DeleteUserSocialLinkCommand(platformNames));
         return response.ToActionResult();
@@ -96,7 +97,7 @@ public class UserController(ISender sender) : ControllerBase
     }
     [Obsolete]
     [HttpPut("update/{id}")]
-    public async Task<IActionResult> UpdateUser(string id, UserDto user)
+    private async Task<IActionResult> UpdateUser(string id, UserDto user)
     {
         var response = await sender.Send(new UpdateUserCommand(id, user));
         return response.ToActionResult();

@@ -11,6 +11,7 @@ namespace Application.Commands.BookAppointment
     public class BookAppointmentCommandHandler(
         IExpertAvailabilityRepository availabilityRepository,
         IAppointmentRepository appointmentRepository,
+        IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<BookAppointmentCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
@@ -18,8 +19,8 @@ namespace Application.Commands.BookAppointment
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
-                Errors = []
+                Timestamp = DateTime.UtcNow.AddHours(7),
+                Errors = new List<string>()
             };
 
             try
@@ -42,6 +43,16 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
+                // Lấy email của người dùng
+                var userEmail = Authentication.GetUserEmailFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userEmail))
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy email người dùng.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
                 var availability = await availabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
                 if (availability == null || availability.Status != 0)
                 {
@@ -51,33 +62,51 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
-                // Cập nhật trạng thái lịch trống sang "Chờ thanh toán"
-                availability.Status = 1;
-                availability.UpdatedAt = DateTime.UtcNow;
+                // Lấy email của chuyên gia
+                var expertProfile = await expertProfileRepository.GetByIdAsync(availability.ExpertProfileId);
+                if (expertProfile == null)
+                {
+                    response.Success = false;
+                    response.Message = "Không tìm thấy hồ sơ chuyên gia.";
+                    response.StatusCode = 404;
+                    return response;
+                }
+                var expertEmail = expertProfile.Email;
+
+                // Đổi trạng thái của lịch trống sang "Chờ thanh toán"
+                availability.Status = 1; // Chờ thanh toán
+                availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
+
+                // Tạo liên kết Jitsi Meet
+                var meetingRoomName = $"{Ulid.NewUlid()}-{availability.ExpertProfileId}";
+                var meetingUrl = $"https://meet.jit.si/{meetingRoomName}";
 
                 // Tạo mới một bản ghi Appointment
                 var appointment = new Appointment
                 {
                     AppointmentId = Ulid.NewUlid().ToString(),
                     UserId = userId,
+                    UserEmail = userEmail,
                     ExpertProfileId = availability.ExpertProfileId,
+                    ExpertEmail = expertEmail,
                     ExpertAvailabilityId = availability.ExpertAvailabilityId,
                     AppointmentDate = availability.AvailableDate,
                     StartTime = availability.StartTime,
                     EndTime = availability.EndTime,
                     Status = 1, // Chờ thanh toán
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    MeetLink = meetingUrl,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
 
                 await appointmentRepository.Create(appointment);
 
                 // Trả về thông tin để tiếp tục thanh toán
                 response.Success = true;
-                response.Data = appointment.AppointmentId;
+                response.Data = null;
                 response.StatusCode = 200;
-                response.Message = "Yêu cầu đặt lịch đã được ghi nhận, vui lòng thanh toán để hoàn tất.";
+                response.Message = "Yêu cầu đặt lịch đã được ghi nhận. Vui lòng hoàn tất thanh toán để xác nhận lịch hẹn.";
             }
             catch (Exception ex)
             {
