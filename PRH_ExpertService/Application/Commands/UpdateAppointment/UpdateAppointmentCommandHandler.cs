@@ -74,8 +74,8 @@ namespace Application.Commands.UpdateAppointment
                     return response;
                 }
 
-                if (request.NewAppointmentDate < DateTime.UtcNow.Date ||
-                   (request.NewAppointmentDate == DateTime.UtcNow.Date && request.NewEndTime <= DateTime.UtcNow.TimeOfDay))
+                if (request.NewAppointmentDate < DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) ||
+                   (request.NewAppointmentDate == DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) && request.NewEndTime <= TimeOnly.FromDateTime(DateTime.UtcNow.AddHours(7))))
                 {
                     response.Errors.Add(new ErrorDetail
                     {

@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ExpertDbContext))]
-    partial class ExpertDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241123163114_changedatatype")]
+    partial class changedatatype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,14 +30,14 @@ namespace Infrastructure.Migrations
                     b.Property<string>("AppointmentId")
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("AppointmentDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("AppointmentDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time without time zone");
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
 
                     b.Property<string>("ExpertAvailabilityId")
                         .IsRequired()
@@ -54,8 +57,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("RecordingLink")
                         .HasColumnType("text");
 
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time without time zone");
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

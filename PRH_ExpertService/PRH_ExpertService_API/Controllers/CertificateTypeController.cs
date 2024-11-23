@@ -14,7 +14,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class CertificateTypeController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Admin,Moderate")]
+        [Authorize(Roles = "Admin,Moderate,Expert")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllCertificateTypes()
         {
@@ -30,7 +30,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin,Moderate")]
+        [Authorize(Roles = "Admin,Moderate,Expert")]
         [HttpGet("get/{certificateTypeId}")]
         public async Task<IActionResult> GetCertificateType(string certificateTypeId)
         {
