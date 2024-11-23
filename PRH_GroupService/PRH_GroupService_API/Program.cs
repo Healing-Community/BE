@@ -20,15 +20,15 @@ builder.Services.AddApplicationDependencies();
 
 # endregion
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    // Cấu hình lắng nghe HTTP/1.1 và HTTP/2 trên cổng 7098 với HTTPS
-    options.ListenLocalhost(7098, listenOptions =>
-    {
-        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-        listenOptions.UseHttps(); // Sử dụng HTTPS
-    });
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    // Cấu hình lắng nghe HTTP/1.1 và HTTP/2 trên cổng 7098 với HTTPS
+//    options.ListenLocalhost(7098, listenOptions =>
+//    {
+//        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+//        listenOptions.UseHttps(); // Sử dụng HTTPS
+//    });
+//});
 // Cấu hình gRPC Service
 builder.Services.AddGrpc();
 
