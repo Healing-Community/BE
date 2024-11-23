@@ -24,26 +24,6 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 #endregion
 
-// Cấu hình Kestrel
-builder.WebHost.ConfigureKestrel(options =>
-{
-    // Lắng nghe trên Docker (môi trường Production)
-    options.ListenAnyIP(8080, listenOptions =>
-    {
-        listenOptions.Protocols = HttpProtocols.Http1; // Chỉ hỗ trợ HTTP trên Docker
-    });
-
-    // Lắng nghe trên Local (môi trường Development)
-    if (builder.Environment.IsDevelopment())
-    {
-        options.ListenAnyIP(5005, listenOptions =>
-        {
-            listenOptions.Protocols = HttpProtocols.Http1AndHttp2; // Hỗ trợ cả HTTP/HTTPS
-            listenOptions.UseHttps(); // Chỉ bật HTTPS trên môi trường Development
-        });
-    }
-});
-
 // Thêm dịch vụ gRPC
 builder.Services.AddGrpc();
 
@@ -72,51 +52,51 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "";
 });
 
-//#region HealthChecks (Kiểm tra tình trạng hệ thống)
-// app.MapHealthChecks("/health/liveness", new HealthCheckOptions
-// {
-//     Predicate = (check) => check.Tags.Contains("liveness"),  // Chỉ lọc các liveness check
-//     ResponseWriter = async (context, report) =>
-//     {
-//         context.Response.ContentType = "application/json";
-//         var result = JsonSerializer.Serialize(new
-//         {
-//             status = report.Status.ToString(),
-//             checks = report.Entries.Select(entry => new
-//             {
-//                 name = entry.Key,
-//                 status = entry.Value.Status.ToString(),
-//                 description = entry.Value.Description,
-//                 duration = entry.Value.Duration.ToString()
-//             }),
-//             totalDuration = report.TotalDuration
-//         });
-//         await context.Response.WriteAsync(result);
-//     }
-// });
+#region HealthChecks (Kiểm tra tình trạng hệ thống)
+app.MapHealthChecks("/health/liveness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("liveness"),  // Chỉ lọc các liveness check
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
 
-// app.MapHealthChecks("/health/readiness", new HealthCheckOptions
-// {
-//     Predicate = (check) => check.Tags.Contains("readiness"),  // Chỉ lọc các readiness check
-//     ResponseWriter = async (context, report) =>
-//     {
-//         context.Response.ContentType = "application/json";
-//         var result = JsonSerializer.Serialize(new
-//         {
-//             status = report.Status.ToString(),
-//             checks = report.Entries.Select(entry => new
-//             {
-//                 name = entry.Key,
-//                 status = entry.Value.Status.ToString(),
-//                 description = entry.Value.Description,
-//                 duration = entry.Value.Duration.ToString()
-//             }),
-//             totalDuration = report.TotalDuration
-//         });
-//         await context.Response.WriteAsync(result);
-//     }
-// });
-//#endregion
+app.MapHealthChecks("/health/readiness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("readiness"),  // Chỉ lọc các readiness check
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
+#endregion
 
 #region Prometheus (Dùng để thu thập metrics hệ thống)
 app.UseHttpMetrics(); // Thu thập HTTP metrics
