@@ -6,7 +6,7 @@ using MediatR;
 using System.Net;
 using Domain.Enum;
 
-namespace Application.Commands.ApproveUser
+namespace Application.Commands.ManageGroup.ApproveUser
 {
     public class ApproveUserCommandHandler : IRequestHandler<ApproveUserCommand, BaseResponse<string>>
     {
@@ -35,6 +35,7 @@ namespace Application.Commands.ApproveUser
 
             try
             {
+                // Lấy UserId của người thực hiện
                 var userId = Authentication.GetUserIdFromHttpContext(request.HttpContext);
                 if (userId == null)
                 {
@@ -70,8 +71,8 @@ namespace Application.Commands.ApproveUser
                     var userGroup = await _userGroupRepository.GetByGroupAndUserIdAsync(group.GroupId, userId);
                     // Kiểm tra nếu người dùng không thuộc nhóm hoặc không có quyền Owner/Moderator
                     if (userGroup == null ||
-                        (userGroup.RoleInGroup != RoleInGroup.Owner.ToString() &&
-                         userGroup.RoleInGroup != RoleInGroup.Moderator.ToString()))
+                        userGroup.RoleInGroup != RoleInGroup.Owner.ToString() &&
+                         userGroup.RoleInGroup != RoleInGroup.Moderator.ToString())
                     {
                         response.Success = false;
                         response.Message = "Bạn không có quyền phê duyệt thành viên.";

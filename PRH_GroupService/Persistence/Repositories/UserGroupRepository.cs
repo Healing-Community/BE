@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Repository;
 using Domain.Entities;
+using Domain.Enum;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using NUlid;
@@ -65,6 +66,15 @@ namespace Persistence.Repositories
             if (existingUserGroup == null) return;
             hFDBGroupServiceContext.Entry(existingUserGroup).CurrentValues.SetValues(entity);
             hFDBGroupServiceContext.Entry(existingUserGroup).State = EntityState.Modified;
+            await hFDBGroupServiceContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateRole(string groupId, string userId, RoleInGroup role)
+        {
+            var userGroup = await hFDBGroupServiceContext.UserGroups.FirstOrDefaultAsync(x => x.GroupId == groupId && x.UserId == userId);
+            if (userGroup == null) return;
+            userGroup.RoleInGroup = role.ToString();
+            hFDBGroupServiceContext.Entry(userGroup).State = EntityState.Modified;
             await hFDBGroupServiceContext.SaveChangesAsync();
         }
     }
