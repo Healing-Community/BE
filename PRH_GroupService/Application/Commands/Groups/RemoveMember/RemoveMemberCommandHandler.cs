@@ -22,7 +22,7 @@ namespace Application.Commands.Groups.RemoveMember
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 

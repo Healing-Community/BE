@@ -18,7 +18,7 @@ namespace Application.Commands.Groups.UpdateGroup
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try
@@ -43,7 +43,7 @@ namespace Application.Commands.Groups.UpdateGroup
 
                 existingGroup.GroupName = request.GroupDto.GroupName;
                 existingGroup.Description = request.GroupDto.Description;
-                existingGroup.UpdatedAt = DateTime.UtcNow;
+                existingGroup.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await groupRepository.Update(request.Id, existingGroup);
                 response.Success = true;
