@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Groups.AddGroup;
 using Application.Commands.Groups.DeleteGroup;
-using Application.Commands.Groups.RemoveMember;
 using Application.Commands.Groups.UpdateGroup;
+using Application.Commands.ManageGroup.RemoveMember;
 using Application.Commons.DTOs;
 using Application.Commons.Tools;
 using Application.Queries.Groups.GetGroups;
@@ -68,18 +68,6 @@ namespace PRH_GroupService_API.Controllers
                 return Forbid("Chỉ Admin hoặc Moderator mới có quyền xóa nhóm.");
             }
             var response = await sender.Send(new DeleteGroupCommand(groupId));
-            return response.ToActionResult();
-        }
-
-        [HttpDelete("remove-member")]
-        [Authorize]
-        public async Task<IActionResult> RemoveMember(string groupId, string memberUserId)
-        {
-            if (!Authentication.IsUserInRole(HttpContext, "Admin", "Moderator"))
-            {
-                return Forbid("Chỉ Admin hoặc Moderator mới có quyền loại bỏ thành viên.");
-            }
-            var response = await sender.Send(new RemoveMemberCommand(groupId, memberUserId, HttpContext));
             return response.ToActionResult();
         }
     }

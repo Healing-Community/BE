@@ -43,6 +43,7 @@ namespace Application.Commands.Groups.AddGroup
                     GroupId = Ulid.NewUlid().ToString(),
                     GroupName = request.GroupDto.GroupName,
                     Description = request.GroupDto.Description,
+                    AvatarGroup = request.GroupDto.AvatarGroup,
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7),
                     CreatedByUserId = userId,

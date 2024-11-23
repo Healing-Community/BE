@@ -5,7 +5,7 @@ using MediatR;
 using NUlid;
 using System.Net;
 
-namespace Application.Commands.Groups.RemoveMember
+namespace Application.Commands.ManageGroup.RemoveMember
 {
     public class RemoveMemberCommandHandler : IRequestHandler<RemoveMemberCommand, BaseResponse<string>>
     {

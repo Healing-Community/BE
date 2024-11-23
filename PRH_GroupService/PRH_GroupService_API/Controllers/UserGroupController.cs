@@ -1,8 +1,7 @@
-﻿using Application.Commands.ApproveUser;
+﻿using Application.Commands.ManageGroup.ApproveUser;
 using Application.Commands.UserGroups.JoinGroups;
 using Application.Commands.UserGroups.LeaveGroups;
 using Application.Commons.DTOs;
-using Application.Commons.Tools;
 using Application.Queries.UserGroups.GetUserGroups;
 using Application.Queries.UserGroups.GetUserGroupsById;
 using MediatR;
@@ -53,14 +52,6 @@ namespace PRH_GroupService_API.Controllers
         public async Task<IActionResult> LeaveGroup(string groupId)
         {
             var response = await _sender.Send(new LeaveGroupCommand(groupId, HttpContext));
-            return response.ToActionResult();
-        }
-
-        [HttpPost("approve-user")]
-        [Authorize(Roles = "Moderator,Admin")]
-        public async Task<IActionResult> ApproveUser(string queueId, bool isApproved)
-        {
-            var response = await _sender.Send(new ApproveUserCommand(queueId, isApproved, HttpContext));
             return response.ToActionResult();
         }
 
