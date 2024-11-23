@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - dev
+      - BK3
+
+env:
+  KEEP_TAGS_COUNT: 5  # Số lượng tags muốn giữ lại (không tính latest tag)
+  IMAGE_PREFIX: "${{ secrets.DOCKER_USERNAME }}/"  # Prefix cho Docker image
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -33,8 +39,9 @@ jobs:
       run: |
         BRANCH_NAME=${GITHUB_REF#refs/heads/}
         SHORT_SHA=$(git rev-parse --short HEAD)
-        echo "TAG=${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
-        echo "Created tag: ${BRANCH_NAME}-${SHORT_SHA}"
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        echo "TAG=${BRANCH_NAME}-${SHORT_SHA}-${TIMESTAMP}" >> $GITHUB_OUTPUT
+        echo "Created tag: ${BRANCH_NAME}-${SHORT_SHA}-${TIMESTAMP}"
 
     - name: Build ${{ matrix.service.name }} Service
       working-directory: ./${{ matrix.service.dir }}
@@ -56,23 +63,70 @@ jobs:
     - name: Build and tag Docker images
       working-directory: ./${{ matrix.service.dir }}
       run: |
-        # Build with version tag
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} -f Dockerfile .
-        # Tag as latest
-        docker tag ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
-
-    - name: List Docker images
-      run: docker images
+        docker build -t ${IMAGE_PREFIX}${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} -f Dockerfile .
+        docker tag ${IMAGE_PREFIX}${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} ${IMAGE_PREFIX}${{ matrix.service.name }}-service:latest
 
     - name: Push Docker images
       run: |
-        # Push version tag
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}
-        # Push latest tag
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
+        docker push ${IMAGE_PREFIX}${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}
+        docker push ${IMAGE_PREFIX}${{ matrix.service.name }}-service:latest
 
-    - name: Echo deployment info
+  cleanup-docker-tags:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - notification
+          - user
+          - report
+          - quiz
+          - group
+          - payment
+          - chat
+    
+    steps:
+    - name: Log cleanup parameters
       run: |
-        echo "Service: ${{ matrix.service.name }}"
-        echo "Version Tag: ${{ steps.docker_tag.outputs.TAG }}"
-        echo "Docker Image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}"
+        echo "Service: ${{ matrix.service }}-service"
+        echo "Keeping $KEEP_TAGS_COUNT most recent tags (plus 'latest')"
+        
+    - name: Set up Docker Hub authentication
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        
+    - name: Cleanup old tags
+      run: |
+        # Get list of all tags except 'latest'
+        TAGS=$(curl -s -H "Authorization: JWT $(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'${{ secrets.DOCKER_USERNAME }}'", "password": "'${{ secrets.DOCKER_PASSWORD }}'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)" \
+          "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}-service/tags/?page_size=100" \
+          | jq -r '.results[].name' \
+          | grep -v '^latest$' \
+          | sort -r)
+        
+        # Convert to array
+        IFS=$'\n' read -rd '' -a TAG_ARRAY <<<"$TAGS"
+        
+        # Keep count of tags to delete
+        COUNT=0
+        
+        # Iterate through tags, skipping the configured number to keep
+        for TAG in "${TAG_ARRAY[@]}"; do
+          COUNT=$((COUNT + 1))
+          if [ $COUNT -gt $KEEP_TAGS_COUNT ]; then
+            echo "Deleting tag: $TAG"
+            curl -X DELETE \
+              -H "Authorization: JWT $(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'${{ secrets.DOCKER_USERNAME }}'", "password": "'${{ secrets.DOCKER_PASSWORD }}'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)" \
+              "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}-service/tags/$TAG/"
+          else
+            echo "Keeping tag: $TAG"
+          fi
+        done
+
+    - name: Log remaining tags
+      run: |
+        echo "Cleanup completed for ${{ matrix.service }}-service"
+        echo "Remaining tags:"
+        curl -s -H "Authorization: JWT $(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'${{ secrets.DOCKER_USERNAME }}'", "password": "'${{ secrets.DOCKER_PASSWORD }}'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)" \
+          "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}-service/tags/?page_size=100" \
+          | jq -r '.results[].name'
