@@ -28,7 +28,7 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 builder.WebHost.ConfigureKestrel(options =>
 {
     // Lắng nghe trên Docker (môi trường Production)
-    options.ListenAnyIP(81, listenOptions =>
+    options.ListenAnyIP(8080, listenOptions =>
     {
         listenOptions.Protocols = HttpProtocols.Http1; // Chỉ hỗ trợ HTTP trên Docker
     });
@@ -118,10 +118,10 @@ app.UseSwaggerUI(c =>
 // });
 //#endregion
 
-//#region Prometheus (Dùng để thu thập metrics hệ thống)
-// app.UseHttpMetrics(); // Thu thập HTTP metrics
-// app.UseMetricServer(); // Expose metrics trên endpoint mặc định
-//#endregion
+#region Prometheus (Dùng để thu thập metrics hệ thống)
+app.UseHttpMetrics(); // Thu thập HTTP metrics
+app.UseMetricServer(); // Expose metrics trên endpoint mặc định
+#endregion
 
 // Chỉ bật HTTPS Redirection trên môi trường Development
 if (builder.Environment.IsDevelopment())
@@ -132,6 +132,7 @@ if (builder.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
