@@ -68,6 +68,7 @@ namespace Application.Commands.Comments.AddComment
                     ParentId = request.CommentDto.ParentId, 
                     UserId = userId,
                     Content = request.CommentDto.Content,
+                    CoverImgUrl = request.CommentDto.CoverImgUrl,
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
@@ -83,7 +84,7 @@ namespace Application.Commands.Comments.AddComment
                 {
                     CommentRequestId = comment.CommentId,
                     PostId = comment.PostId,
-                    //ParentId = comment.ParentId,
+                    ParentId = comment.ParentId,
                     UserId = comment.UserId,
                     Content = comment.Content,
                     CommentedDate = comment.CreatedAt

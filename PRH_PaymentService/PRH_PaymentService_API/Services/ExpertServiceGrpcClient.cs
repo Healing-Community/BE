@@ -9,13 +9,7 @@ namespace PRH_PaymentService_API.Services
 
         public ExpertServiceGrpcClient(string expertServiceUrl)
         {
-            var httpHandler = new HttpClientHandler();
-            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-
-            var channel = GrpcChannel.ForAddress(expertServiceUrl, new GrpcChannelOptions
-            {
-                HttpHandler = httpHandler
-            });
+            var channel = GrpcChannel.ForAddress(expertServiceUrl);
             _client = new ExpertService.gRPC.ExpertService.ExpertServiceClient(channel);
         }
 

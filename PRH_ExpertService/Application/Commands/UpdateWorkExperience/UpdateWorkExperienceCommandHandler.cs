@@ -3,11 +3,15 @@ using Application.Interfaces.Repository;
 using MediatR;
 using Domain.Entities;
 using NUlid;
+using Application.Commons.Tools;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.UpdateWorkExperience
 {
     public class UpdateWorkExperienceCommandHandler(
-        IWorkExperienceRepository workExperienceRepository) : IRequestHandler<UpdateWorkExperienceCommand, DetailBaseResponse<bool>>
+        IWorkExperienceRepository workExperienceRepository,
+        IHttpContextAccessor httpContextAccessor)
+        : IRequestHandler<UpdateWorkExperienceCommand, DetailBaseResponse<bool>>
     {
         public async Task<DetailBaseResponse<bool>> Handle(UpdateWorkExperienceCommand request, CancellationToken cancellationToken)
         {
@@ -20,6 +24,34 @@ namespace Application.Commands.UpdateWorkExperience
 
             try
             {
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
+                        Field = "HttpContext"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                // Lấy UserId từ HTTP context
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Không xác định được người dùng hiện tại.",
+                        Field = "UserId"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 401;
+                    return response;
+                }
+
+                // Lấy thông tin WorkExperience từ repository
                 var workExperience = await workExperienceRepository.GetByIdAsync(request.WorkExperienceId);
                 if (workExperience == null)
                 {
@@ -30,6 +62,55 @@ namespace Application.Commands.UpdateWorkExperience
                     });
                     response.Success = false;
                     response.StatusCode = 404;
+                    return response;
+                }
+
+                // Kiểm tra quyền sở hữu
+                if (workExperience.ExpertProfileId != userId)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Người dùng không có quyền cập nhật kinh nghiệm làm việc này.",
+                        Field = "Authorization"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 403; // Forbidden
+                    return response;
+                }
+
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrWhiteSpace(request.CompanyName))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Tên công ty không được để trống.",
+                        Field = "CompanyName"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.PositionTitle))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Chức danh không được để trống.",
+                        Field = "PositionTitle"
+                    });
+                }
+
+                if (request.StartDate >= request.EndDate)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.",
+                        Field = "StartDate"
+                    });
+                }
+
+                if (response.Errors.Count > 0)
+                {
+                    response.Success = false;
+                    response.StatusCode = 400;
+                    response.Message = "Dữ liệu đầu vào không hợp lệ.";
                     return response;
                 }
 

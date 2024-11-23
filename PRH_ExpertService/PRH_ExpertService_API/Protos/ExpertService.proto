@@ -11,6 +11,7 @@ service ExpertService {
 message PaymentSuccessRequest {
   string appointmentId = 1;
   string paymentId = 2;
+  bool isSuccess = 3;
 }
 
 message PaymentSuccessResponse {

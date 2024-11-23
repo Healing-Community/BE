@@ -33,7 +33,7 @@ namespace Application.Commands.DeleteAvailability
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
 
-                var availability = await expertAvailabilityRepository.GetByIdAsync(request.AvailabilityId);
+                var availability = await expertAvailabilityRepository.GetByIdAsync(request.expertAvailabilityId);
                 if (availability == null)
                 {
                     response.Success = false;
@@ -42,7 +42,7 @@ namespace Application.Commands.DeleteAvailability
                     return response;
                 }
 
-                await expertAvailabilityRepository.DeleteAsync(request.AvailabilityId);
+                await expertAvailabilityRepository.DeleteAsync(request.expertAvailabilityId);
 
                 response.Success = true;
                 response.Data = true;

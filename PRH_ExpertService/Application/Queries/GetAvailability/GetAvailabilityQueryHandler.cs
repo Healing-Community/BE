@@ -1,12 +1,15 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Queries.GetAvailability
 {
-    public class GetAvailabilityQueryHandler(IExpertAvailabilityRepository expertAvailabilityRepository) : IRequestHandler<GetAvailabilityQuery, BaseResponse<IEnumerable<ExpertAvailability>>>
+    public class GetAvailabilityQueryHandler(IExpertAvailabilityRepository expertAvailabilityRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<GetAvailabilityQuery, BaseResponse<IEnumerable<ExpertAvailability>>>
     {
         public async Task<BaseResponse<IEnumerable<ExpertAvailability>>> Handle(GetAvailabilityQuery request, CancellationToken cancellationToken)
         {
@@ -19,7 +22,25 @@ namespace Application.Queries.GetAvailability
 
             try
             {
-                var availabilityList = await expertAvailabilityRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.StatusCode = 401;
+                    return response;
+                }
+
+                var availabilityList = await expertAvailabilityRepository.GetByExpertProfileIdAsync(userId);
 
                 response.Success = true;
                 response.Data = availabilityList;
