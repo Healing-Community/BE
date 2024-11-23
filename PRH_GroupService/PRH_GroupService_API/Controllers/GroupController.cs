@@ -4,6 +4,7 @@ using Application.Commands.Groups.UpdateGroup;
 using Application.Commands.ManageGroup.RemoveMember;
 using Application.Commons.DTOs;
 using Application.Commons.Tools;
+using Application.Queries.Groups.GetApprovalQueue;
 using Application.Queries.Groups.GetGroups;
 using Application.Queries.Groups.GetGroupsById;
 using MediatR;
@@ -31,6 +32,14 @@ namespace PRH_GroupService_API.Controllers
         public async Task<IActionResult> GetById(string groupId)
         {
             var response = await sender.Send(new GetGroupsByIdQuery(groupId));
+            return response.ToActionResult();
+        }
+
+        [Authorize]
+        [HttpGet("approval-queue/{groupId}")]
+        public async Task<IActionResult> GetApprovalQueue(string groupId)
+        {
+            var response = await sender.Send(new GetAllApprovalQueueQuery(groupId, HttpContext));
             return response.ToActionResult();
         }
 

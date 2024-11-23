@@ -28,7 +28,7 @@ namespace PRH_GroupService_API.Controllers
         }
 
         [HttpPost("approve-user")]
-        [Authorize(Roles = "Moderator,Admin")]
+        [Authorize]
         public async Task<IActionResult> ApproveUser(string queueId, bool isApproved)
         {
             var response = await _sender.Send(new ApproveUserCommand(queueId, isApproved, HttpContext));
