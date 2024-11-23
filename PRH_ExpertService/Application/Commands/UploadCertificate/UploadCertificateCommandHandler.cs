@@ -13,12 +13,11 @@ namespace Application.Commands.UploadCertificate
         IFirebaseStorageService firebaseStorageService,
         ICertificateRepository certificateRepository,
         IHttpContextAccessor httpContextAccessor,
-        ICertificateTypeRepository certificateTypeRepository)
-        : IRequestHandler<UploadCertificateCommand, DetailBaseResponse<string>>
+        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<UploadCertificateCommand, DetailBaseResponse<string>>
     {
-        private static readonly List<string> ValidFileExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
+        private static readonly List<string> ValidFileExtensions = new() { ".pdf", ".jpg", ".jpeg", ".png" };
         private const long MaxFileSize = 5 * 1024 * 1024;
-        private static readonly List<string> AllowedMimeTypes = ["application/pdf", "image/jpeg", "image/png"];
+        private static readonly List<string> AllowedMimeTypes = new() { "application/pdf", "image/jpeg", "image/png" };
 
         public async Task<DetailBaseResponse<string>> Handle(UploadCertificateCommand request, CancellationToken cancellationToken)
         {
@@ -26,88 +25,88 @@ namespace Application.Commands.UploadCertificate
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<ErrorDetail>()
             };
+
+            var httpContext = httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                response.Success = false;
+                response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                response.StatusCode = StatusCodes.Status400BadRequest;
+                return response;
+            }
+
+            var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+            if (string.IsNullOrEmpty(userId))
+            {
+                response.Success = false;
+                response.Message = "Không thể xác định UserId từ yêu cầu.";
+                response.StatusCode = StatusCodes.Status401Unauthorized;
+                return response;
+            }
+
+            var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificationTypeId);
+            if (certificateType == null)
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = $"Loại chứng chỉ với ID '{request.CertificationTypeId}' không hợp lệ.",
+                    Field = "CertificationTypeId"
+                });
+            }
+
+            var file = request.File;
+            if (file == null || file.Length == 0)
+            {
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = "File không hợp lệ. Vui lòng chọn một file hợp lệ để tải lên.",
+                    Field = "File"
+                });
+            }
+            else
+            {
+                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (!ValidFileExtensions.Contains(fileExtension))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = $"Định dạng file '{fileExtension}' không hợp lệ. Chỉ chấp nhận các định dạng: {string.Join(", ", ValidFileExtensions)}.",
+                        Field = "FileExtension"
+                    });
+                }
+
+                var mimeType = file.ContentType.ToLowerInvariant();
+                if (!AllowedMimeTypes.Contains(mimeType))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Định dạng MIME của tệp không được chấp nhận.",
+                        Field = "MimeType"
+                    });
+                }
+
+                if (file.Length > MaxFileSize)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = $"Kích thước file hiện tại là {file.Length / 1024 / 1024}MB, vượt quá giới hạn cho phép là 5MB.",
+                        Field = "FileSize"
+                    });
+                }
+            }
+
+            if (response.Errors.Any())
+            {
+                response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                response.Success = false;
+                response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
+                return response;
+            }
 
             try
             {
-                var httpContext = httpContextAccessor.HttpContext;
-                if (httpContext == null)
-                {
-                    response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
-                    response.StatusCode = 400;
-                    return response;
-                }
-
-                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
-                if (string.IsNullOrEmpty(userId))
-                {
-                    response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
-                    response.StatusCode = 401;
-                    return response;
-                }
-
-                var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificationTypeId);
-                if (certificateType == null)
-                {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = $"Loại chứng chỉ với ID '{request.CertificationTypeId}' không hợp lệ.",
-                        Field = "CertificationTypeId"
-                    });
-                }
-
-                var file = request.File;
-                if (file == null || file.Length == 0)
-                {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "File không hợp lệ. Vui lòng chọn một file hợp lệ để tải lên.",
-                        Field = "File"
-                    });
-                }
-                else
-                {
-                    var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-                    if (!ValidFileExtensions.Contains(fileExtension))
-                    {
-                        response.Errors.Add(new ErrorDetail
-                        {
-                            Message = $"Định dạng file '{fileExtension}' không hợp lệ. Chỉ chấp nhận các định dạng: {string.Join(", ", ValidFileExtensions)}.",
-                            Field = "FileExtension"
-                        });
-                    }
-
-                    var mimeType = file.ContentType.ToLowerInvariant();
-                    if (!AllowedMimeTypes.Contains(mimeType))
-                    {
-                        response.Errors.Add(new ErrorDetail
-                        {
-                            Message = "Định dạng MIME của tệp không được chấp nhận.",
-                            Field = "MimeType"
-                        });
-                    }
-
-                    if (file.Length > MaxFileSize)
-                    {
-                        response.Errors.Add(new ErrorDetail
-                        {
-                            Message = $"Kích thước file hiện tại là {file.Length / 1024 / 1024}MB, vượt quá giới hạn cho phép là 5MB.",
-                            Field = "FileSize"
-                        });
-                    }
-                }
-
-                if (response.Errors.Count != 0)
-                {
-                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
-                    response.Success = false;
-                    response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
-                    return response;
-                }
-
                 using var memoryStream = new MemoryStream();
                 await file.CopyToAsync(memoryStream, cancellationToken);
                 memoryStream.Position = 0;
@@ -135,7 +134,7 @@ namespace Application.Commands.UploadCertificate
                 response.Success = true;
                 response.Message = "Tệp đã được tải lên thành công.";
                 response.Data = fileUrl;
-                response.StatusCode = 200;
+                response.StatusCode = StatusCodes.Status200OK;
             }
             catch (Exception ex)
             {
@@ -145,7 +144,7 @@ namespace Application.Commands.UploadCertificate
                 response.Errors.Add(new ErrorDetail
                 {
                     Message = ex.Message,
-                    Field = "exception"
+                    Field = "Exception"
                 });
             }
 
