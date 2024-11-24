@@ -11,8 +11,8 @@
         public string FrontIdCardUrl { get; set; } = string.Empty;
         public string BackIdCardUrl { get; set; } = string.Empty;
         public string ProfileImageUrl { get; set; } = string.Empty;
+        public string Fullname { get; set; } = string.Empty;
         public int Status { get; set; }
-        public string RejectionReason { get; set; } = string.Empty;
         public decimal AverageRating { get; set; } = 0.0m;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

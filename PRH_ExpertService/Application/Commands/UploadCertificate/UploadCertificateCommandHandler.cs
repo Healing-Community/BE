@@ -16,7 +16,7 @@ namespace Application.Commands.UploadCertificate
         ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<UploadCertificateCommand, DetailBaseResponse<string>>
     {
         private static readonly List<string> ValidFileExtensions = new() { ".pdf", ".jpg", ".jpeg", ".png" };
-        private const long MaxFileSize = 5 * 1024 * 1024;
+        private const long MaxFileSize = 30 * 1024 * 1024; // 30MB
         private static readonly List<string> AllowedMimeTypes = new() { "application/pdf", "image/jpeg", "image/png" };
 
         public async Task<DetailBaseResponse<string>> Handle(UploadCertificateCommand request, CancellationToken cancellationToken)
@@ -91,7 +91,7 @@ namespace Application.Commands.UploadCertificate
                 {
                     response.Errors.Add(new ErrorDetail
                     {
-                        Message = $"Kích thước file hiện tại là {file.Length / 1024 / 1024}MB, vượt quá giới hạn cho phép là 5MB.",
+                        Message = $"Kích thước file hiện tại là {file.Length / 1024 / 1024}MB, vượt quá giới hạn cho phép là {MaxFileSize / 1024 / 1024}MB.",
                         Field = "FileSize"
                     });
                 }
@@ -107,15 +107,8 @@ namespace Application.Commands.UploadCertificate
 
             try
             {
-                using var memoryStream = new MemoryStream();
-                await file.CopyToAsync(memoryStream, cancellationToken);
-                memoryStream.Position = 0;
-
-                string fileUrl = await firebaseStorageService.UploadFileAsync(
-                    memoryStream,
-                    file.FileName,
-                    file.ContentType
-                );
+                var fileName = $"{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}";
+                var fileUrl = await firebaseStorageService.UploadFileAsync(file.OpenReadStream(), fileName, file.ContentType);
 
                 var certificate = new Certificate
                 {

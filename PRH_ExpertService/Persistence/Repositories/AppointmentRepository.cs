@@ -67,5 +67,13 @@ namespace Persistence.Repositories
                              (startTime <= a.StartTime && endTime >= a.EndTime)))
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Appointment>> GetByUserIdAsync(string userId)
+        {
+            return await context.Appointments
+                    .Include(a => a.ExpertProfile)
+                    .Where(a => a.UserId == userId)
+                    .ToListAsync();
+        }
     }
 }

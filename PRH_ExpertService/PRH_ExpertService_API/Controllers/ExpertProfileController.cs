@@ -7,6 +7,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_ExpertService_API.Extentions;
+using Application.Commands.UploadProfileImage;
+using MassTransit.Mediator;
+using PRH_ExpertService_API.FileUpload;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -22,19 +25,27 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Expert")]
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateExpertProfile([FromBody] CreateExpertProfileCommand command)
+        //[Authorize(Roles = "Expert")]
+        //[HttpPost("create")]
+        //public async Task<IActionResult> CreateExpertProfile([FromBody] CreateExpertProfileCommand command)
+        //{
+        //    var response = await sender.Send(command);
+        //    return response.ToActionResult();
+        //}
+
+        [Authorize]
+        [HttpGet("profile/{expertProfileId}")]
+        public async Task<IActionResult> GetExpertProfile([FromRoute] string expertProfileId)
         {
-            var response = await sender.Send(command);
+            var response = await sender.Send(new GetExpertProfileQuery(expertProfileId));
             return response.ToActionResult();
         }
 
-        [Authorize]
-        [HttpGet("profile/{expertId}")]
-        public async Task<IActionResult> GetExpertProfile([FromRoute] string expertId)
+        [Authorize(Roles = "Expert")]
+        [HttpPost("upload-profile-image")]
+        public async Task<IActionResult> UploadProfileImage([FromForm] FileUploadModel model)
         {
-            var response = await sender.Send(new GetExpertProfileQuery(expertId));
+            var response = await sender.Send(new UploadProfileImageCommand(model.File));
             return response.ToActionResult();
         }
 
