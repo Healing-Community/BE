@@ -73,5 +73,9 @@ namespace Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<int> CountCommentsByPostIdAsync(string postId)
+        {
+            return await hFDBPostserviceContext.Comments.CountAsync(c => c.PostId == postId);
+        }
     }
 }
