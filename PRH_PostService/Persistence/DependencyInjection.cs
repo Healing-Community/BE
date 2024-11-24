@@ -24,6 +24,7 @@ public static class DependencyInjection
         services.AddScoped<IMessagePublisher, MessagePublisher>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IFirebaseStorageService, FirebaseService>();
+        services.AddScoped<ICommentTreeService, CommentTreeService>();
 
         //#region MongoDB
 

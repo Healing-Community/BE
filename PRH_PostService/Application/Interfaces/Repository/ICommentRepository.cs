@@ -7,5 +7,7 @@ namespace Application.Interfaces.Repository
     {
         Task<bool> ExistsAsync(string id);
         IQueryable<Comment> GetQueryable();
+        Task<IEnumerable<Comment>> GetAllCommentsByPostIdAsync(string postId);
+        Task<IEnumerable<Comment>> GetAllCommentsByCommentIdAsync(string commentId);
     }
 }
