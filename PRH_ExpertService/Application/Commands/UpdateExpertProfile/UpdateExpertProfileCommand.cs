@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.UpdateExpertProfile
 {
-    public record UpdateExpertProfileCommand(string ExpertProfileId, string? Specialization, string? ExpertiseAreas, string? Bio, int? Status) : IRequest<DetailBaseResponse<bool>>;
+    public record UpdateExpertProfileCommand(string Specialization, string ExpertiseAreas, string Bio, string ProfileImageUrl, string Fullname) : IRequest<DetailBaseResponse<bool>>;
 }
