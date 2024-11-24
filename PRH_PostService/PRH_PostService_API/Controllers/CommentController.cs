@@ -2,6 +2,7 @@
 using Application.Commands.Comments.DeleteComment;
 using Application.Commands.Comments.UpdateComment;
 using Application.Commons.DTOs;
+using Application.Queries.Comments.CountTotalCommentByPostId;
 using Application.Queries.Comments.GetComments;
 using Application.Queries.Comments.GetCommentsById;
 using Application.Queries.Comments.GetCommentsByPostId;
@@ -58,6 +59,13 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> DeleteComment(string id)
         {
             var response = await sender.Send(new DeleteCommentCommand(id));
+            return response.ToActionResult();
+        }
+
+        [HttpGet("count-by-post-id/{postId}")]
+        public async Task<IActionResult> CountTotalCommentByPostId(string postId)
+        {
+            var response = await sender.Send(new CountTotalCommentByPostIdQuery(postId));
             return response.ToActionResult();
         }
     }

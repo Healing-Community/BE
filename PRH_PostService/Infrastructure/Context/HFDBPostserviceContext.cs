@@ -28,34 +28,60 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Post>().HasKey(p => p.PostId);
             modelBuilder.Entity<Post>().HasIndex(p => p.Title).IsUnique();
             modelBuilder.Entity<Category>().HasKey(p => p.CategoryId);
-            modelBuilder.Entity<Category>().HasIndex(c=>c.Name).IsUnique();
+            modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
+
             // Relationship
-            modelBuilder.Entity<Post>().HasOne(p => p.Category).WithMany(c => c.Posts).HasForeignKey(p => p.CategoryId);
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Posts)
+                .HasForeignKey(p => p.CategoryId);
 
             // Reaction
             modelBuilder.Entity<Reaction>().HasKey(r => r.ReactionId);
-            modelBuilder.Entity<Reaction>().HasOne(r => r.Post).WithMany(p => p.Reactions).HasForeignKey(r => r.PostId);
-            modelBuilder.Entity<Reaction>().HasOne(r => r.ReactionType).WithMany(rt => rt.Reactions).HasForeignKey(r => r.ReactionTypeId);
+            modelBuilder.Entity<Reaction>()
+                .HasOne(r => r.Post)
+                .WithMany(p => p.Reactions)
+                .HasForeignKey(r => r.PostId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<Reaction>()
+                .HasOne(r => r.ReactionType)
+                .WithMany(rt => rt.Reactions)
+                .HasForeignKey(r => r.ReactionTypeId);
 
             // ReactionType
             modelBuilder.Entity<ReactionType>().HasKey(rt => rt.ReactionTypeId);
 
             // Comment
             modelBuilder.Entity<Comment>().HasKey(c => c.CommentId);
-            modelBuilder.Entity<Comment>().HasOne(c => c.Post).WithMany(p => p.Comments).HasForeignKey(c => c.PostId);
-            modelBuilder.Entity<Comment>().HasOne(c => c.Parent).WithMany(c => c.Replies).HasForeignKey(c => c.ParentId);
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Parent)
+                .WithMany(c => c.Replies)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Cascade); 
 
             // Report 
             modelBuilder.Entity<Report>().HasKey(r => r.ReportId);
-            modelBuilder.Entity<Report>().HasOne(r => r.Post).WithMany(p => p.Reports).HasForeignKey(r => r.PostId);
-            modelBuilder.Entity<Report>().HasOne(r => r.ReportType).WithMany(rt => rt.Reports).HasForeignKey(r => r.ReportTypeId);
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Post)
+                .WithMany(p => p.Reports)
+                .HasForeignKey(r => r.PostId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.ReportType)
+                .WithMany(rt => rt.Reports)
+                .HasForeignKey(r => r.ReportTypeId);
 
             // ReportType 
             modelBuilder.Entity<ReportType>().HasKey(rt => rt.ReportTypeId);
 
-
             OnModelCreatingPartial(modelBuilder);
         }
+
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }

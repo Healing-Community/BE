@@ -24,6 +24,11 @@ namespace Persistence.Repositories
             await hFDBPostserviceContext.SaveChangesAsync();
         }
 
+        public async Task<bool> ExistsAsync(string postId)
+        {
+            return await hFDBPostserviceContext.Posts.AnyAsync(p => p.PostId == postId);
+        }
+
         public async Task<Post> GetByIdAsync(string id)
         {
             return await hFDBPostserviceContext.Posts.FirstAsync(x => x.PostId == id);
