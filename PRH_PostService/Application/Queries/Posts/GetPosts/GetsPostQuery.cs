@@ -5,5 +5,5 @@ using MediatR;
 
 namespace Application.Queries.Posts.GetPosts
 {
-    public record GetsPostQuery : IRequest<BaseResponse<IEnumerable<PostDto>>>;
+    public record GetsPostQuery : IRequest<BaseResponse<IEnumerable<PostDetailDto>>>;
 }
