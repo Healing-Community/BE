@@ -10,7 +10,6 @@ public class ResetPasswordDto
 
     [Required(ErrorMessage = "Mật khẩu mới không được để trống")]
     [MinLength(6, ErrorMessage = "Mật khẩu mới phải có ít nhất 6 ký tự")]
-    [Compare("OldPassword", ErrorMessage = "Mật khẩu mới không được trùng với mật khẩu cũ")]
     public string NewPassword { get; set; } = null!;
 
     [Required(ErrorMessage = "Xác nhận mật khẩu không được để trống")]
