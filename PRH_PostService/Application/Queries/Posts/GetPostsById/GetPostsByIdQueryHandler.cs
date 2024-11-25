@@ -6,11 +6,11 @@ using MediatR;
 namespace Application.Queries.Posts.GetPostsById
 {
     public class GetPostsByIdQueryHandler(IPostRepository postRepository)
-        : IRequestHandler<GetPostsByIdQuery, BaseResponse<PostDto>>
+        : IRequestHandler<GetPostsByIdQuery, BaseResponse<PostDetailDto>>
     {
-        public async Task<BaseResponse<PostDto>> Handle(GetPostsByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<PostDetailDto>> Handle(GetPostsByIdQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<PostDto>
+            var response = new BaseResponse<PostDetailDto>
             {
                 Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow,
@@ -28,8 +28,11 @@ namespace Application.Queries.Posts.GetPostsById
                     return response;
                 }
 
-                response.Data = new PostDto
+                response.Data = new PostDetailDto
                 {
+                    PostId = post.PostId,
+                    UserId = post.UserId,
+                    GroupId = post.GroupId,
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,

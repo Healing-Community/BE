@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Queries.Posts.GetPostsById
 {
-    public class GetPostsByIdQuery : IRequest<BaseResponse<PostDto>>
+    public class GetPostsByIdQuery : IRequest<BaseResponse<PostDetailDto>>
     {
         public string Id { get; }
 
