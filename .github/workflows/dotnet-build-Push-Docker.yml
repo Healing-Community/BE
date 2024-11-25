@@ -5,360 +5,102 @@ on:
     branches:
       - main
       - dev
-  # pull_request:
-  #   branches:
-  #     - main &
-  #build
 
 jobs:
-  build-notification-service:
+  build-and-publish:
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0'
-
-    - name: Build Notification Service
-      working-directory: ./PRH_NotificationService  # Navigate to NotificationService directory
-      run: dotnet build --configuration Release
-
-    - name: Publish Notification Service
-      working-directory: ./PRH_NotificationService
-      run: dotnet publish --configuration Release --output ./publish
-
-    - name: Upload Notification Service artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: notification-service-publish
-        path: ./PRH_NotificationService/publish
-
-    # Docker Steps for Notification Service
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Build Docker image for Notification Service
-      working-directory: ./PRH_NotificationService  # Adjust if Dockerfile is in another directory
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/notification-service:latest -f Dockerfile .
-
-    - name: List Docker images
-      run: docker images
-
-    - name: Push Docker image for Notification Service to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
-
-  # build-post-service:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v3
-
-  #   - name: Set up .NET SDK
-  #     uses: actions/setup-dotnet@v3
-  #     with:
-  #       dotnet-version: '8.0'
-
-  #   - name: Build Post Service
-  #     working-directory: ./PRH_PostService  # Navigate to PostService directory
-  #     run: dotnet build --configuration Release
-
-  #   - name: Publish Post Service
-  #     working-directory: ./PRH_PostService
-  #     run: dotnet publish --configuration Release --output ./publish
-
-  #   - name: Upload Post Service artifacts
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: post-service-publish
-  #       path: ./PRH_PostService/publish
-
-  #   # Docker Steps for Post Service
-  #   - name: Log in to Docker Hub
-  #     run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-  #   - name: Build Docker image for Post Service
-  #     working-directory: ./PRH_PostService  # Adjust if Dockerfile is in another directory
-  #     run: docker build -t ${{ secrets.DOCKER_USERNAME }}/post-service:latest -f Dockerfile .
-
-  #   - name: List Docker images
-  #     run: docker images
-
-  #   - name: Push Docker image for Post Service to Docker Hub
-  #     run: docker push ${{ secrets.DOCKER_USERNAME }}/post-service:latest
-
-  build-user-service:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0'
-
-    - name: Build User Service
-      working-directory: ./PRH_UserService  # Navigate to UserService directory
-      run: dotnet build --configuration Release
-
-    - name: Publish User Service
-      working-directory: ./PRH_UserService
-      run: dotnet publish --configuration Release --output ./publish
-
-    - name: Upload User Service artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: user-service-publish
-        path: ./PRH_UserService/publish
-
-    # Docker Steps for User Service
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Build Docker image for User Service
-      working-directory: ./PRH_UserService  # Adjust if Dockerfile is in another directory
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest -f Dockerfile .
-
-    - name: List Docker images
-      run: docker images
-
-    - name: Push Docker image for User Service to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
-  build-report-service:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0'
-
-    - name: Build Report Service
-      working-directory: ./PRH_ReportService 
-      run: dotnet build --configuration Release
-
-    - name: Publish Report Service
-      working-directory: ./PRH_ReportService
-      run: dotnet publish --configuration Release --output ./publish
-
-    - name: Upload Report Service artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: user-report-publish
-        path: ./PRH_ReportService/publish
-
-    # Docker Steps for User Service
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Build Docker image for Report Service
-      working-directory: ./PRH_ReportService  # Adjust if Dockerfile is in another directory
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/report-service:latest -f Dockerfile .
-
-    - name: List Docker images
-      run: docker images
-
-    - name: Push Docker image for User Service to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/report-service:latest
-  build-quizz-service:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0'
-
-    - name: Build Quizz Service
-      working-directory: ./PRH_QuizService 
-      run: dotnet build --configuration Release
-
-    - name: Publish Quizz Service
-      working-directory: ./PRH_QuizService
-      run: dotnet publish --configuration Release --output ./publish
-
-    - name: Upload Quizz Service artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: user-report-publish
-        path: ./PRH_QuizService/publish
-
-    # Docker Steps for Expert Service
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Build Docker image for Quizz Service
-      working-directory: ./PRH_QuizService  # Adjust if Dockerfile is in another directory
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/quizz-service:latest -f Dockerfile .
-
-    - name: List Docker images
-      run: docker images
-
-    - name: Push Docker image for Quizz Service to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/quizz-service:latest
-  build-expert-service:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0'
-
-    - name: Build Expert Service
-      working-directory: ./PRH_ExpertService 
-      run: dotnet build --configuration Release
-
-    - name: Publish Expert Service
-      working-directory: ./PRH_ExpertService
-      run: dotnet publish --configuration Release --output ./publish
-
-    - name: Upload Expert Service artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: expert-publish
-        path: ./PRH_ExpertService/publish
-
-    # # Docker Steps for Expert Service
-    # - name: Log in to Docker Hub
-    #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    # - name: Build Docker image for Expert Service
-    #   working-directory: ./PRH_ExpertService  # Adjust if Dockerfile is in another directory
-    #   run: docker build -t ${{ secrets.DOCKER_USERNAME }}/expert-service:latest -f Dockerfile .
-
-    # - name: List Docker images
-    #   run: docker images
-
-    # - name: Push Docker image for Expert Service to Docker Hub
-    #   run: docker push ${{ secrets.DOCKER_USERNAME }}/expert-service:latest
-  build-group-service:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0'
-
-    - name: Build Group Service
-      working-directory: ./PRH_GroupService  
-      run: dotnet build --configuration Release
-
-    - name: Publish Group Service
-      working-directory: ./PRH_GroupService
-      run: dotnet publish --configuration Release --output ./publish
-
-    - name: Upload Group Service artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: group-service-publish
-        path: ./PRH_GroupService/publish
-
+    strategy:
+      matrix:
+        service:
+          - { name: notification, dir: PRH_NotificationService }
+          - { name: user, dir: PRH_UserService }
+          - { name: report, dir: PRH_ReportService }
+          - { name: quiz, dir: PRH_QuizService }
+          - { name: group, dir: PRH_GroupService }
+          - { name: payment, dir: PRH_PaymentService }
+          - { name: chat, dir: PRH_ChatService }
     
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'
+
+    - name: Install jq
+      run: |
+        if ! command -v jq &> /dev/null; then
+          echo "jq not found. Installing jq..."
+          sudo apt-get update
+          sudo apt-get install -y jq
+        else
+          echo "jq is already installed."
+        fi
+
+    - name: Generate Docker tag
+      id: docker_tag
+      run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        SHORT_SHA=$(git rev-parse --short HEAD)
+        echo "TAG=${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+        echo "Created tag: ${BRANCH_NAME}-${SHORT_SHA}"
+
+    - name: Build ${{ matrix.service.name }} Service
+      working-directory: ./${{ matrix.service.dir }}
+      run: dotnet build --configuration Release
+
+    - name: Publish ${{ matrix.service.name }} Service
+      working-directory: ./${{ matrix.service.dir }}
+      run: dotnet publish --configuration Release --output ./publish
+
+    - name: Upload ${{ matrix.service.name }} Service artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.service.name }}-service-publish
+        path: ./${{ matrix.service.dir }}/publish
+
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Build Docker image for Group Service
-      working-directory: ./PRH_GroupService  
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/group-service:latest -f Dockerfile .
+    - name: Build and tag Docker images
+      working-directory: ./${{ matrix.service.dir }}
+      run: |
+        # Build with version tag
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} -f Dockerfile .
+        # Tag as latest
+        docker tag ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
 
     - name: List Docker images
       run: docker images
 
-    - name: Push Docker image for Group Service to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/group-service:latest
+    - name: Push Docker images
+      run: |
+        # Push version tag
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}
+        # Push latest tag
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
 
-  build-payment-service:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Echo deployment info
+      run: |
+        echo "Service: ${{ matrix.service.name }}"
+        echo "Version Tag: ${{ steps.docker_tag.outputs.TAG }}"
+        echo "Docker Image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}"
 
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0'
+    - name: Cleanup old Docker images
+      run: |
+        REPO=${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service
+        echo "Fetching tags for $REPO"
 
-      - name: Build Payment Service
-        working-directory: ./PRH_PaymentService  # Navigate to PaymentService directory
-        run: dotnet build --configuration Release
+        # Fetch all tags, sort by creation time, and remove all except the 5 most recent
+        tags=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
+          "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | \
+          jq -r '.results | sort_by(.last_updated) | .[:-5] | .[].name')
 
-      - name: Publish Payment Service
-        working-directory: ./PRH_PaymentService
-        run: dotnet publish --configuration Release --output ./publish
-
-      - name: Upload Payment Service artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: payment-service-publish
-          path: ./PRH_PaymentService/publish
-
-      # Docker Steps for Payment Service
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Build Docker image for Payment Service
-        working-directory: ./PRH_PaymentService  # Adjust if Dockerfile is in another directory
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/payment-service:latest -f Dockerfile .
-
-      - name: List Docker images
-        run: docker images
-
-      - name: Push Docker image for Payment Service to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/payment-service:latest
-        
-  build-chat-service:
-          runs-on: ubuntu-latest
-          steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
-      
-            - name: Set up .NET SDK
-              uses: actions/setup-dotnet@v3
-              with:
-                dotnet-version: '8.0'
-      
-            - name: Build Chat Service
-              working-directory: ./PRH_ChatService  # Navigate to PaymentService directory
-              run: dotnet build --configuration Release
-      
-            - name: Publish Payment Service
-              working-directory: ./PRH_ChatService
-              run: dotnet publish --configuration Release --output ./publish
-      
-            - name: Upload Chat Service artifacts
-              uses: actions/upload-artifact@v3
-              with:
-                name: chat-service-publish
-                path: ./PRH_ChatService/publish
-      
-            # Docker Steps for Chat Service
-            - name: Log in to Docker Hub
-              run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      
-            - name: Build Docker image for Chat Service
-              working-directory: ./PRH_ChatService  # Adjust if Dockerfile is in another directory
-              run: docker build -t ${{ secrets.DOCKER_USERNAME }}/chat-service:latest -f Dockerfile .
-      
-            - name: List Docker images
-              run: docker images
-      
-            - name: Push Docker image for Chat Service to Docker Hub
-              run: docker push ${{ secrets.DOCKER_USERNAME }}/chat-service:latest
-              
-      
-
-        
-     
+        # Delete tags older than the 5 most recent
+        for tag in $tags; do
+          echo "Deleting old tag: $tag"
+          curl -s -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
+            "https://hub.docker.com/v2/repositories/$REPO/tags/$tag/"
+        done
