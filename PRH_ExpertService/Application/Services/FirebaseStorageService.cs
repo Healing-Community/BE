@@ -147,5 +147,27 @@ namespace Application.Services
             outputStream.Position = 0;
             return (outputStream, contentType);
         }
+
+        public async Task DeleteFileAsync(string fileUrl)
+        {
+            // Tách tên đối tượng từ URL
+            var bucketPath = $"https://firebasestorage.googleapis.com/v0/b/{_bucketName}/o/";
+            if (!fileUrl.StartsWith(bucketPath))
+            {
+                throw new ArgumentException("URL không hợp lệ hoặc không thuộc bucket Firebase của bạn.");
+            }
+
+            var objectName = Uri.UnescapeDataString(fileUrl.Replace(bucketPath, "").Split("?")[0]);
+
+            try
+            {
+                await _storageClient.DeleteObjectAsync(_bucketName, objectName);
+            }
+            catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // File không tồn tại, không cần xóa
+            }
+        }
+
     }
 }

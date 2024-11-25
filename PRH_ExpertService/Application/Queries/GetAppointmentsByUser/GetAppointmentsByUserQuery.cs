@@ -5,5 +5,5 @@ using MediatR;
 
 namespace Application.Queries.GetAppointmentsByUser
 {
-    public record GetAppointmentsByUserQuery(string UserId) : IRequest<BaseResponse<IEnumerable<AppointmentResponseDto>>>;
+    public record GetAppointmentsByUserQuery(string UserId) : IRequest<BaseResponse<IEnumerable<AppointmentResponseForUserDto>>>;
 }

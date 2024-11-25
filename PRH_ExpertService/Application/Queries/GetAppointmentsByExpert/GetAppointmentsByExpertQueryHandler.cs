@@ -6,12 +6,13 @@ using NUlid;
 
 namespace Application.Queries.GetAppointmentsByExpert
 {
-    public class GetAppointmentsByExpertQueryHandler(IAppointmentRepository appointmentRepository)
-        : IRequestHandler<GetAppointmentsByExpertQuery, BaseResponse<IEnumerable<AppointmentResponseDto>>>
+    public class GetAppointmentsByExpertQueryHandler(
+        IAppointmentRepository appointmentRepository)
+        : IRequestHandler<GetAppointmentsByExpertQuery, BaseResponse<IEnumerable<AppointmentResponseForExpertDto>>>
     {
-        public async Task<BaseResponse<IEnumerable<AppointmentResponseDto>>> Handle(GetAppointmentsByExpertQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<AppointmentResponseForExpertDto>>> Handle(GetAppointmentsByExpertQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<IEnumerable<AppointmentResponseDto>>
+            var response = new BaseResponse<IEnumerable<AppointmentResponseForExpertDto>>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
@@ -20,13 +21,14 @@ namespace Application.Queries.GetAppointmentsByExpert
 
             try
             {
-                // Load danh sách lịch hẹn từ repository, bao gồm UserEmail
+                // Lấy danh sách lịch hẹn từ repository dựa trên expertProfileId
                 var appointments = await appointmentRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
 
-                // Map dữ liệu từ Appointment sang AppointmentResponseDto
-                var result = appointments.Select(a => new AppointmentResponseDto
+                // Map dữ liệu từ Appointment sang AppointmentResponseForExpertDto
+                var result = appointments.Select(a => new AppointmentResponseForExpertDto
                 {
-                    Name = a.UserEmail, // Lấy email người dùng
+                    UserId = a.UserId,
+                    Name = a.UserEmail,
                     AppointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"),
                     TimeRange = $"{a.StartTime:hh\\:mm} - {a.EndTime:hh\\:mm}",
                     MeetLink = a.MeetLink ?? "",
