@@ -1,6 +1,6 @@
-﻿using Application.Services;
+﻿using Application.Interfaces.Service;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace PRH_PostService_API.Controllers
 {
@@ -8,26 +8,29 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class FileUploadController : ControllerBase
     {
-        private readonly FirebaseService _firebaseService;
+        private readonly IFileService _fileService;
 
-        public FileUploadController(FirebaseService firebaseService)
+        public FileUploadController(IFileService fileService)
         {
-            _firebaseService = firebaseService;
+            _fileService = fileService;
         }
 
         [HttpPost("upload")]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("File không hợp lệ.");
-
-            await using var stream = file.OpenReadStream();
-            var fileName = file.FileName;
-
-            // Upload file lên Firebase và nhận URL
-            var fileUrl = await _firebaseService.UploadFileAsync(stream, fileName);
-
-            return Ok(new { Url = fileUrl });
+            try
+            {
+                var fileUrl = await _fileService.UploadImageAsync(file);
+                return Ok(new { url = fileUrl });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Đã xảy ra lỗi trong quá trình xử lý.");
+            }
         }
     }
 }

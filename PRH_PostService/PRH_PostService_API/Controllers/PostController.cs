@@ -2,6 +2,7 @@
 using Application.Commands.Posts.AddPostGroup;
 using Application.Commands.Posts.DeletePost;
 using Application.Commands.Posts.UpdatePost;
+using Application.Commands.UserReference;
 using Application.Commons.DTOs;
 using Application.Queries.Posts.GetPosts;
 using Application.Queries.Posts.GetPostsById;
@@ -24,7 +25,20 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new GetsPostQuery());
             return response.ToActionResult();
         }
-
+        [Authorize]
+        [HttpPost("add-user-reference")]
+        public async Task<IActionResult> AddUserReference(UserPreferenceDto userPreferenceDto)
+        {
+            var response = await sender.Send(new CreateUserReferenceCommand(userPreferenceDto));
+            return response.ToActionResult();
+        }
+        [Authorize]
+        [HttpGet("get-homepage")]
+        public async Task<IActionResult> GetHomePage(int pageNumber, int pageSize)
+        {
+            var response = await sender.Send(new GetRecommendedPostsQuery(pageNumber, pageSize));
+            return response.ToActionResult();
+        }
         [HttpGet("get-by-post-id/{postId}")]
         public async Task<IActionResult> GetById(string postId)
         {

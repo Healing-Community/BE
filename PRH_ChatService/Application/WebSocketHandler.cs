@@ -89,8 +89,10 @@ public class WebSocketHandler
 
             if (content == null)
             {
-                Console.WriteLine("Received invalid message format.");
-                continue;
+                Console.WriteLine("Received invalid message format. Closing connection...");
+                // Gửi lỗi và đóng kết nối
+                await SendErrorMessageAndClose(webSocket, "Invalid message format");
+                return;
             }
 
             // Save new message to database
@@ -164,7 +166,7 @@ public class WebSocketHandler
             : $"{partnerId}-{userId}";
     }
 
-    private static string ParseMessageContent(string? message)
+    private static string ParseMessageContent(string message)
     {
         try
         {

@@ -1,5 +1,8 @@
 ﻿using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Service;
+using Application.Interfaces.Services;
+using Application.Services;
 using CleanArchitecture.Persistence.AMQP;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Repositories;
@@ -11,6 +14,7 @@ public static class DependencyInjection
 {
     public static void AddPersistenceDependencies(this IServiceCollection services)
     {
+        services.AddScoped<IUserReferenceRepository, UserReferenceRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IReactionRepository, ReactionRepository>();
@@ -19,6 +23,9 @@ public static class DependencyInjection
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IReportTypeRepository, ReportTypeRepository>();
         services.AddScoped<IMessagePublisher, MessagePublisher>();
+        services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IFirebaseStorageService, FirebaseService>();
+        services.AddScoped<ICommentTreeService, CommentTreeService>();
 
         //#region MongoDB
 

@@ -37,7 +37,7 @@ namespace Application.Commands.UpdateAvailability
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
 
-                var availability = await expertAvailabilityRepository.GetByIdAsync(request.AvailabilityId);
+                var availability = await expertAvailabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
                 if (availability == null)
                 {
                     response.Errors.Add(new ErrorDetail
@@ -62,8 +62,9 @@ namespace Application.Commands.UpdateAvailability
                     return response;
                 }
 
-                if (request.NewAvailableDate < DateTime.UtcNow.Date ||
-                   (request.NewAvailableDate == DateTime.UtcNow.Date && request.NewEndTime <= DateTime.UtcNow.TimeOfDay))
+                if (request.NewAvailableDate < DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) ||
+                   (request.NewAvailableDate == DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) &&
+                    request.NewEndTime <= TimeOnly.FromDateTime(DateTime.UtcNow.AddHours(7))))
                 {
                     response.Errors.Add(new ErrorDetail
                     {

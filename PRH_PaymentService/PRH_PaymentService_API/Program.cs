@@ -9,6 +9,9 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Nạp cấu hình từ appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
 #region Add-layer-dependencies
 
 builder.Services.AddPresentationDependencies(builder.Configuration);
@@ -18,7 +21,14 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
 
-builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient("https://localhost:5005")); // URL của Expert Service
+// Lấy URL từ cấu hình và đăng ký ExpertServiceGrpcClient
+var expertServiceUrl = builder.Configuration["ExpertServiceUrl"];
+if (string.IsNullOrEmpty(expertServiceUrl))
+{
+    throw new ArgumentException("ExpertServiceUrl không được cấu hình trong appsettings.json.");
+}
+Console.WriteLine($"ExpertServiceUrl: {expertServiceUrl}");
+builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient(expertServiceUrl));
 
 var app = builder.Build();
 
@@ -43,59 +53,59 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "";
 });
 
-//# region HealthChecks
-//app.MapHealthChecks("/health/liveness", new HealthCheckOptions
-//{
-//    Predicate = (check) => check.Tags.Contains("liveness"),  // Lọc chỉ liveness checks
-//    ResponseWriter = async (context, report) =>
-//    {
-//        context.Response.ContentType = "application/json";
-//        var result = JsonSerializer.Serialize(new
-//        {
-//            status = report.Status.ToString(),
-//            checks = report.Entries.Select(entry => new
-//            {
-//                name = entry.Key,
-//                status = entry.Value.Status.ToString(),
-//                description = entry.Value.Description,
-//                duration = entry.Value.Duration.ToString()
-//            }),
-//            totalDuration = report.TotalDuration
-//        });
-//        await context.Response.WriteAsync(result);
-//    }
-//});
+# region HealthChecks
+app.MapHealthChecks("/health/liveness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("liveness"),  // Lọc chỉ liveness checks
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
 
-//app.MapHealthChecks("/health/readiness", new HealthCheckOptions
-//{
-//    Predicate = (check) => check.Tags.Contains("readiness"),  // Lọc chỉ readiness checks
-//    ResponseWriter = async (context, report) =>
-//    {
-//        context.Response.ContentType = "application/json";
-//        var result = JsonSerializer.Serialize(new
-//        {
-//            status = report.Status.ToString(),
-//            checks = report.Entries.Select(entry => new
-//            {
-//                name = entry.Key,
-//                status = entry.Value.Status.ToString(),
-//                description = entry.Value.Description,
-//                duration = entry.Value.Duration.ToString()
-//            }),
-//            totalDuration = report.TotalDuration
-//        });
-//        await context.Response.WriteAsync(result);
-//    }
-//});
-//# endregion
+app.MapHealthChecks("/health/readiness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("readiness"),  // Lọc chỉ readiness checks
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
+# endregion
 
-//#region Prometheus
+#region Prometheus
 
-//app.UseHttpMetrics();
+app.UseHttpMetrics();
 
-//app.UseMetricServer();
+app.UseMetricServer();
 
-//#endregion
+#endregion
 
 app.UseHttpsRedirection();
 

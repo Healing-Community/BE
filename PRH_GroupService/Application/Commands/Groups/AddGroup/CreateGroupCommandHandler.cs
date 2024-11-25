@@ -16,28 +16,41 @@ namespace Application.Commands.Groups.AddGroup
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 
             try
             {
-                var userId = Authentication.GetUserIdFromHttpContext(request.httpContext);
-                if (userId == null)
+                var userId = Authentication.GetUserIdFromHttpContext(request.HttpContext);
+                if (userId == null )
                 {
                     response.Success = false;
                     response.Message = "Không có quyền để truy cập";
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     return response;
                 }
+                if (!Authentication.IsUserInRole(request.HttpContext, "Admin", "Moderator"))
+                {
+                    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    response.Message = "Chỉ Admin hoặc Moderator mới có quyền tạo nhóm.";
+                    return response;
+                }
+
+
                 var group = new Group
                 {
                     GroupId = Ulid.NewUlid().ToString(),
-                    GroupName = request.groupDto.GroupName,
-                    Description = request.groupDto.Description,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    GroupName = request.GroupDto.GroupName,
+                    Description = request.GroupDto.Description,
+                    AvatarGroup = request.GroupDto.AvatarGroup,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7),
                     CreatedByUserId = userId,
+                    IsAutoApprove = request.GroupDto.IsAutoApprove,
+                    GroupVisibility = request.GroupDto.GroupVisibility,
+                    MemberLimit = 50,
+                    CurrentMemberCount = 1
                 };
 
                 await groupRepository.Create(group);
@@ -47,6 +60,7 @@ namespace Application.Commands.Groups.AddGroup
                 {
                     GroupId = group.GroupId,
                     UserId = userId,
+                    RoleInGroup = "Owner",
                     JoinedAt = DateTime.UtcNow
                 };
                 await userGroupRepository.Create(userGroup);
@@ -54,6 +68,7 @@ namespace Application.Commands.Groups.AddGroup
                 response.StatusCode = 200;
                 response.Success = true;
                 response.Message = "Tạo nhóm thành công";
+                response.Data = group.GroupId;
             }
             catch (Exception ex)
             {

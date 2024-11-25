@@ -1,12 +1,15 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Queries.GetAvailability
 {
-    public class GetAvailabilityQueryHandler(IExpertAvailabilityRepository expertAvailabilityRepository) : IRequestHandler<GetAvailabilityQuery, BaseResponse<IEnumerable<ExpertAvailability>>>
+    public class GetAvailabilityQueryHandler(IExpertAvailabilityRepository expertAvailabilityRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<GetAvailabilityQuery, BaseResponse<IEnumerable<ExpertAvailability>>>
     {
         public async Task<BaseResponse<IEnumerable<ExpertAvailability>>> Handle(GetAvailabilityQuery request, CancellationToken cancellationToken)
         {

@@ -22,9 +22,40 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Entities.ApprovalQueue", b =>
+                {
+                    b.Property<string>("QueueId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GroupId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsApproved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("QueueId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("ApprovalQueues");
+                });
+
             modelBuilder.Entity("Domain.Entities.Group", b =>
                 {
                     b.Property<string>("GroupId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AvatarGroup")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -33,6 +64,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CreatedByUserId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("CurrentMemberCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -43,6 +77,15 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<int>("GroupVisibility")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsAutoApprove")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MemberLimit")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -63,9 +106,22 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("JoinedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("RoleInGroup")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("GroupId", "UserId");
 
                     b.ToTable("UserGroups");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ApprovalQueue", b =>
+                {
+                    b.HasOne("Domain.Entities.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.UserGroup", b =>

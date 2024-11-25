@@ -7,8 +7,8 @@
         public required string CertificateTypeId { get; set; }
         public string? VerifiedByAdminId { get; set; }
         public string FileUrl { get; set; } = string.Empty;
-        public DateTime IssueDate { get; set; }
-        public DateTime ExpirationDate { get; set; }
+        public DateOnly? IssueDate { get; set; }
+        public DateOnly? ExpirationDate { get; set; }
         public int Status { get; set; }
         public DateTime VerifiedAt { get; set; }
         public DateTime CreatedAt { get; set; }

@@ -9,11 +9,11 @@ using System.Net;
 
 namespace Application.Queries.Posts.GetPosts
 {
-    public class GetsPostQueryHandler(IPostRepository postRepository) : IRequestHandler<GetsPostQuery, BaseResponse<IEnumerable<PostDto>>>
+    public class GetsPostQueryHandler(IPostRepository postRepository) : IRequestHandler<GetsPostQuery, BaseResponse<IEnumerable<PostDetailDto>>>
     {
-        public async Task<BaseResponse<IEnumerable<PostDto>>> Handle(GetsPostQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<PostDetailDto>>> Handle(GetsPostQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<IEnumerable<PostDto>>()
+            var response = new BaseResponse<IEnumerable<PostDetailDto>>()
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow,
@@ -31,7 +31,7 @@ namespace Application.Queries.Posts.GetPosts
                     return response;
                 }
 
-                response.Data = posts.Select(post => new PostDto
+                response.Data = posts.Select(post => new PostDetailDto
                 {
                     PostId = post.PostId,
                     UserId = post.UserId,

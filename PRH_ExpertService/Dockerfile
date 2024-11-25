@@ -2,19 +2,18 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-
+EXPOSE 8080 5005
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["PRH_ExpertService_API/PRH_ExpertService_API.csproj", "PRH_ExpertService_API/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Application/Application.csproj", "Application/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Persistence/Persistence.csproj", "Persistence/"]
 RUN dotnet restore "./PRH_ExpertService_API/PRH_ExpertService_API.csproj"
 COPY . .

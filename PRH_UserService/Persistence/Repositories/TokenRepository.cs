@@ -38,6 +38,11 @@ public class TokenRepository(UserServiceDbContext hFDbContext) : ITokenRepositor
         throw new NotImplementedException();
     }
 
+    public Task<IEnumerable<Token>?> GetsByPropertyAsync(Expression<Func<Token, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task UpdateAsync(string id, Token entity)
     {
         var existingToken = await hFDbContext.Tokens.FindAsync(id) ??

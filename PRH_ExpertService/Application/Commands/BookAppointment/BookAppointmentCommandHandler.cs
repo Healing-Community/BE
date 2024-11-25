@@ -19,7 +19,7 @@ namespace Application.Commands.BookAppointment
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 
@@ -54,7 +54,7 @@ namespace Application.Commands.BookAppointment
                 }
 
                 var availability = await availabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
-                if (availability == null || availability.Status != 0)
+                if (availability == null || availability.Status != 0) // Check trạng thái Available
                 {
                     response.Success = false;
                     response.Message = "Lịch trống không tồn tại hoặc không khả dụng.";
@@ -73,10 +73,14 @@ namespace Application.Commands.BookAppointment
                 }
                 var expertEmail = expertProfile.Email;
 
-                // Cập nhật trạng thái lịch trống sang "Chờ thanh toán"
-                availability.Status = 1;
-                availability.UpdatedAt = DateTime.UtcNow;
+                // Đổi trạng thái của lịch trống sang PendingPayment
+                availability.Status = 1; // PendingPayment
+                availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
+
+                // Tạo liên kết Jitsi Meet
+                var meetingRoomName = $"{Ulid.NewUlid()}-{availability.ExpertProfileId}";
+                var meetingUrl = $"https://meet.jit.si/{meetingRoomName}";
 
                 // Tạo mới một bản ghi Appointment
                 var appointment = new Appointment
@@ -90,18 +94,19 @@ namespace Application.Commands.BookAppointment
                     AppointmentDate = availability.AvailableDate,
                     StartTime = availability.StartTime,
                     EndTime = availability.EndTime,
-                    Status = 1, // Chờ thanh toán
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    Status = 1, // PendingPayment
+                    MeetLink = meetingUrl,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
 
                 await appointmentRepository.Create(appointment);
 
                 // Trả về thông tin để tiếp tục thanh toán
                 response.Success = true;
-                response.Data = appointment.AppointmentId;
+                response.Data = null;
                 response.StatusCode = 200;
-                response.Message = "Yêu cầu đặt lịch đã được ghi nhận, vui lòng thanh toán để hoàn tất.";
+                response.Message = "Yêu cầu đặt lịch đã được ghi nhận. Vui lòng hoàn tất thanh toán để xác nhận lịch hẹn.";
             }
             catch (Exception ex)
             {

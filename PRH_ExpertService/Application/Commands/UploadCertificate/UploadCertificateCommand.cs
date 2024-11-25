@@ -1,8 +1,9 @@
 ﻿using Application.Commons;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Application.Commons.DTOs;
 
 namespace Application.Commands.UploadCertificate
 {
-    public record UploadCertificateCommand(string ExpertId, IFormFile File, string CertificationTypeId) : IRequest<DetailBaseResponse<string>>;
+    public record UploadCertificateCommand(IFormFile File, string CertificationTypeId) : IRequest<DetailBaseResponse<UploadCertificateResponse>>;
 }

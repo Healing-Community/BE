@@ -27,14 +27,14 @@ namespace Infrastructure.Migrations
                     b.Property<string>("AppointmentId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("AppointmentDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("AppointmentDate")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<string>("ExpertAvailabilityId")
                         .IsRequired()
@@ -54,8 +54,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("RecordingLink")
                         .HasColumnType("text");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -96,15 +96,15 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("FileUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("IssueDate")
+                        .HasColumnType("date");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -153,21 +153,21 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ExpertAvailabilityId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("AvailableDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("AvailableDate")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<string>("ExpertProfileId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -213,11 +213,11 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ProfileImageUrl")
+                    b.Property<string>("Fullname")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("RejectionReason")
+                    b.Property<string>("ProfileImageUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -256,8 +256,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("ExpertProfileId")
                         .IsRequired()
@@ -267,8 +267,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

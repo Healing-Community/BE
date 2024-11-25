@@ -1,35 +1,70 @@
-﻿using System.Net;
-using System.Net.Mail;
-using Application.Interfaces.Services;
+﻿using Application.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using System.Net.Mail;
+using System.Net;
 
 namespace Application.Services
 {
     public class EmailService(IConfiguration configuration) : IEmailService
     {
-        public async Task SendAppointmentConfirmationEmailAsync(string toEmail, string expertName, string appointmentTime, string meetingLink)
+        private static string GetEmailTemplate(string title, string bodyContent, string footer = "&copy; 2024 Healing Community. Tất cả các quyền được bảo lưu.")
         {
-            var emailContent = $@"
-                <html>
-                <body style=""font-family: 'Verdana', sans-serif;"">
-                    <div style=""max-width: 650px; margin: 0 auto; padding: 30px;"">
-                        <h2>Thông báo xác nhận cuộc hẹn</h2>
-                        <p>Chào bạn,</p>
-                        <p>Bạn đã đặt lịch hẹn với chuyên gia <strong>{expertName}</strong> vào lúc <strong>{appointmentTime}</strong>.</p>
-                        <p>Link họp của bạn: <a href=""{meetingLink}"">{meetingLink}</a></p>
-                        <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
-                        <p>Trân trọng,<br/>Healing Community</p>
+            return $@"
+            <html>
+            <body style=""margin: 0; padding: 0; font-family: 'Verdana', sans-serif; background-color: #e0f7fa;"">
+                <div style=""max-width: 650px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);"">
+                    <div style=""text-align: center;"">
+                        <img src=""https://i.postimg.cc/zXN0D5kY/logo.png"" alt=""Healing Community Logo"" style=""max-width: 150px; height: auto; margin-bottom: 20px;"">
                     </div>
-                </body>
-                </html>
-                ";
+                    <h2 style=""color: #00796b; text-align: center; margin-top: 20px;"">{title}</h2>
+                    <div style=""font-size: 17px; line-height: 1.8; color: #444; margin-top: 20px;"">
+                        {bodyContent}
+                    </div>
+                    <p style=""text-align: center; color: #999; font-size: 13px; margin-top: 30px;"">{footer}</p>
+                </div>
+            </body>
+            </html>
+            ";
+        }
 
+        public async Task SendAppointmentConfirmationEmailAsync(string toEmail, string appointmentTime, string meetingLink)
+        {
+            var bodyContent = $@"
+                <p>Xin chào,</p>
+                <p>Bạn đã đặt lịch hẹn vào lúc <strong>{appointmentTime}</strong>.</p>
+                <p>Liên kết cuộc họp của bạn: <a href=""{meetingLink}"">{meetingLink}</a></p>
+                <p>Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của Healing Community.</p>";
+            var emailContent = GetEmailTemplate("Xác nhận cuộc hẹn", bodyContent);
             await SendEmailAsync(toEmail, "Xác nhận cuộc hẹn", emailContent);
+        }
+
+        public async Task SendAppointmentNotificationToExpertAsync(string toEmail, string appointmentTime, string meetingLink)
+        {
+            var bodyContent = $@"
+                <p>Xin chào,</p>
+                <p>Bạn có một lịch hẹn mới vào lúc <strong>{appointmentTime}</strong>.</p>
+                <p>Liên kết cuộc họp: <a href=""{meetingLink}"">{meetingLink}</a></p>
+                <p>Vui lòng chuẩn bị và tham gia đúng giờ.</p>
+                <p>Cảm ơn bạn đã đồng hành cùng Healing Community.</p>";
+            var emailContent = GetEmailTemplate("Thông báo lịch hẹn mới", bodyContent);
+            await SendEmailAsync(toEmail, "Thông báo lịch hẹn mới", emailContent);
+        }
+
+        public async Task SendAppointmentCancellationEmailAsync(string toEmail, string appointmentTime)
+        {
+            var bodyContent = $@"
+                <p>Xin chào,</p>
+                <p>Chúng tôi rất tiếc thông báo rằng lịch hẹn vào lúc <strong>{appointmentTime}</strong> của bạn đã bị hủy.</p>
+                <p>Nếu bạn cần hỗ trợ hoặc có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi.</p>
+                <p>Cảm ơn bạn đã quan tâm đến Healing Community.</p>";
+            var emailContent = GetEmailTemplate("Thông báo hủy lịch hẹn", bodyContent);
+            await SendEmailAsync(toEmail, "Thông báo hủy lịch hẹn", emailContent);
         }
 
         private async Task SendEmailAsync(string to, string subject, string body)
         {
-            if (string.IsNullOrEmpty(to)) throw new ArgumentException("Email address cannot be null or empty", nameof(to));
+            if (string.IsNullOrEmpty(to))
+                throw new ArgumentException("Địa chỉ email không được để trống.", nameof(to));
 
             var smtpSettings = configuration.GetSection("SmtpSettings");
             var host = smtpSettings["Host"];
@@ -41,7 +76,7 @@ namespace Application.Services
 
             if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(port) || string.IsNullOrEmpty(username) ||
                 string.IsNullOrEmpty(password) || string.IsNullOrEmpty(fromEmail) || string.IsNullOrEmpty(fromName))
-                throw new ArgumentException("SMTP settings are not properly configured.");
+                throw new ArgumentException("Cấu hình SMTP không đầy đủ.");
 
             var smtpClient = new SmtpClient(host)
             {

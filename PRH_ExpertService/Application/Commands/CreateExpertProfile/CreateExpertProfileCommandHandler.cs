@@ -10,7 +10,8 @@ namespace Application.Commands.CreateExpertProfile
 {
     public class CreateExpertProfileCommandHandler(
         IExpertProfileRepository expertProfileRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreateExpertProfileCommand, DetailBaseResponse<string>>
+        IHttpContextAccessor httpContextAccessor)
+        : IRequestHandler<CreateExpertProfileCommand, DetailBaseResponse<string>>
     {
         public async Task<DetailBaseResponse<string>> Handle(CreateExpertProfileCommand request, CancellationToken cancellationToken)
         {
@@ -36,6 +37,7 @@ namespace Application.Commands.CreateExpertProfile
                     return response;
                 }
 
+                // Lấy UserId từ HTTP context
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -49,14 +51,44 @@ namespace Application.Commands.CreateExpertProfile
                     return response;
                 }
 
+                // Lấy email từ HTTP context
+                var email = Authentication.GetUserEmailFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(email))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Không xác định được email của người dùng hiện tại.",
+                        Field = "Email"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                // Kiểm tra xem hồ sơ chuyên gia đã tồn tại chưa
+                var existingProfile = await expertProfileRepository.GetByIdAsync(userId);
+                if (existingProfile != null)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Hồ sơ chuyên gia đã tồn tại.",
+                        Field = "ExpertProfile"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 409;
+                    return response;
+                }
+
+                // Tạo hồ sơ chuyên gia mới
                 var newExpertProfile = new ExpertProfile
                 {
-                    ExpertProfileId = Ulid.NewUlid().ToString(),
+                    ExpertProfileId = userId,
                     UserId = userId,
+                    Email = email,
                     Specialization = request.Specialization,
                     ExpertiseAreas = request.ExpertiseAreas,
                     Bio = request.Bio,
-                    Status = 1,
+                    Status = 0, // PendingApproval
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };

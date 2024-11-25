@@ -54,6 +54,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("CoverImgUrl")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -222,15 +225,37 @@ namespace Infrastructure.Migrations
                     b.ToTable("ReportTypes");
                 });
 
+            modelBuilder.Entity("UserPreference", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("UserPreferences");
+                });
+
             modelBuilder.Entity("Domain.Entities.Comment", b =>
                 {
                     b.HasOne("Domain.Entities.Comment", "Parent")
                         .WithMany("Replies")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Entities.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Parent");
 
@@ -250,7 +275,8 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entities.Post", "Post")
                         .WithMany("Reactions")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Entities.ReactionType", "ReactionType")
                         .WithMany("Reactions")
@@ -265,7 +291,8 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entities.Post", "Post")
                         .WithMany("Reports")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Entities.ReportType", "ReportType")
                         .WithMany("Reports")
@@ -276,9 +303,22 @@ namespace Infrastructure.Migrations
                     b.Navigation("ReportType");
                 });
 
+            modelBuilder.Entity("UserPreference", b =>
+                {
+                    b.HasOne("Domain.Entities.Category", "Category")
+                        .WithMany("UserPreferences")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Domain.Entities.Category", b =>
                 {
                     b.Navigation("Posts");
+
+                    b.Navigation("UserPreferences");
                 });
 
             modelBuilder.Entity("Domain.Entities.Comment", b =>

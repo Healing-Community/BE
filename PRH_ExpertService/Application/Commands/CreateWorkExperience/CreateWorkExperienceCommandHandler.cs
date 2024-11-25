@@ -3,12 +3,15 @@ using Application.Interfaces.Repository;
 using MediatR;
 using NUlid;
 using Domain.Entities;
+using Application.Commons.Tools;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.CreateWorkExperience
 {
     public class CreateWorkExperienceCommandHandler(
         IWorkExperienceRepository workExperienceRepository,
-        IExpertProfileRepository expertProfileRepository) : IRequestHandler<CreateWorkExperienceCommand, DetailBaseResponse<string>>
+        IHttpContextAccessor httpContextAccessor)
+        : IRequestHandler<CreateWorkExperienceCommand, DetailBaseResponse<string>>
     {
         public async Task<DetailBaseResponse<string>> Handle(CreateWorkExperienceCommand request, CancellationToken cancellationToken)
         {
@@ -21,40 +24,107 @@ namespace Application.Commands.CreateWorkExperience
 
             try
             {
-                var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
-                if (expertProfile == null)
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
                 {
                     response.Errors.Add(new ErrorDetail
                     {
-                        Message = "Không tìm thấy hồ sơ chuyên gia.",
-                        Field = "ExpertProfileId"
-                    });
-                    response.Success = false;
-                    response.StatusCode = 404;
-                    return response;
-                }
-
-                if (string.IsNullOrWhiteSpace(request.CompanyName) || string.IsNullOrWhiteSpace(request.PositionTitle))
-                {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Tên công ty không được để trống.",
-                        Field = "CompanyName"
-                    });
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Chức danh không được để trống.",
-                        Field = "PositionTitle"
+                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
+                        Field = "HttpContext"
                     });
                     response.Success = false;
                     response.StatusCode = 400;
                     return response;
                 }
 
+                // Lấy UserId từ HTTP context
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Không xác định được người dùng hiện tại.",
+                        Field = "UserId"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 401;
+                    return response;
+                }
+
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrWhiteSpace(request.CompanyName))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Tên công ty không được để trống.",
+                        Field = "CompanyName"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.PositionTitle))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Chức danh không được để trống.",
+                        Field = "PositionTitle"
+                    });
+                }
+
+                if (request.StartDate >= request.EndDate)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.",
+                        Field = "StartDate"
+                    });
+                }
+
+                if (response.Errors.Count > 0)
+                {
+                    response.Success = false;
+                    response.StatusCode = 400;
+                    response.Message = "Dữ liệu đầu vào không hợp lệ.";
+                    return response;
+                }
+
+                // Kiểm tra trùng lặp kinh nghiệm làm việc
+                var existingExperiences = await workExperienceRepository.GetWorkExperiencesByExpertIdAsync(userId);
+                if (existingExperiences.Any(e =>
+                    e.CompanyName == request.CompanyName &&
+                    e.PositionTitle == request.PositionTitle &&
+                    e.StartDate == request.StartDate &&
+                    e.EndDate == request.EndDate))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Kinh nghiệm làm việc này đã tồn tại.",
+                        Field = "WorkExperience"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 409; // Conflict
+                    response.Message = "Kinh nghiệm làm việc trùng lặp.";
+                    return response;
+                }
+
+                // Kiểm tra xung đột ngày tháng với các kinh nghiệm khác
+                if (existingExperiences.Any(e =>
+                    e.StartDate < request.EndDate && e.EndDate > request.StartDate))
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Khoảng thời gian này xung đột với một kinh nghiệm làm việc khác.",
+                        Field = "TimeConflict"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 409; // Conflict
+                    response.Message = "Xung đột thời gian với kinh nghiệm làm việc khác.";
+                    return response;
+                }
+
                 var workExperience = new WorkExperience
                 {
                     WorkExperienceId = Ulid.NewUlid().ToString(),
-                    ExpertProfileId = request.ExpertProfileId,
+                    ExpertProfileId = userId,
                     CompanyName = request.CompanyName,
                     PositionTitle = request.PositionTitle,
                     StartDate = request.StartDate,

@@ -56,5 +56,26 @@ namespace Persistence.Repositories
         {
             return hFDBPostserviceContext.Comments.AsQueryable();
         }
+
+        public async Task<IEnumerable<Comment>> GetAllCommentsByPostIdAsync(string postId)
+        {
+            return await hFDBPostserviceContext.Comments
+                .Where(c => c.PostId == postId)
+                .OrderBy(c => c.CreatedAt) // Sắp xếp theo thời gian tạo
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Comment>> GetAllCommentsByCommentIdAsync(string commentId)
+        {
+            return await hFDBPostserviceContext.Comments
+                .Where(c => c.ParentId == commentId || c.CommentId == commentId)
+                .OrderBy(c => c.CreatedAt) // Sắp xếp theo thời gian tạo
+                .ToListAsync();
+        }
+
+        public async Task<int> CountCommentsByPostIdAsync(string postId)
+        {
+            return await hFDBPostserviceContext.Comments.CountAsync(c => c.PostId == postId);
+        }
     }
 }

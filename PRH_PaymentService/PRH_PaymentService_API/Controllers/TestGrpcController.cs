@@ -1,21 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRH_PaymentService_API.Services;
 using ExpertService.gRPC;
-using System.Threading.Tasks;
 
 namespace PRH_PaymentService_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TestGrpcController : ControllerBase
+    public class TestGrpcController(ExpertServiceGrpcClient expertServiceGrpcClient) : ControllerBase
     {
-        private readonly ExpertServiceGrpcClient _expertServiceGrpcClient;
-
-        public TestGrpcController(ExpertServiceGrpcClient expertServiceGrpcClient)
-        {
-            _expertServiceGrpcClient = expertServiceGrpcClient;
-        }
-
         [HttpGet("test-payment-success")]
         public async Task<IActionResult> TestPaymentSuccess()
         {
@@ -27,7 +19,7 @@ namespace PRH_PaymentService_API.Controllers
             };
 
             // Gọi Expert Service qua gRPC
-            var response = await _expertServiceGrpcClient.PaymentSuccessAsync(request);
+            var response = await expertServiceGrpcClient.PaymentSuccessAsync(request);
 
             // Trả về kết quả từ gRPC response
             return Ok(new

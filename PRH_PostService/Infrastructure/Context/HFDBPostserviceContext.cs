@@ -14,9 +14,10 @@ namespace Infrastructure.Context
         public virtual DbSet<Comment> Comments { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<ReportType> ReportTypes { get; set; }
+        public DbSet<UserPreference> UserPreferences { get; set; }
         public HFDBPostserviceContext(DbContextOptions<HFDBPostserviceContext> options) : base(options) { }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.kulssrgvnfgpytdjvmyy; Password=ProjectHealing@1234");
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,34 +29,65 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Post>().HasKey(p => p.PostId);
             modelBuilder.Entity<Post>().HasIndex(p => p.Title).IsUnique();
             modelBuilder.Entity<Category>().HasKey(p => p.CategoryId);
-            modelBuilder.Entity<Category>().HasIndex(c=>c.Name).IsUnique();
+            modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
+
             // Relationship
-            modelBuilder.Entity<Post>().HasOne(p => p.Category).WithMany(c => c.Posts).HasForeignKey(p => p.CategoryId);
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Posts)
+                .HasForeignKey(p => p.CategoryId);
 
             // Reaction
             modelBuilder.Entity<Reaction>().HasKey(r => r.ReactionId);
-            modelBuilder.Entity<Reaction>().HasOne(r => r.Post).WithMany(p => p.Reactions).HasForeignKey(r => r.PostId);
-            modelBuilder.Entity<Reaction>().HasOne(r => r.ReactionType).WithMany(rt => rt.Reactions).HasForeignKey(r => r.ReactionTypeId);
+            modelBuilder.Entity<Reaction>()
+                .HasOne(r => r.Post)
+                .WithMany(p => p.Reactions)
+                .HasForeignKey(r => r.PostId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<Reaction>()
+                .HasOne(r => r.ReactionType)
+                .WithMany(rt => rt.Reactions)
+                .HasForeignKey(r => r.ReactionTypeId);
 
             // ReactionType
             modelBuilder.Entity<ReactionType>().HasKey(rt => rt.ReactionTypeId);
 
             // Comment
             modelBuilder.Entity<Comment>().HasKey(c => c.CommentId);
-            modelBuilder.Entity<Comment>().HasOne(c => c.Post).WithMany(p => p.Comments).HasForeignKey(c => c.PostId);
-            modelBuilder.Entity<Comment>().HasOne(c => c.Parent).WithMany(c => c.Replies).HasForeignKey(c => c.ParentId);
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Parent)
+                .WithMany(c => c.Replies)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Cascade); 
 
             // Report 
             modelBuilder.Entity<Report>().HasKey(r => r.ReportId);
-            modelBuilder.Entity<Report>().HasOne(r => r.Post).WithMany(p => p.Reports).HasForeignKey(r => r.PostId);
-            modelBuilder.Entity<Report>().HasOne(r => r.ReportType).WithMany(rt => rt.Reports).HasForeignKey(r => r.ReportTypeId);
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Post)
+                .WithMany(p => p.Reports)
+                .HasForeignKey(r => r.PostId)
+                .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.ReportType)
+                .WithMany(rt => rt.Reports)
+                .HasForeignKey(r => r.ReportTypeId);
 
             // ReportType 
             modelBuilder.Entity<ReportType>().HasKey(rt => rt.ReportTypeId);
-
-
+            // user preference
+            modelBuilder.Entity<UserPreference>().HasKey(up => up.Id);
+            modelBuilder.Entity<UserPreference>()
+                .HasOne(up => up.Category)
+                .WithMany(c => c.UserPreferences)
+                .HasForeignKey(up => up.CategoryId); 
             OnModelCreatingPartial(modelBuilder);
         }
+
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }

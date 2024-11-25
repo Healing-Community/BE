@@ -12,37 +12,33 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region Add-layer-dependencies
+// Nạp cấu hình từ appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+#region Thêm các dependency theo tầng
 
 builder.Services.AddPresentationDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 builder.Services.AddPersistenceDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
-# endregion
+#endregion
 
+// Thêm dịch vụ gRPC
 builder.Services.AddGrpc();
-
-// Cấu hình Kestrel
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(5005, listenOptions =>
-    {
-        listenOptions.Protocols = HttpProtocols.Http2;
-        listenOptions.UseHttps(); // Nếu dịch vụ của bạn yêu cầu HTTPS
-    });
-});
 
 var app = builder.Build();
 
 #region Middleware
 
+// Sử dụng middleware cho xác thực
 app.UseMiddleware<AuthMiddleware>();
 
 #endregion
 
-#region MassTransitHostedService
+#region Khởi động dịch vụ MassTransit
 
+// Lấy và khởi động IBusControl cho MassTransit
 var busControl = app.Services.GetRequiredService<IBusControl>();
 await busControl.StartAsync();
 
@@ -56,61 +52,62 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "";
 });
 
-//# region HealthChecks
-//app.MapHealthChecks("/health/liveness", new HealthCheckOptions
-//{
-//    Predicate = (check) => check.Tags.Contains("liveness"),  // Lọc chỉ liveness checks
-//    ResponseWriter = async (context, report) =>
-//    {
-//        context.Response.ContentType = "application/json";
-//        var result = JsonSerializer.Serialize(new
-//        {
-//            status = report.Status.ToString(),
-//            checks = report.Entries.Select(entry => new
-//            {
-//                name = entry.Key,
-//                status = entry.Value.Status.ToString(),
-//                description = entry.Value.Description,
-//                duration = entry.Value.Duration.ToString()
-//            }),
-//            totalDuration = report.TotalDuration
-//        });
-//        await context.Response.WriteAsync(result);
-//    }
-//});
+#region HealthChecks (Kiểm tra tình trạng hệ thống)
+app.MapHealthChecks("/health/liveness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("liveness"),  // Chỉ lọc các liveness check
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
 
-//app.MapHealthChecks("/health/readiness", new HealthCheckOptions
-//{
-//    Predicate = (check) => check.Tags.Contains("readiness"),  // Lọc chỉ readiness checks
-//    ResponseWriter = async (context, report) =>
-//    {
-//        context.Response.ContentType = "application/json";
-//        var result = JsonSerializer.Serialize(new
-//        {
-//            status = report.Status.ToString(),
-//            checks = report.Entries.Select(entry => new
-//            {
-//                name = entry.Key,
-//                status = entry.Value.Status.ToString(),
-//                description = entry.Value.Description,
-//                duration = entry.Value.Duration.ToString()
-//            }),
-//            totalDuration = report.TotalDuration
-//        });
-//        await context.Response.WriteAsync(result);
-//    }
-//});
-//# endregion
+app.MapHealthChecks("/health/readiness", new HealthCheckOptions
+{
+    Predicate = (check) => check.Tags.Contains("readiness"),  // Chỉ lọc các readiness check
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString()
+            }),
+            totalDuration = report.TotalDuration
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
+#endregion
 
-//#region Prometheus
+#region Prometheus (Dùng để thu thập metrics hệ thống)
+app.UseHttpMetrics(); // Thu thập HTTP metrics
+app.UseMetricServer(); // Expose metrics trên endpoint mặc định
+#endregion
 
-//app.UseHttpMetrics();
-
-//app.UseMetricServer();
-
-//#endregion
-
-app.UseHttpsRedirection();
+// Chỉ bật HTTPS Redirection trên môi trường Development
+if (builder.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors();
 
@@ -121,7 +118,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGrpcService<ExpertServiceImpl>();
-
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.Run();

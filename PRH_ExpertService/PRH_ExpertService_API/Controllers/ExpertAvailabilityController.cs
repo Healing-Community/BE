@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_ExpertService_API.Extentions;
 using Application.Queries.GetAllExpertAvailabilities;
+using Domain.Entities;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -47,10 +48,10 @@ namespace PRH_ExpertService_API.Controllers
         }
 
         [Authorize(Roles = "Expert")]
-        [HttpDelete("delete/{availabilityId}")]
-        public async Task<IActionResult> DeleteAvailability(string availabilityId)
+        [HttpDelete("delete/{expertAvailabilityId}")]
+        public async Task<IActionResult> DeleteAvailability(string expertAvailabilityId)
         {
-            var response = await sender.Send(new DeleteAvailabilityCommand(availabilityId));
+            var response = await sender.Send(new DeleteAvailabilityCommand(expertAvailabilityId));
             return response.ToActionResult();
         }
     }

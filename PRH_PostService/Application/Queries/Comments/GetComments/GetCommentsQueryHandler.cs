@@ -50,7 +50,8 @@ namespace Application.Queries.Comments.GetComments
                 UserId = comment.UserId,
                 Content = comment.Content,
                 CreatedAt = comment.CreatedAt,
-                UpdatedAt = comment.UpdatedAt
+                UpdatedAt = comment.UpdatedAt,
+                CoverImgUrl = comment.CoverImgUrl
             };
 
             dto.Replies = comment.Replies?.Select(MapToDto).ToList() ?? new List<CommentDtoResponse>();

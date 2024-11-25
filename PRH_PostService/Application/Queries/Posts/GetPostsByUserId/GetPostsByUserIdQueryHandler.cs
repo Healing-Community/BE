@@ -6,11 +6,11 @@ using MediatR;
 namespace Application.Queries.Posts.GetPostsByUserId
 {
     public class GetPostsByUserIdQueryHandler(IPostRepository postRepository)
-        : IRequestHandler<GetPostsByUserIdQuery, BaseResponse<IEnumerable<PostDto>>>
+        : IRequestHandler<GetPostsByUserIdQuery, BaseResponse<IEnumerable<PostDetailDto>>>
     {
-        public async Task<BaseResponse<IEnumerable<PostDto>>> Handle(GetPostsByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<PostDetailDto>>> Handle(GetPostsByUserIdQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<IEnumerable<PostDto>>
+            var response = new BaseResponse<IEnumerable<PostDetailDto>>
             {
                 Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow,
@@ -30,19 +30,19 @@ namespace Application.Queries.Posts.GetPostsByUserId
                     return response;
                 }
 
-                response.Data = posts.Select(post => new PostDto
+                response.Data = posts.Select(post => new PostDetailDto
                 {
-                    PostId = post.PostId,         
-                    UserId = post.UserId,         
-                    GroupId = post.GroupId,        
+                    PostId = post.PostId,
+                    UserId = post.UserId,
+                    GroupId = post.GroupId,
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
                     VideoUrl = post.VideoUrl,
                     Description = post.Description,
                     Status = post.Status,
-                    CreateAt = post.CreateAt,   
-                    UpdateAt = post.UpdateAt    
+                    CreateAt = post.CreateAt,
+                    UpdateAt = post.UpdateAt
                 });
                 response.Success = true;
                 response.Message = "Lấy bài viết thành công.";

@@ -1,4 +1,5 @@
-﻿using Application.Commands.UserGroups.JoinGroups;
+﻿using Application.Commands.ManageGroup.ApproveUser;
+using Application.Commands.UserGroups.JoinGroups;
 using Application.Commands.UserGroups.LeaveGroups;
 using Application.Commons.DTOs;
 using Application.Queries.UserGroups.GetUserGroups;
@@ -21,36 +22,38 @@ namespace PRH_GroupService_API.Controllers
             _sender = sender;
         }
 
-        [Authorize(Roles = "User")]
         [HttpGet("get-all")]
-        public async Task<IActionResult> GetAllUserGroups()
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllUserGroup()
         {
             var response = await _sender.Send(new GetUserGroupsQuery());
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
         [HttpGet("get-by-id")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserGroupById(string groupId, string userId)
         {
             var response = await _sender.Send(new GetUserGroupByIdQuery(groupId, userId));
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+
         [HttpPost("join")]
+        [Authorize(Roles = "User,Expert")]
         public async Task<IActionResult> JoinGroup([FromBody] UserGroupDto userGroupDto)
         {
             var response = await _sender.Send(new JoinGroupCommand(userGroupDto, HttpContext));
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
         [HttpPost("leave")]
+        [Authorize(Roles = "User,Expert")]
         public async Task<IActionResult> LeaveGroup(string groupId)
         {
             var response = await _sender.Send(new LeaveGroupCommand(groupId, HttpContext));
             return response.ToActionResult();
         }
+
     }
 }

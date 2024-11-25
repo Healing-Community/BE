@@ -36,25 +36,56 @@ namespace Application.Commands.UpdateExpertProfile
                     return response;
                 }
 
+                // Lấy UserId và Email từ JWT token
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                var email = Authentication.GetUserEmailFromHttpContext(httpContext);
 
-                var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
-                if (expertProfile == null)
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email))
                 {
                     response.Errors.Add(new ErrorDetail
                     {
-                        Message = "Không tìm thấy hồ sơ chuyên gia.",
-                        Field = "ExpertProfileId"
+                        Message = "Không thể xác định thông tin người dùng từ token.",
+                        Field = "Token"
                     });
                     response.Success = false;
-                    response.StatusCode = 404;
+                    response.StatusCode = 401;
                     return response;
                 }
 
-                expertProfile.Specialization = request.Specialization ?? expertProfile.Specialization;
-                expertProfile.ExpertiseAreas = request.ExpertiseAreas ?? expertProfile.ExpertiseAreas;
-                expertProfile.Bio = request.Bio ?? expertProfile.Bio;
-                expertProfile.Status = request.Status ?? expertProfile.Status;
+                // Kiểm tra nếu hồ sơ chuyên gia không tồn tại, tạo mới
+                var expertProfile = await expertProfileRepository.GetByIdAsync(userId);
+                if (expertProfile == null)
+                {
+                    expertProfile = new ExpertProfile
+                    {
+                        ExpertProfileId = userId,
+                        UserId = userId,
+                        Email = email,
+                        Specialization = request.Specialization,
+                        ExpertiseAreas = request.ExpertiseAreas,
+                        Bio = request.Bio,
+                        ProfileImageUrl = request.ProfileImageUrl,
+                        Fullname = request.Fullname,
+                        Status = 0, // PendingApproval
+                        CreatedAt = DateTime.UtcNow.AddHours(7),
+                        UpdatedAt = DateTime.UtcNow.AddHours(7)
+                    };
+
+                    await expertProfileRepository.Create(expertProfile);
+
+                    response.Success = true;
+                    response.Data = true;
+                    response.StatusCode = 201; // Created
+                    response.Message = "Hồ sơ chuyên gia đã được tạo mới thành công.";
+                    return response;
+                }
+
+                // Cập nhật hồ sơ chuyên gia nếu đã tồn tại
+                expertProfile.Specialization = request.Specialization;
+                expertProfile.ExpertiseAreas = request.ExpertiseAreas;
+                expertProfile.Bio = request.Bio;
+                expertProfile.ProfileImageUrl = request.ProfileImageUrl;
+                expertProfile.Fullname = request.Fullname;
                 expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
@@ -72,7 +103,7 @@ namespace Application.Commands.UpdateExpertProfile
                     Field = "Exception"
                 });
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra khi cập nhật hồ sơ chuyên gia.";
+                response.Message = "Có lỗi xảy ra khi xử lý hồ sơ chuyên gia.";
                 response.StatusCode = 500;
             }
 

@@ -5,7 +5,7 @@ using MediatR;
 using NUlid;
 using System.Net;
 
-namespace Application.Commands.Groups.RemoveMember
+namespace Application.Commands.ManageGroup.RemoveMember
 {
     public class RemoveMemberCommandHandler : IRequestHandler<RemoveMemberCommand, BaseResponse<string>>
     {
@@ -22,7 +22,7 @@ namespace Application.Commands.Groups.RemoveMember
             var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 
