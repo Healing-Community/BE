@@ -13,10 +13,9 @@
         public int Status { get; set; }
         public DateTime CreateAt { get; init; }
         public DateTime? UpdateAt { get; set; }
-        public Category Category { get; set; } = null!;
         public ICollection<Comment> Comments { get; set; } 
         public ICollection<Reaction> Reactions { get; set; }
         public ICollection<Report> Reports { get; set; }
-
+        public Category? Category { get; set; }
     }
 }

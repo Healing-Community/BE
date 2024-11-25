@@ -7,5 +7,6 @@ namespace Application.Interfaces.Repository
     {
         Task<IEnumerable<Post>> GetByUserIdAsync(string userId);
         Task<bool> ExistsAsync(string postId);
+        Task<IEnumerable<Post>> GetRecommendedPostsAsync(string userId, int pageNumber, int pageSize);
     }
 }

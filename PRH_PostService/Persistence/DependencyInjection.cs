@@ -14,6 +14,7 @@ public static class DependencyInjection
 {
     public static void AddPersistenceDependencies(this IServiceCollection services)
     {
+        services.AddScoped<IUserReferenceRepository, UserReferenceRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IReactionRepository, ReactionRepository>();

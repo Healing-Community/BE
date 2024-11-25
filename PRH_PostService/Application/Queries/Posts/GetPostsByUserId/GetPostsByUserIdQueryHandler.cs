@@ -31,10 +31,7 @@ namespace Application.Queries.Posts.GetPostsByUserId
                 }
 
                 response.Data = posts.Select(post => new PostDto
-                {
-                    PostId = post.PostId,         
-                    UserId = post.UserId,         
-                    GroupId = post.GroupId,        
+                {  
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,

@@ -14,9 +14,10 @@ namespace Infrastructure.Context
         public virtual DbSet<Comment> Comments { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<ReportType> ReportTypes { get; set; }
+        public DbSet<UserPreference> UserPreferences { get; set; }
         public HFDBPostserviceContext(DbContextOptions<HFDBPostserviceContext> options) : base(options) { }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.kulssrgvnfgpytdjvmyy; Password=ProjectHealing@1234");
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -78,7 +79,12 @@ namespace Infrastructure.Context
 
             // ReportType 
             modelBuilder.Entity<ReportType>().HasKey(rt => rt.ReportTypeId);
-
+            // user preference
+            modelBuilder.Entity<UserPreference>().HasKey(up => up.Id);
+            modelBuilder.Entity<UserPreference>()
+                .HasOne(up => up.Category)
+                .WithMany(c => c.UserPreferences)
+                .HasForeignKey(up => up.CategoryId); 
             OnModelCreatingPartial(modelBuilder);
         }
 
