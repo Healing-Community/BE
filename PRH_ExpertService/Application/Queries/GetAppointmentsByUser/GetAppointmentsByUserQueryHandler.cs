@@ -6,12 +6,13 @@ using NUlid;
 
 namespace Application.Queries.GetAppointmentsByUser
 {
-    public class GetAppointmentsByUserQueryHandler(IAppointmentRepository appointmentRepository)
-        : IRequestHandler<GetAppointmentsByUserQuery, BaseResponse<IEnumerable<AppointmentResponseDto>>>
+    public class GetAppointmentsByUserQueryHandler(
+        IAppointmentRepository appointmentRepository)
+        : IRequestHandler<GetAppointmentsByUserQuery, BaseResponse<IEnumerable<AppointmentResponseForUserDto>>>
     {
-        public async Task<BaseResponse<IEnumerable<AppointmentResponseDto>>> Handle(GetAppointmentsByUserQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<AppointmentResponseForUserDto>>> Handle(GetAppointmentsByUserQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<IEnumerable<AppointmentResponseDto>>
+            var response = new BaseResponse<IEnumerable<AppointmentResponseForUserDto>>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
@@ -20,17 +21,18 @@ namespace Application.Queries.GetAppointmentsByUser
 
             try
             {
-                // Load danh sách lịch hẹn từ repository, bao gồm cả ExpertProfile
+                // Lấy danh sách lịch hẹn từ repository dựa trên userId
                 var appointments = await appointmentRepository.GetByUserIdAsync(request.UserId);
 
-                // Map dữ liệu từ Appointment sang AppointmentResponseDto
-                var result = appointments.Select(a => new AppointmentResponseDto
+                // Map dữ liệu từ Appointment sang AppointmentResponseForUserDto
+                var result = appointments.Select(a => new AppointmentResponseForUserDto
                 {
-                    Name = a.ExpertProfile?.Fullname ?? "Không xác định", // Lấy tên chuyên gia từ DB
-                    AppointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"), // Chuyển DateOnly thành chuỗi
-                    TimeRange = $"{a.StartTime:hh\\:mm} - {a.EndTime:hh\\:mm}", // Chuyển TimeOnly thành chuỗi
-                    MeetLink = a.MeetLink ?? "", // Giá trị mặc định nếu MeetLink null
-                    Tag = MapTag(a.Status, a.AppointmentDate, a.StartTime) // Xử lý tag
+                    ExpertId = a.ExpertProfileId,
+                    Name = a.ExpertProfile?.Fullname ?? "Không xác định",
+                    AppointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"),
+                    TimeRange = $"{a.StartTime:hh\\:mm} - {a.EndTime:hh\\:mm}",
+                    MeetLink = a.MeetLink ?? "",
+                    Tag = MapTag(a.Status, a.AppointmentDate, a.StartTime)
                 });
 
                 response.Success = true;

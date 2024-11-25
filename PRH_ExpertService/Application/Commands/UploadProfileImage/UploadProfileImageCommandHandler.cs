@@ -91,10 +91,11 @@ namespace Application.Commands.UploadProfileImage
                 return response;
             }
 
+            string? fileUrl = null;
             try
             {
                 var fileName = $"{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}";
-                var fileUrl = await firebaseStorageService.UploadImageAsync(file.OpenReadStream(), fileName, file.ContentType);
+                fileUrl = await firebaseStorageService.UploadImageAsync(file.OpenReadStream(), fileName, file.ContentType);
 
                 response.Success = true;
                 response.Data = fileUrl;
@@ -103,6 +104,23 @@ namespace Application.Commands.UploadProfileImage
             }
             catch (Exception ex)
             {
+                // Xóa file trên Firebase nếu đã upload
+                if (!string.IsNullOrEmpty(fileUrl))
+                {
+                    try
+                    {
+                        await firebaseStorageService.DeleteFileAsync(fileUrl);
+                    }
+                    catch (Exception deleteEx)
+                    {
+                        response.Errors.Add(new ErrorDetail
+                        {
+                            Message = $"Lỗi khi xóa file trên Firebase: {deleteEx.Message}",
+                            Field = "Cleanup"
+                        });
+                    }
+                }
+
                 response.Success = false;
                 response.Message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu.";
                 response.StatusCode = StatusCodes.Status500InternalServerError;

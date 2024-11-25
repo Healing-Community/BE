@@ -3,6 +3,7 @@ using Application.Commands.UpdateCertificate;
 using Application.Commands.UploadCertificate;
 using Application.Queries.GetAllCertificates;
 using Application.Queries.GetCertificate;
+using Application.Queries.GetCertificatesByExpert;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +33,18 @@ namespace PRH_ExpertService_API.Controllers
         }
 
         [Authorize(Roles = "Admin,User,Expert")]
-        [HttpGet("{certificateId}")]
+        [HttpGet("get-certificate{certificateId}")]
         public async Task<IActionResult> GetCertificate([FromRoute] string certificateId)
         {
             var response = await sender.Send(new GetCertificateQuery(certificateId));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin,User,Expert")]
+        [HttpGet("get-certificates-by-expert/{expertProfileId}")]
+        public async Task<IActionResult> GetCertificatesByExpertProfileId([FromRoute] string expertProfileId)
+        {
+            var response = await sender.Send(new GetCertificatesByExpertQuery(expertProfileId));
             return response.ToActionResult();
         }
 

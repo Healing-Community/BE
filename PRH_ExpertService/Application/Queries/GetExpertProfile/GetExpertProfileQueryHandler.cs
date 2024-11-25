@@ -1,8 +1,7 @@
-﻿using Application.Commons;
-using Application.Commons.DTOs;
+﻿using Application.Commons.DTOs;
+using Application.Commons;
 using Application.Interfaces.Repository;
 using AutoMapper;
-using Domain.Entities;
 using MediatR;
 using NUlid;
 
@@ -10,19 +9,23 @@ namespace Application.Queries.GetExpertProfile
 {
     public class GetExpertProfileQueryHandler(
         IExpertProfileRepository expertProfileRepository,
-        IMapper mapper) : IRequestHandler<GetExpertProfileQuery, BaseResponse<ExpertProfile>>
+        IAppointmentRepository appointmentRepository,
+        ICertificateRepository certificateRepository,
+        IWorkExperienceRepository workExperienceRepository,
+        IMapper mapper) : IRequestHandler<GetExpertProfileQuery, BaseResponse<ExpertProfileDTO>>
     {
-        public async Task<BaseResponse<ExpertProfile>> Handle(GetExpertProfileQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<ExpertProfileDTO>> Handle(GetExpertProfileQuery request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<ExpertProfile>
+            var response = new BaseResponse<ExpertProfileDTO>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<string>()
             };
 
             try
             {
+                // Lấy ExpertProfile
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
                 if (expertProfile == null)
                 {
@@ -32,10 +35,23 @@ namespace Application.Queries.GetExpertProfile
                     return response;
                 }
 
+                // Map ExpertProfile
                 var expertProfileDto = mapper.Map<ExpertProfileDTO>(expertProfile);
 
+                // Lấy và ánh xạ Appointments
+                var appointments = await appointmentRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
+                expertProfileDto.Appointments = mapper.Map<ICollection<AppointmentDTO>>(appointments);
+
+                // Lấy và ánh xạ Certificates
+                var certificates = await certificateRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
+                expertProfileDto.Certificates = mapper.Map<ICollection<CertificateDTO>>(certificates);
+
+                // Lấy và ánh xạ WorkExperiences
+                var workExperiences = await workExperienceRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
+                expertProfileDto.WorkExperiences = mapper.Map<ICollection<WorkExperienceDTO>>(workExperiences);
+
                 response.Success = true;
-                response.Data = expertProfile;
+                response.Data = expertProfileDto;
                 response.StatusCode = 200;
                 response.Message = "Lấy thông tin hồ sơ chuyên gia thành công.";
             }
