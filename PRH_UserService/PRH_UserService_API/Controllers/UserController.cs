@@ -23,7 +23,7 @@ namespace PRH_UserService_API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController(ISender sender) : ControllerBase
+public class UserController(ISender sender, IHttpContextAccessor accessor) : ControllerBase
 {
     //[Authorize(Roles = "User")]
     [HttpGet("get-all")]
@@ -121,7 +121,9 @@ public class UserController(ISender sender) : ControllerBase
     [HttpPost("register-user")]
     public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var request = accessor.HttpContext?.Request;
+        var baseUrl = $"{request?.Scheme}://{request?.Host}";
+        //var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var response = await sender.Send(new RegisterUserCommand(registerUserDto, baseUrl));
         return response.ToActionResult();
     }

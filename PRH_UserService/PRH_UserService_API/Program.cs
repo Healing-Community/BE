@@ -101,15 +101,15 @@ app.UseMetricServer();
 
 #endregion
 
-// Cấu hình Forwarded Headers
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto,
+// // Cấu hình Forwarded Headers
+// app.UseForwardedHeaders(new ForwardedHeadersOptions
+// {
+//     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto,
     
-    // Tùy chọn thêm: Cho phép các header forwarded từ bất kỳ proxy nào (nếu không rõ proxy)
-    // Xác định rõ proxy nếu cần bằng app.ForwardedHeadersOptions.KnownProxies hoặc KnownNetworks
-    ForwardLimit = null // không giới hạn số header forwarded
-});
+//     // Tùy chọn thêm: Cho phép các header forwarded từ bất kỳ proxy nào (nếu không rõ proxy)
+//     // Xác định rõ proxy nếu cần bằng app.ForwardedHeadersOptions.KnownProxies hoặc KnownNetworks
+//     ForwardLimit = null // không giới hạn số header forwarded
+// });
 
 app.UseHttpsRedirection();
 
