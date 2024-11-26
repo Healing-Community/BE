@@ -15,7 +15,7 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class ReactionController(ISender sender) : ControllerBase
     {
-
+        [AllowAnonymous]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetReaction()
         {
@@ -23,7 +23,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-
+        [AllowAnonymous]
         [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -31,7 +31,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateReaction(ReactionDto reaction)
         {
@@ -39,7 +39,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateReaction(string id, ReactionDto reaction)
         {
@@ -47,7 +47,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteReaction(string id)
         {
