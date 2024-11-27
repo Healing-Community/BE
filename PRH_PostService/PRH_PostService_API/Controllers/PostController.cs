@@ -32,7 +32,6 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new CreateUserReferenceCommand(userPreferenceDto));
             return response.ToActionResult();
         }
-        [Authorize]
         [HttpGet("get-homepage")]
         public async Task<IActionResult> GetHomePage(int pageNumber, int pageSize)
         {
@@ -45,7 +44,12 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new GetPostsByIdQuery(postId));
             return response.ToActionResult();
         }
-
+        [HttpGet("get-side-recommendation")]
+        public async Task<IActionResult> GetSideRecommendation()
+        {
+            var response = await sender.Send(new GetSideRecommendPostQuery(PageSize:1, PageNumber:7));
+            return response.ToActionResult();
+        }
         [HttpGet("get-by-user-id/{userId}")]
         public async Task<IActionResult> GetByUserId(string userId)
         {

@@ -28,7 +28,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Comments.FirstAsync(x => x.CommentId == id);
         }
 
-        public async Task<Comment> GetByPropertyAsync(Expression<Func<Comment, bool>> predicate)
+        public async Task<Comment?> GetByPropertyAsync(Expression<Func<Comment, bool>> predicate)
         {
             return await hFDBPostserviceContext.Comments.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Comment() { 
                 CommentId = Ulid.Empty.ToString() 
