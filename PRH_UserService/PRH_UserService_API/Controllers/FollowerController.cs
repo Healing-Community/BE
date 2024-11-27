@@ -16,9 +16,9 @@ namespace PRH_UserService_API.Controllers
     {
         [Authorize]
         [HttpGet("get-following")]
-        public async Task<IActionResult> GetUserFollowing()
+        public async Task<IActionResult> GetUserFollowing(string userId)
         {
-            var response = await sender.Send(new GetUserFollowingQuery());
+            var response = await sender.Send(new GetUserFollowingQuery(userId));
             return response.ToActionResult();
         }
         [Authorize]

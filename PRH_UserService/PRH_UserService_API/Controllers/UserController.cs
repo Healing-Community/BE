@@ -122,8 +122,8 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
     {
         var request = accessor.HttpContext?.Request;
-        var baseUrl = $"{request?.Scheme}://{request?.Host}";
-        //var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        //var baseUrl = $"{request?.Scheme}://{request?.Host}";
+        var baseUrl = $"{Request.Scheme}://localhost:8000/user";
         var response = await sender.Send(new RegisterUserCommand(registerUserDto, baseUrl));
         return response.ToActionResult();
     }
