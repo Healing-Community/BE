@@ -21,7 +21,7 @@ public class CreateUserReferenceCommandHandler(ICategoryRepository categoryRepos
 
             if (userPreference != null)
             {
-                return BaseResponse<string>.BadRequest("User preference already exists");
+                return BaseResponse<string>.SuccessReturn("User preference already exists");
             }
             // User preference does not exist, create a new one
 
