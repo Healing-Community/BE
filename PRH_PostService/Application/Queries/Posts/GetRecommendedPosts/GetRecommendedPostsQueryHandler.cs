@@ -5,9 +5,9 @@ using Application.Interfaces.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
-public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpContextAccessor accessor) : IRequestHandler<GetRecommendedPostsQuery, BaseResponse<IEnumerable<PostDto>>>
+public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpContextAccessor accessor) : IRequestHandler<GetRecommendedPostsQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
 {
-    public async Task<BaseResponse<IEnumerable<PostDto>>> Handle(GetRecommendedPostsQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<IEnumerable<PostRecommendDto>>> Handle(GetRecommendedPostsQuery request, CancellationToken cancellationToken)
     {
         try
         {
@@ -15,7 +15,7 @@ public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpCo
             if (string.IsNullOrEmpty(userId))
             {
                 var randomPosts = await repository.GetRandomPostsAsync(request.PageNumber, request.PageSize);
-                return BaseResponse<IEnumerable<PostDto>>.SuccessReturn(randomPosts.Select(post => new PostDto
+                return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(randomPosts.Select(post => new PostRecommendDto
                 {
                     PostId = post.PostId,
                     UserId = post.UserId,
@@ -31,8 +31,8 @@ public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpCo
             }
             var posts = await repository.GetRecommendedPostsAsync(userId ?? string.Empty, request.PageNumber, request.PageSize);
             // Map Post to PostDto in a new list
-            var data = posts.Select(post => new PostDto
-                {
+            var data = posts.Select(post => new PostRecommendDto
+            {
                     PostId = post.PostId,
                     UserId = post.UserId,
                     CategoryId = post.CategoryId,
@@ -44,11 +44,11 @@ public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpCo
                     CreateAt = post.CreateAt,
                     UpdateAt = post.UpdateAt
                 });
-            return BaseResponse<IEnumerable<PostDto>>.SuccessReturn(data);
+            return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(data);
         }
         catch (Exception ex) 
         {
-           return BaseResponse<IEnumerable<PostDto>>.InternalServerError(ex.Message);
+           return BaseResponse<IEnumerable<PostRecommendDto>>.InternalServerError(ex.Message);
         }
     }
 }
