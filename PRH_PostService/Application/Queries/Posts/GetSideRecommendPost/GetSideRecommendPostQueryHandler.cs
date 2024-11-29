@@ -3,16 +3,16 @@ using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using MediatR;
 
-public class GetSideRecommendPostQueryHandler(IPostRepository repository) : IRequestHandler<GetSideRecommendPostQuery, BaseResponse<IEnumerable<PostDto>>>
+public class GetSideRecommendPostQueryHandler(IPostRepository repository) : IRequestHandler<GetSideRecommendPostQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
 {
-    public async Task<BaseResponse<IEnumerable<PostDto>>> Handle(GetSideRecommendPostQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<IEnumerable<PostRecommendDto>>> Handle(GetSideRecommendPostQuery request, CancellationToken cancellationToken)
     {
        try
         {
             var posts = await repository.GetRandomPostsAsync(request.PageSize, request.PageNumber);
             // Map Post to PostDto in a new list
-            var data = posts.Select(post => new PostDto
-                {
+            var data = posts.Select(post => new PostRecommendDto
+            {
                     PostId = post.PostId,
                     UserId = post.UserId,
                     CategoryId = post.CategoryId,
@@ -24,11 +24,11 @@ public class GetSideRecommendPostQueryHandler(IPostRepository repository) : IReq
                     CreateAt = post.CreateAt,
                     UpdateAt = post.UpdateAt
                 });
-            return BaseResponse<IEnumerable<PostDto>>.SuccessReturn(data);
+            return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(data);
         }
         catch (Exception ex) 
         {
-           return BaseResponse<IEnumerable<PostDto>>.InternalServerError(ex.Message);
+           return BaseResponse<IEnumerable<PostRecommendDto>>.InternalServerError(ex.Message);
         }
     }
 }
