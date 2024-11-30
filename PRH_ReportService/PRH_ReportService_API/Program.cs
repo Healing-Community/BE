@@ -28,7 +28,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", builder.Configuration["GeneralSettings:ApiName"]);
-    c.RoutePrefix = "";
+    c.RoutePrefix = "swagger";
 });
 
 # region HealthChecks
