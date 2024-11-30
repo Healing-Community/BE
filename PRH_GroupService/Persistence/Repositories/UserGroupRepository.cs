@@ -63,24 +63,36 @@ namespace Persistence.Repositories
 
         public async Task<List<UserGroupByGroupIdDto>> GetUserGroupsByGroupIdAsync(string groupId)
         {
-            return await hFDBGroupServiceContext.UserGroups.Where(ug => ug.GroupId == groupId).Select(ug => 
-            new UserGroupByGroupIdDto 
-            { 
-                UserId = ug.UserId, 
-                JoinedAt = ug.JoinedAt, 
-                RoleInGroup = ug.RoleInGroup 
-            }).ToListAsync();
+            var query = from ug in hFDBGroupServiceContext.UserGroups
+                        join g in hFDBGroupServiceContext.Groups on ug.GroupId equals g.GroupId
+                        where ug.GroupId == groupId
+                        select new UserGroupByGroupIdDto
+                        {
+                            UserId = ug.UserId,
+                            GroupName = g.GroupName, 
+                            GroupAvatar = g.AvatarGroup, 
+                            JoinedAt = ug.JoinedAt,
+                            RoleInGroup = ug.RoleInGroup
+                        };
+
+            return await query.ToListAsync();
         }
 
         public async Task<List<UserGroupByUserIdDto>> GetUserGroupsByUserIdAsync(string userId)
         {
-            return await hFDBGroupServiceContext.UserGroups.Where(ug => ug.UserId == userId).Select(ug => 
-            new UserGroupByUserIdDto 
-            { 
-                GroupId = ug.GroupId,
-                JoinedAt = ug.JoinedAt,
-                RoleInGroup = ug.RoleInGroup
-            }).ToListAsync();
+            var query = from ug in hFDBGroupServiceContext.UserGroups
+                        join g in hFDBGroupServiceContext.Groups on ug.GroupId equals g.GroupId
+                        where ug.UserId == userId
+                        select new UserGroupByUserIdDto
+                        {
+                            GroupId = ug.GroupId,
+                            GroupName = g.GroupName, 
+                            GroupAvatar = g.AvatarGroup, 
+                            JoinedAt = ug.JoinedAt,
+                            RoleInGroup = ug.RoleInGroup
+                        };
+
+            return await query.ToListAsync();
         }
 
         public async Task Update(string id, UserGroup entity)
