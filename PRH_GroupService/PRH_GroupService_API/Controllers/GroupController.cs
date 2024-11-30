@@ -1,7 +1,6 @@
 ﻿using Application.Commands.Groups.AddGroup;
 using Application.Commands.Groups.DeleteGroup;
 using Application.Commands.Groups.UpdateGroup;
-using Application.Commands.ManageGroup.RemoveMember;
 using Application.Commons.DTOs;
 using Application.Commons.Tools;
 using Application.Queries.Groups.GetApprovalQueue;

@@ -4,10 +4,9 @@ using Application.Commands.ManageGroup.RemoveMember;
 using Application.Commons.Tools;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRH_GroupService_API.Extentions;
-using System.Reflection;
+
 
 namespace PRH_GroupService_API.Controllers
 {
