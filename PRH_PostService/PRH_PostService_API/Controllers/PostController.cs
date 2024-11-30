@@ -25,7 +25,6 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new GetsPostQuery());
             return response.ToActionResult();
         }
-        [Authorize]
         [HttpPost("add-user-reference")]
         public async Task<IActionResult> AddUserReference(UserPreferenceDto userPreferenceDto)
         {

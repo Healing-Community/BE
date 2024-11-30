@@ -16,7 +16,10 @@ public class CreateUserReferenceCommandHandler(ICategoryRepository categoryRepos
         try
         {
             var userId = accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BaseResponse<string>.SuccessReturn("User not found");
+            }
             var userPreference = await repository.GetByPropertyAsync(x => x.UserId == userId && x.CategoryId == request.UserPreferenceDto.CategoryId);
 
             if (userPreference != null)
