@@ -27,16 +27,16 @@ namespace Application.Queries.UserGroups.GetUserGroupsByUserId
             try
             {
                 var userGroups = await _userGroupRepository.GetUserGroupsByUserIdAsync(request.UserId);
-                if (userGroups == null || userGroups.Count == 0)
-                {
-                    response.Success = false;
-                    response.Message = $"Không tìm thấy Group nào có User ID: {request.UserId}.";
-                    response.StatusCode = 404;
-                    return response;
-                }
+                //if (userGroups == null || userGroups.Count == 0)
+                //{
+                //    response.Success = false;
+                //    response.Message = $"Không tìm thấy Group nào có User ID: {request.UserId}.";
+                //    response.StatusCode = 404;
+                //    return response;
+                //}
 
                 response.Success = true;
-                response.Data = userGroups;
+                response.Data = userGroups ?? new List<UserGroupByUserIdDto>();
                 response.StatusCode = 200;
                 response.Message = "Lấy ra danh sách Group của User thành công.";
             }
