@@ -40,6 +40,12 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         var response = await sender.Send(new GetUsersByIdQuery(userId));
         return response.ToActionResult();
     }
+    [HttpGet("get-user-role/{userId}")]
+    public async Task<IActionResult> GetRoleByPropertyQuery(string userId)
+    {
+        var response = await sender.Send(new GetRoleByPropertyQuery(userId));
+        return response.ToActionResult();
+    }
     // [Authorize(Roles="User, Expert, Admin, Moderator")]
     [HttpGet("get-user-profile/{userId}")]
     public async Task<IActionResult> GetUserProfile(string userId)
