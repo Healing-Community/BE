@@ -174,31 +174,31 @@ public static class DependencyInjection
 
         #region HealthCheck
 
-        // // Retrieve connection strings and settings from configuration
-        // var postgresConnectionString =
-        //     configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
-        // var redisConnectionString = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException();
-        // services.AddHealthChecks()
-        //     .AddCheck("Self", () => HealthCheckResult.Healthy(), ["liveness"])
-        //     .AddNpgSql(
-        //         configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
-        //         name: "PostgresDb-check",
-        //         tags: ["db", "postgres", "readiness"],
-        //         healthQuery: "SELECT 1;",
-        //         failureStatus: HealthStatus.Unhealthy
-        //     )
-        //     .AddRabbitMQ(
-        //         rabbitMq["Host"] ?? throw new NullReferenceException(),
-        //         name: "RabbitMq-check",
-        //         tags: ["rabbitmq", "messaging", "readiness"],
-        //         failureStatus: HealthStatus.Unhealthy
-        //     )
-        //     .AddRedis(
-        //         redisConnectionString,
-        //         "Redis-check",
-        //         tags: ["cache", "redis", "readiness"],
-        //         failureStatus: HealthStatus.Unhealthy
-        //     );
+        // Retrieve connection strings and settings from configuration
+        var postgresConnectionString =
+            configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException();
+        var redisConnectionString = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException();
+        services.AddHealthChecks()
+            .AddCheck("Self", () => HealthCheckResult.Healthy(), ["liveness"])
+            .AddNpgSql(
+                configuration.GetConnectionString("PostgresDb") ?? throw new NullReferenceException(),
+                name: "PostgresDb-check",
+                tags: ["db", "postgres", "readiness"],
+                healthQuery: "SELECT 1;",
+                failureStatus: HealthStatus.Unhealthy
+            )
+            .AddRabbitMQ(
+                rabbitMq["Host"] ?? throw new NullReferenceException(),
+                name: "RabbitMq-check",
+                tags: ["rabbitmq", "messaging", "readiness"],
+                failureStatus: HealthStatus.Unhealthy
+            )
+            .AddRedis(
+                redisConnectionString,
+                "Redis-check",
+                tags: ["cache", "redis", "readiness"],
+                failureStatus: HealthStatus.Unhealthy
+            );
 
         #endregion
 

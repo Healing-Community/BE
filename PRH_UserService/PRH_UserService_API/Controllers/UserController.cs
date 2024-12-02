@@ -40,6 +40,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         var response = await sender.Send(new GetUsersByIdQuery(userId));
         return response.ToActionResult();
     }
+    [Authorize]
     [HttpGet("get-user-role/{userId}")]
     public async Task<IActionResult> GetRoleByPropertyQuery(string userId)
     {
@@ -72,6 +73,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     /// </summary>
     /// <param name="socialLinkDtos"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPut("update-social-media-link")]
     private async Task<IActionResult> UpdateSocialMediaLink(List<SocialLinkDto> socialLinkDtos)
     {
@@ -84,6 +86,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     /// <returns>Trạng thái</returns>
     /// <response code="200">Xóa thành công</response>
     /// <response code="404">Không tìm thấy link mạng xã hội</response>
+    [Authorize]
     [HttpDelete("delete-social-media-link")]
     private async Task<IActionResult> DeleteSocialMediaLink(string[] platformNames)
     {
@@ -95,6 +98,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     /// </summary>
     /// <param name="formFile"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPut("update-profile-picture")]
     public async Task<IActionResult> UpdateProfilePicture(IFormFile formFile)
     {
@@ -108,6 +112,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         var response = await sender.Send(new UpdateUserCommand(id, user));
         return response.ToActionResult();
     }
+    [Authorize]
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUser(string id)
     {

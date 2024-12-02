@@ -15,7 +15,7 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class ReactionController(ISender sender) : ControllerBase
     {
-        [AllowAnonymous]
+        [Authorize]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetReaction()
         {
@@ -23,16 +23,20 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
             var response = await sender.Send(new GetReactionsByIdQuery(id));
             return response.ToActionResult();
         }
-
+        /// <summary>
+        /// 1: Thích, 2: Haha, 3: Buồn, 4: Phãn nộ, 5: Yêu, 6: Wow
+        /// </summary>
+        /// <param name="reaction"></param>
+        /// <returns></returns>
         [Authorize]
-        [HttpPost("create")]
+        [HttpPost("add-reaction")]
         public async Task<IActionResult> CreateReaction(ReactionDto reaction)
         {
             var response = await sender.Send(new CreateReactionCommand(reaction, HttpContext));
@@ -46,12 +50,11 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new UpdateReactionCommand(id, reaction));
             return response.ToActionResult();
         }
-
         [Authorize]
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteReaction(string id)
+        [HttpDelete("remove-reaction")]
+        public async Task<IActionResult> DeleteReaction(RemoveReactionDto removeReactionDto)
         {
-            var response = await sender.Send(new DeleteReactionCommand(id));
+            var response = await sender.Send(new DeleteReactionCommand(removeReactionDto));
             return response.ToActionResult();
         }
     }

@@ -28,11 +28,9 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.ReactionTypes.FirstAsync(x => x.ReactionTypeId == id);
         }
 
-        public async Task<ReactionType> GetByPropertyAsync(Expression<Func<ReactionType, bool>> predicate)
+        public async Task<ReactionType?> GetByPropertyAsync(Expression<Func<ReactionType, bool>> predicate)
         {
-            return await hFDBPostserviceContext.ReactionTypes.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new ReactionType() { 
-                ReactionTypeId = Ulid.Empty.ToString() 
-            };
+            return await hFDBPostserviceContext.ReactionTypes.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public async Task<IEnumerable<ReactionType>> GetsAsync()
