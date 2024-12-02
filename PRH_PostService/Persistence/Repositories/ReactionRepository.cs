@@ -46,5 +46,9 @@ namespace Persistence.Repositories
             hFDBPostserviceContext.Entry(existingReaction).State = EntityState.Modified;
             await hFDBPostserviceContext.SaveChangesAsync();
         }
+        public async Task<IEnumerable<Reaction>?> GetsByPropertyAsync(Expression<Func<Reaction, bool>> predicate)
+        {
+            return await hFDBPostserviceContext.Reactions.Where(predicate).ToListAsync();
+        }
     }
 }

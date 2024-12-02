@@ -36,7 +36,6 @@ namespace Application.Queries.Posts.GetPostsById
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
-                    VideoUrl = post.VideoUrl,
                     Description = post.Description,
                     Status = post.Status,
                     CreateAt = post.CreateAt,

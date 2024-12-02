@@ -4,7 +4,11 @@ using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-
+/// <summary>
+/// Get Public Posts Query Handler (Not get private posts) 
+/// </summary>
+/// <param name="repository"></param>
+/// <param name="accessor"></param>
 public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpContextAccessor accessor) : IRequestHandler<GetRecommendedPostsQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
 {
     public async Task<BaseResponse<IEnumerable<PostRecommendDto>>> Handle(GetRecommendedPostsQuery request, CancellationToken cancellationToken)
@@ -15,14 +19,13 @@ public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpCo
             if (string.IsNullOrEmpty(userId))
             {
                 var randomPosts = await repository.GetRandomPostsAsync(request.PageNumber, request.PageSize);
-                return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(randomPosts.Select(post => new PostRecommendDto
+                return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(randomPosts.Where(post=>post.Status == 0).Select(post => new PostRecommendDto
                 {
                     PostId = post.PostId,
                     UserId = post.UserId,
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
-                    VideoUrl = post.VideoUrl,
                     Description = post.Description,
                     Status = post.Status,
                     CreateAt = post.CreateAt,
@@ -38,7 +41,6 @@ public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpCo
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
-                    VideoUrl = post.VideoUrl,
                     Description = post.Description,
                     Status = post.Status,
                     CreateAt = post.CreateAt,

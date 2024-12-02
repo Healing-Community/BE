@@ -38,6 +38,11 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.ReactionTypes.ToListAsync();
         }
 
+        public Task<IEnumerable<ReactionType>?> GetsByPropertyAsync(Expression<Func<ReactionType, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task Update(string id, ReactionType entity)
         {
             var existingReactionType = await hFDBPostserviceContext.ReactionTypes.FirstOrDefaultAsync(x => x.ReactionTypeId == id);

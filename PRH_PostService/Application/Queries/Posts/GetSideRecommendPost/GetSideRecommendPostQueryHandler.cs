@@ -11,14 +11,13 @@ public class GetSideRecommendPostQueryHandler(IPostRepository repository) : IReq
         {
             var posts = await repository.GetRandomPostsAsync(request.PageSize, request.PageNumber);
             // Map Post to PostDto in a new list
-            var data = posts.Select(post => new PostRecommendDto
+            var data = posts.Where(p=>p.Status == 0).Select(post => new PostRecommendDto
             {
                     PostId = post.PostId,
                     UserId = post.UserId,
                     CategoryId = post.CategoryId,
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
-                    VideoUrl = post.VideoUrl,
                     Description = post.Description,
                     Status = post.Status,
                     CreateAt = post.CreateAt,

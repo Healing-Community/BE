@@ -30,9 +30,5 @@
 		
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Commands/Reactions/GetPostReactionCount/" />
-	</ItemGroup>
-
 
 </Project>

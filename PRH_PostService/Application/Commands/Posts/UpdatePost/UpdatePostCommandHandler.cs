@@ -65,7 +65,6 @@ namespace Application.Commands.Posts.UpdatePost
                     CategoryId = request.PostDto.CategoryId,
                     Title = request.PostDto.Title,
                     CoverImgUrl = request.PostDto.CoverImgUrl,
-                    VideoUrl = request.PostDto.VideoUrl,
                     Description = request.PostDto.Description,
                     Status = request.PostDto.Status,
                     CreateAt = existingPost.CreateAt,

@@ -5,6 +5,7 @@ using Application.Interfaces.Repository;
 using Domain.Constants;
 using Domain.Constants.AMQPMessage.Post;
 using Domain.Entities;
+using Domain.Enum;
 using MediatR;
 using NUlid;
 using System.Net;
@@ -88,9 +89,8 @@ namespace Application.Commands.Posts.AddPostGroup
                     CategoryId = request.PostGroupDto.CategoryId,
                     Title = request.PostGroupDto.Title,
                     CoverImgUrl = request.PostGroupDto.CoverImgUrl,
-                    VideoUrl = request.PostGroupDto.VideoUrl,
                     Description = request.PostGroupDto.Description,
-                    Status = request.PostGroupDto.Status,
+                    Status = (int)PostStatus.Group,
                     CreateAt = DateTime.UtcNow.AddHours(7),
                     UpdateAt = DateTime.UtcNow.AddHours(7)
                 };

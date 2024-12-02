@@ -71,7 +71,6 @@ namespace Application.Commands.Posts.AddPost
                     CategoryId = request.PostDto.CategoryId,
                     Title = request.PostDto.Title,
                     CoverImgUrl = request.PostDto.CoverImgUrl,
-                    VideoUrl = request.PostDto.VideoUrl,
                     Description = request.PostDto.Description,
                     Status = request.PostDto.Status,
                     CreateAt = DateTime.UtcNow.AddHours(7),

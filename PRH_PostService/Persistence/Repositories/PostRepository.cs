@@ -123,5 +123,19 @@ namespace Persistence.Repositories
                 .Take(pageSize)
                 .ToListAsync();
         }
+
+        public Task<IEnumerable<Post>?> GetsByPropertyAsync(Expression<Func<Post, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Post>> GetsPostByPropertyPagingAsync(Expression<Func<Post, bool>> predicate, int pageNumber, int pageSize)
+        {
+            return await context.Posts
+                .Where(predicate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
     }
 }
