@@ -16,7 +16,7 @@ public class GetsUserPostQueryHandler(IPostRepository repository, IHttpContextAc
     {
         try
         {
-            var userId = accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = request.UserId;
             if (string.IsNullOrEmpty(userId))
             {
                 return BaseResponse<IEnumerable<PostRecommendDto>>.Unauthorized();

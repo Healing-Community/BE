@@ -46,7 +46,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
         /// <summary>
-        /// Lấy ra bài viết theo id có thể lấy ra cả bài viết private (chỉ dùng cho dev)
+        /// Lấy ra bài viết theo id có thể lấy ra cả bài viết private
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
@@ -63,16 +63,15 @@ namespace PRH_PostService_API.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpGet("get-user-post")]
-        public async Task<IActionResult> GetsUserPost(int pageNumber, int pageSize)
+        public async Task<IActionResult> GetsUserPost(string userId)
         {
-            var response = await sender.Send(new GetsUserPostQuery(pageNumber, pageSize));
+            var response = await sender.Send(new GetsUserPostQuery(userId,1, 100));
             return response.ToActionResult();
         }
         /// <summary>
         /// Không lấy các bài viết private
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         [HttpGet("get-side-recommendation")]
         public async Task<IActionResult> GetSideRecommendation()
         {

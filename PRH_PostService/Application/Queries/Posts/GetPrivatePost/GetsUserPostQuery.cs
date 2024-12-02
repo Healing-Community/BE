@@ -5,4 +5,4 @@ using MediatR;
 
 namespace Application.Queries.Posts.GetPrivatePost;
 
-public record GetsUserPostQuery(int PageNumber, int PageSize) : IRequest<BaseResponse<IEnumerable<PostRecommendDto>>>;
+public record GetsUserPostQuery(string UserId,int PageNumber, int PageSize) : IRequest<BaseResponse<IEnumerable<PostRecommendDto>>>;
