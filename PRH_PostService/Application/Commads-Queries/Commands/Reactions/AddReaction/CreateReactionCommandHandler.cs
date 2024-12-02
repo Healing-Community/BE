@@ -18,9 +18,18 @@ namespace Application.Commands.Reactions.AddReaction
             {
                 var userId = accessor?.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var reactionInDb = await reactionRepository.GetByPropertyAsync(x => x.PostId == request.ReactionDto.PostId && x.UserId == userId);
-                if (reactionInDb != null)
+                if (reactionInDb?.ReactionTypeId == request.ReactionDto.ReactionTypeId)
                 {
-                    return BaseResponse<string>.BadRequest("Bạn đã reaction bài viết này rồi");
+                    return BaseResponse<string>.BadRequest("Bạn đã reaction bài viết này rồi.");
+                }else if(reactionInDb != null && reactionInDb.ReactionTypeId != request.ReactionDto.ReactionTypeId)
+                {
+                    await reactionRepository.Update(reactionInDb.ReactionId, new Reaction
+                    {
+                        ReactionId = reactionInDb.ReactionId,
+                        ReactionTypeId = request.ReactionDto.ReactionTypeId,
+                        UpdateAt = DateTime.UtcNow + TimeSpan.FromHours(7)
+                    });
+                    return BaseResponse<string>.SuccessReturn("Cập nhật reaction thành công.");
                 }
                 var reactionType = await reactionTypeRepository.GetByPropertyAsync(x => x.ReactionTypeId == request.ReactionDto.ReactionTypeId);
                 if (reactionType?.ReactionTypeId == Ulid.Empty.ToString())

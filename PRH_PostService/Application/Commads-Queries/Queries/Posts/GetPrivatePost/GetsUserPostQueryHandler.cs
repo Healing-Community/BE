@@ -1,5 +1,3 @@
-using System;
-using System.Security.Claims;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
@@ -10,7 +8,7 @@ namespace Application.Queries.Posts.GetPrivatePost;
 /// <summary>
 /// Get Private Posts Only 
 /// </summary>
-public class GetsUserPostQueryHandler(IPostRepository repository, IHttpContextAccessor accessor) : IRequestHandler<GetsUserPostQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
+public class GetsUserPostQueryHandler(IPostRepository repository) : IRequestHandler<GetsUserPostQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
 {
     public async Task<BaseResponse<IEnumerable<PostRecommendDto>>> Handle(GetsUserPostQuery request, CancellationToken cancellationToken)
     {
