@@ -7,8 +7,6 @@ using Application.Interfaces.Services;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using NUlid;
-
 namespace Application.Commands_Queries.Commands.Users.RefreshToken;
 
 public class RefreshTokenCommandHandler(
@@ -20,22 +18,12 @@ public class RefreshTokenCommandHandler(
 {
     public async Task<BaseResponse<TokenDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<TokenDto>
-        {
-            Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow.AddHours(7)
-        };
         try
         {
             // Kiểm tra refresh token có hết hạn không
             if (tokenService.IsRefreshTokenExpired(request.RefreshTokenDto.RefreshToken))
             {
-                response.Success = false;
-                response.Message = "Refresh token đã hết hạn";
-                response.StatusCode = 401;
-                response.Data = null;
-                response.Errors = ["Refresh token đã hết hạn"];
-                return response;
+                return BaseResponse<TokenDto>.CustomResponse(401, "Refresh token đã hết hạn", false, ["Refresh token đã hết hạn"]);
             }
 
             // Tìm người dùng theo username
@@ -43,24 +31,14 @@ public class RefreshTokenCommandHandler(
                 u.RefreshToken == request.RefreshTokenDto.RefreshToken);
             if (token == null || token.RefreshToken != request.RefreshTokenDto.RefreshToken)
             {
-                response.Success = false;
-                response.Message = "Token không hợp lệ";
-                response.StatusCode = 401;
-                response.Data = null;
-                response.Errors = ["Token không hợp lệ"];
-                return response;
+                return BaseResponse<TokenDto>.CustomResponse(401, "Token không hợp lệ", false, ["Token không hợp lệ"]);
             }
 
             // Lấy thông tin người dùng từ token đã tìm được để tạo mới token 
             var user = await userRepository.GetByPropertyAsync(u => u.UserId == token.UserId);
             if (user == null)
             {
-                response.Success = false;
-                response.Message = "Người dùng không tồn tại";
-                response.StatusCode = 404;
-                response.Data = null;
-                response.Errors = ["Người dùng không tồn tại"];
-                return response;
+                return BaseResponse<TokenDto>.CustomResponse(404, "Người dùng không tồn tại", false, ["Người dùng không tồn tại"]);
             }
 
             var role = await roleRepository.GetByPropertyAsync(r => r.RoleId == user.RoleId) ?? new Role();
@@ -82,37 +60,46 @@ public class RefreshTokenCommandHandler(
             // Tạo access token và refresh token mới
             var newAccessToken = tokenService.GenerateAccessToken(accessTokenClaims);
             // Tạo refresh token mới
-            var newRefreshToken = tokenService.GenerateRefreshToken(token.RefreshToken,refreshTokenClaims);
+            var newRefreshToken = tokenService.GenerateRefreshToken(token.RefreshToken, refreshTokenClaims);
 
             // Cập nhật refresh token trong cơ sở dữ liệu
-            UpdateRefreshToken(token, newRefreshToken).Wait();
+            bool isTokenUpdate = await UpdateRefreshToken(token, newRefreshToken);
             // Thiết lập chi tiết phản hồi
-            response.Success = true;
-            response.Message = "Tạo mới token thành công";
-            response.StatusCode = 200;
-            response.Data = new TokenDto
+            if (!isTokenUpdate)
             {
-                RefreshToken = newRefreshToken,
-                Token = newAccessToken
-            };
+                return BaseResponse<TokenDto>.CustomResponse(500, "Có lỗi xảy ra", false, ["Có lỗi xảy ra"]);
+            }
+            else
+            {
+                var tokenDto = new TokenDto
+                {
+                    RefreshToken = newRefreshToken,
+                    Token = newAccessToken
+                };
+                return BaseResponse<TokenDto>.SuccessReturn(tokenDto, "Tạo token thành công");
+            }
         }
         catch (Exception e)
         {
-            response.Success = false;
-            response.Message = "Có lỗi xảy ra";
-            response.StatusCode = 500;
-            response.Errors = [e.Message];
+            return BaseResponse<TokenDto>.InternalServerError(message: e.Message);
         }
-
-        return response;
     }
 
-    private async Task UpdateRefreshToken(Token token, string newRefreshToken)
+    private async Task<bool> UpdateRefreshToken(Token token, string newRefreshToken)
     {
-        token.RefreshToken = newRefreshToken;
-        token.IssuedAt = DateTime.UtcNow.AddHours(7);
-        token.ExpiresAt =
-            DateTime.UtcNow.AddMinutes(60 * 7 + int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? ""));
-        await tokenRepository.UpdateAsync(token.TokenId, token);
+        try
+        {
+            token.RefreshToken = newRefreshToken;
+            token.IssuedAt = DateTime.UtcNow.AddHours(7);
+            token.ExpiresAt =
+                DateTime.UtcNow.AddMinutes(60 * 7 + int.Parse(configuration["JwtSettings:ExpiryMinutes"] ?? ""));
+            await tokenRepository.UpdateAsync(token.TokenId, token);
+        }
+        catch
+        {
+            return false;
+            throw;
+        }
+        return true;
     }
 }

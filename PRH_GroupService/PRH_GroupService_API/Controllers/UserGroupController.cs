@@ -1,9 +1,10 @@
-﻿using Application.Commands.ManageGroup.ApproveUser;
-using Application.Commands.UserGroups.JoinGroups;
+﻿using Application.Commands.UserGroups.JoinGroups;
 using Application.Commands.UserGroups.LeaveGroups;
 using Application.Commons.DTOs;
 using Application.Queries.UserGroups.GetUserGroups;
+using Application.Queries.UserGroups.GetUserGroupsByGroupId;
 using Application.Queries.UserGroups.GetUserGroupsById;
+using Application.Queries.UserGroups.GetUserGroupsByUserId;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,11 +31,27 @@ namespace PRH_GroupService_API.Controllers
             return response.ToActionResult();
         }
 
-        [HttpGet("get-by-id")]
+        [HttpGet("get-by-group-id-and-user-id")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetUserGroupById(string groupId, string userId)
+        public async Task<IActionResult> GetUserGroupByGroupIdAndUserId(string groupId, string userId)
         {
             var response = await _sender.Send(new GetUserGroupByIdQuery(groupId, userId));
+            return response.ToActionResult();
+        }
+
+        [HttpGet("get-by-user-id")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUserGroupsByUserId(string userId)
+        {
+            var response = await _sender.Send(new GetUserGroupsByUserIdQuery(userId));
+            return response.ToActionResult();
+        }
+
+        [HttpGet("get-by-group-id")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUserGroupsByGroupId(string groupId)
+        {
+            var response = await _sender.Send(new GetUserGroupsByGroupIdQuery(groupId));
             return response.ToActionResult();
         }
 

@@ -28,7 +28,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Comments.FirstAsync(x => x.CommentId == id);
         }
 
-        public async Task<Comment> GetByPropertyAsync(Expression<Func<Comment, bool>> predicate)
+        public async Task<Comment?> GetByPropertyAsync(Expression<Func<Comment, bool>> predicate)
         {
             return await hFDBPostserviceContext.Comments.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Comment() { 
                 CommentId = Ulid.Empty.ToString() 
@@ -76,6 +76,11 @@ namespace Persistence.Repositories
         public async Task<int> CountCommentsByPostIdAsync(string postId)
         {
             return await hFDBPostserviceContext.Comments.CountAsync(c => c.PostId == postId);
+        }
+
+        public Task<IEnumerable<Comment>?> GetsByPropertyAsync(Expression<Func<Comment, bool>> predicate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

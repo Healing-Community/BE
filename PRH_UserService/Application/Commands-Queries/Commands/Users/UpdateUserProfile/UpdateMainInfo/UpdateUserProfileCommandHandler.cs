@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using Application.Commons;
 using Application.Interfaces.Repository;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Domain.Entities;
@@ -48,7 +47,7 @@ public class UpdateUserProfileCommandHandler(ISocialLinkRepository socialLinkRep
                 var platformName = dtoLink.Key;
                 var newUrl = dtoLink.Value;
 
-                var existingSocialLink = socialLinks.FirstOrDefault(p => p.PlatformName == platformName);
+                var existingSocialLink = socialLinks?.FirstOrDefault(p => p.PlatformName == platformName);
 
                 // Add new social link if it doesn't exist and the URL is not empty
                 if (existingSocialLink == null && !string.IsNullOrWhiteSpace(newUrl))
@@ -86,12 +85,7 @@ public class UpdateUserProfileCommandHandler(ISocialLinkRepository socialLinkRep
         }
         catch
         {
-            return new DetailBaseResponse<string>
-            {
-                Id = NewId.NextGuid().ToString(),
-                Message = "Có lỗi xảy ra khi cập nhật thông tin cá nhân",
-                Success = false
-            };
+            return DetailBaseResponse<string>.InternalServerError();
         }
         return DetailBaseResponse<string>.SuccessReturn("Thông tin cá nhân đã được cập nhật", string.Empty);
     }

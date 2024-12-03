@@ -11,7 +11,6 @@ public class UpdateProfilePictureCommandHandler(IUserRepository userRepository, 
 {
     public async Task<BaseResponse<string>> Handle(UpdateProfilePictureCommand request, CancellationToken cancellationToken)
     {
-        string base64Picture = string.Empty;
         try
         {
             var userId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -26,7 +25,7 @@ public class UpdateProfilePictureCommandHandler(IUserRepository userRepository, 
             }
             var profilePicture = request.ProfilePicture;
             // profilePicture to base64 string
-            base64Picture = Tools.ConvertImageToBase64(profilePicture, 200, 200, 9, quality: 10);
+            var base64Picture = Tools.ConvertImageToBase64(profilePicture, 200, 200, 9, quality: 10);
 
             if (profilePicture == null)
             {
@@ -37,12 +36,11 @@ public class UpdateProfilePictureCommandHandler(IUserRepository userRepository, 
                 user.ProfilePicture = base64Picture;
                 await userRepository.UpdateAsync(userId, user);
             }
-
+            return BaseResponse<string>.SuccessReturn(base64Picture);
         }
         catch (Exception e)
         {
             return BaseResponse<string>.InternalServerError(e.Message);
         }
-        return BaseResponse<string>.SuccessReturn(base64Picture);
     }
 }

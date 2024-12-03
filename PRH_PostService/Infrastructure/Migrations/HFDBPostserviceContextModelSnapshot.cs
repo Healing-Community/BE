@@ -116,10 +116,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<string>("VideoUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("PostId");
 
                     b.HasIndex("CategoryId");
@@ -143,9 +139,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("ReactionTypeId")
                         .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("timestamp with time zone");
@@ -225,7 +218,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("ReportTypes");
                 });
 
-            modelBuilder.Entity("UserPreference", b =>
+            modelBuilder.Entity("Domain.Entities.UserPreference", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -303,7 +296,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("ReportType");
                 });
 
-            modelBuilder.Entity("UserPreference", b =>
+            modelBuilder.Entity("Domain.Entities.UserPreference", b =>
                 {
                     b.HasOne("Domain.Entities.Category", "Category")
                         .WithMany("UserPreferences")

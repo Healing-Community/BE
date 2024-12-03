@@ -17,6 +17,7 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class CommentController(ISender sender) : ControllerBase
     {
+        [AllowAnonymous]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetComment()
         {
@@ -24,6 +25,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
+        [AllowAnonymous]
         [HttpGet("get-by-comment-id/{commentId}")]
         public async Task<IActionResult> GetById(string commentId)
         {
@@ -31,6 +33,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
+        [AllowAnonymous]
         [HttpGet("get-by-post-id/{postId}")]
         public async Task<IActionResult> GetCommentsByPostId(string postId)
         {
@@ -38,7 +41,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Expert")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateComment(CommentDto comment)
         {
@@ -46,7 +49,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Expert")]
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateComment(string id, CommentDto comment)
         {
@@ -54,7 +57,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Expert")]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteComment(string id)
         {
@@ -62,6 +65,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
+        [AllowAnonymous]
         [HttpGet("count-by-post-id/{postId}")]
         public async Task<IActionResult> CountTotalCommentByPostId(string postId)
         {

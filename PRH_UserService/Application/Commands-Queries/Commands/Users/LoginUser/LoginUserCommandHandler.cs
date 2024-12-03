@@ -22,38 +22,19 @@ public class LoginUserCommandHandler(
 {
     public async Task<BaseResponse<TokenDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<TokenDto>
-        {
-            Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow.AddHours(7)
-        };
         try
         {
             // Tìm kiếm người dùng bằng email
             var user = await userRepository.GetUserByEmailAsync(request.LoginDto.Email);
             if (user == null)
-                return new BaseResponse<TokenDto>
-                {
-                    Id = Ulid.NewUlid().ToString(),
-                    Success = false,
-                    Message = "Email hoặc mật khẩu không đúng.",
-                    Errors = ["Email hoặc mật khẩu không đúng."],
-                    Timestamp = DateTime.UtcNow.AddHours(7),
-
-                    StatusCode = StatusCodes.Status422UnprocessableEntity
-                };
-
+            {
+                return BaseResponse<TokenDto>.CustomResponse(StatusCodes.Status422UnprocessableEntity,"Email hoặc mật khẩu không đúng.",false,["Email hoặc mật khẩu không đúng."]);
+            }
             // Kiểm tra trạng thái người dùng
             if (user.Status == 0)
-                return new BaseResponse<TokenDto>
-                {
-                    Id = Ulid.NewUlid().ToString(),
-                    Success = false,
-                    Message = "Tài khoản người dùng đã bị vô hiệu hóa.",
-                    Errors = ["Tài khoản đã bị vô hiệu hóa."],
-                    Timestamp = DateTime.UtcNow.AddHours(7),
-                    StatusCode = StatusCodes.Status401Unauthorized
-                };
+            {
+                return BaseResponse<TokenDto>.CustomResponse(StatusCodes.Status401Unauthorized,"Tài khoản của bạn đã bị khóa.",false,["Tài khoản của bạn đã bị khóa."]);
+            }
 
             // Xác thực mật khẩu
             var isPasswordValid = BCrypt.Net.BCrypt.Verify(request.LoginDto.Password, user.PasswordHash);
@@ -69,15 +50,7 @@ public class LoginUserCommandHandler(
                 }
                 else
                 {
-                    return new BaseResponse<TokenDto>
-                    {
-                        Id = Ulid.NewUlid().ToString(),
-                        Success = false,
-                        Message = "Email hoặc mật khẩu không đúng.",
-                        Errors = ["Email hoặc mật khẩu không đúng."],
-                        Timestamp = DateTime.UtcNow.AddHours(7),
-                        StatusCode = StatusCodes.Status422UnprocessableEntity
-                    };
+                    return BaseResponse<TokenDto>.CustomResponse(StatusCodes.Status422UnprocessableEntity,"Email hoặc mật khẩu không đúng.",false,["Email hoặc mật khẩu không đúng."]);
                 }
             }
 
@@ -95,8 +68,6 @@ public class LoginUserCommandHandler(
 
             // Tạo Access token
             var accessToken = tokenService.GenerateAccessToken(accessTokenClaims);
-            response.Success = true;
-            response.Message = "Đăng nhập thành công.";
 
             var refreshTokenClaims = new List<Claim>
             {
@@ -109,8 +80,6 @@ public class LoginUserCommandHandler(
                 Token = accessToken,
                 RefreshToken = tokenService.GenerateRefreshToken(string.Empty, refreshTokenClaims)
             };
-
-            response.Data = tokenData;
 
             // Lưu Refresh token vào cơ sở dữ liệu
             var userToken = await tokenRepository.GetByPropertyAsync(t => t.UserId == user.UserId);
@@ -127,17 +96,12 @@ public class LoginUserCommandHandler(
                                                        int.Parse(configuration["JwtSettings:RefreshTokenExpiryMinutes"] ?? "60"))
             };
             await tokenRepository.Create(token);
-            response.StatusCode = StatusCodes.Status200OK;
+            
+            return BaseResponse<TokenDto>.SuccessReturn(tokenData, "Đăng nhập thành công");
         }
         catch (Exception ex)
         {
-            // Xử lý lỗi
-            response.StatusCode = StatusCodes.Status500InternalServerError;
-            response.Success = false;
-            response.Message = "Đăng nhập không thành công.";
-            response.Errors = [ex.StackTrace];
+            return BaseResponse<TokenDto>.InternalServerError(ex.Message);
         }
-
-        return response;
     }
 }

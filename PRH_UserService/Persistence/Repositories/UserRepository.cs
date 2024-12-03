@@ -50,7 +50,7 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        return await hFDbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
+        return await hFDbContext.Users.SingleOrDefaultAsync(u => u.Email == email); // if not found, return null
     }
 
     public async Task<IEnumerable<User>?> GetsAsync()

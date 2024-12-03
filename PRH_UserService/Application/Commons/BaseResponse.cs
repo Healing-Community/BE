@@ -25,7 +25,7 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<T> SuccessReturn(T classInstance = default, string message = "Thành công")
+    internal static BaseResponse<T> SuccessReturn(T classInstance, string message = "Thành công")
     {
         return new BaseResponse<T>
         {
@@ -49,9 +49,9 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<string> Unauthorized()
+    internal static BaseResponse<T> Unauthorized()
     {
-        return new BaseResponse<string>
+        return new BaseResponse<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status401Unauthorized,
@@ -61,14 +61,26 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<string> BadRequest(string message)
+    internal static BaseResponse<T> BadRequest(string message)
     {
-        return new BaseResponse<string>
+        return new BaseResponse<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status400BadRequest,
             Message = message,
             Success = false,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
+    internal static BaseResponse<T> CustomResponse(int statusCodes,string message, bool success, List<string> errors) 
+    {
+        return new BaseResponse<T>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = statusCodes,
+            Message = message,
+            Success = success,
+            Errors = errors,
             Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
         };
     }

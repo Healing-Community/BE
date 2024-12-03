@@ -13,7 +13,7 @@ public class AuthMiddleware(RequestDelegate next, IConfiguration configuration)
     public async Task Invoke(HttpContext context)
     {
         var endpoint = context.GetEndpoint();
-        var allowAnonymous = endpoint?.Metadata.GetMetadata<AllowAnonymous>();
+        var allowAnonymous = endpoint?.Metadata.GetMetadata<AllowAnonymousAttribute>();
         if (allowAnonymous != null)
         {
             await _next(context);

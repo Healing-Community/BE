@@ -41,6 +41,11 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.ReportTypes.ToListAsync();
         }
 
+        public Task<IEnumerable<ReportType>?> GetsByPropertyAsync(Expression<Func<ReportType, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task Update(string id, ReportType entity)
         {
             var existingReportType = await hFDBPostserviceContext.ReportTypes.FirstOrDefaultAsync(x => x.ReportTypeId == id);

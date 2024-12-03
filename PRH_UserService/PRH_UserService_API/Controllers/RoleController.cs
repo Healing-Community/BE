@@ -1,9 +1,4 @@
 ﻿using Application.Commands_Queries.Queries.Roles.GetRoles;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using PRH_UserService_API.Extentions;
-
 namespace PRH_UserService_API.Controllers;
 
 [Route("api/[controller]")]

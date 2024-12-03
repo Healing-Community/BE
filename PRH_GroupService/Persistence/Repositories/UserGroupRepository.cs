@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Repository;
+﻿using Application.Commons.DTOs;
+using Application.Interfaces.Repository;
 using Domain.Entities;
 using Domain.Enum;
 using Infrastructure.Context;
@@ -60,6 +61,40 @@ namespace Persistence.Repositories
             return await hFDBGroupServiceContext.UserGroups.ToListAsync();
         }
 
+        public async Task<List<UserGroupByGroupIdDto>> GetUserGroupsByGroupIdAsync(string groupId)
+        {
+            var query = from ug in hFDBGroupServiceContext.UserGroups
+                        join g in hFDBGroupServiceContext.Groups on ug.GroupId equals g.GroupId
+                        where ug.GroupId == groupId
+                        select new UserGroupByGroupIdDto
+                        {
+                            UserId = ug.UserId,
+                            GroupName = g.GroupName, 
+                            GroupAvatar = g.AvatarGroup, 
+                            JoinedAt = ug.JoinedAt,
+                            RoleInGroup = ug.RoleInGroup
+                        };
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<UserGroupByUserIdDto>> GetUserGroupsByUserIdAsync(string userId)
+        {
+            var query = from ug in hFDBGroupServiceContext.UserGroups
+                        join g in hFDBGroupServiceContext.Groups on ug.GroupId equals g.GroupId
+                        where ug.UserId == userId
+                        select new UserGroupByUserIdDto
+                        {
+                            GroupId = ug.GroupId,
+                            GroupName = g.GroupName, 
+                            GroupAvatar = g.AvatarGroup, 
+                            JoinedAt = ug.JoinedAt,
+                            RoleInGroup = ug.RoleInGroup
+                        };
+
+            return await query.ToListAsync();
+        }
+
         public async Task Update(string id, UserGroup entity)
         {
             var existingUserGroup = await hFDBGroupServiceContext.UserGroups.FirstOrDefaultAsync(x => x.UserId == id);
@@ -77,5 +112,6 @@ namespace Persistence.Repositories
             hFDBGroupServiceContext.Entry(userGroup).State = EntityState.Modified;
             await hFDBGroupServiceContext.SaveChangesAsync();
         }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.GenericRepository;
+﻿using Application.Commons.DTOs;
+using Application.Interfaces.GenericRepository;
 using Domain.Entities;
 using Domain.Enum;
 
@@ -10,5 +11,8 @@ namespace Application.Interfaces.Repository
         Task<UserGroup?> GetByIdInGroupAsync(string groupId, string userId);
         Task DeleteAsyncV2(string groupId, string userId);
         Task UpdateRole(string groupId, string userId, RoleInGroup role);
+        Task<List<UserGroupByUserIdDto>> GetUserGroupsByUserIdAsync(string userId);
+        Task<List<UserGroupByGroupIdDto>> GetUserGroupsByGroupIdAsync(string groupId);
+
     }
 }

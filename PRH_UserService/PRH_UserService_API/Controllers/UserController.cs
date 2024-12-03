@@ -12,18 +12,12 @@ using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateSocial
 using Application.Commands_Queries.Commands.Users.VerifyUser;
 using Application.Commands_Queries.Queries.Users.GetUsers;
 using Application.Commands_Queries.Queries.Users.GetUsersById;
-using Application.Commons.DTOs;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using PRH_UserService_API.Extentions;
-using PRH_UserService_API.Middleware;
 
 namespace PRH_UserService_API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController(ISender sender) : ControllerBase
+public class UserController(ISender sender, IHttpContextAccessor accessor) : ControllerBase
 {
     //[Authorize(Roles = "User")]
     [HttpGet("get-all")]
@@ -38,6 +32,13 @@ public class UserController(ISender sender) : ControllerBase
     private async Task<IActionResult> GetById(string userId)
     {
         var response = await sender.Send(new GetUsersByIdQuery(userId));
+        return response.ToActionResult();
+    }
+    [Authorize]
+    [HttpGet("get-user-role/{userId}")]
+    public async Task<IActionResult> GetRoleByPropertyQuery(string userId)
+    {
+        var response = await sender.Send(new GetRoleByPropertyQuery(userId));
         return response.ToActionResult();
     }
     // [Authorize(Roles="User, Expert, Admin, Moderator")]
@@ -66,6 +67,7 @@ public class UserController(ISender sender) : ControllerBase
     /// </summary>
     /// <param name="socialLinkDtos"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPut("update-social-media-link")]
     private async Task<IActionResult> UpdateSocialMediaLink(List<SocialLinkDto> socialLinkDtos)
     {
@@ -78,6 +80,7 @@ public class UserController(ISender sender) : ControllerBase
     /// <returns>Trạng thái</returns>
     /// <response code="200">Xóa thành công</response>
     /// <response code="404">Không tìm thấy link mạng xã hội</response>
+    [Authorize]
     [HttpDelete("delete-social-media-link")]
     private async Task<IActionResult> DeleteSocialMediaLink(string[] platformNames)
     {
@@ -89,6 +92,7 @@ public class UserController(ISender sender) : ControllerBase
     /// </summary>
     /// <param name="formFile"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPut("update-profile-picture")]
     public async Task<IActionResult> UpdateProfilePicture(IFormFile formFile)
     {
@@ -102,6 +106,7 @@ public class UserController(ISender sender) : ControllerBase
         var response = await sender.Send(new UpdateUserCommand(id, user));
         return response.ToActionResult();
     }
+    [Authorize]
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUser(string id)
     {
@@ -109,7 +114,7 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [@AllowAnonymous]
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
@@ -117,11 +122,13 @@ public class UserController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [@AllowAnonymous]
+    [AllowAnonymous]
     [HttpPost("register-user")]
     public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var request = accessor.HttpContext?.Request;
+        //var baseUrl = $"{request?.Scheme}://{request?.Host}";
+        var baseUrl = $"{Request.Scheme}://localhost:8000/user";
         var response = await sender.Send(new RegisterUserCommand(registerUserDto, baseUrl));
         return response.ToActionResult();
     }
@@ -141,7 +148,6 @@ public class UserController(ISender sender) : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout([FromBody] LogoutRequestDto logoutRequestDto)
     {
-        logoutRequestDto.context = HttpContext;
         var response = await sender.Send(new LogoutUserCommand(logoutRequestDto));
         return response.ToActionResult();
     }

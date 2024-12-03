@@ -5,5 +5,5 @@ using MediatR;
 
 namespace Application.Commands_Queries.Queries.Users.GetUserProfile;
 
-public record GetUserFollowingQuery : IRequest<BaseResponse<List<UserProfileDto>>>;
+public record GetUserFollowingQuery(string UserId) : IRequest<BaseResponse<List<UserProfileDto>>>;
     

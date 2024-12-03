@@ -45,6 +45,11 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Categories.ToListAsync();
         }
 
+        public Task<IEnumerable<Category>?> GetsByPropertyAsync(Expression<Func<Category, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task Update(string id, Category entity)
         {
             var existingCategory = await hFDBPostserviceContext.Categories.FirstOrDefaultAsync(x => x.CategoryId == id);

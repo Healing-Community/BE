@@ -34,7 +34,7 @@ namespace Persistence.Repositories
             return await context.Posts.FirstAsync(x => x.PostId == id);
         }
 
-        public async Task<Post> GetByPropertyAsync(Expression<Func<Post, bool>> predicate)
+        public async Task<Post?> GetByPropertyAsync(Expression<Func<Post, bool>> predicate)
         {
             var post = await context.Posts.AsNoTracking().FirstOrDefaultAsync(predicate);
             return post ?? new Post() { PostId = Ulid.Empty.ToString() };
@@ -58,8 +58,21 @@ namespace Persistence.Repositories
             context.Entry(existingPost).State = EntityState.Modified;
             await context.SaveChangesAsync();
         }
-        public async Task<IEnumerable<Post>> GetRecommendedPostsAsync(string userId, int pageNumber, int pageSize)
+        public async Task<IEnumerable<Post>> GetRecommendedPostsAsync(string? userId, int pageNumber, int pageSize)
         {
+
+            // Nếu userId là rỗng, trả về bài viết ngẫu nhiên
+            if (string.IsNullOrEmpty(userId))
+            {
+                var randomPosts = await context.Posts
+                    .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
+                    .ToListAsync();
+
+                // Áp dụng paging
+                return randomPosts
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
+            }
             // Lấy danh sách CategoryId mà user yêu thích
             var preferredCategories = await context.UserPreferences
                 .Where(up => up.UserId == userId)
@@ -70,13 +83,13 @@ namespace Persistence.Repositories
             {
                 // Lấy bài viết theo danh mục yêu thích
                 var preferredPosts = await context.Posts
-                    .Where(post => preferredCategories.Contains(post.CategoryId))
+                    .Where(post => preferredCategories.Contains(post.CategoryId ?? string.Empty))
                     .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
                     .ToListAsync();
 
                 // Lấy bài viết không thuộc danh mục yêu thích
                 var nonPreferredPosts = await context.Posts
-                    .Where(post => !preferredCategories.Contains(post.CategoryId))
+                    .Where(post => !preferredCategories.Contains(post.CategoryId ?? string.Empty))
                     .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
                     .ToListAsync();
 
@@ -102,5 +115,27 @@ namespace Persistence.Repositories
             }
         }
 
+        public async Task<IEnumerable<Post>> GetRandomPostsAsync(int pageNumber, int pageSize)
+        {
+            return await context.Posts
+                .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public Task<IEnumerable<Post>?> GetsByPropertyAsync(Expression<Func<Post, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Post>> GetsPostByPropertyPagingAsync(Expression<Func<Post, bool>> predicate, int pageNumber, int pageSize)
+        {
+            return await context.Posts
+                .Where(predicate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
     }
 }

@@ -9,26 +9,14 @@ public class DeleteUserCommandHandler(IUserRepository userRepository)
 {
     public async Task<BaseResponse<string>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<string>
-        {
-            Id = request.Id,
-            Timestamp = DateTime.UtcNow,
-            Errors = new List<string>() // Initialize the error list
-        };
-
         try
         {
             await userRepository.DeleteAsync(request.Id);
-            response.Success = true;
-            response.Message = "User deleted successfully";
+            return BaseResponse<string>.SuccessReturn("User deleted successfully");
         }
         catch (Exception e)
         {
-            response.Success = false;
-            response.Message = "Failed to delete user";
-            response.Errors.Add(e.Message); // Add error message to the list
+            return BaseResponse<string>.InternalServerError(e.Message);
         }
-
-        return response;
     }
 }

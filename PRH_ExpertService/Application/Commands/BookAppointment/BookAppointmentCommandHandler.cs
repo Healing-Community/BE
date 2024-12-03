@@ -104,7 +104,7 @@ namespace Application.Commands.BookAppointment
 
                 // Trả về thông tin để tiếp tục thanh toán
                 response.Success = true;
-                response.Data = null;
+                response.Data = appointment.AppointmentId;
                 response.StatusCode = 200;
                 response.Message = "Yêu cầu đặt lịch đã được ghi nhận. Vui lòng hoàn tất thanh toán để xác nhận lịch hẹn.";
             }

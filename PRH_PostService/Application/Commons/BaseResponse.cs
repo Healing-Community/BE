@@ -48,9 +48,9 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<string> Unauthorized()
+    internal static BaseResponse<T> Unauthorized()
     {
-        return new BaseResponse<string>
+        return new BaseResponse<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status401Unauthorized,

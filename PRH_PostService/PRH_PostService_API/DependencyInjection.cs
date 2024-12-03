@@ -97,6 +97,8 @@ public static class DependencyInjection
                     Array.Empty<string>()
                 }
             });
+            var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
 
         #endregion
