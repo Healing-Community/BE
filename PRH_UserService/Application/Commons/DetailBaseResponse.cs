@@ -25,7 +25,7 @@ public class DetailBaseResponse<T>
             Timestamp = DateTime.UtcNow
         };
     }
-    internal static DetailBaseResponse<T> InternalServerError(string message)
+    internal static DetailBaseResponse<T> InternalServerError(string message = "Có lỗi xảy ra")
     {
         return new DetailBaseResponse<T>
         {

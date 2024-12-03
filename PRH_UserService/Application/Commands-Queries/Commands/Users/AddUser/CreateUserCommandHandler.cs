@@ -24,29 +24,15 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             CreatedAt = DateTime.UtcNow.AddHours(7), // Fixed UTC time to UTC+7
             UpdatedAt = DateTime.UtcNow.AddHours(7) // Fixed UTC time to UTC+7
         };
-
-        var response = new BaseResponse<string>
-        {
-            Id = userId,
-            Timestamp = DateTime.UtcNow,
-            Errors = new List<string>() // Initialize the error list
-        };
-
         try
         {
             // Create user if name does not exist
             await userRepository.Create(user);
-            response.Success = true;
-            response.Message = "User created successfully";
-            response.StatusCode = 200;
+            return BaseResponse<string>.SuccessReturn("User created successfully", userId);
         }
         catch (Exception ex)
         {
-            response.Success = false;
-            response.Errors.Add(ex.Message); // Add error message to the list
-            response.Message = "Failed to create user"; // Fixed typo from "product" to "user"
+            return BaseResponse<string>.InternalServerError(ex.Message);
         }
-
-        return response;
     }
 }

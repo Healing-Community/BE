@@ -11,22 +11,12 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
 {
     public async Task<BaseResponse<string>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<string>
-        {
-            Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow,
-            Errors = new List<string>() // Initialize the error list
-        };
-
         try
         {
             var existingUser = await userRepository.GetByIdAsync(request.Id);
             if (existingUser == null)
             {
-                response.Success = false;
-                response.Message = "User not found";
-                response.Errors.Add("No user found with the provided ID.");
-                return response;
+                return BaseResponse<string>.NotFound("không tìm thấy người dùng");
             }
 
             var updatedUser = new User
@@ -43,16 +33,12 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
             };
 
             await userRepository.UpdateAsync(request.Id, updatedUser);
-            response.Success = true;
-            response.Message = "User updated successfully";
+            
+            return BaseResponse<string>.SuccessReturn("Cập nhật người dùng thành công");
         }
         catch (Exception ex)
         {
-            response.Success = false;
-            response.Message = "Failed to update user";
-            response.Errors.Add(ex.Message); // Add error message to the list
+            return BaseResponse<string>.InternalServerError(ex.Message);
         }
-
-        return response;
     }
 }

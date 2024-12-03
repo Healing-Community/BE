@@ -1,8 +1,4 @@
 ﻿using Application.Commands_Queries.Commands.Report;
-using Application.Commons.DTOs;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using PRH_UserService_API.Extentions;
 
 namespace PRH_UserService_API.Controllers;
 

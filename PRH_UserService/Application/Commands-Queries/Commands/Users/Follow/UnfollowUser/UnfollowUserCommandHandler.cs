@@ -15,14 +15,12 @@ public class UnfollowUserCommandHandler(IHttpContextAccessor httpContextAccessor
         {
 
             var userId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            if (userId == null) return BaseResponse<bool>.Unauthorized();
             var follower = await followerRepository.GetByPropertyAsync(x => x.UserId == userId && x.FollowerId == request.UserId);
-
             if (follower == null) return BaseResponse<bool>.NotFound();
-
             await followerRepository.DeleteAsync(follower.Id);
 
-            return BaseResponse<bool>.SuccessReturn(true, "Huỷ theo dõi thành công");
+            return BaseResponse<bool>.SuccessReturn(classInstance:true, message:"Huỷ theo dõi thành công");
         }
         catch (Exception e)
         {

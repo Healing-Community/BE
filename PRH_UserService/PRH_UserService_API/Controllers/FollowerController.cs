@@ -1,12 +1,6 @@
 using Application.Commands_Queries.Commands.Users.UserFollower;
 using Application.Commands_Queries.Commands.Users.UserFollower.UnfollowUser;
 using Application.Commands_Queries.Queries.Users.GetUserProfile;
-using Application.Commons.DTOs;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using PRH_UserService_API.Extentions;
 
 namespace PRH_UserService_API.Controllers
 {

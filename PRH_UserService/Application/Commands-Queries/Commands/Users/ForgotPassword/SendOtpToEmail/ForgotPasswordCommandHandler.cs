@@ -1,54 +1,44 @@
 ﻿using Application.Commons;
 using Application.Commons.Tools;
 using Application.Interfaces.Redis;
+using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using MediatR;
-using NUlid;
 
 namespace Application.Commands_Queries.Commands.Users.ForgotPassword.SendOtpToEmail;
 
-public class ForgotPasswordCommandHandler(IOtpCache otpCache, IEmailService emailService)
+public class ForgotPasswordCommandHandler(IOtpCache otpCache, IEmailService emailService, IUserRepository userRepository)
     : IRequestHandler<ForgotPasswordCommand, BaseResponse<string>>
 {
     public async Task<BaseResponse<string>> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<string>
-        {
-            Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.Now
-        };
         var otp = Authentication.GenerateOtp();
         var expriredTime = TimeSpan.FromMinutes(5);
-
         try
         {
+            var user = await userRepository.GetUserByEmailAsync(request.ForgotPasswordDto.Email);
+            if (user == null)
+            {
+                return BaseResponse<string>.NotFound("Email không tồn tại.");
+            }
             var isOtpExists = await otpCache.OtpExistsAsync(request.ForgotPasswordDto.Email);
             if (isOtpExists)
             {
                 var isDeleted = await otpCache.DeleteOtpAsync(request.ForgotPasswordDto.Email);
                 if (!isDeleted)
                 {
-                    response.Message = "Có lỗi xảy ra khi xóa OTP cũ.";
-                    response.StatusCode = 500;
-                    response.Success = false;
-                    return response;
+                    return BaseResponse<string>.InternalServerError("Có lỗi xảy ra khi xóa OTP cũ.");
                 }
             }
 
             await otpCache.SaveOtpAsync(request.ForgotPasswordDto.Email, otp, expriredTime);
             await emailService.SendOtpEmailAsync(request.ForgotPasswordDto.Email, otp);
 
-            response.Message = "OTP đã được gửi đến email của bạn.";
-            response.StatusCode = 200;
-            response.Success = true;
+            return BaseResponse<string>.SuccessReturn("Mã OTP đã được gửi đến email của bạn.");
         }
         catch (Exception e)
         {
-            response.StatusCode = 500;
-            response.Success = false;
-            response.Message = e.Message;
+            return BaseResponse<string>.InternalServerError(e.Message);
         }
-
-        return response;
     }
 }

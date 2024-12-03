@@ -16,7 +16,7 @@ public class ConfirmForgotPasswordCommandHandler(IUserRepository userRepository,
         var response = new DetailBaseResponse<string>
         {
             Id = Ulid.NewUlid().ToString(),
-            Timestamp = DateTime.UtcNow,
+            Timestamp = DateTime.UtcNow + TimeSpan.FromHours(7),
             Errors = []
         };
         var exitingUser = await userRepository.GetByPropertyAsync(u => u.Email == request.ConfirmForgotPasswordDto.Email);

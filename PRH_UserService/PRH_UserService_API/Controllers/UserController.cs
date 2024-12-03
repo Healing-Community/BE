@@ -12,12 +12,6 @@ using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateSocial
 using Application.Commands_Queries.Commands.Users.VerifyUser;
 using Application.Commands_Queries.Queries.Users.GetUsers;
 using Application.Commands_Queries.Queries.Users.GetUsersById;
-using Application.Commons.DTOs;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using PRH_UserService_API.Extentions;
-using PRH_UserService_API.Middleware;
 
 namespace PRH_UserService_API.Controllers;
 
@@ -120,7 +114,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         return response.ToActionResult();
     }
 
-    [@AllowAnonymous]
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
@@ -128,7 +122,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         return response.ToActionResult();
     }
 
-    [@AllowAnonymous]
+    [AllowAnonymous]
     [HttpPost("register-user")]
     public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
     {
@@ -154,7 +148,6 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     [HttpPost("logout")]
     public async Task<IActionResult> Logout([FromBody] LogoutRequestDto logoutRequestDto)
     {
-        logoutRequestDto.context = HttpContext;
         var response = await sender.Send(new LogoutUserCommand(logoutRequestDto));
         return response.ToActionResult();
     }

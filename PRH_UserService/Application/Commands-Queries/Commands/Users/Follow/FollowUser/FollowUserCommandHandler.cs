@@ -17,6 +17,7 @@ public class FollowUserCommandHandler(IUserRepository userRepository, IMapper ma
         try
         {
             var userId = accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return BaseResponse<string>.Unauthorized();
             var user = await userRepository.GetByIdAsync(userId);
             var followUser = await userRepository.GetByIdAsync(request.FollowUserDto.FollowerId);
 
