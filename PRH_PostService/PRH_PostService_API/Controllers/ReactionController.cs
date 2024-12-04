@@ -82,12 +82,6 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new UpdateReactionCommand(id, reaction));
             return response.ToActionResult();
         }
-        /// <summary>
-        /// Vì đang fix cứng 6 loai reaction nên có thể không cần dùng (dùng có thể gây bug)
-        /// </summary>
-        /// <param name="removeReactionDto"></param>
-        /// <returns></returns>
-        [Obsolete]
         [Authorize]
         [HttpDelete("remove-reaction")]
         public async Task<IActionResult> DeleteReaction(PostIdOnlyDto removeReactionDto)
