@@ -33,10 +33,10 @@ public partial class PaymentDbContext : DbContext
             .Property(p => p.AppointmentId)
             .IsRequired();
 
-        modelBuilder.Entity<Payment>()
-            .Property(p => p.Amount)
-            .HasColumnType("decimal(10,2)")
-            .IsRequired();
+        //modelBuilder.Entity<Payment>()
+        //    .Property(p => p.Amount)
+        //    .HasColumnType("decimal(10,2)")
+        //    .IsRequired();
 
         OnModelCreatingPartial(modelBuilder);
     }

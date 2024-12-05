@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ExpertDbContext))]
-    partial class ExpertDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241205153443_changedatatype10")]
+    partial class changedatatype10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,8 +156,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ExpertAvailabilityId")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("AvailableDate")
                         .HasColumnType("date");
