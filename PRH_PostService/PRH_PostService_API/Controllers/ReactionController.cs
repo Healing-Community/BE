@@ -17,6 +17,17 @@ namespace PRH_PostService_API.Controllers
     public class ReactionController(ISender sender) : ControllerBase
     {
         /// <summary>
+        /// Lấy reaction của user theo post id
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        [HttpGet("get-user-reaction-by-post-id/{PostId}")]
+        public async Task<IActionResult> GetUserReactionByPostId(string PostId)
+        {
+            var response = await sender.Send(new GetUserReactionByPostIdQuery(PostId));
+            return response.ToActionResult();
+        }
+        /// <summary>
         /// Lấy số lượng reaction của bài viết
         /// </summary>
         /// <param name="postId"></param>
