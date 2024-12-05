@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Application.Queries.GetWorkExperienceQuery
 {
-    public record GetWorkExperienceQuery(string WorkExperienceId) : IRequest<BaseResponse<WorkExperience>>;
+    public record GetWorkExperienceQuery : IRequest<BaseResponse<IEnumerable<WorkExperience>>>;
 }

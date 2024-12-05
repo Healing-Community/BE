@@ -30,11 +30,11 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin,Expert")]
-        [HttpGet("get/{workExperienceId}")]
-        public async Task<IActionResult> GetWorkExperience(string workExperienceId)
+        [Authorize(Roles = "Expert")]
+        [HttpGet("get")]
+        public async Task<IActionResult> GetWorkExperience()
         {
-            var response = await sender.Send(new GetWorkExperienceQuery(workExperienceId));
+            var response = await sender.Send(new GetWorkExperienceQuery());
             return response.ToActionResult();
         }
 
