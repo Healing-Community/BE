@@ -15,6 +15,8 @@ namespace Infrastructure.Context
         public DbSet<Report> Reports { get; set; }
         public DbSet<ReportType> ReportTypes { get; set; }
         public DbSet<UserPreference> UserPreferences { get; set; }
+        public DbSet<Bookmark> Bookmarks { get; set; }
+        public DbSet<BookmarkPost> BookmarkPosts { get; set; }
         public HFDBPostserviceContext(DbContextOptions<HFDBPostserviceContext> options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,7 +32,10 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Post>().HasIndex(p => p.Title).IsUnique();
             modelBuilder.Entity<Category>().HasKey(p => p.CategoryId);
             modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
-
+            modelBuilder.Entity<Bookmark>().HasKey(b => b.BookmarkId);
+            modelBuilder.Entity<BookmarkPost>().HasKey(bp => bp.BookmarkPostId);
+            //make sure that the combination of PostId and BookmarkId is unique
+            modelBuilder.Entity<BookmarkPost>().HasIndex(bp => new { bp.PostId, bp.BookmarkId }).IsUnique();
             // Relationship
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.Category)
@@ -43,7 +48,7 @@ namespace Infrastructure.Context
                 .HasOne(r => r.Post)
                 .WithMany(p => p.Reactions)
                 .HasForeignKey(r => r.PostId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Reaction>()
                 .HasOne(r => r.ReactionType)
                 .WithMany(rt => rt.Reactions)
@@ -58,12 +63,12 @@ namespace Infrastructure.Context
                 .HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(c => c.PostId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Parent)
                 .WithMany(c => c.Replies)
                 .HasForeignKey(c => c.ParentId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Report 
             modelBuilder.Entity<Report>().HasKey(r => r.ReportId);
@@ -71,7 +76,7 @@ namespace Infrastructure.Context
                 .HasOne(r => r.Post)
                 .WithMany(p => p.Reports)
                 .HasForeignKey(r => r.PostId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Report>()
                 .HasOne(r => r.ReportType)
                 .WithMany(rt => rt.Reports)
@@ -84,10 +89,22 @@ namespace Infrastructure.Context
             modelBuilder.Entity<UserPreference>()
                 .HasOne(up => up.Category)
                 .WithMany(c => c.UserPreferences)
-                .HasForeignKey(up => up.CategoryId); 
+                .HasForeignKey(up => up.CategoryId);
             OnModelCreatingPartial(modelBuilder);
-        }
+            // Bookmark : One bookmark has many bookmark posts
+            modelBuilder.Entity<Bookmark>()
+                .HasMany(b => b.BookmarkPosts)
+                .WithOne(bp => bp.Bookmark)
+                .HasForeignKey(bp => bp.BookmarkId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // BookmarkPost : One bookmark post has one post
+            modelBuilder.Entity<BookmarkPost>()
+                .HasOne(bp => bp.Post)
+                .WithMany(p => p.BookmarkPosts)
+                .HasForeignKey(bp => bp.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+        }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }

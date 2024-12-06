@@ -30,7 +30,7 @@ namespace Application.Queries.GetAppointmentsByUser
                     ExpertId = a.ExpertProfileId,
                     Name = a.ExpertProfile?.Fullname ?? "Không xác định",
                     AppointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"),
-                    TimeRange = $"{a.StartTime:hh\\:mm} - {a.EndTime:hh\\:mm}",
+                    TimeRange = $"{a.StartTime:HH:mm} - {a.EndTime:HH:mm}",
                     MeetLink = a.MeetLink ?? "",
                     Tag = MapTag(a.Status, a.AppointmentDate, a.StartTime)
                 });

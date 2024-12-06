@@ -30,7 +30,7 @@ namespace Application.Queries.GetAppointmentsByExpert
                     UserId = a.UserId,
                     Name = a.UserEmail,
                     AppointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"),
-                    TimeRange = $"{a.StartTime:hh\\:mm} - {a.EndTime:hh\\:mm}",
+                    TimeRange = $"{a.StartTime:HH:mm} - {a.EndTime:HH:mm}",
                     MeetLink = a.MeetLink ?? "",
                     Tag = MapTag(a.Status, a.AppointmentDate, a.StartTime)
                 });

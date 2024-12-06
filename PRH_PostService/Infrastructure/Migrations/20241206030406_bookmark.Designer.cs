@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(HFDBPostserviceContext))]
-    partial class HFDBPostserviceContextModelSnapshot : ModelSnapshot
+    [Migration("20241206030406_bookmark")]
+    partial class bookmark
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,6 +37,10 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PostId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -43,36 +50,12 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("BookmarkId");
 
-                    b.ToTable("Bookmarks");
-                });
+                    b.HasIndex("PostId");
 
-            modelBuilder.Entity("Domain.Entities.BookmarkPost", b =>
-                {
-                    b.Property<string>("BookmarkPostId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("BookmarkId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PostId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("BookmarkPostId");
-
-                    b.HasIndex("BookmarkId");
-
-                    b.HasIndex("PostId", "BookmarkId")
+                    b.HasIndex("UserId", "PostId")
                         .IsUnique();
 
-                    b.ToTable("BookmarkPosts");
+                    b.ToTable("Bookmarks");
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
@@ -291,21 +274,13 @@ namespace Infrastructure.Migrations
                     b.ToTable("UserPreferences");
                 });
 
-            modelBuilder.Entity("Domain.Entities.BookmarkPost", b =>
+            modelBuilder.Entity("Domain.Entities.Bookmark", b =>
                 {
-                    b.HasOne("Domain.Entities.Bookmark", "Bookmark")
-                        .WithMany("BookmarkPosts")
-                        .HasForeignKey("BookmarkId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Post", "Post")
-                        .WithMany("BookmarkPosts")
+                        .WithMany("Bookmarks")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Bookmark");
 
                     b.Navigation("Post");
                 });
@@ -379,11 +354,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Bookmark", b =>
-                {
-                    b.Navigation("BookmarkPosts");
-                });
-
             modelBuilder.Entity("Domain.Entities.Category", b =>
                 {
                     b.Navigation("Posts");
@@ -398,7 +368,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Post", b =>
                 {
-                    b.Navigation("BookmarkPosts");
+                    b.Navigation("Bookmarks");
 
                     b.Navigation("Comments");
 

@@ -92,7 +92,8 @@ namespace Application.Commands.CreateAvailability
                     EndTime = request.EndTime,
                     Status = 0, // Available
                     CreatedAt = DateTime.UtcNow.AddHours(7),
-                    UpdatedAt = DateTime.UtcNow.AddHours(7)
+                    UpdatedAt = DateTime.UtcNow.AddHours(7),
+                    Amount = request.Amount
                 };
 
                 await expertAvailabilityRepository.Create(newAvailability);

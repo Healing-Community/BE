@@ -60,19 +60,18 @@ namespace Persistence.Repositories
         }
         public async Task<IEnumerable<Post>> GetRecommendedPostsAsync(string? userId, int pageNumber, int pageSize)
         {
-
             // Nếu userId là rỗng, trả về bài viết ngẫu nhiên
             if (string.IsNullOrEmpty(userId))
             {
                 var randomPosts = await context.Posts
-                    .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
+                    .Where(p => p.Status == 0)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
-                // Áp dụng paging
-                return randomPosts
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
+                return randomPosts;
             }
+
             // Lấy danh sách CategoryId mà user yêu thích
             var preferredCategories = await context.UserPreferences
                 .Where(up => up.UserId == userId)
@@ -81,47 +80,29 @@ namespace Persistence.Repositories
 
             if (preferredCategories.Any())
             {
-                // Lấy bài viết theo danh mục yêu thích
-                var preferredPosts = await context.Posts
-                    .Where(post => preferredCategories.Contains(post.CategoryId ?? string.Empty))
-                    .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
-                    .ToListAsync();
-
+                
                 // Lấy bài viết không thuộc danh mục yêu thích
-                var nonPreferredPosts = await context.Posts
-                    .Where(post => !preferredCategories.Contains(post.CategoryId ?? string.Empty))
-                    .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
-                    .ToListAsync();
-
                 // Ghép bài viết yêu thích lên trước, bài viết không yêu thích xuống sau
-                var allPosts = preferredPosts.Concat(nonPreferredPosts);
-
-                // Áp dụng paging
-                return allPosts
+                var posts = await context.Posts.Where(p => p.Status == 0)
+                    .OrderByDescending(p => preferredCategories.Contains(p.CategoryId ?? ""))
+                    .ThenByDescending(p => p.CreateAt)
                     .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
-            }
-            else
-            {
-                // Không có danh mục yêu thích, lấy toàn bộ bài viết và trộn ngẫu nhiên
-                var allPosts = await context.Posts
-                    .OrderBy(_ => Guid.NewGuid())
+                    .Take(pageSize)
                     .ToListAsync();
-
-                // Áp dụng paging
-                return allPosts
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
+                
+                return posts;
             }
+            return await GetRandomPostsAsync(pageNumber, pageSize);
         }
 
         public async Task<IEnumerable<Post>> GetRandomPostsAsync(int pageNumber, int pageSize)
         {
-            return await context.Posts
-                .OrderBy(_ => Guid.NewGuid()) // Trộn ngẫu nhiên
+            var randomPosts = await context.Posts
+                .Where(p => p.Status == 0)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+            return randomPosts;
         }
 
         public Task<IEnumerable<Post>?> GetsByPropertyAsync(Expression<Func<Post, bool>> predicate)
@@ -131,11 +112,12 @@ namespace Persistence.Repositories
 
         public async Task<IEnumerable<Post>> GetsPostByPropertyPagingAsync(Expression<Func<Post, bool>> predicate, int pageNumber, int pageSize)
         {
-            return await context.Posts
+            var posts = await context.Posts
                 .Where(predicate)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+            return posts;
         }
     }
 }

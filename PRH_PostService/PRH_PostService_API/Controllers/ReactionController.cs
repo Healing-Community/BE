@@ -17,6 +17,17 @@ namespace PRH_PostService_API.Controllers
     public class ReactionController(ISender sender) : ControllerBase
     {
         /// <summary>
+        /// Lấy reaction của user theo post id
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        [HttpGet("get-user-reaction-by-post-id/{PostId}")]
+        public async Task<IActionResult> GetUserReactionByPostId(string PostId)
+        {
+            var response = await sender.Send(new GetUserReactionByPostIdQuery(PostId));
+            return response.ToActionResult();
+        }
+        /// <summary>
         /// Lấy số lượng reaction của bài viết
         /// </summary>
         /// <param name="postId"></param>
@@ -82,12 +93,6 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new UpdateReactionCommand(id, reaction));
             return response.ToActionResult();
         }
-        /// <summary>
-        /// Vì đang fix cứng 6 loai reaction nên có thể không cần dùng (dùng có thể gây bug)
-        /// </summary>
-        /// <param name="removeReactionDto"></param>
-        /// <returns></returns>
-        [Obsolete]
         [Authorize]
         [HttpDelete("remove-reaction")]
         public async Task<IActionResult> DeleteReaction(PostIdOnlyDto removeReactionDto)
