@@ -12,16 +12,16 @@ namespace Application.Commands.Reactions.AddReaction
     public class CreateReactionCommandHandler(
         IReactionTypeRepository reactionTypeRepository,
         IHttpContextAccessor accessor,
-        IReactionRepository reactionRepository) : IRequestHandler<CreateReactionCommand, BaseResponse<string>>
+        IReactionRepository reactionRepository) : IRequestHandler<CreateReactionCommand, BaseResponse<ReactionType>>
     {
-        public async Task<BaseResponse<string>> Handle(CreateReactionCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<ReactionType>> Handle(CreateReactionCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 var userId = accessor?.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userId))
                 {
-                    return BaseResponse<string>.Unauthorized();
+                    return BaseResponse<ReactionType>.Unauthorized();
                 }
 
                 // Tính thời gian hiện tại (UTC + 7)
@@ -34,7 +34,7 @@ namespace Application.Commands.Reactions.AddReaction
                 // Nếu người dùng đã reaction với loại tương tự, trả về thông báo lỗi
                 if (existingReaction?.ReactionTypeId == request.ReactionDto.ReactionTypeId)
                 {
-                    return BaseResponse<string>.BadRequest("Bạn đã reaction bài viết này rồi.");
+                    return BaseResponse<ReactionType>.BadRequest("Bạn đã reaction bài viết này rồi.");
                 }
 
                 // Nếu người dùng đã có reaction nhưng với loại khác, cập nhật lại reaction
@@ -45,7 +45,7 @@ namespace Application.Commands.Reactions.AddReaction
 
                     if (reactionTypeUpdate == null)
                     {
-                        return BaseResponse<string>.NotFound("Loại reaction không tồn tại.");
+                        return BaseResponse<ReactionType>.NotFound("Loại reaction không tồn tại.");
                     }
 
                     existingReaction.ReactionTypeId = request.ReactionDto.ReactionTypeId;
@@ -53,8 +53,13 @@ namespace Application.Commands.Reactions.AddReaction
 
                     await reactionRepository.Update(existingReaction.ReactionId, existingReaction);
 
-                    return BaseResponse<string>.SuccessReturn(
-                        $"Cập nhật reaction thành công với loại {reactionTypeUpdate.Name}.");
+                    var reactionTypeIndb = await reactionTypeRepository.GetByPropertyAsync(
+                        x => x.ReactionTypeId == existingReaction.ReactionTypeId);
+                    if (reactionTypeIndb == null)
+                    {
+                        return BaseResponse<ReactionType>.NotFound("Loại reaction không tồn tại.");
+                    }
+                    return BaseResponse<ReactionType>.SuccessReturn(reactionTypeIndb, "Cập nhật phản hồi thành công.");
                 }
 
                 // Kiểm tra sự tồn tại của loại reaction
@@ -63,7 +68,7 @@ namespace Application.Commands.Reactions.AddReaction
 
                 if (reactionType == null || reactionType.ReactionTypeId == Ulid.Empty.ToString())
                 {
-                    return BaseResponse<string>.NotFound("Loại reaction không tồn tại.");
+                    return BaseResponse<ReactionType>.NotFound("Loại reaction không tồn tại.");
                 }
 
                 // Tạo mới một reaction
@@ -79,11 +84,11 @@ namespace Application.Commands.Reactions.AddReaction
 
                 await reactionRepository.Create(newReaction);
 
-                return BaseResponse<string>.SuccessReturn($"Phản hồi bài viết thành công với loại {reactionType.Name}.");
+                return BaseResponse<ReactionType>.SuccessReturn(reactionType,"Phản hồi bài viết thành công");
             }
             catch (Exception ex)
             {
-                return BaseResponse<string>.InternalServerError($"Đã xảy ra lỗi: {ex.Message}");
+                return BaseResponse<ReactionType>.InternalServerError($"Đã xảy ra lỗi: {ex.Message}");
             }
         }
     }

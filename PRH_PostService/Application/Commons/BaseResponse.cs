@@ -60,9 +60,9 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<string> BadRequest(string message)
+    internal static BaseResponse<T> BadRequest(string message)
     {
-        return new BaseResponse<string>
+        return new BaseResponse<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status400BadRequest,

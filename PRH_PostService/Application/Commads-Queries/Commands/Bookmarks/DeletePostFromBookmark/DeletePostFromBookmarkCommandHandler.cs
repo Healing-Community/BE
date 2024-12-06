@@ -26,7 +26,7 @@ public class DeletePostFromBookmarkCommandHandler(IBookMarkRepository bookmarkRe
                 return BaseResponse<string>.NotFound("Không tìm thấy bookmark");
             }
             await bookmarkPostRepository.DeleteAsync(bookmarkPost.BookmarkPostId);
-            return BaseResponse<string>.SuccessReturn("Xóa bookmark thành công");
+            return BaseResponse<string>.SuccessReturn("Đã xóa bài viết khỏi bookmark");
         }
         catch (Exception e)
         {

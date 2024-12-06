@@ -16,7 +16,7 @@ public class GetsPostBookmarkHandler(IBookMarkRepository bookmarkRepository,IPos
         {
             var userId = accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return BaseResponse<IEnumerable<PostDetailDto>>.Unauthorized();
-            var bookmarkInDb = await bookmarkRepository.GetByPropertyAsync(b => b.UserId == userId);
+            var bookmarkInDb = await bookmarkRepository.GetByPropertyAsync(b => b.UserId == userId && b.BookmarkId == request.BookmarkId);
             if (bookmarkInDb == null) return BaseResponse<IEnumerable<PostDetailDto>>.SuccessReturn([]);
             var bookmarkPost = await bookmarkPostRepository.GetsByPropertyAsync(bp => bp.BookmarkId == bookmarkInDb.BookmarkId);
             var bookmarkPostList = bookmarkPost?.ToList();

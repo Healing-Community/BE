@@ -1,5 +1,6 @@
 using Application.Commads_Queries.Commands.Bookmarks.AddBookMark;
 using Application.Commads_Queries.Commands.Bookmarks.AddBookmarkPost;
+using Application.Commads_Queries.Commands.Bookmarks.DeleteBookmark;
 using Application.Commads_Queries.Commands.Bookmarks.DeletePostFromBookmark;
 using Application.Commads_Queries.Queries.Bookmarks.GetsPostBookmark;
 using Application.Commons.DTOs;
@@ -31,9 +32,9 @@ namespace PRH_PostService_API.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpGet("get-post-bookmark")]
-        public async Task<IActionResult> GetPostBookmark()
+        public async Task<IActionResult> GetPostBookmark(string bookmarkId)
         {
-            var response = await sender.Send(new GetsPostBookmark());
+            var response = await sender.Send(new GetsPostBookmark(bookmarkId));
             return response.ToActionResult();
         }
         /// <summary>
@@ -61,11 +62,28 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new AddBookmarkPostCommand(bookmarkPostDto));
             return response.ToActionResult();
         }
+        /// <summary>
+        /// xóa bài viết khỏi bookmark
+        /// </summary>
+        /// <param name="bookmarkPostDto"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpDelete("delete-bookmark-post")]
         public async Task<IActionResult> DeletePostFromBookmark(BookmarkPostDto bookmarkPostDto)
         {
             var response = await sender.Send(new DeletePostFromBookmarkCommand(bookmarkPostDto));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// xóa bookmark
+        /// </summary>
+        /// <param name="bookmarkId"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpDelete("delete-bookmark")]
+        public async Task<IActionResult> DeleteBookmark([FromBody]string bookmarkId)
+        {
+            var response = await sender.Send(new DeleteBookmarkCommand(bookmarkId));
             return response.ToActionResult();
         }
     }

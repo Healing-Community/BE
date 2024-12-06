@@ -16,7 +16,7 @@ public class GetBookmarkQueryHandler(IBookMarkRepository bookMarkRepository, IHt
             var userId = accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return BaseResponse<IEnumerable<Bookmark>>.Unauthorized();
             var bookmark = await bookMarkRepository.GetsByPropertyAsync(b => b.UserId == userId);
-            return BaseResponse<IEnumerable<Bookmark>>.SuccessReturn(bookmark ?? new List<Bookmark>());
+            return BaseResponse<IEnumerable<Bookmark>>.SuccessReturn(bookmark ?? []);
         }
         catch (Exception e)
         {

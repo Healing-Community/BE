@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Commads_Queries.Queries.Bookmarks.GetsPostBookmark;
 
-public record GetsPostBookmark : IRequest<BaseResponse<IEnumerable<PostDetailDto>>>;
+public record GetsPostBookmark(string BookmarkId) : IRequest<BaseResponse<IEnumerable<PostDetailDto>>>;
