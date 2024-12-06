@@ -12,9 +12,10 @@
         public int Status { get; set; }
         public DateTime CreateAt { get; init; }
         public DateTime? UpdateAt { get; set; }
-        public ICollection<Comment> Comments { get; set; } 
-        public ICollection<Reaction> Reactions { get; set; }
-        public ICollection<Report> Reports { get; set; }
+        public ICollection<Comment>? Comments { get; set; } 
+        public ICollection<Reaction>? Reactions { get; set; }
+        public ICollection<Report>? Reports { get; set; }
+        public ICollection<BookmarkPost>? BookmarkPosts { get; set; }
         public Category? Category { get; set; }
     }
 }

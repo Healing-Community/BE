@@ -33,11 +33,12 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Categories.FirstAsync(x => x.CategoryId == id);
         }
 
-        public async Task<Category> GetByPropertyAsync(Expression<Func<Category, bool>> predicate)
+        public async Task<Category?> GetByPropertyAsync(Expression<Func<Category, bool>> predicate)
         {
-            return await hFDBPostserviceContext.Categories.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Category() { 
-                    CategoryId = Ulid.Empty.ToString() 
-                };
+            return await hFDBPostserviceContext.Categories.AsNoTracking().FirstOrDefaultAsync(predicate) ?? new Category()
+            {
+                CategoryId = Ulid.Empty.ToString()
+            };
         }
 
         public async Task<IEnumerable<Category>> GetsAsync()
