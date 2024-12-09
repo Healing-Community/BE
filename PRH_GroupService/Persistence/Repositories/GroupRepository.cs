@@ -51,5 +51,11 @@ namespace Persistence.Repositories
             hFDBGroupServiceContext.Entry(existingGroup).State = EntityState.Modified;
             await hFDBGroupServiceContext.SaveChangesAsync();
         }
+
+        public async Task UpdateAfterLeaving(Group group)
+        {
+            hFDBGroupServiceContext.Groups.Update(group);
+            await hFDBGroupServiceContext.SaveChangesAsync();
+        }
     }
 }
