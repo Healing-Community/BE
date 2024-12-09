@@ -10,10 +10,12 @@ namespace Application.Commands.UserGroups.LeaveGroups
     public class LeaveGroupCommandHandler : IRequestHandler<LeaveGroupCommand, BaseResponse<string>>
     {
         private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IGroupRepository _groupRepository;
 
-        public LeaveGroupCommandHandler(IUserGroupRepository userGroupRepository)
+        public LeaveGroupCommandHandler(IUserGroupRepository userGroupRepository, IGroupRepository groupRepository)
         {
             _userGroupRepository = userGroupRepository;
+            _groupRepository = groupRepository;  
         }
 
         public async Task<BaseResponse<string>> Handle(LeaveGroupCommand request, CancellationToken cancellationToken)
@@ -47,6 +49,14 @@ namespace Application.Commands.UserGroups.LeaveGroups
                 }
 
                 await _userGroupRepository.DeleteAsyncV2(request.GroupId, userId);
+
+                // Cập nhật số lượng thành viên trong nhóm (Giảm đi 1)
+                var group = await _groupRepository.GetByIdAsync(request.GroupId);
+                if (group != null)
+                {
+                    group.CurrentMemberCount--;  
+                    await _groupRepository.UpdateAfterLeaving(group);  
+                }
 
                 response.StatusCode = 200;
                 response.Success = true;
