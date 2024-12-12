@@ -37,7 +37,6 @@ namespace Application.Commands.UpdateWorkExperience
                     return response;
                 }
 
-                // Lấy UserId từ HTTP context
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -51,7 +50,6 @@ namespace Application.Commands.UpdateWorkExperience
                     return response;
                 }
 
-                // Lấy thông tin WorkExperience từ repository
                 var workExperience = await workExperienceRepository.GetByIdAsync(request.WorkExperienceId);
                 if (workExperience == null)
                 {
@@ -65,7 +63,6 @@ namespace Application.Commands.UpdateWorkExperience
                     return response;
                 }
 
-                // Kiểm tra quyền sở hữu
                 if (workExperience.ExpertProfileId != userId)
                 {
                     response.Errors.Add(new ErrorDetail
@@ -74,11 +71,11 @@ namespace Application.Commands.UpdateWorkExperience
                         Field = "Authorization"
                     });
                     response.Success = false;
-                    response.StatusCode = 403; // Forbidden
+                    response.StatusCode = 403;
                     return response;
                 }
 
-                // Kiểm tra dữ liệu đầu vào
+                // Validate input
                 if (string.IsNullOrWhiteSpace(request.CompanyName))
                 {
                     response.Errors.Add(new ErrorDetail
@@ -111,6 +108,46 @@ namespace Application.Commands.UpdateWorkExperience
                     response.Success = false;
                     response.StatusCode = 400;
                     response.Message = "Dữ liệu đầu vào không hợp lệ.";
+                    return response;
+                }
+
+                var existingExperiences = await workExperienceRepository.GetWorkExperiencesByExpertIdAsync(userId);
+
+                // Loại bỏ bản ghi hiện tại khỏi danh sách kiểm tra
+                existingExperiences = existingExperiences.Where(e => e.WorkExperienceId != request.WorkExperienceId);
+
+                bool isDuplicate = existingExperiences.Any(e =>
+                    e.CompanyName == request.CompanyName &&
+                    e.PositionTitle == request.PositionTitle &&
+                    e.StartDate == request.StartDate &&
+                    e.EndDate == request.EndDate);
+
+                if (isDuplicate)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Kinh nghiệm làm việc này đã tồn tại.",
+                        Field = "WorkExperience"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 409;
+                    response.Message = "Kinh nghiệm làm việc trùng lặp.";
+                    return response;
+                }
+
+                bool hasTimeConflict = existingExperiences.Any(e =>
+                    e.StartDate < request.EndDate && e.EndDate > request.StartDate);
+
+                if (hasTimeConflict)
+                {
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Khoảng thời gian này xung đột với một kinh nghiệm làm việc khác.",
+                        Field = "TimeConflict"
+                    });
+                    response.Success = false;
+                    response.StatusCode = 409;
+                    response.Message = "Xung đột thời gian với kinh nghiệm làm việc khác.";
                     return response;
                 }
 
