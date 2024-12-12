@@ -2,6 +2,7 @@
 using Application.Commands.DeleteWorkExperience;
 using Application.Commands.UpdateWorkExperience;
 using Application.Queries.GetAllWorkExperiences;
+using Application.Queries.GetWorkExperienceById;
 using Application.Queries.GetWorkExperienceQuery;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -51,6 +52,14 @@ namespace PRH_ExpertService_API.Controllers
         public async Task<IActionResult> DeleteWorkExperience(string workExperienceId)
         {
             var response = await sender.Send(new DeleteWorkExperienceCommand(workExperienceId));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Expert")]
+        [HttpGet("get/{workExperienceId}")]
+        public async Task<IActionResult> GetWorkExperienceById(string workExperienceId)
+        {
+            var response = await sender.Send(new GetWorkExperienceByIdQuery(workExperienceId));
             return response.ToActionResult();
         }
     }
