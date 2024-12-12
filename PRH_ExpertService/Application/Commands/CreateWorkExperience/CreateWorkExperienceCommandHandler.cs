@@ -37,7 +37,6 @@ namespace Application.Commands.CreateWorkExperience
                     return response;
                 }
 
-                // Lấy UserId từ HTTP context
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -51,7 +50,7 @@ namespace Application.Commands.CreateWorkExperience
                     return response;
                 }
 
-                // Kiểm tra dữ liệu đầu vào
+                // Validate input
                 if (string.IsNullOrWhiteSpace(request.CompanyName))
                 {
                     response.Errors.Add(new ErrorDetail
@@ -87,13 +86,15 @@ namespace Application.Commands.CreateWorkExperience
                     return response;
                 }
 
-                // Kiểm tra trùng lặp kinh nghiệm làm việc
                 var existingExperiences = await workExperienceRepository.GetWorkExperiencesByExpertIdAsync(userId);
-                if (existingExperiences.Any(e =>
+
+                bool isDuplicate = existingExperiences.Any(e =>
                     e.CompanyName == request.CompanyName &&
                     e.PositionTitle == request.PositionTitle &&
                     e.StartDate == request.StartDate &&
-                    e.EndDate == request.EndDate))
+                    e.EndDate == request.EndDate);
+
+                if (isDuplicate)
                 {
                     response.Errors.Add(new ErrorDetail
                     {
@@ -101,14 +102,15 @@ namespace Application.Commands.CreateWorkExperience
                         Field = "WorkExperience"
                     });
                     response.Success = false;
-                    response.StatusCode = 409; // Conflict
+                    response.StatusCode = 409;
                     response.Message = "Kinh nghiệm làm việc trùng lặp.";
                     return response;
                 }
 
-                // Kiểm tra xung đột ngày tháng với các kinh nghiệm khác
-                if (existingExperiences.Any(e =>
-                    e.StartDate < request.EndDate && e.EndDate > request.StartDate))
+                bool hasTimeConflict = existingExperiences.Any(e =>
+                    e.StartDate < request.EndDate && e.EndDate > request.StartDate);
+
+                if (hasTimeConflict)
                 {
                     response.Errors.Add(new ErrorDetail
                     {
