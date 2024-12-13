@@ -18,8 +18,8 @@ namespace Application.Queries.Groups.GetGroups
                 Errors = new List<string>()
             };
             try
-            {
-                var groups = await groupRepository.GetsAsync();
+            {                
+                var groups = (await groupRepository.GetsAsync()).OrderByDescending(g => g.CreatedAt);
 
                 if (!groups.Any())
                 {
