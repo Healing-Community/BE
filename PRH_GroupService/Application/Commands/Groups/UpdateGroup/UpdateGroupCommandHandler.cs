@@ -45,6 +45,9 @@ namespace Application.Commands.Groups.UpdateGroup
                 existingGroup.Description = request.GroupDto.Description;
                 existingGroup.AvatarGroup = request.GroupDto.AvatarGroup;
                 existingGroup.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                existingGroup.IsAutoApprove = request.GroupDto.IsAutoApprove;
+                existingGroup.GroupVisibility = request.GroupDto.GroupVisibility;
+                existingGroup.MemberLimit = request.GroupDto.MemberLimit;
 
                 await groupRepository.Update(request.Id, existingGroup);
                 response.Success = true;

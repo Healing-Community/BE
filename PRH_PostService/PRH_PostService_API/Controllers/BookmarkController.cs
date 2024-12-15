@@ -1,7 +1,9 @@
 using Application.Commads_Queries.Commands.Bookmarks.AddBookMark;
 using Application.Commads_Queries.Commands.Bookmarks.AddBookmarkPost;
+using Application.Commads_Queries.Commands.Bookmarks.DeleteBookmark;
 using Application.Commads_Queries.Commands.Bookmarks.DeletePostFromBookmark;
 using Application.Commads_Queries.Queries.Bookmarks.GetsPostBookmark;
+using Application.Commons;
 using Application.Commons.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,21 +33,21 @@ namespace PRH_PostService_API.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpGet("get-post-bookmark")]
-        public async Task<IActionResult> GetPostBookmark()
+        public async Task<IActionResult> GetPostBookmark(string bookmarkId)
         {
-            var response = await sender.Send(new GetsPostBookmark());
+            var response = await sender.Send(new GetsPostBookmark(bookmarkId));
             return response.ToActionResult();
         }
         /// <summary>
         /// tạo bookmark: mỗi user có thể tạo nhiều bookmark và bookmark chỉ thuộc về user tạo ra nó
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="bookmarkNameOnlyDto"></param>
         /// <returns></returns>
         [Authorize]
         [HttpPost("create-bookmark")]
-        public async Task<IActionResult> CreateBookmark([FromBody]string name)
+        public async Task<IActionResult> CreateBookmark(BookmarkNameOnlyDto bookmarkNameOnlyDto)
         {
-            var response = await sender.Send(new AddBookmarkCommand(name));
+            var response = await sender.Send(new AddBookmarkCommand(bookmarkNameOnlyDto.Name));
             return response.ToActionResult();
         }
 
@@ -61,11 +63,28 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new AddBookmarkPostCommand(bookmarkPostDto));
             return response.ToActionResult();
         }
+        /// <summary>
+        /// xóa bài viết khỏi bookmark
+        /// </summary>
+        /// <param name="bookmarkPostDto"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpDelete("delete-bookmark-post")]
         public async Task<IActionResult> DeletePostFromBookmark(BookmarkPostDto bookmarkPostDto)
         {
             var response = await sender.Send(new DeletePostFromBookmarkCommand(bookmarkPostDto));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// xóa bookmark
+        /// </summary>
+        /// <param name="bookmarkIdOnlyDto"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpDelete("delete-bookmark")]
+        public async Task<IActionResult> DeleteBookmark(BookmarkIdOnlyDto bookmarkIdOnlyDto)
+        {
+            var response = await sender.Send(new DeleteBookmarkCommand(bookmarkIdOnlyDto.BookmarkId));
             return response.ToActionResult();
         }
     }

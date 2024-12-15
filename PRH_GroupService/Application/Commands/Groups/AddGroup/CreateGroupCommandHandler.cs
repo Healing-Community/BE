@@ -49,7 +49,7 @@ namespace Application.Commands.Groups.AddGroup
                     CreatedByUserId = userId,
                     IsAutoApprove = request.GroupDto.IsAutoApprove,
                     GroupVisibility = request.GroupDto.GroupVisibility,
-                    MemberLimit = 50,
+                    MemberLimit = request.GroupDto.MemberLimit,
                     CurrentMemberCount = 1
                 };
 
@@ -61,7 +61,7 @@ namespace Application.Commands.Groups.AddGroup
                     GroupId = group.GroupId,
                     UserId = userId,
                     RoleInGroup = "Owner",
-                    JoinedAt = DateTime.UtcNow
+                    JoinedAt = DateTime.UtcNow.AddHours(7)
                 };
                 await userGroupRepository.Create(userGroup);
 

@@ -1,20 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Commons;
-public class BaseResponse<T>
+public class BaseResponseCount<T>
 {
     public required string Id { get; set; }
     public int StatusCode { get; set; }
     public string? Message { get; set; }
     public bool Success { get; set; }
+    public int Total { get; set; }
     public T? Data { get; set; }
     public List<string>? Errors { get; set; }
     public DateTime Timestamp { get; set; }
+    
 
-    internal static BaseResponse<T> NotFound(string message = "Không tìm thấy dữ liệu")
+    internal static BaseResponseCount<T> NotFound(string message = "Không tìm thấy dữ liệu")
     {
-        return new BaseResponse<T>
+        return new BaseResponseCount<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status404NotFound,
@@ -24,21 +26,22 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<T> SuccessReturn(T classInstance = default, string message = "Thành công")
+    internal static BaseResponseCount<T> SuccessReturn(T classInstance = default, string message = "Thành công", int total = 0)
     {
-        return new BaseResponse<T>
+        return new BaseResponseCount<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status200OK,
             Message = message,
             Success = true,
             Data = classInstance,
-            Timestamp = DateTime.UtcNow + TimeSpan.FromHours(7)
+            Timestamp = DateTime.UtcNow + TimeSpan.FromHours(7),
+            Total = total
         };
     }
-    internal static BaseResponse<T> InternalServerError(string message)
+    internal static BaseResponseCount<T> InternalServerError(string message)
     {
-        return new BaseResponse<T>
+        return new BaseResponseCount<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status500InternalServerError,
@@ -48,9 +51,9 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<T> Unauthorized()
+    internal static BaseResponseCount<T> Unauthorized()
     {
-        return new BaseResponse<T>
+        return new BaseResponseCount<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status401Unauthorized,
@@ -60,9 +63,9 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<T> BadRequest(string message)
+    internal static BaseResponseCount<T> BadRequest(string message)
     {
-        return new BaseResponse<T>
+        return new BaseResponseCount<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status400BadRequest,
