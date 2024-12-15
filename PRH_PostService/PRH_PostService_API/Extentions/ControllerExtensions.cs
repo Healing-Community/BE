@@ -19,4 +19,11 @@ public static class ControllerExtensions
             StatusCode = response.StatusCode
         };
     }
+    public static IActionResult ToActionResult<T>(this BaseResponseCount<T> response)
+    {
+        return new ObjectResult(response)
+        {
+            StatusCode = response.StatusCode
+        };
+    }
 }

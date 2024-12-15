@@ -8,16 +8,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Commads_Queries.Queries.Bookmarks.GetsPostBookmark;
 
-public class GetsPostBookmarkHandler(IBookMarkRepository bookmarkRepository,IPostRepository postRepository, IBookmarkPostRepository bookmarkPostRepository, IHttpContextAccessor accessor) : IRequestHandler<GetsPostBookmark, BaseResponse<IEnumerable<PostDetailDto>>>
+public class GetsPostBookmarkHandler(IBookMarkRepository bookmarkRepository,IPostRepository postRepository, IBookmarkPostRepository bookmarkPostRepository, IHttpContextAccessor accessor) : IRequestHandler<GetsPostBookmark, BaseResponseCount<IEnumerable<PostDetailDto>>>
 {
-    public async Task<BaseResponse<IEnumerable<PostDetailDto>>> Handle(GetsPostBookmark request, CancellationToken cancellationToken)
+    public async Task<BaseResponseCount<IEnumerable<PostDetailDto>>> Handle(GetsPostBookmark request, CancellationToken cancellationToken)
     {
         try
         {
             var userId = accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return BaseResponse<IEnumerable<PostDetailDto>>.Unauthorized();
+            if (userId == null) return BaseResponseCount<IEnumerable<PostDetailDto>>.Unauthorized();
             var bookmarkInDb = await bookmarkRepository.GetByPropertyAsync(b => b.UserId == userId && b.BookmarkId == request.BookmarkId);
-            if (bookmarkInDb == null) return BaseResponse<IEnumerable<PostDetailDto>>.SuccessReturn([]);
+            if (bookmarkInDb == null) return BaseResponseCount<IEnumerable<PostDetailDto>>.SuccessReturn([]);
             var bookmarkPost = await bookmarkPostRepository.GetsByPropertyAsync(bp => bp.BookmarkId == bookmarkInDb.BookmarkId);
             var bookmarkPostList = bookmarkPost?.ToList();
             foreach (var item in bookmarkPostList)
@@ -37,11 +37,12 @@ public class GetsPostBookmarkHandler(IBookMarkRepository bookmarkRepository,IPos
                 Status = bp.Post.Status,
                 UpdateAt = bp.Post.UpdateAt
             });
-            return BaseResponse<IEnumerable<PostDetailDto>>.SuccessReturn(postDetailDtos);
+            int totalPost = postDetailDtos?.Count() ?? 0;
+            return BaseResponseCount<IEnumerable<PostDetailDto>>.SuccessReturn(postDetailDtos,total:totalPost);
         }
         catch (Exception e)
         {
-            return BaseResponse<IEnumerable<PostDetailDto>>.InternalServerError(e.Message);
+            return BaseResponseCount<IEnumerable<PostDetailDto>>.InternalServerError(e.Message);
         }
     }
 }

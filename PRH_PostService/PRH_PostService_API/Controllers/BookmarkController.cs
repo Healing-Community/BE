@@ -3,6 +3,7 @@ using Application.Commads_Queries.Commands.Bookmarks.AddBookmarkPost;
 using Application.Commads_Queries.Commands.Bookmarks.DeleteBookmark;
 using Application.Commads_Queries.Commands.Bookmarks.DeletePostFromBookmark;
 using Application.Commads_Queries.Queries.Bookmarks.GetsPostBookmark;
+using Application.Commons;
 using Application.Commons.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -40,13 +41,13 @@ namespace PRH_PostService_API.Controllers
         /// <summary>
         /// tạo bookmark: mỗi user có thể tạo nhiều bookmark và bookmark chỉ thuộc về user tạo ra nó
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="bookmarkNameOnlyDto"></param>
         /// <returns></returns>
         [Authorize]
         [HttpPost("create-bookmark")]
-        public async Task<IActionResult> CreateBookmark([FromBody]string name)
+        public async Task<IActionResult> CreateBookmark(BookmarkNameOnlyDto bookmarkNameOnlyDto)
         {
-            var response = await sender.Send(new AddBookmarkCommand(name));
+            var response = await sender.Send(new AddBookmarkCommand(bookmarkNameOnlyDto.Name));
             return response.ToActionResult();
         }
 
@@ -77,13 +78,13 @@ namespace PRH_PostService_API.Controllers
         /// <summary>
         /// xóa bookmark
         /// </summary>
-        /// <param name="bookmarkId"></param>
+        /// <param name="bookmarkIdOnlyDto"></param>
         /// <returns></returns>
         [Authorize]
         [HttpDelete("delete-bookmark")]
-        public async Task<IActionResult> DeleteBookmark([FromBody]string bookmarkId)
+        public async Task<IActionResult> DeleteBookmark(BookmarkIdOnlyDto bookmarkIdOnlyDto)
         {
-            var response = await sender.Send(new DeleteBookmarkCommand(bookmarkId));
+            var response = await sender.Send(new DeleteBookmarkCommand(bookmarkIdOnlyDto.BookmarkId));
             return response.ToActionResult();
         }
     }
