@@ -43,7 +43,6 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
-                // Lấy email của người dùng
                 var userEmail = Authentication.GetUserEmailFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userEmail))
                 {
@@ -54,7 +53,7 @@ namespace Application.Commands.BookAppointment
                 }
 
                 var availability = await availabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
-                if (availability == null || availability.Status != 0) // Check trạng thái Available
+                if (availability == null || availability.Status != 0) // 0 = Available
                 {
                     response.Success = false;
                     response.Message = "Lịch trống không tồn tại hoặc không khả dụng.";
@@ -62,7 +61,6 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
-                // Lấy email của chuyên gia
                 var expertProfile = await expertProfileRepository.GetByIdAsync(availability.ExpertProfileId);
                 if (expertProfile == null)
                 {
@@ -74,7 +72,7 @@ namespace Application.Commands.BookAppointment
                 var expertEmail = expertProfile.Email;
 
                 // Đổi trạng thái của lịch trống sang PendingPayment
-                availability.Status = 1; // PendingPayment
+                availability.Status = 1; // PendingPayment cho availability (không thay đổi)
                 availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
 
@@ -82,7 +80,7 @@ namespace Application.Commands.BookAppointment
                 var meetingRoomName = $"{Ulid.NewUlid()}-{availability.ExpertProfileId}";
                 var meetingUrl = $"https://meet.jit.si/{meetingRoomName}";
 
-                // Tạo mới một bản ghi Appointment
+                // Appointment PendingPayment = 0
                 var appointment = new Appointment
                 {
                     AppointmentId = Ulid.NewUlid().ToString(),
@@ -94,7 +92,7 @@ namespace Application.Commands.BookAppointment
                     AppointmentDate = availability.AvailableDate,
                     StartTime = availability.StartTime,
                     EndTime = availability.EndTime,
-                    Status = 1, // PendingPayment
+                    Status = 0, // PendingPayment
                     MeetLink = meetingUrl,
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
@@ -102,7 +100,6 @@ namespace Application.Commands.BookAppointment
 
                 await appointmentRepository.Create(appointment);
 
-                // Trả về thông tin để tiếp tục thanh toán
                 response.Success = true;
                 response.Data = appointment.AppointmentId;
                 response.StatusCode = 200;
