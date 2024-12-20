@@ -22,7 +22,8 @@ namespace Application.Commands.CancelAppointment
             {
                 var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
 
-                if (appointment.Status == 4 || appointment.Status == 5)
+                // Kiểm tra trạng thái. Nếu Completed(3) hoặc Cancelled(2) thì không thể hủy.
+                if (appointment.Status == 3 || appointment.Status == 2)
                 {
                     response.Success = false;
                     response.Message = "Không thể hủy cuộc hẹn đã hoàn thành hoặc đã bị hủy.";
@@ -30,7 +31,7 @@ namespace Application.Commands.CancelAppointment
                     return response;
                 }
 
-                appointment.Status = 4; // Cancelled
+                appointment.Status = 2; // Cancelled
                 await appointmentRepository.Update(appointment.AppointmentId, appointment);
 
                 var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);

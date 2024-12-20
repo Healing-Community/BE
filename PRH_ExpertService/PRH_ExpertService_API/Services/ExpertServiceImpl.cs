@@ -2,7 +2,6 @@
 using ExpertService.gRPC;
 using Application.Interfaces.Services;
 using Application.Interfaces.Repository;
-using Application.Services;
 
 namespace PRH_ExpertService_API.Services
 {
@@ -15,7 +14,7 @@ namespace PRH_ExpertService_API.Services
         {
             try
             {
-                // 1. Lấy thông tin lịch hẹn
+                // Lấy thông tin lịch hẹn
                 var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
                 if (appointment == null)
                 {
@@ -26,84 +25,42 @@ namespace PRH_ExpertService_API.Services
                     };
                 }
 
-                if (request.IsSuccess)
+                // Sau khi thanh toán thành công, chuyển trạng thái Appointment sang Scheduled (1)
+                appointment.Status = 1; // Scheduled
+                appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                await appointmentRepository.Update(appointment.AppointmentId, appointment);
+
+                // ExpertAvailability = Booked (2) vẫn giữ nguyên
+                var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
+                if (availability != null)
                 {
-                    // Xử lý khi thanh toán thành công
-                    // 2. Cập nhật trạng thái lịch hẹn thành Paid
-                    appointment.Status = 2; // Paid
-                    appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
-                    await appointmentRepository.Update(appointment.AppointmentId, appointment);
-
-                    // 3. Cập nhật trạng thái lịch trống thành Booked
-                    var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
-                    if (availability != null)
-                    {
-                        availability.Status = 2; // Booked
-                        availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
-                        await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
-                    }
-
-                    // 4. Chuẩn bị thông tin cho email
-                    string appointmentTime = $"{appointment.AppointmentDate:dd/MM/yyyy} từ {appointment.StartTime} đến {appointment.EndTime}";
-                    string meetingLink = appointment.MeetLink;
-                    string userEmail = appointment.UserEmail;
-                    string expertEmail = appointment.ExpertEmail;
-
-                    // 5. Gửi email xác nhận cho người dùng
-                    await emailService.SendAppointmentConfirmationEmailAsync(
-                        userEmail,
-                        appointmentTime,
-                        meetingLink
-                    );
-
-                    // 6. Gửi email thông báo cho chuyên gia
-                    await emailService.SendAppointmentNotificationToExpertAsync(
-                        expertEmail,
-                        appointmentTime,
-                        meetingLink
-                    );
-
-                    // 7. Trả về kết quả thành công
-                    return new PaymentSuccessResponse
-                    {
-                        Success = true,
-                        Message = "Đã xử lý thanh toán thành công và gửi email xác nhận."
-                    };
+                    availability.Status = 2; // Booked
+                    availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                    await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
                 }
-                else
+
+                // Gửi email cho user
+                await emailService.SendAppointmentConfirmationEmailAsync(
+                    appointment.UserEmail,
+                    $"{appointment.AppointmentDate:dd/MM/yyyy} từ {appointment.StartTime} đến {appointment.EndTime}",
+                    appointment.MeetLink
+                );
+
+                // Gửi email cho expert
+                await emailService.SendAppointmentNotificationToExpertAsync(
+                    appointment.ExpertEmail,
+                    $"{appointment.AppointmentDate:dd/MM/yyyy} từ {appointment.StartTime} đến {appointment.EndTime}",
+                    appointment.MeetLink
+                );
+
+                return new PaymentSuccessResponse
                 {
-                    // Xử lý khi thanh toán thất bại hoặc bị hủy
-                    // 2. Cập nhật trạng thái lịch hẹn thành Cancelled
-                    appointment.Status = 4; // Cancelled
-                    appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
-                    await appointmentRepository.Update(appointment.AppointmentId, appointment);
-
-                    // 3. Cập nhật trạng thái lịch trống thành Available
-                    var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
-                    if (availability != null)
-                    {
-                        availability.Status = 0; // Available
-                        availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
-                        await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
-                    }
-
-                    // 4. Gửi email thông báo hủy lịch hẹn cho người dùng
-                    await emailService.SendAppointmentCancellationEmailAsync(
-                        appointment.UserEmail,
-                        $"{appointment.AppointmentDate:dd/MM/yyyy} từ {appointment.StartTime} đến {appointment.EndTime}"
-                    );
-
-                    // 5. Trả về kết quả thành công
-                    return new PaymentSuccessResponse
-                    {
-                        Success = true,
-                        Message = "Đã xử lý hủy thanh toán và gửi email thông báo."
-                    };
-                }
+                    Success = true,
+                    Message = "Đã xác nhận đặt lịch thành công và chuyển sang trạng thái Scheduled."
+                };
             }
             catch (Exception ex)
             {
-                // Xử lý ngoại lệ
                 return new PaymentSuccessResponse
                 {
                     Success = false,

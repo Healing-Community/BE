@@ -30,22 +30,24 @@ namespace Application.Services
         public async Task SendAppointmentConfirmationEmailAsync(string toEmail, string appointmentTime, string meetingLink)
         {
             var bodyContent = $@"
-                <p>Xin chào,</p>
-                <p>Bạn đã đặt lịch hẹn vào lúc <strong>{appointmentTime}</strong>.</p>
-                <p>Liên kết cuộc họp của bạn: <a href=""{meetingLink}"">{meetingLink}</a></p>
-                <p>Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của Healing Community.</p>";
-            var emailContent = GetEmailTemplate("Xác nhận cuộc hẹn", bodyContent);
-            await SendEmailAsync(toEmail, "Xác nhận cuộc hẹn", emailContent);
+                <p>Xin chào bạn,</p>
+                <p>Chúc mừng! Lịch hẹn của bạn đã được đặt thành công vào thời gian <strong>{appointmentTime}</strong>.</p>
+                <p>Để tham gia cuộc họp, vui lòng truy cập: <a href=""{meetingLink}"">{meetingLink}</a></p>
+                <p>Hãy tham gia đúng thời gian hẹn để bắt đầu buổi gặp gỡ. Chúng tôi chân thành cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của Healing Community.</p>
+                <p>Chúc bạn một trải nghiệm hiệu quả và thoải mái.</p>
+                <p>Trân trọng,<br>Đội ngũ Healing Community</p>";
+            var emailContent = GetEmailTemplate("Xác nhận lịch hẹn", bodyContent);
+            await SendEmailAsync(toEmail, "Xác nhận lịch hẹn", emailContent);
         }
 
         public async Task SendAppointmentNotificationToExpertAsync(string toEmail, string appointmentTime, string meetingLink)
         {
             var bodyContent = $@"
-                <p>Xin chào,</p>
+                <p>Xin chào chuyên gia,</p>
                 <p>Bạn có một lịch hẹn mới vào lúc <strong>{appointmentTime}</strong>.</p>
-                <p>Liên kết cuộc họp: <a href=""{meetingLink}"">{meetingLink}</a></p>
-                <p>Vui lòng chuẩn bị và tham gia đúng giờ.</p>
-                <p>Cảm ơn bạn đã đồng hành cùng Healing Community.</p>";
+                <p>Vui lòng truy cập liên kết sau để tham gia phòng họp: <a href=""{meetingLink}"">{meetingLink}</a>. Nên tham gia sớm để bạn có thể nhận quyền điều hành (moderator) trước khi khách hàng vào phòng.</p>
+                <p>Cảm ơn bạn đã đồng hành cùng Healing Community. Chúc bạn một buổi trao đổi suôn sẻ và hiệu quả.</p>
+                <p>Trân trọng,<br>Đội ngũ Healing Community</p>";
             var emailContent = GetEmailTemplate("Thông báo lịch hẹn mới", bodyContent);
             await SendEmailAsync(toEmail, "Thông báo lịch hẹn mới", emailContent);
         }
@@ -54,9 +56,10 @@ namespace Application.Services
         {
             var bodyContent = $@"
                 <p>Xin chào,</p>
-                <p>Chúng tôi rất tiếc thông báo rằng lịch hẹn vào lúc <strong>{appointmentTime}</strong> của bạn đã bị hủy.</p>
-                <p>Nếu bạn cần hỗ trợ hoặc có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi.</p>
-                <p>Cảm ơn bạn đã quan tâm đến Healing Community.</p>";
+                <p>Chúng tôi rất tiếc phải thông báo rằng cuộc hẹn vào lúc <strong>{appointmentTime}</strong> của bạn đã bị hủy.</p>
+                <p>Nếu bạn cần thêm thông tin hỗ trợ hoặc có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi.</p>
+                <p>Cảm ơn bạn đã quan tâm đến Healing Community.</p>
+                <p>Trân trọng,<br>Đội ngũ Healing Community</p>";
             var emailContent = GetEmailTemplate("Thông báo hủy lịch hẹn", bodyContent);
             await SendEmailAsync(toEmail, "Thông báo hủy lịch hẹn", emailContent);
         }
