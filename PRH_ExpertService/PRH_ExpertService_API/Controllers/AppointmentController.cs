@@ -1,4 +1,5 @@
 ﻿using Application.Commands.BookAppointment;
+using Application.Commands.CancelAppointment;
 using Application.Commands.DeleteAppointment;
 using Application.Commands.UpdateAppointment;
 using Application.Commons.Tools;
@@ -92,5 +93,12 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
+        [Authorize(Roles = "User,Expert")]
+        [HttpPost("cancel")]
+        public async Task<IActionResult> CancelAppointment([FromBody] CancelAppointmentCommand command)
+        {
+            var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
     }
 }

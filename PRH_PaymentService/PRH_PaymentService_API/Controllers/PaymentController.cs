@@ -2,15 +2,17 @@
 using Application.Commands.CreatePayment;
 using Application.Queries.GetPaymentStatus;
 using Application.Queries.GetTransactionHistory;
+using Infrastructure.Context;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace PRH_PaymentService_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentController(ISender sender) : ControllerBase
+    public class PaymentController(ISender sender, PaymentDbContext paymentDbContext) : ControllerBase
     {
         [Authorize(Roles = "User")]
         [HttpPost("create")]

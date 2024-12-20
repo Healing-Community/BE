@@ -8,5 +8,7 @@
         public string MeetLink { get; set; } // Link họp
         public string Tag { get; set; } // Tag hiển thị (Sắp diễn ra, Đã hoàn thành)
         public string UserId { get; set; } // ID của người dùng
+        public string AppointmentId { get; set; }
+        public int Amount { get; set; }
     }
 }

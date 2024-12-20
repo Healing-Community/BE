@@ -7,7 +7,8 @@ using NUlid;
 namespace Application.Queries.GetAppointmentsByExpert
 {
     public class GetAppointmentsByExpertQueryHandler(
-        IAppointmentRepository appointmentRepository)
+        IAppointmentRepository appointmentRepository,
+        IExpertAvailabilityRepository expertAvailabilityRepository)
         : IRequestHandler<GetAppointmentsByExpertQuery, BaseResponse<IEnumerable<AppointmentResponseForExpertDto>>>
     {
         public async Task<BaseResponse<IEnumerable<AppointmentResponseForExpertDto>>> Handle(GetAppointmentsByExpertQuery request, CancellationToken cancellationToken)
@@ -16,7 +17,7 @@ namespace Application.Queries.GetAppointmentsByExpert
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<string>()
             };
 
             try
@@ -24,16 +25,26 @@ namespace Application.Queries.GetAppointmentsByExpert
                 // Lấy danh sách lịch hẹn từ repository dựa trên expertProfileId
                 var appointments = await appointmentRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
 
-                // Map dữ liệu từ Appointment sang AppointmentResponseForExpertDto
-                var result = appointments.Select(a => new AppointmentResponseForExpertDto
+                // Tìm nạp ExpertAvailability cho mỗi cuộc hẹn để nhận Amount
+                var result = new List<AppointmentResponseForExpertDto>();
+                foreach (var appointment in appointments)
                 {
-                    UserId = a.UserId,
-                    Name = a.UserEmail,
-                    AppointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"),
-                    TimeRange = $"{a.StartTime:HH:mm} - {a.EndTime:HH:mm}",
-                    MeetLink = a.MeetLink ?? "",
-                    Tag = MapTag(a.Status, a.AppointmentDate, a.StartTime)
-                });
+                    var expertAvailability = await expertAvailabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
+                    if (expertAvailability != null)
+                    {
+                        result.Add(new AppointmentResponseForExpertDto
+                        {
+                            AppointmentId = appointment.AppointmentId,
+                            UserId = appointment.UserId,
+                            Name = appointment.UserEmail,
+                            Amount = expertAvailability.Amount,
+                            AppointmentDate = appointment.AppointmentDate.ToString("yyyy-MM-dd"),
+                            TimeRange = $"{appointment.StartTime:HH:mm} - {appointment.EndTime:HH:mm}",
+                            MeetLink = appointment.MeetLink ?? "",
+                            Tag = MapTag(appointment.Status, appointment.AppointmentDate, appointment.StartTime)
+                        });
+                    }
+                }
 
                 response.Success = true;
                 response.Data = result;
