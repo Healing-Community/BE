@@ -1,4 +1,3 @@
-using System;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Commons.Enum;
@@ -19,16 +18,40 @@ public class GetPostReactionCountQueryHandler(IReactionRepository reactionReposi
                 return BaseResponse<PostReactionCountDto>.NotFound("Bài viết không tồn tại");
             }
             var reactions = await reactionRepository.GetsByPropertyAsync(x => x.PostId == request.PostId.PostId);
-            
+
             var PostReactionCountDto = new PostReactionCountDto
             {
                 PostId = post.PostId,
-                Like = reactions?.Count(x=>x.ReactionTypeId == ((int)ReactionTypeEnum.Like).ToString()) ?? 0,
-                Haha = reactions?.Count(x=>x.ReactionTypeId == ((int)ReactionTypeEnum.Haha).ToString()) ?? 0,
-                Sad = reactions?.Count(x=>x.ReactionTypeId == ((int)ReactionTypeEnum.Sad).ToString()) ?? 0,
-                Angry = reactions?.Count(x=>x.ReactionTypeId == ((int)ReactionTypeEnum.Angry).ToString()) ?? 0,
-                Love = reactions?.Count(x=>x.ReactionTypeId == ((int)ReactionTypeEnum.Love).ToString()) ?? 0,
-                Wow = reactions?.Count(x=>x.ReactionTypeId == ((int)ReactionTypeEnum.Wow).ToString()) ?? 0,
+                Like = new Like
+                {
+                    LikeCount = reactions?.Count(x => x.ReactionTypeId == ((int)ReactionTypeEnum.Like).ToString()) ?? 0,
+                    Icon = "👍" 
+                },
+                Haha = new Haha
+                {
+                    HahaCount = reactions?.Count(x => x.ReactionTypeId == ((int)ReactionTypeEnum.Haha).ToString()) ?? 0,
+                    Icon = "😆"
+                },
+                Sad = new Sad
+                {
+                    SadCount = reactions?.Count(x => x.ReactionTypeId == ((int)ReactionTypeEnum.Sad).ToString()) ?? 0,
+                    Icon = "😢"
+                },
+                Angry = new Angry
+                {
+                    AngryCount = reactions?.Count(x => x.ReactionTypeId == ((int)ReactionTypeEnum.Angry).ToString()) ?? 0,
+                    Icon = "😡"
+                },
+                Love = new Love
+                {
+                    LoveCount = reactions?.Count(x => x.ReactionTypeId == ((int)ReactionTypeEnum.Love).ToString()) ?? 0,
+                    Icon = "❤️"
+                },
+                Wow = new Wow
+                {
+                    WowCount = reactions?.Count(x => x.ReactionTypeId == ((int)ReactionTypeEnum.Wow).ToString()) ?? 0,
+                    Icon = "😲"
+                },
                 Total = reactions?.Count() ?? 0
 
             };
@@ -36,7 +59,7 @@ public class GetPostReactionCountQueryHandler(IReactionRepository reactionReposi
             return BaseResponse<PostReactionCountDto>.SuccessReturn(PostReactionCountDto);
             
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             return BaseResponse<PostReactionCountDto>.InternalServerError(ex.Message);
         }

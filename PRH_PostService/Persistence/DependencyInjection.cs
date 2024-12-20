@@ -14,6 +14,7 @@ public static class DependencyInjection
 {
     public static void AddPersistenceDependencies(this IServiceCollection services)
     {
+        services.AddScoped<IShareRepository, ShareRepository>();
         services.AddScoped<IBookmarkPostRepository, BookmarkPostRepository>();
         services.AddScoped<IBookMarkRepository, BookMarkRepository>();
         services.AddScoped<IUserReferenceRepository, UserReferenceRepository>();

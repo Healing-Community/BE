@@ -54,7 +54,5 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new DeleteCategoryCommand(id));
             return response.ToActionResult();
         }
-
-
     }
 }
