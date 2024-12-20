@@ -25,7 +25,6 @@ namespace Application.Queries.GetTransactionHistory
             {
                 // Lấy UserId từ token trong HttpContext
                 var userId = Authentication.GetUserIdFromHttpContext(httpContextAccessor.HttpContext);
-                Console.WriteLine($"UserId retrieved from token: {userId}");
 
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -38,7 +37,6 @@ namespace Application.Queries.GetTransactionHistory
 
                 // Truy vấn lịch sử giao dịch từ UserId
                 var appointments = await appointmentRepository.GetByUserIdAsync(userId);
-                Console.WriteLine($"Number of appointments retrieved: {appointments.Count()}");
 
                 // Ánh xạ dữ liệu sang DTO
                 var transactionHistory = appointments.Select(a => new TransactionHistoryDTO
@@ -49,7 +47,6 @@ namespace Application.Queries.GetTransactionHistory
                     StartTime = a.StartTime,
                     EndTime = a.EndTime
                 }).ToList();
-                Console.WriteLine($"Transaction history mapped to DTO: {transactionHistory.Count} records");
 
                 response.Success = true;
                 response.Data = transactionHistory;
