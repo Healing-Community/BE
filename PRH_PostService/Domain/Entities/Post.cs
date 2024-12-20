@@ -16,6 +16,7 @@
         public ICollection<Reaction>? Reactions { get; set; }
         public ICollection<Report>? Reports { get; set; }
         public ICollection<BookmarkPost>? BookmarkPosts { get; set; }
+        public ICollection<Share>? Shares { get; set; }
         public Category? Category { get; set; }
     }
 }

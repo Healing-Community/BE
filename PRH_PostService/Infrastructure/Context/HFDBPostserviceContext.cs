@@ -17,6 +17,7 @@ namespace Infrastructure.Context
         public DbSet<UserPreference> UserPreferences { get; set; }
         public DbSet<Bookmark> Bookmarks { get; set; }
         public DbSet<BookmarkPost> BookmarkPosts { get; set; }
+        public DbSet<Share> Shares { get; set; }
         public HFDBPostserviceContext(DbContextOptions<HFDBPostserviceContext> options) : base(options) { }
 
         // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -34,6 +35,7 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Bookmark>().HasKey(b => b.BookmarkId);
             modelBuilder.Entity<BookmarkPost>().HasKey(bp => bp.BookmarkPostId);
+            modelBuilder.Entity<Share>().HasKey(s => s.ShareId);
             //make sure that the combination of PostId and BookmarkId is unique
             modelBuilder.Entity<BookmarkPost>().HasIndex(bp => new { bp.PostId, bp.BookmarkId }).IsUnique();
             // Relationship
@@ -102,6 +104,12 @@ namespace Infrastructure.Context
                 .HasOne(bp => bp.Post)
                 .WithMany(p => p.BookmarkPosts)
                 .HasForeignKey(bp => bp.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // Share : One share has one post
+            modelBuilder.Entity<Share>()
+                .HasOne(s => s.Post)
+                .WithMany(p => p.Shares)
+                .HasForeignKey(s => s.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
         }
