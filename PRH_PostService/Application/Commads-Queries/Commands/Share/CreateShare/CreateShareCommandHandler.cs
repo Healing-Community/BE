@@ -17,7 +17,7 @@ public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpCo
         {
             var userId = accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var postIndb = await shareRepository.GetByPropertyAsync(s => s.PostId == request.ShareDto.PostId && s.UserId == userId);
-            if (request.ShareDto.Platform == "Internal" && postIndb != null)
+            if (request.ShareDto.Platform == "Internal" && postIndb?.Platform == "Internal")
             {
                 return BaseResponse<string>.BadRequest("Bạn đã chia sẻ bài viết này rồi");
             }

@@ -96,7 +96,7 @@ namespace PRH_PostService_API.Controllers
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost("create-post")]
         public async Task<IActionResult> CreatePost(PostDto post)
         {
@@ -108,7 +108,7 @@ namespace PRH_PostService_API.Controllers
         /// </summary>
         /// <param name="postGroup"></param>
         /// <returns></returns>
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost("create-post-group")]
         public async Task<IActionResult> CreatePostInGroup(PostGroupDto postGroup)
         {
@@ -124,7 +124,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePost(string id)
         {
