@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Commads_Queries.Queries.Share;
 
-public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepository postRepository, IHttpContextAccessor accessor) : IRequestHandler<GetSharePostQuery, BaseResponse<IEnumerable<PostDetailDto>>>
+public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepository postRepository, IHttpContextAccessor accessor) : IRequestHandler<GetSharePostQuery, BaseResponse<IEnumerable<PostDetailShareDto>>>
 {
-    public async Task<BaseResponse<IEnumerable<PostDetailDto>>> Handle(GetSharePostQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<IEnumerable<PostDetailShareDto>>> Handle(GetSharePostQuery request, CancellationToken cancellationToken)
     {
         try
         {
@@ -20,8 +20,9 @@ public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepo
             {
                 item.Post = await postRepository.GetByIdAsync(item.PostId);
             }
-            var postDetailDtos = postList?.Select(p => new PostDetailDto
+            var postDetailDtos = postList?.Select(p => new PostDetailShareDto
             {
+                ShareDescription = p.Description,
                 PostId = p.PostId,
                 Title = p.Post.Title,
                 CategoryId = p.Post.CategoryId,
@@ -33,12 +34,12 @@ public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepo
                 Status = p.Post.Status,
                 UpdateAt = p.Post.UpdateAt
             });
-            if (postDetailDtos == null) return BaseResponse<IEnumerable<PostDetailDto>>.SuccessReturn(new List<PostDetailDto>());
-            return BaseResponse<IEnumerable<PostDetailDto>>.SuccessReturn(postDetailDtos);
+            if (postDetailDtos == null) return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(new List<PostDetailShareDto>());
+            return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(postDetailDtos);
         }
         catch (Exception e)
         {
-            return BaseResponse<IEnumerable<PostDetailDto>>.InternalServerError(e.Message);
+            return BaseResponse<IEnumerable<PostDetailShareDto>>.InternalServerError(e.Message);
             throw;
         }
     }

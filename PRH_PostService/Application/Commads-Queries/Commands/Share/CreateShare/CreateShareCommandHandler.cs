@@ -26,6 +26,7 @@ public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpCo
                 ShareId = Ulid.NewUlid().ToString(),
                 PostId = request.ShareDto.PostId ?? "",
                 Platform = request.ShareDto.Platform ?? "Internal",
+                Description = request.ShareDto.Description,
                 UserId = userId,
                 CreatedAt = DateTime.UtcNow + TimeSpan.FromHours(7),
                 UpdatedAt = DateTime.UtcNow + TimeSpan.FromHours(7)

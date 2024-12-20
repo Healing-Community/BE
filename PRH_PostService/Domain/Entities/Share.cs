@@ -7,6 +7,7 @@ public class Share
     public required string ShareId { get; set; }
     public required string PostId { get; set; }
     public required string UserId { get; set; }
+    public string? Description { get; set; }  // Description of the share
     public string? Platform { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
