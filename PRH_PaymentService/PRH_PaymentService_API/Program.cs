@@ -27,7 +27,6 @@ if (string.IsNullOrEmpty(expertServiceUrl))
 {
     throw new ArgumentException("ExpertServiceUrl không được cấu hình trong appsettings.json.");
 }
-Console.WriteLine($"ExpertServiceUrl: {expertServiceUrl}");
 builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient(expertServiceUrl));
 
 var app = builder.Build();
