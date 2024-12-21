@@ -60,7 +60,6 @@ namespace PRH_PaymentService_API.Services
                 using var scope = serviceScopeFactory.CreateScope();
                 var paymentRepository = scope.ServiceProvider.GetRequiredService<IPaymentRepository>();
                 var payOSService = scope.ServiceProvider.GetRequiredService<IPayOSService>();
-                var expertServiceGrpcClient = CreateExpertServiceClient();
 
                 if ((PaymentStatus)payment.Status == PaymentStatus.Pending)
                 {
@@ -83,16 +82,21 @@ namespace PRH_PaymentService_API.Services
 
                             try
                             {
-                                var expertServiceResponse = await expertServiceGrpcClient.PaymentSuccessAsync(paymentSuccessRequest);
+                                var expertServiceResponse = await CreateExpertServiceClient()
+                                    .PaymentSuccessAsync(paymentSuccessRequest);
 
                                 if (!expertServiceResponse.Success)
                                 {
-                                    logger.LogWarning($"Không thể thông báo cho Expert Service cho AppointmentId: {payment.AppointmentId}. Message: {expertServiceResponse.Message}");
+                                    logger.LogWarning(
+                                        "Không thể thông báo cho Expert Service cho AppointmentId: {AppointmentId}. Message: {Message}",
+                                        payment.AppointmentId, expertServiceResponse.Message);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                logger.LogError(ex, $"Lỗi khi thông báo cho Expert Service cho AppointmentId: {payment.AppointmentId}");
+                                logger.LogError(ex,
+                                    "Lỗi khi thông báo cho Expert Service cho AppointmentId: {AppointmentId}",
+                                    payment.AppointmentId);
                             }
                         }
                     }
@@ -106,13 +110,15 @@ namespace PRH_PaymentService_API.Services
 
         private ExpertServiceGrpcClient CreateExpertServiceClient()
         {
-            var expertServiceUrl = configuration["ExpertServiceUrl"];
+            var expertServiceUrl = configuration["ExpertServiceUrl"]
+                ?? throw new InvalidOperationException("ExpertServiceUrl is not configured.");
+
             return new ExpertServiceGrpcClient(expertServiceUrl);
         }
 
         private void HandleIndividualError(long orderCode, Exception exception)
         {
-            logger.LogError(exception, $"Lỗi khi cập nhật thanh toán với OrderCode {orderCode}");
+            logger.LogError(exception, "Lỗi khi cập nhật thanh toán với OrderCode {OrderCode}", orderCode);
         }
 
         private void HandlePollingError(Exception exception)

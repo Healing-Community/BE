@@ -7,8 +7,13 @@ namespace Application.Services
 {
     public class PayOSService(PayOS payOS) : IPayOSService
     {
+        private readonly PayOS _payOS = payOS ?? throw new ArgumentNullException(nameof(payOS));
+
         public async Task<CreatePaymentResponse> CreatePaymentLink(PaymentRequest request)
         {
+            if (request is null)
+                throw new ArgumentNullException(nameof(request));
+
             var paymentData = new PaymentData(
                 orderCode: request.OrderCode,
                 amount: request.Amount,
@@ -18,12 +23,10 @@ namespace Application.Services
                 returnUrl: request.ReturnUrl
             );
 
-            var createPaymentResult = await payOS.createPaymentLink(paymentData);
+            var createPaymentResult = await _payOS.createPaymentLink(paymentData);
 
             if (createPaymentResult == null)
-            {
                 throw new InvalidOperationException("Unable to create payment link.");
-            }
 
             return new CreatePaymentResponse
             {
@@ -34,40 +37,27 @@ namespace Application.Services
 
         public async Task<PaymentStatusResponse> GetPaymentStatus(long orderCode)
         {
-            var paymentLinkInformation = await payOS.getPaymentLinkInformation(orderCode);
-
-            if (paymentLinkInformation == null)
-            {
-                throw new InvalidOperationException("Unable to fetch payment status.");
-            }
+            var paymentLinkInfo = await _payOS.getPaymentLinkInformation(orderCode)
+                                   ?? throw new InvalidOperationException("Unable to fetch payment status.");
 
             return new PaymentStatusResponse
             {
-                Status = paymentLinkInformation.status
+                Status = paymentLinkInfo.status
             };
         }
 
         public async Task<PaymentStatusResponse> CancelPaymentLink(long orderCode, string? reason = null)
         {
-            PaymentLinkInformation cancelledPaymentLinkInfo;
+            var cancelledLinkInfo = string.IsNullOrEmpty(reason)
+                ? await _payOS.cancelPaymentLink(orderCode)
+                : await _payOS.cancelPaymentLink(orderCode, reason);
 
-            if (string.IsNullOrEmpty(reason))
-            {
-                cancelledPaymentLinkInfo = await payOS.cancelPaymentLink(orderCode);
-            }
-            else
-            {
-                cancelledPaymentLinkInfo = await payOS.cancelPaymentLink(orderCode, reason);
-            }
-
-            if (cancelledPaymentLinkInfo == null)
-            {
+            if (cancelledLinkInfo == null)
                 throw new InvalidOperationException("Unable to cancel payment link.");
-            }
 
             return new PaymentStatusResponse
             {
-                Status = cancelledPaymentLinkInfo.status
+                Status = cancelledLinkInfo.status
             };
         }
     }
