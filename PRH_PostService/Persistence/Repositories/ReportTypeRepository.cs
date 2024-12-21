@@ -41,7 +41,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.ReportTypes.ToListAsync();
         }
 
-        public Task<IEnumerable<ReportType>?> GetsByPropertyAsync(Expression<Func<ReportType, bool>> predicate)
+        public Task<IEnumerable<ReportType>?> GetsByPropertyAsync(Expression<Func<ReportType, bool>> predicate , int size = int.MaxValue)
         {
             throw new NotImplementedException();
         }

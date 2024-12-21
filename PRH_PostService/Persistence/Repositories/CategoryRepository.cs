@@ -46,7 +46,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Categories.ToListAsync();
         }
 
-        public Task<IEnumerable<Category>?> GetsByPropertyAsync(Expression<Func<Category, bool>> predicate)
+        public Task<IEnumerable<Category>?> GetsByPropertyAsync(Expression<Func<Category, bool>> predicate , int size = int.MaxValue)
         {
             throw new NotImplementedException();
         }

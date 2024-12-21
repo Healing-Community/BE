@@ -37,7 +37,7 @@ public class ShareRepository(HFDBPostserviceContext context) : IShareRepository
         return await context.Shares.ToListAsync();
     }
 
-    public async Task<IEnumerable<Share>?> GetsByPropertyAsync(Expression<Func<Share, bool>> predicate)
+    public async Task<IEnumerable<Share>?> GetsByPropertyAsync(Expression<Func<Share, bool>> predicate , int size = int.MaxValue)
     {
         return await context.Shares.AsNoTracking().Where(predicate).ToListAsync();
     }

@@ -1,8 +1,11 @@
-﻿using Application.Commands.Posts.AddPost;
+﻿using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
+using Application.Commads_Queries.Queries.Posts.GetRelativeCatogoryPost;
+using Application.Commands.Posts.AddPost;
 using Application.Commands.Posts.AddPostGroup;
 using Application.Commands.Posts.DeletePost;
 using Application.Commands.Posts.UpdatePost;
 using Application.Commands.UserReference;
+using Application.CommandsQueries.Queries.Posts.GetsTopPost;
 using Application.Commons.DTOs;
 using Application.Queries.Posts.GetPosts;
 using Application.Queries.Posts.GetPostsById;
@@ -76,6 +79,41 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> GetSideRecommendation()
         {
             var response = await sender.Send(new GetSideRecommendPostQuery(PageSize: 1, PageNumber: 7));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy ra các bài viết public có lượt reaction cao nhất
+        /// </summary>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        [HttpGet("get-top-post/{top}")]
+        public async Task<IActionResult> GetTopPost(int top)
+        {
+            var response = await sender.Send(new GetsTopPostQuery(top));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy ra các bài viết của một user theo id theo số lượng top
+        /// </summary>
+        /// <param name="authourId"></param>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        [HttpGet("get-other-authour-post/{authourId}/top")]
+        public async Task<IActionResult> GetOtherAuthourPost(string authourId, int top)
+        {
+            var response = await sender.Send(new GetOtherPostByAutourQuery(authourId, top));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy ra các bài viết cùng category với bài viết có id là postId
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        [HttpGet("get-other-relative-post/{postId}/{top}")]
+        public async Task<IActionResult> GetOtherRelativePost(string postId, int top)
+        {
+            var response = await sender.Send(new GetRelativeCatogoryPostQuery(postId, top));
             return response.ToActionResult();
         }
         /// <summary>

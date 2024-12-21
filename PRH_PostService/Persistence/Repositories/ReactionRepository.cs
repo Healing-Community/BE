@@ -46,9 +46,27 @@ namespace Persistence.Repositories
             hFDBPostserviceContext.Entry(existingReaction).State = EntityState.Modified;
             await hFDBPostserviceContext.SaveChangesAsync();
         }
-        public async Task<IEnumerable<Reaction>?> GetsByPropertyAsync(Expression<Func<Reaction, bool>> predicate)
+        public async Task<IEnumerable<Reaction>?> GetsByPropertyAsync(Expression<Func<Reaction, bool>> predicate , int size = int.MaxValue)
         {
-            return await hFDBPostserviceContext.Reactions.Where(predicate).ToListAsync();
+            return await hFDBPostserviceContext.Reactions.AsNoTracking().Where(predicate).Take(size).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Reaction>> GetsMostReactedPost(int top)
+        {
+            // Get top 5 most reacted posts base on the number of postId
+            var reaction = await hFDBPostserviceContext.Reactions.GroupBy(x => x.PostId)
+                .Select(x => new { PostId = x.Key, Count = x.Count() })
+                .OrderByDescending(x => x.Count)
+                .Take(top)
+                .ToListAsync();
+            
+            var reactions = new List<Reaction>();
+            foreach (var react in reaction)
+            {
+                var reactionEntity = await hFDBPostserviceContext.Reactions.FirstOrDefaultAsync(x => x.PostId == react.PostId);
+                reactions.Add(reactionEntity);
+            }
+            return reactions;
         }
     }
 }

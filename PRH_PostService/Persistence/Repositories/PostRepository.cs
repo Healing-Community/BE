@@ -105,9 +105,9 @@ namespace Persistence.Repositories
             return randomPosts;
         }
 
-        public Task<IEnumerable<Post>?> GetsByPropertyAsync(Expression<Func<Post, bool>> predicate)
+        public async Task<IEnumerable<Post>?> GetsByPropertyAsync(Expression<Func<Post, bool>> predicate, int size = int.MaxValue)
         {
-            throw new NotImplementedException();
+            return await context.Posts.Where(predicate).Take(size).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetsPostByPropertyPagingAsync(Expression<Func<Post, bool>> predicate, int pageNumber, int pageSize)

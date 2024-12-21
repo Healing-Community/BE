@@ -78,7 +78,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Comments.CountAsync(c => c.PostId == postId);
         }
 
-        public Task<IEnumerable<Comment>?> GetsByPropertyAsync(Expression<Func<Comment, bool>> predicate)
+        public Task<IEnumerable<Comment>?> GetsByPropertyAsync(Expression<Func<Comment, bool>> predicate , int size = int.MaxValue)
         {
             throw new NotImplementedException();
         }
