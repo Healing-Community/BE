@@ -71,7 +71,6 @@ namespace Application.Queries.GetAppointmentsByUser
             {
                 0 => "Chờ thanh toán",
                 1 when appointmentDateTime > now => "Sắp diễn ra",
-                1 when appointmentDateTime <= now => "Đang diễn ra",
                 2 => "Đã hủy",
                 3 => "Đã hoàn thành",
                 _ => "Không xác định"
