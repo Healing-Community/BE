@@ -23,7 +23,6 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize]
         [HttpGet("get-by-id/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
