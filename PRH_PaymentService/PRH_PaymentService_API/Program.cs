@@ -29,6 +29,11 @@ if (string.IsNullOrEmpty(expertServiceUrl))
 }
 builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient(expertServiceUrl));
 
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(GetPaymentDetailsQueryHandler).Assembly);
+});
+
 var app = builder.Build();
 
 #region Middleware

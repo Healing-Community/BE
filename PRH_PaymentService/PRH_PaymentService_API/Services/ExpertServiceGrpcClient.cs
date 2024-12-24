@@ -17,5 +17,14 @@ namespace PRH_PaymentService_API.Services
         {
             return await _client.PaymentSuccessAsync(request);
         }
+
+        public async Task<GetAppointmentDetailsResponse> GetAppointmentDetailsAsync(string appointmentId)
+        {
+            var request = new GetAppointmentDetailsRequest
+            {
+                AppointmentId = appointmentId
+            };
+            return await _client.GetAppointmentDetailsAsync(request);
+        }
     }
 }

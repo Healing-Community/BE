@@ -6,7 +6,7 @@ using Infrastructure.Context;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using PRH_PaymentService_API.Services;
 
 namespace PRH_PaymentService_API.Controllers
 {
@@ -45,5 +45,14 @@ namespace PRH_PaymentService_API.Controllers
             var response = await sender.Send(new GetTransactionHistoryQuery());
             return Ok(response);
         }
+
+        [Authorize(Roles = "User")]
+        [HttpGet("details/{paymentId}")]
+        public async Task<IActionResult> GetPaymentDetails([FromRoute] string paymentId)
+        {
+            var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
+            return Ok(response);
+        }
+
     }
 }

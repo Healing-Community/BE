@@ -8,7 +8,8 @@ namespace PRH_ExpertService_API.Services
     public class ExpertServiceImpl(
         IEmailService emailService,
         IAppointmentRepository appointmentRepository,
-        IExpertAvailabilityRepository availabilityRepository) : ExpertService.gRPC.ExpertService.ExpertServiceBase
+        IExpertAvailabilityRepository expertAvailabilityRepository,
+        IExpertProfileRepository expertProfileRepository) : ExpertService.gRPC.ExpertService.ExpertServiceBase
     {
         public override async Task<PaymentSuccessResponse> PaymentSuccess(PaymentSuccessRequest request, ServerCallContext context)
         {
@@ -31,12 +32,12 @@ namespace PRH_ExpertService_API.Services
                 await appointmentRepository.Update(appointment.AppointmentId, appointment);
 
                 // ExpertAvailability = Booked (2) vẫn giữ nguyên
-                var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
+                var availability = await expertAvailabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
                 if (availability != null)
                 {
                     availability.Status = 2; // Booked
                     availability.UpdatedAt = DateTime.UtcNow.AddHours(7);
-                    await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
+                    await expertAvailabilityRepository.Update(availability.ExpertAvailabilityId, availability);
                 }
 
                 // Gửi email cho user
@@ -62,6 +63,51 @@ namespace PRH_ExpertService_API.Services
             catch (Exception ex)
             {
                 return new PaymentSuccessResponse
+                {
+                    Success = false,
+                    Message = $"Đã xảy ra lỗi: {ex.Message}"
+                };
+            }
+        }
+
+        public override async Task<GetAppointmentDetailsResponse> GetAppointmentDetails(GetAppointmentDetailsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
+                if (appointment == null)
+                {
+                    return new GetAppointmentDetailsResponse
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy AppointmentId = {request.AppointmentId}"
+                    };
+                }
+
+                var expert = await expertProfileRepository.GetByIdAsync(appointment.ExpertProfileId);
+                if (expert == null)
+                {
+                    return new GetAppointmentDetailsResponse
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy ExpertId = {appointment.ExpertProfileId}"
+                    };
+                }
+
+                return new GetAppointmentDetailsResponse
+                {
+                    Success = true,
+                    Message = "Lấy thông tin Appointment thành công.",
+                    ExpertName = expert.Fullname,
+                    ExpertEmail = appointment.ExpertEmail,
+                    AppointmentDate = appointment.AppointmentDate.ToString("yyyy-MM-dd"),
+                    StartTime = appointment.StartTime.ToString(),
+                    EndTime = appointment.EndTime.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GetAppointmentDetailsResponse
                 {
                     Success = false,
                     Message = $"Đã xảy ra lỗi: {ex.Message}"
