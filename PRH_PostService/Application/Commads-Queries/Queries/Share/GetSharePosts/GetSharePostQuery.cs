@@ -5,4 +5,4 @@ using MediatR;
 
 namespace Application.Commads_Queries.Queries.Share;
 
-public record GetSharePostQuery : IRequest<BaseResponse<IEnumerable<PostDetailShareDto>>>;
+public record GetSharePostQuery(string UserId) : IRequest<BaseResponse<IEnumerable<PostDetailShareDto>>>;

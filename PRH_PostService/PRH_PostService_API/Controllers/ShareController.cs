@@ -18,10 +18,10 @@ namespace PRH_PostService_API.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("get-share-posts")]
-        public async Task<IActionResult> GetSharePosts()
+        [HttpGet("get-share-posts/{userId}")]
+        public async Task<IActionResult> GetSharePosts(string userId)
         {
-            var response = await sender.Send(new GetSharePostQuery());
+            var response = await sender.Send(new GetSharePostQuery(userId));
             return response.ToActionResult();
         }
         /// <summary>

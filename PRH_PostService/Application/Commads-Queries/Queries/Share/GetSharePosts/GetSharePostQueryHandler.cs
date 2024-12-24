@@ -1,19 +1,17 @@
-using System.Security.Claims;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.Commads_Queries.Queries.Share;
 
-public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepository postRepository, IHttpContextAccessor accessor) : IRequestHandler<GetSharePostQuery, BaseResponse<IEnumerable<PostDetailShareDto>>>
+public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepository postRepository) : IRequestHandler<GetSharePostQuery, BaseResponse<IEnumerable<PostDetailShareDto>>>
 {
     public async Task<BaseResponse<IEnumerable<PostDetailShareDto>>> Handle(GetSharePostQuery request, CancellationToken cancellationToken)
     {
         try
         {
-            var userId = accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = request.UserId;
             var posts = await shareRepository.GetsByPropertyAsync(s=> s.UserId == userId && s.Platform == "Internal");
             var postList = posts?.ToList();
             foreach (var item in postList ?? [])
@@ -22,6 +20,8 @@ public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepo
             }
             var postDetailDtos = postList?.Select(p => new PostDetailShareDto
             {
+                ShareAt = p.CreatedAt,
+                ShareId = p.ShareId,
                 ShareDescription = p.Description,
                 PostId = p.PostId,
                 Title = p.Post.Title,
@@ -34,7 +34,7 @@ public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepo
                 Status = p.Post.Status,
                 UpdateAt = p.Post.UpdateAt
             });
-            if (postDetailDtos == null) return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(new List<PostDetailShareDto>());
+            if (postDetailDtos == null) return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn([]);
             return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(postDetailDtos);
         }
         catch (Exception e)
