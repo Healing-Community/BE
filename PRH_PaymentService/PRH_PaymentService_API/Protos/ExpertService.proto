@@ -6,6 +6,7 @@ package expert_service;
 
 service ExpertService {
   rpc PaymentSuccess(PaymentSuccessRequest) returns (PaymentSuccessResponse);
+  rpc GetAppointmentDetails(GetAppointmentDetailsRequest) returns (GetAppointmentDetailsResponse);
 }
 
 message PaymentSuccessRequest {
@@ -17,4 +18,20 @@ message PaymentSuccessRequest {
 message PaymentSuccessResponse {
   bool success = 1;
   string message = 2;
+}
+
+message GetAppointmentDetailsRequest {
+  string appointmentId = 1;
+}
+
+message GetAppointmentDetailsResponse {
+  bool success = 1;
+  string message = 2;
+
+  // Các trường dữ liệu Appointment
+  string expertName = 3;
+  string expertEmail = 4;
+  string appointmentDate = 5;
+  string startTime = 6;
+  string endTime = 7;
 }
