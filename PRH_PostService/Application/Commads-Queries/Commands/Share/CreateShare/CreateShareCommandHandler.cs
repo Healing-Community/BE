@@ -30,7 +30,7 @@ public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpCo
 
                 if (existingShare != null)
                 {
-                    return BaseResponse<string>.SuccessReturn("Bạn đã chia sẻ bài viết này rồi");
+                    return BaseResponse<string>.SuccessReturn(existingShare.ShareId, "Bài viết đã được chia sẻ trước đó");
                 }
             }
 
