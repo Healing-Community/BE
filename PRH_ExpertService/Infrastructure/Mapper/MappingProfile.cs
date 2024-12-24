@@ -12,5 +12,7 @@ public class MappingProfile : Profile
         CreateMap<Certificate, CertificateDTO>();
         CreateMap<WorkExperience, WorkExperienceDTO>();
         CreateMap<Appointment, AppointmentDTO>();
+        CreateMap<ExpertAvailability, ExpertAvailabilityDTO>();
+        CreateMap<ExpertProfile, ExpertFullDetailsDTO>();
     }
 }
