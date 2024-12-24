@@ -10,6 +10,7 @@ using PRH_ExpertService_API.Extentions;
 using Application.Commands.UploadProfileImage;
 using MassTransit.Mediator;
 using PRH_ExpertService_API.FileUpload;
+using Application.Queries.GetExpertFullDetails;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -65,5 +66,14 @@ namespace PRH_ExpertService_API.Controllers
             var response = await sender.Send(command);
             return response.ToActionResult();
         }
+
+        [Authorize(Roles = "Expert")]
+        [HttpGet("details")]
+        public async Task<IActionResult> GetExpertFullDetails()
+        {
+            var response = await sender.Send(new GetExpertFullDetailsQuery());
+            return response.ToActionResult();
+        }
+
     }
 }
