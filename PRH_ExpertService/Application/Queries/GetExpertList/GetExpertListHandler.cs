@@ -26,18 +26,32 @@ namespace Application.Queries.GetExpertList
 
                 foreach (var expertProfile in expertProfiles)
                 {
+                    // Lấy tất cả các cuộc hẹn của chuyên gia
                     var appointments = await appointmentRepository.GetByExpertProfileIdAsync(expertProfile.ExpertProfileId);
                     var completedAppointments = appointments.Where(a => a.Status == 3).ToList();
-                    //var totalRatings = completedAppointments.Count(a => a.AverageRating > 0);
+
+                    // Lọc các cuộc hẹn đã được đánh giá
+                    var ratedAppointments = completedAppointments.Where(a => a.Rating.HasValue && a.Rating.Value > 0).ToList();
+
+                    // Tính tổng số đánh giá
+                    var totalRatings = ratedAppointments.Count;
+
+                    // Tính trung bình đánh giá và làm tròn đến nửa sao gần nhất
+                    decimal averageRating = 0M;
+                    if (totalRatings > 0)
+                    {
+                        averageRating = (decimal)ratedAppointments.Average(a => a.Rating.Value);
+                        averageRating = Math.Round(averageRating * 2, MidpointRounding.AwayFromZero) / 2;
+                    }
 
                     var expertDetailsDto = new ExpertListDTO
                     {
                         Fullname = expertProfile.Fullname,
                         Specialization = expertProfile.Specialization,
-                        AverageRating = expertProfile.AverageRating,
+                        AverageRating = averageRating,
                         TotalAppointments = completedAppointments.Count,
                         ProfileImageUrl = expertProfile.ProfileImageUrl,
-                        //TotalRatings = totalRatings
+                        TotalRatings = totalRatings
                     };
                     expertDetailsDtos.Add(expertDetailsDto);
                 }
@@ -59,6 +73,3 @@ namespace Application.Queries.GetExpertList
         }
     }
 }
-
-
-
