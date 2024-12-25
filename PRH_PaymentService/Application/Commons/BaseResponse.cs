@@ -1,4 +1,8 @@
-﻿namespace Application.Commons;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Http;
+using NUlid;
+
+namespace Application.Commons;
 
 public class BaseResponse<T>
 {
@@ -8,5 +12,76 @@ public class BaseResponse<T>
     public bool Success { get; set; }
     public T? Data { get; set; }
     public List<string>? Errors { get; set; }
-    public DateTime Timestamp { get; set; }
+    public DateTimeOffset Timestamp { get; set; }
+    internal static BaseResponse<T> NotFound(string message = "Không tìm thấy dữ liệu")
+    {
+        return new BaseResponse<T>
+        {
+            Id = NewId.NextSequentialGuid().ToString(),
+            StatusCode = StatusCodes.Status404NotFound,
+            Message = message,
+            Success = false,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
+
+    internal static BaseResponse<T> SuccessReturn(T classInstance, string message = "Thành công")
+    {
+        return new BaseResponse<T>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = StatusCodes.Status200OK,
+            Message = message,
+            Success = true,
+            Data = classInstance,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
+    internal static BaseResponse<T> InternalServerError(string message)
+    {
+        return new BaseResponse<T>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = StatusCodes.Status500InternalServerError,
+            Message = message,
+            Success = false,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
+
+    internal static BaseResponse<T> Unauthorized()
+    {
+        return new BaseResponse<T>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = StatusCodes.Status401Unauthorized,
+            Message = "Không có quyền truy cập, chưa đăng nhập hoặc phiên làm việc hết hạn",
+            Success = false,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
+
+    internal static BaseResponse<T> BadRequest(string message)
+    {
+        return new BaseResponse<T>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = StatusCodes.Status400BadRequest,
+            Message = message,
+            Success = false,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
+    internal static BaseResponse<T> CustomResponse(int statusCodes,string message, bool success, List<string> errors) 
+    {
+        return new BaseResponse<T>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = statusCodes,
+            Message = message,
+            Success = success,
+            Errors = errors,
+            Timestamp = DateTimeOffset.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
 }

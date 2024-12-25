@@ -12,17 +12,22 @@ namespace PRH_PaymentService_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentController(ISender sender, PaymentDbContext paymentDbContext) : ControllerBase
+    public class PaymentController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePayment(CreatePaymentCommand command)
+        public async Task<IActionResult> CreatePayment(PaymentPayloadDto paymentPayloadDto)
         {
-            var response = await sender.Send(command);
+            long orderCode = 123;
+            var cancelUrl = Url.Action("cancel", "Payment", new ReturnPaymentDto { OrderCode = orderCode, RedirectUrl = paymentPayloadDto.ReturnUrl }, protocol: Request.Scheme);
+            var returnUrl = Url.Action("return", "Payment", new ReturnPaymentDto { OrderCode = orderCode, RedirectUrl = paymentPayloadDto.ReturnUrl }, protocol: Request.Scheme);
+            
+            paymentPayloadDto.OrderCode = orderCode;
+            var response = await sender.Send(new CreatePaymentCommand(paymentPayloadDto));
             return Ok(response);
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpGet("status/{orderCode}")]
         public async Task<IActionResult> GetPaymentStatus(long orderCode)
         {
@@ -30,15 +35,23 @@ namespace PRH_PaymentService_API.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "User")]
-        [HttpPost("cancel")]
-        public async Task<IActionResult> CancelPayment([FromBody] CancelPaymentLinkCommand command)
+        [Authorize]
+        [HttpGet("cancel/{orderCode}")]
+        public async Task<IActionResult> CancelPayment([FromQuery] ReturnPaymentDto returnPaymentDto)
         {
-            var response = await sender.Send(command);
-            return Ok(response);
+            // Huỷ thanh toán
+            await sender.Send(new CancelPaymentLinkCommand(returnPaymentDto));
+            // Redirect về trang gốc
+            return Redirect($"{returnPaymentDto.RedirectUrl}?status=CANCEL");
         }
-
-        [Authorize(Roles = "User")]
+        [Authorize]
+        [HttpGet("return/{orderCode}")]
+        public async Task<IActionResult> ReturnPayment([FromQuery] ReturnPaymentDto returnPaymentDto)
+        {
+            await sender.Send(new CancelPaymentLinkCommand(returnPaymentDto));
+            return Redirect($"{returnPaymentDto.RedirectUrl}?status=SUCCEED");
+        }
+        [Authorize]
         [HttpGet("history")]
         public async Task<IActionResult> GetTransactionHistory()
         {
@@ -46,13 +59,12 @@ namespace PRH_PaymentService_API.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpGet("details/{paymentId}")]
         public async Task<IActionResult> GetPaymentDetails([FromRoute] string paymentId)
         {
             var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
             return Ok(response);
         }
-
     }
 }
