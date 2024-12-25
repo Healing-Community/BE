@@ -16,7 +16,7 @@ namespace Application.Queries.Comments.GetComments
             var response = new BaseResponse<IEnumerable<CommentDtoResponse>>()
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 
