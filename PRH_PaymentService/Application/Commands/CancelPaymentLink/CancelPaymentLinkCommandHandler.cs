@@ -18,7 +18,7 @@ namespace Application.Commands.CancelPaymentLink
 
             try
             {
-                var cancelResult = await payOSService.CancelPaymentLink(request.OrderCode, request.Reason);
+                var cancelResult = await payOSService.CancelPaymentLink(request.OrderCode);
 
                 response.Success = true;
                 response.Data = cancelResult.Status;
