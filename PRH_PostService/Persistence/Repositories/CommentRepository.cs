@@ -82,5 +82,10 @@ namespace Persistence.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public async Task<IEnumerable<Comment>> GetAllCommentsByShareIdAsync(string shareId)
+        {
+            return await hFDBPostserviceContext.Comments.Where(c => c.ShareId == shareId).OrderBy(c => c.CreatedAt).ToListAsync();
+        }
     }
 }
