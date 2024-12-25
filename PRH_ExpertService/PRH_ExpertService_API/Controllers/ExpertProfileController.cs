@@ -1,5 +1,4 @@
-﻿using Application.Commands.CreateExpertProfile;
-using Application.Commands.UpdateExpertProfile;
+﻿using Application.Commands.UpdateExpertProfile;
 using Application.Commands.DeleteExpertProfile;
 using Application.Queries.GetAllExpertProfiles;
 using Application.Queries.GetExpertProfile;
@@ -8,9 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRH_ExpertService_API.Extentions;
 using Application.Commands.UploadProfileImage;
-using MassTransit.Mediator;
 using PRH_ExpertService_API.FileUpload;
-using Application.Queries.GetExpertFullDetails;
+using Application.Queries.GetExpertList;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -67,11 +65,11 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Expert")]
-        [HttpGet("details")]
-        public async Task<IActionResult> GetExpertFullDetails()
+        [Authorize(Roles = "Expert,User")]
+        [HttpGet("expert-list")]
+        public async Task<IActionResult> GetExpertList()
         {
-            var response = await sender.Send(new GetExpertFullDetailsQuery());
+            var response = await sender.Send(new GetExpertListQuery());
             return response.ToActionResult();
         }
 

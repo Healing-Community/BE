@@ -13,6 +13,5 @@ public class MappingProfile : Profile
         CreateMap<WorkExperience, WorkExperienceDTO>();
         CreateMap<Appointment, AppointmentDTO>();
         CreateMap<ExpertAvailability, ExpertAvailabilityDTO>();
-        CreateMap<ExpertProfile, ExpertFullDetailsDTO>();
     }
 }
