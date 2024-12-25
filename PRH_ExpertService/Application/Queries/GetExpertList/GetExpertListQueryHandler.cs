@@ -6,7 +6,7 @@ using NUlid;
 
 namespace Application.Queries.GetExpertList
 {
-    public class GetExpertListHandler(
+    public class GetExpertListQueryHandler(
         IExpertProfileRepository expertProfileRepository,
         IAppointmentRepository appointmentRepository) : IRequestHandler<GetExpertListQuery, BaseResponse<IEnumerable<ExpertListDTO>>>
     {
@@ -59,12 +59,12 @@ namespace Application.Queries.GetExpertList
                 response.Success = true;
                 response.Data = expertDetailsDtos;
                 response.StatusCode = 200;
-                response.Message = "Lấy danh sách thông tin chi tiết chuyên gia thành công.";
+                response.Message = "Lấy danh sách thông tin chuyên gia thành công.";
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi khi lấy danh sách thông tin chi tiết chuyên gia.";
+                response.Message = "Đã xảy ra lỗi khi lấy danh sách thông tin chuyên gia.";
                 response.StatusCode = 500;
                 response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
