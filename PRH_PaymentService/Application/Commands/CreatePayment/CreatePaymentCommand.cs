@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.CreatePayment
 {
-    public record CreatePaymentCommand(PaymentPayloadDto PaymentPayloadDto) : IRequest<BaseResponse<string>>;
+    public record CreatePaymentCommand(string AppointmentId,int Amount, string Description, string ReturnUrl, string CancelUrl) : IRequest<BaseResponse<string>>;
 }

@@ -18,7 +18,7 @@ namespace Application.Services
                 orderCode: request.OrderCode,
                 amount: request.Amount,
                 description: request.Description,
-                items: [],
+                items: new List<ItemData>(),
                 cancelUrl: request.CancelUrl,
                 returnUrl: request.ReturnUrl
             );

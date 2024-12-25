@@ -1,13 +1,11 @@
 ﻿using Application.Commons;
-using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Domain.Entities;
 using MediatR;
 using NUlid;
 
 namespace Application.Commands.CancelPaymentLink
 {
-    public class CancelPaymentLinkCommandHandler(IPayOSService payOSService, IPaymentRepository paymentRepository) : IRequestHandler<CancelPaymentLinkCommand, BaseResponse<string>>
+    public class CancelPaymentLinkCommandHandler(IPayOSService payOSService) : IRequestHandler<CancelPaymentLinkCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CancelPaymentLinkCommand request, CancellationToken cancellationToken)
         {
@@ -20,21 +18,8 @@ namespace Application.Commands.CancelPaymentLink
 
             try
             {
-                // Hủy liên kết thanh toán trên cổng thanh toán PayOS
-                var cancelResult = await payOSService.CancelPaymentLink(request.ReturnPaymentDto.OrderCode);
-                // Cập nhật trạng thái hủy liên kết thanh toán trong cơ sở dữ liệu
-                var payment = await paymentRepository.GetByPropertyAsync(p => p.OrderCode == request.ReturnPaymentDto.OrderCode);
-                await paymentRepository.Update(payment.PaymentId, new Payment
-                {
-                    UserId = payment.UserId,
-                    AppointmentId = payment.AppointmentId,
-                    Amount = payment.Amount,
-                    PaymentDate = payment.PaymentDate,
-                    UpdatedAt = DateTime.UtcNow,
-                    PaymentId = payment.PaymentId,
-                    OrderCode = payment.OrderCode,
-                    Status = 3
-                });
+                var cancelResult = await payOSService.CancelPaymentLink(request.OrderCode);
+
                 response.Success = true;
                 response.Data = cancelResult.Status;
                 response.StatusCode = 200;
@@ -43,9 +28,9 @@ namespace Application.Commands.CancelPaymentLink
             catch (Exception ex)
             {
                 response.Success = false;
+                response.Message = "Không thể hủy liên kết thanh toán.";
                 response.StatusCode = 500;
-                response.Message = "Hủy liên kết thanh toán thất bại.";
-                response.Errors.Add(ex.Message);
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
 
             return response;

@@ -18,57 +18,91 @@ namespace Application.Commands.CreatePayment
     {
         public async Task<BaseResponse<string>> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
+            var response = new BaseResponse<string>
+            {
+                Id = Ulid.NewUlid().ToString(),
+                Timestamp = DateTime.UtcNow.AddHours(7),
+                Errors = new List<string>()
+            };
+
             try
             {
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
-                    return BaseResponse<string>.BadRequest("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
                 }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    return BaseResponse<string>.Unauthorized();
+                    response.Success = false;
+                    response.Message = "Không tìm thấy ID người dùng.";
+                    response.StatusCode = 400;
+                    return response;
                 }
 
+                long timestampPart = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                int randomPart = new Random().Next(1000, 9999);
+
+                string orderCodeString = $"{timestampPart}{randomPart}";
+                if (orderCodeString.Length > 15)
+                {
+                    orderCodeString = orderCodeString.Substring(0, 15);
+                }
+
+                long orderCode = long.Parse(orderCodeString);
 
                 var paymentRequest = new PaymentRequest
                 {
-                    AppointmentId = request.PaymentPayloadDto.AppointmentId,
-                    OrderCode = request.PaymentPayloadDto.OrderCode ,
-                    Amount = request.PaymentPayloadDto.Amount,
-                    Description = "request.PaymentPayloadDto.Description",
-                    ReturnUrl = request.PaymentPayloadDto.ReturnUrl,
-                    CancelUrl = request.PaymentPayloadDto.CancelUrl
+                    AppointmentId = request.AppointmentId,
+                    OrderCode = orderCode,
+                    Amount = request.Amount,
+                    Description = request.Description,
+                    ReturnUrl = request.ReturnUrl,
+                    CancelUrl = request.CancelUrl
                 };
 
                 var payOSResponse = await payOSService.CreatePaymentLink(paymentRequest);
 
                 if (payOSResponse == null)
                 {
-                    return BaseResponse<string>.InternalServerError("Không thể tạo liên kết thanh toán.");
+                    response.Success = false;
+                    response.Message = "Không thể tạo liên kết thanh toán.";
+                    response.StatusCode = 500;
+                    return response;
                 }
 
                 var payment = new Payment
                 {
                     PaymentId = Ulid.NewUlid().ToString(),
                     UserId = userId,
-                    AppointmentId = request.PaymentPayloadDto.AppointmentId,
-                    OrderCode = request.PaymentPayloadDto.OrderCode,
-                    Amount = request.PaymentPayloadDto.Amount,
+                    AppointmentId = request.AppointmentId,
+                    OrderCode = orderCode,
+                    Amount = request.Amount,
                     Status = (int)PaymentStatus.Pending,
                     PaymentDate = DateTime.UtcNow.AddHours(7),
                     UpdatedAt = DateTime.UtcNow.AddHours(7)
                 };
                 await paymentRepository.Create(payment);
 
-                return BaseResponse<string>.SuccessReturn(payOSResponse.PaymentUrl, "Đã tạo yêu cầu thanh toán thành công.");
+                response.Success = true;
+                response.Data = payOSResponse.PaymentUrl;
+                response.StatusCode = 200;
+                response.Message = "Đã tạo yêu cầu thanh toán thành công.";
             }
-            catch 
+            catch (Exception ex)
             {
-                return BaseResponse<string>.InternalServerError("Lỗi hệ thống: không thể tạo yêu cầu thanh toán.");
+                response.Success = false;
+                response.Message = "Đã xảy ra lỗi khi tạo yêu cầu thanh toán.";
+                response.StatusCode = 500;
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
             }
+
+            return response;
         }
     }
 }

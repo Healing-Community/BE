@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.CancelPaymentLink
 {
-    public record CancelPaymentLinkCommand(ReturnPaymentDto ReturnPaymentDto) : IRequest<BaseResponse<string>>;
+    public record CancelPaymentLinkCommand(long OrderCode) : IRequest<BaseResponse<string>>;
 }
