@@ -20,8 +20,8 @@ namespace Infrastructure.Context
         public DbSet<Share> Shares { get; set; }
         public HFDBPostserviceContext(DbContextOptions<HFDBPostserviceContext> options) : base(options) { }
 
-        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.kulssrgvnfgpytdjvmyy; Password=ProjectHealing@1234");
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //   => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.kulssrgvnfgpytdjvmyy; Password=ProjectHealing@1234");
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //    => optionsBuilder.UseNpgsql("Host=localhost; Database=HFDB_PostService; Username=postgres; Password=Abcd1234");
@@ -70,6 +70,11 @@ namespace Infrastructure.Context
                 .HasOne(c => c.Parent)
                 .WithMany(c => c.Replies)
                 .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Share)
+                .WithMany()
+                .HasForeignKey(c => c.ShareId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Report 
