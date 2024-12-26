@@ -69,6 +69,16 @@ namespace Application.Commands.Posts.AddPostGroup
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         return response;
                     }
+
+                    // Check if user is in group
+                    var isUserInGroup = await groupGrpcClient.IsUserInGroupAsync(userId, request.PostGroupDto.GroupId);
+                    if (!isUserInGroup)
+                    {
+                        response.Success = false;
+                        response.Message = "Bạn không phải là thành viên của nhóm này.";
+                        response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        return response;
+                    }
                 }
 
                 // Validate Title
