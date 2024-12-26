@@ -1,9 +1,6 @@
 ﻿using Grpc.Net.Client;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http;
-using System.Threading.Tasks;
-using PRH_PostService_API.Protos;
 using Application.Interfaces.Repository;
+using GroupServiceGrpc;
 
 namespace PRH_PostService_API
 {

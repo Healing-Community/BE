@@ -11,6 +11,7 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddScoped<GroupGrpcClient>();
 builder.Services.AddScoped<IGroupGrpcClient, GroupGrpcClient>();
 

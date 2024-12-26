@@ -1,6 +1,6 @@
 ﻿using Grpc.Core;
-using PRH_GroupService_API.Protos;
 using Application.Interfaces.Repository;
+using GroupServiceGrpc;
 
 namespace PRH_GroupService_API
 {
