@@ -3,6 +3,7 @@ using Application.Interfaces.Repository;
 using Domain.Entities;
 using Domain.Enum;
 using Infrastructure.Context;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using NUlid;
 using System.Linq.Expressions;
@@ -11,6 +12,23 @@ namespace Persistence.Repositories
 {
     public class UserGroupRepository(HFDBGroupServiceContext hFDBGroupServiceContext) : IUserGroupRepository
     {
+        public async Task<RoleCountDto> CountRolesByGroupIdAsync(string groupId)
+        {
+            var totalUsers = await hFDBGroupServiceContext.UserGroups
+                .Where(ug => ug.GroupId == groupId && ug.RoleInGroup == "User")
+                .CountAsync();
+
+            var totalOwnersAndModerators = await hFDBGroupServiceContext.UserGroups
+                .Where(ug => ug.GroupId == groupId && (ug.RoleInGroup == "Owner" || ug.RoleInGroup == "Moderator"))
+                .CountAsync();
+
+            return new RoleCountDto
+            {
+                TotalUsers = totalUsers,
+                TotalOwnersAndModerators = totalOwnersAndModerators
+            };
+        }
+
         public async Task Create(UserGroup entity)
         {
             await hFDBGroupServiceContext.UserGroups.AddAsync(entity);
