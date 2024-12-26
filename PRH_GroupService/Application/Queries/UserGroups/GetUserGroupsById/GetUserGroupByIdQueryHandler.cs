@@ -20,7 +20,7 @@ namespace Application.Queries.UserGroups.GetUserGroupsById
             var response = new BaseResponse<UserGroup>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 
