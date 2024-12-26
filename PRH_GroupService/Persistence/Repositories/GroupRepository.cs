@@ -23,6 +23,11 @@ namespace Persistence.Repositories
             await hFDBGroupServiceContext.SaveChangesAsync();
         }
 
+        public async Task<bool> ExistsAsync(string groupId)
+        {
+            return await hFDBGroupServiceContext.Groups.AnyAsync(g => g.GroupId == groupId);
+        }
+
         public async Task<Group> GetByIdAsync(string id)
         {
             return await hFDBGroupServiceContext.Groups.FirstAsync(x => x.GroupId == id);
