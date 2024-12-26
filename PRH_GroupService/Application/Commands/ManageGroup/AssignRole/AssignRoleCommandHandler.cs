@@ -24,7 +24,7 @@ namespace Application.Commands.Groups.AssignRole
             var response = new BaseResponse<string>
             {
                 Id = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 
