@@ -50,5 +50,20 @@ namespace PRH_PostService_API
                 return false; // Trả về false nếu có lỗi xảy ra
             }
         }
+
+        public async Task<bool> IsUserInGroupAsync(string userId, string groupId)
+        {
+            var request = new CheckUserInGroupRequest { UserId = userId, GroupId = groupId };
+
+            try
+            {
+                var response = await _client.IsUserInGroupAsync(request);
+                return response.Exists;
+            }
+            catch (Grpc.Core.RpcException)
+            {
+                return false;
+            }
+        }
     }
 }

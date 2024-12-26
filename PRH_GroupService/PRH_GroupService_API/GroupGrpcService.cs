@@ -7,10 +7,12 @@ namespace PRH_GroupService_API
     public class GroupGrpcService : GroupService.GroupServiceBase
     {
         private readonly IGroupRepository _groupRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
 
-        public GroupGrpcService(IGroupRepository groupRepository)
+        public GroupGrpcService(IGroupRepository groupRepository, IUserGroupRepository userGroupRepository)
         {
             _groupRepository = groupRepository;
+            _userGroupRepository = userGroupRepository;
         }
 
         public override async Task<CheckGroupResponse> CheckGroupExists(CheckGroupRequest request, ServerCallContext context)
@@ -20,6 +22,15 @@ namespace PRH_GroupService_API
             var response = new CheckGroupResponse
             {
                 Exists = group != null // true nếu group tồn tại, ngược lại false
+            };
+            return response;
+        }
+        public override async Task<CheckUserInGroupResponse> IsUserInGroup(CheckUserInGroupRequest request, ServerCallContext context)
+        {
+            var userGroup = await _userGroupRepository.GetByGroupAndUserIdAsync(request.GroupId, request.UserId);
+            var response = new CheckUserInGroupResponse
+            {
+                Exists = userGroup != null // true nếu User nằm trong Group, ngược lại false
             };
             return response;
         }

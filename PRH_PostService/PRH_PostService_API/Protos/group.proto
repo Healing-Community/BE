@@ -7,6 +7,9 @@ package group;
 service GroupService {
     // RPC để kiểm tra xem Group có tồn tại không
     rpc CheckGroupExists (CheckGroupRequest) returns (CheckGroupResponse);
+
+    // RPC để kiểm tra xem User có nằm trong Group không
+    rpc IsUserInGroup (CheckUserInGroupRequest) returns (CheckUserInGroupResponse);
 }
 
 message CheckGroupRequest {
@@ -15,4 +18,13 @@ message CheckGroupRequest {
 
 message CheckGroupResponse {
     bool exists = 1; // Kết quả: true nếu Group tồn tại, false nếu không
+}
+
+message CheckUserInGroupRequest {
+    string group_id = 1; // ID của Group cần kiểm tra
+    string user_id = 2; // ID của User cần kiểm tra
+}
+
+message CheckUserInGroupResponse {
+    bool exists = 1; // Kết quả: true nếu User nằm trong Group, false nếu không
 }
