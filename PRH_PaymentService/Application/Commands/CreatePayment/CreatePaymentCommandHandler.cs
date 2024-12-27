@@ -10,11 +10,13 @@ using Net.payOS;
 using Net.payOS.Types;
 using Grpc.Net.Client;
 using ExpertPaymentService;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Commands.CreatePayment
 {
     public class CreatePaymentCommandHandler(
         IPaymentRepository paymentRepository,
+        IConfiguration configuration,
         PayOS payOSService,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreatePaymentCommand, BaseResponse<string>>
     {
@@ -29,13 +31,18 @@ namespace Application.Commands.CreatePayment
                 }
                 #region ExpertPaymentService gRPC
                 // Grpc qua expert để lấy thông tin lịch hẹn đồng thời kiểm tra xem lịch hẹn có tồn tại không
+                var expertServiceUrl = configuration["ExpertServiceUrl"];
+                if(expertServiceUrl == null)
+                {
+                    return BaseResponse<string>.InternalServerError("Đã xảy ra lỗi khi tạo yêu cầu thanh toán.");
+                }
                 var httpHandler = new HttpClientHandler
                 {
                     // For local development only - allows insecure HTTP/2
                     ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
                 };
 
-                using var channel = GrpcChannel.ForAddress("http://localhost:5005/", new GrpcChannelOptions
+                using var channel = GrpcChannel.ForAddress(expertServiceUrl, new GrpcChannelOptions
                 {
                     HttpHandler = httpHandler
                 });
