@@ -40,7 +40,7 @@ namespace PRH_GroupService_API.Controllers
             return response.ToActionResult();
         }
 
-        [HttpGet("get-by-user-id")]
+        [HttpGet("get-by-user-id/{userId}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetUserGroupsByUserId(string userId)
         {
@@ -48,7 +48,7 @@ namespace PRH_GroupService_API.Controllers
             return response.ToActionResult();
         }
 
-        [HttpGet("get-by-group-id")]
+        [HttpGet("get-by-group-id/{groupId}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetUserGroupsByGroupId(string groupId)
         {
