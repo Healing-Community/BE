@@ -1,5 +1,7 @@
-﻿using Application.Interfaces.Repository;
+﻿using Application.Commons.DTOs;
+using Application.Interfaces.Repository;
 using Domain.Entities;
+using Domain.Enum;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using NUlid;
@@ -118,6 +120,43 @@ namespace Persistence.Repositories
                 .Take(pageSize)
                 .ToListAsync();
             return posts;
+        }
+
+        public async Task<IEnumerable<Post>> GetAllPostsInGroupsWithValidationAsync(
+            string userId, 
+            Func<string, Task<GroupDetailsDto?>> getGroupDetails, 
+            Func<string, string, Task<bool>> isUserInGroup)
+        {
+            var posts = await context.Posts
+                .Where(p => p.Status == (int)PostStatus.Group) // Only group posts
+                .ToListAsync();
+
+            var validPosts = new List<Post>();
+
+            foreach (var post in posts)
+            {
+                if (string.IsNullOrEmpty(post.GroupId)) continue;
+
+                // Fetch group details using gRPC
+                var groupDetails = await getGroupDetails(post.GroupId);
+
+                // Validate group visibility or user's membership
+                if (groupDetails != null &&
+                    (groupDetails.Visibility == 0 || // Public group
+                    await isUserInGroup(post.GroupId, userId))) // User is a group member
+                {
+                    validPosts.Add(post);
+                }
+            }
+
+            return validPosts;
+        }
+
+        public async Task<IEnumerable<Post>> GetPostsByGroupIdAsync(string groupId)
+        {
+            return await context.Posts
+                .Where(p => p.GroupId == groupId && p.Status == (int)PostStatus.Group) 
+                .ToListAsync();
         }
     }
 }

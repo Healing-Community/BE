@@ -1,6 +1,7 @@
 ﻿using Grpc.Net.Client;
 using Application.Interfaces.Repository;
 using GroupServiceGrpc;
+using Application.Commons.DTOs;
 
 namespace PRH_PostService_API
 {
@@ -51,19 +52,43 @@ namespace PRH_PostService_API
             }
         }
 
-        public async Task<bool> IsUserInGroupAsync(string userId, string groupId)
+        public async Task<bool> CheckUserInGroupAsync(string groupId, string userId)
         {
-            var request = new CheckUserInGroupRequest { UserId = userId, GroupId = groupId };
+            var request = new CheckUserInGroupRequest
+            {
+                GroupId = groupId,
+                UserId = userId
+            };
 
-            try
+            var response = await _client.CheckUserInGroupAsync(request);
+            return response.IsMember;
+        }
+
+        public async Task<bool> CheckUserInGroupOrPublicAsync(string groupId, string userId)
+        {
+            var request = new CheckUserInGroupRequest
             {
-                var response = await _client.IsUserInGroupAsync(request);
-                return response.Exists;
-            }
-            catch (Grpc.Core.RpcException)
-            {
-                return false;
-            }
+                GroupId = groupId,
+                UserId = userId
+            };
+
+            var response = await _client.CheckUserInGroupOrPublicAsync(request);
+            return response.IsMember;
+        }
+
+        public async Task<GroupDetailsDto?> GetGroupDetailsAsync(string groupId)
+        {
+            var request = new GetGroupDetailsRequest { GroupId = groupId };
+
+            var response = await _client.GetGroupDetailsAsync(request);
+
+            return response != null
+                ? new GroupDetailsDto
+                {
+                    GroupId = response.GroupId,
+                    Visibility = response.Visibility
+                }
+                : null;
         }
     }
 }

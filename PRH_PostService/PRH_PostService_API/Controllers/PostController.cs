@@ -1,4 +1,6 @@
 ﻿using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
+using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByGroupId;
+using Application.Commads_Queries.Queries.Posts.GetPostsInGroups;
 using Application.Commads_Queries.Queries.Posts.GetRelativeCatogoryPost;
 using Application.Commands.Posts.AddPost;
 using Application.Commands.Posts.AddPostGroup;
@@ -153,7 +155,29 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new CreatePostGroupCommand(postGroup, HttpContext));
             return response.ToActionResult();
         }
-
+        /// <summary>
+        /// Lấy danh sách các bài viết trong group - với GroupVisibility = 0 (public) - GroupVisibility = 1 (private) sẽ không thấy
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("get-posts-in-groups")]
+        public async Task<IActionResult> GetPostsInGroups()
+        {
+            var response = await sender.Send(new GetPostsInGroupsQuery(HttpContext));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy danh sách các bài viết trong group bằng cách truyền vào GroupId - với GroupVisibility = 0 (public) - GroupVisibility = 1 (private) sẽ không thấy
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("get-posts-in-group-by-id/{groupId}")]
+        public async Task<IActionResult> GetPostsInGroupById(string groupId)
+        {
+            var response = await sender.Send(new GetPostsInGroupByGroupIdQuery(groupId));
+            return response.ToActionResult();
+        }
         [Authorize]
         [HttpPut("update-post/{id}")]
         public async Task<IActionResult> UpdatePost(string id, PostDto post)
