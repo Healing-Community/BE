@@ -46,6 +46,7 @@ namespace Application.Queries.GetExpertList
 
                     var expertDetailsDto = new ExpertListDTO
                     {
+                        ExpertId = expertProfile.ExpertProfileId,
                         Fullname = expertProfile.Fullname,
                         Specialization = expertProfile.Specialization,
                         AverageRating = averageRating,

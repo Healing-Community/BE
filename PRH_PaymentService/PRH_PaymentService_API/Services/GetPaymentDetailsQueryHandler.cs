@@ -62,7 +62,7 @@ namespace PRH_PaymentService_API.Services
                 // 4. Trả kết quả
                 response.Success = true;
                 response.Data = paymentDetails;
-                response.Message = "Lấy Payment + Appointment thành công.";
+                response.Message = "Lấy chi tiết lịch sử giao dịch thành công.";
                 response.StatusCode = 200;
             }
             catch (Exception ex)
