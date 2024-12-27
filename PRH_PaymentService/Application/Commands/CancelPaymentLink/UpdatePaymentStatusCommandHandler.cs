@@ -13,7 +13,7 @@ namespace Application.Commands.CancelPaymentLink
         {
             try
             {
-                var expertServiceUrl = "http://host.docker.internal:5005";
+                var expertServiceUrl = "http://host.docker.internal:5005/";
                 var httpHandler = new HttpClientHandler
                 {
                     // For local development only - allows insecure HTTP/2
@@ -67,7 +67,7 @@ namespace Application.Commands.CancelPaymentLink
             }
             catch (Exception ex)
             {
-                return BaseResponse<string>.InternalServerError(ex.Message);
+                return BaseResponse<string>.InternalServerError(ex.ToString());
             }
         }
     }
