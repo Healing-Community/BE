@@ -13,7 +13,7 @@ namespace Application.Commands.CancelPaymentLink
         {
             try
             {
-                var expertServiceUrl = configuration["ExpertServiceUrl"] ?? "http://localhost:5005/";
+                var expertServiceUrl = "http://host.docker.internal:5005";
                 var httpHandler = new HttpClientHandler
                 {
                     // For local development only - allows insecure HTTP/2
