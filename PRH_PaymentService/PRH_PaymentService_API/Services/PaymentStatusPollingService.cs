@@ -4,6 +4,8 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Enum;
 using ExpertService.gRPC;
+using Grpc.Core;
+using Newtonsoft.Json;
 
 namespace PRH_PaymentService_API.Services
 {
@@ -92,6 +94,12 @@ namespace PRH_PaymentService_API.Services
                                         payment.AppointmentId, expertServiceResponse.Message);
                                 }
                             }
+                            catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
+                            {
+                                logger.LogError(ex,
+                                    "Lỗi khi kết nối với Expert Service cho AppointmentId: {AppointmentId}",
+                                    payment.AppointmentId);
+                            }
                             catch (Exception ex)
                             {
                                 logger.LogError(ex,
@@ -101,6 +109,10 @@ namespace PRH_PaymentService_API.Services
                         }
                     }
                 }
+            }
+            catch (JsonReaderException ex)
+            {
+                logger.LogError(ex, "Lỗi khi phân tích cú pháp JSON cho OrderCode {OrderCode}", payment.OrderCode);
             }
             catch (Exception ex)
             {
