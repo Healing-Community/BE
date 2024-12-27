@@ -15,24 +15,70 @@ namespace PRH_GroupService_API
             _userGroupRepository = userGroupRepository;
         }
 
+        // Check if a Group exists
         public override async Task<CheckGroupResponse> CheckGroupExists(CheckGroupRequest request, ServerCallContext context)
         {
-            // Kiểm tra nếu group với group_id tồn tại trong cơ sở dữ liệu
             var group = await _groupRepository.GetByIdAsync(request.GroupId);
             var response = new CheckGroupResponse
             {
-                Exists = group != null // true nếu group tồn tại, ngược lại false
+                Exists = group != null // true if the group exists
             };
             return response;
         }
-        public override async Task<CheckUserInGroupResponse> IsUserInGroup(CheckUserInGroupRequest request, ServerCallContext context)
+
+        // Check if a User belongs to a Group
+        public override async Task<CheckUserInGroupResponse> CheckUserInGroup(CheckUserInGroupRequest request, ServerCallContext context)
         {
             var userGroup = await _userGroupRepository.GetByGroupAndUserIdAsync(request.GroupId, request.UserId);
             var response = new CheckUserInGroupResponse
             {
-                Exists = userGroup != null // true nếu User nằm trong Group, ngược lại false
+                IsMember = userGroup != null // true if the user is in the group
             };
             return response;
+        }
+
+        // Get details of a Group (including visibility)
+        public override async Task<GetGroupDetailsResponse> GetGroupDetails(GetGroupDetailsRequest request, ServerCallContext context)
+        {
+            var group = await _groupRepository.GetByIdAsync(request.GroupId);
+
+            if (group == null)
+            {
+                return new GetGroupDetailsResponse
+                {
+                    GroupId = request.GroupId,
+                    Visibility = 1 // Default to private if the group does not exist
+                };
+            }
+
+            return new GetGroupDetailsResponse
+            {
+                GroupId = group.GroupId,
+                Visibility = group.GroupVisibility // 0: Public, 1: Private
+            };
+        }
+
+        // Check if a User has access to a Group (public or member)
+        public override async Task<CheckUserInGroupResponse> CheckUserInGroupOrPublic(CheckUserInGroupRequest request, ServerCallContext context)
+        {
+            var group = await _groupRepository.GetByIdAsync(request.GroupId);
+
+            if (group == null)
+            {
+                return new CheckUserInGroupResponse
+                {
+                    IsMember = false
+                };
+            }
+
+            // Allow access if GroupVisibility = 0 (Public) or user is a member of the group
+            var userGroup = await _userGroupRepository.GetByGroupAndUserIdAsync(request.GroupId, request.UserId);
+            var hasAccess = group.GroupVisibility == 0 || userGroup != null;
+
+            return new CheckUserInGroupResponse
+            {
+                IsMember = hasAccess
+            };
         }
     }
 }
