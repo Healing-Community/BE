@@ -67,9 +67,9 @@ namespace PRH_ExpertService_API.Controllers
 
         [Authorize(Roles = "Expert,User")]
         [HttpGet("expert-list")]
-        public async Task<IActionResult> GetExpertList()
+        public async Task<IActionResult> GetExpertList([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
-            var response = await sender.Send(new GetExpertListQuery());
+            var response = await sender.Send(new GetExpertListQuery(pageNumber, pageSize));
             return response.ToActionResult();
         }
 

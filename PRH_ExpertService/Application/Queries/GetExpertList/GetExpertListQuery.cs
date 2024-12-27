@@ -4,5 +4,5 @@ using Application.Commons;
 
 namespace Application.Queries.GetExpertList
 {
-    public record GetExpertListQuery() : IRequest<BaseResponse<IEnumerable<ExpertListDTO>>>;
+    public record GetExpertListQuery(int PageNumber, int PageSize) : IRequest<BaseResponse<IEnumerable<ExpertListDTO>>>;
 }

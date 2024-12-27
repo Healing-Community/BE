@@ -46,6 +46,7 @@ namespace Application.Queries.GetExpertList
 
                     var expertDetailsDto = new ExpertListDTO
                     {
+                        ExpertId = expertProfile.ExpertProfileId,
                         Fullname = expertProfile.Fullname,
                         Specialization = expertProfile.Specialization,
                         AverageRating = averageRating,
@@ -56,8 +57,13 @@ namespace Application.Queries.GetExpertList
                     expertDetailsDtos.Add(expertDetailsDto);
                 }
 
+                var pagedExpertDetailsDtos = expertDetailsDtos
+                    .Skip((request.PageNumber - 1) * request.PageSize)
+                    .Take(request.PageSize)
+                    .ToList();
+
                 response.Success = true;
-                response.Data = expertDetailsDtos;
+                response.Data = pagedExpertDetailsDtos;
                 response.StatusCode = 200;
                 response.Message = "Lấy danh sách thông tin chuyên gia thành công.";
             }
