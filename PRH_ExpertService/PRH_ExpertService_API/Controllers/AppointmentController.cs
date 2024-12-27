@@ -18,6 +18,12 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class AppointmentController(ISender sender) : ControllerBase
     {
+        [HttpGet("get-by-id/{appointmentId}")]
+        public async Task<IActionResult> GetAppointment(string appointmentId)
+        {
+            var response = await sender.Send(new GetAppointmentByPropertyQuery(appointmentId));
+            return response.ToActionResult();
+        }
         [Authorize(Roles = "User")]
         [HttpGet("user")]
         public async Task<IActionResult> GetAppointmentsByUser()

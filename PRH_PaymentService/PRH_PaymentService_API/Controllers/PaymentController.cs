@@ -2,23 +2,22 @@
 using Application.Commands.CreatePayment;
 using Application.Queries.GetPaymentStatus;
 using Application.Queries.GetTransactionHistory;
-using Infrastructure.Context;
+using Domain.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PRH_PaymentService_API.Services;
 
 namespace PRH_PaymentService_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentController(ISender sender, PaymentDbContext paymentDbContext) : ControllerBase
+    public class PaymentController(ISender sender) : ControllerBase
     {
         [Authorize(Roles = "User")]
         [HttpPost("create")]
-        public async Task<IActionResult> CreatePayment(CreatePaymentCommand command)
+        public async Task<IActionResult> CreatePayment(PaymentRequest paymentRequest)
         {
-            var response = await sender.Send(command);
+            var response = await sender.Send(new CreatePaymentCommand(paymentRequest));
             return Ok(response);
         }
 
@@ -30,12 +29,18 @@ namespace PRH_PaymentService_API.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "User")]
-        [HttpPost("cancel")]
-        public async Task<IActionResult> CancelPayment([FromBody] CancelPaymentLinkCommand command)
+        [HttpGet("redirect/{orderCode}/{redirectUrl}/{isCancel}/{appointmentId}")]
+        public async Task<IActionResult> CancelPayment(long orderCode, string redirectUrl, bool isCancel,string appointmentId)
         {
-            var response = await sender.Send(command);
-            return Ok(response);
+            if (isCancel)
+            {
+                await sender.Send(new UpdatePaymentStatusCommand(orderCode, (int)Domain.Enum.PaymentStatus.Cancelled, appointmentId));
+            }
+            else
+            {
+                await sender.Send(new UpdatePaymentStatusCommand(orderCode, (int)Domain.Enum.PaymentStatus.Paid, appointmentId));
+            }
+            return Redirect($"https://{redirectUrl}");
         }
 
         [Authorize(Roles = "User")]
@@ -46,13 +51,12 @@ namespace PRH_PaymentService_API.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "User")]
-        [HttpGet("details/{paymentId}")]
-        public async Task<IActionResult> GetPaymentDetails([FromRoute] string paymentId)
-        {
-            var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
-            return Ok(response);
-        }
-
+        // [Authorize(Roles = "User")]
+        // [HttpGet("details/{paymentId}")]
+        // public async Task<IActionResult> GetPaymentDetails([FromRoute] string paymentId)
+        // {
+        //     var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
+        //     return Ok(response);
+        // }
     }
 }

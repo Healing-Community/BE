@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using Application.Interfaces.Services;
-using Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Net.payOS;
@@ -11,6 +9,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
     {
+
+        
+
+
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
 
         var payOsConfig = configuration.GetSection("Environment");
@@ -21,8 +23,6 @@ public static class DependencyInjection
         );
 
         services.AddSingleton(payOS);
-
-        services.AddScoped<IPayOSService, PayOSService>();
 
         services.AddHttpContextAccessor();
 

@@ -2,11 +2,7 @@
 {
     public class PaymentRequest
     {
-        public string AppointmentId { get; set; }
-        public long OrderCode { get; set; }
-        public int Amount { get; set; }
-        public string Description { get; set; }
-        public string ReturnUrl { get; set; }
-        public string CancelUrl { get; set; }
+        public required string AppointmentId { get; set; } // Xác định đơn hàng cần thanh toán
+        public string? RedirectUrl { get; set; }
     }
 }

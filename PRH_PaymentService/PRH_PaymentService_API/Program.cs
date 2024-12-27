@@ -4,7 +4,6 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
-using PRH_PaymentService_API.Services;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,18 +20,6 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
 
-// Lấy URL từ cấu hình và đăng ký ExpertServiceGrpcClient
-var expertServiceUrl = builder.Configuration["ExpertServiceUrl"];
-if (string.IsNullOrEmpty(expertServiceUrl))
-{
-    throw new ArgumentException("ExpertServiceUrl không được cấu hình trong appsettings.json.");
-}
-builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient(expertServiceUrl));
-
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(GetPaymentDetailsQueryHandler).Assembly);
-});
 
 var app = builder.Build();
 

@@ -1,7 +1,8 @@
 ﻿using Application.Commons;
+using Domain.Contracts;
 using MediatR;
 
 namespace Application.Commands.CreatePayment
 {
-    public record CreatePaymentCommand(string AppointmentId,int Amount, string Description, string ReturnUrl, string CancelUrl) : IRequest<BaseResponse<string>>;
+    public record CreatePaymentCommand(PaymentRequest PaymentRequest) : IRequest<BaseResponse<string>>;
 }
