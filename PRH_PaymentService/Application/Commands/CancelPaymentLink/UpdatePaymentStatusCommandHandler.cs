@@ -53,7 +53,7 @@ namespace Application.Commands.CancelPaymentLink
                     await paymentRepository.UpdateStatus(request.OrderCode, Domain.Enum.PaymentStatus.Paid);
                     #region ExpertPaymentService gRPC
                     // Gửi appointmentId để cancel appointment
-                    var reply = await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = 3 });
+                    var reply = await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = 1 });
                     var reply2 = await client.UpdateExpertAvailabilityAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = 2 });
                     if (reply == null || reply2 == null)
                     {
