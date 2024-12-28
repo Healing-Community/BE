@@ -17,6 +17,11 @@ message GetAppointmentsRequest {
 
 message GetAppointmentsResponse {
     int32 amount = 1;
+    string expertName = 2;
+    string expertEmail = 3;
+    string appointmentDate = 4;
+    string startTime = 5;
+    string endTime = 6;
 }
 
 message UpdateResponse {

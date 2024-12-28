@@ -8,6 +8,7 @@ service ExpertService {
     rpc GetAppointments(GetAppointmentsRequest) returns (GetAppointmentsResponse);
     rpc UpdateAppointment(GetAppointmentsRequest) returns (UpdateResponse);
     rpc UpdateExpertAvailability(GetAppointmentsRequest) returns (UpdateResponse);
+    
 }   
 
 message GetAppointmentsRequest {
@@ -17,6 +18,11 @@ message GetAppointmentsRequest {
 
 message GetAppointmentsResponse {
     int32 amount = 1;
+    string expertName = 2;
+    string expertEmail = 3;
+    string appointmentDate = 4;
+    string startTime = 5;
+    string endTime = 6;
 }
 
 message UpdateResponse {

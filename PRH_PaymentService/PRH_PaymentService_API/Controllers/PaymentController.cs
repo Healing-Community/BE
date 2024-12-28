@@ -1,5 +1,6 @@
 ﻿using Application.Commands.CancelPaymentLink;
 using Application.Commands.CreatePayment;
+using Application.Commands_Queries.Queries.GetPaymentDetails;
 using Application.Queries.GetPaymentStatus;
 using Application.Queries.GetTransactionHistory;
 using Domain.Contracts;
@@ -30,7 +31,7 @@ namespace PRH_PaymentService_API.Controllers
         }
 
         [HttpGet("redirect/{orderCode}/{isCancel}/{appointmentId}")]
-        public async Task<IActionResult> CancelPayment(long orderCode, bool isCancel,string appointmentId, string redirectUrl)
+        public async Task<IActionResult> CancelPayment(long orderCode, bool isCancel, string appointmentId, string redirectUrl)
         {
             string status = isCancel ? "cancelled" : "paid";
             if (isCancel)
@@ -44,7 +45,7 @@ namespace PRH_PaymentService_API.Controllers
             return Redirect($"{redirectUrl}?status={status}");
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpGet("history")]
         public async Task<IActionResult> GetTransactionHistory()
         {
@@ -52,12 +53,12 @@ namespace PRH_PaymentService_API.Controllers
             return response.ToActionResult();
         }
 
-        // [Authorize(Roles = "User")]
-        // [HttpGet("details/{paymentId}")]
-        // public async Task<IActionResult> GetPaymentDetails([FromRoute] string paymentId)
-        // {
-        //     var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
-        //     return Ok(response);
-        // }
+        [Authorize]
+        [HttpGet("details/{paymentId}")]
+        public async Task<IActionResult> GetPaymentDetails([FromRoute] string paymentId)
+        {
+            var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
+            return response.ToActionResult();
+        }
     }
 }
