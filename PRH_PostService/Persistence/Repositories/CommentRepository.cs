@@ -78,9 +78,14 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.Comments.CountAsync(c => c.PostId == postId);
         }
 
-        public Task<IEnumerable<Comment>?> GetsByPropertyAsync(Expression<Func<Comment, bool>> predicate)
+        public Task<IEnumerable<Comment>?> GetsByPropertyAsync(Expression<Func<Comment, bool>> predicate , int size = int.MaxValue)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Comment>> GetAllCommentsByShareIdAsync(string shareId)
+        {
+            return await hFDBPostserviceContext.Comments.Where(c => c.ShareId == shareId).OrderBy(c => c.CreatedAt).ToListAsync();
         }
     }
 }

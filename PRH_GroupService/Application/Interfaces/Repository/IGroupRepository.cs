@@ -7,5 +7,6 @@ namespace Application.Interfaces.Repository
     {
         Task<IEnumerable<Group>> GetPublicGroupsAsync();
         Task UpdateAfterLeaving(Group group);
+        Task<bool> ExistsAsync(string groupId);
     }
 }

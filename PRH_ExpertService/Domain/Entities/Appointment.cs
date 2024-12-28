@@ -16,6 +16,7 @@
         public string? RecordingLink { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public int? Rating { get; set; }
 
         public ExpertProfile ExpertProfile { get; set; } = null!;
         public ExpertAvailability ExpertAvailability { get; set; } = null!;

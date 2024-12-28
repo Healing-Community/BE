@@ -30,7 +30,7 @@ public class UserReferenceRepository(HFDBPostserviceContext context) : IUserRefe
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<UserPreference>?> GetsByPropertyAsync(Expression<Func<UserPreference, bool>> predicate)
+    public Task<IEnumerable<UserPreference>?> GetsByPropertyAsync(Expression<Func<UserPreference, bool>> predicate , int size = int.MaxValue)
     {
         throw new NotImplementedException();
     }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using PRH_ExpertService_API.Extentions;
 using Application.Queries.GetAllExpertAvailabilities;
 using Domain.Entities;
+using Application.Queries.GetExpertAvailbilityByAppointmentId;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -15,6 +16,13 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class ExpertAvailabilityController(ISender sender) : ControllerBase
     {
+        [HttpGet("get-by-appointmentId/{appointmentId}")]
+        public async Task<IActionResult> GetExpertAvailabilityByAppointmentId(string appointmentId)
+        {
+            var response = await sender.Send(new GetExpertAvailbilityByAppointmentIdQuery(appointmentId));
+            return response.ToActionResult();
+        }
+
         [Authorize(Roles = "Admin,Expert,User")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllExpertAvailabilities()

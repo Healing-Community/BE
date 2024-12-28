@@ -69,12 +69,10 @@ namespace Application.Queries.GetAppointmentsByExpert
 
             return status switch
             {
-                1 => "Chờ thanh toán",
-                2 => "Đã thanh toán",
-                3 when appointmentDateTime > now => "Sắp diễn ra",
-                3 when appointmentDateTime <= now => "Đang diễn ra",
-                4 => "Đã hủy",
-                5 => "Đã hoàn thành",
+                0 => "Chờ thanh toán",
+                1 when appointmentDateTime > now => "Sắp diễn ra",
+                2 => "Đã hủy",
+                3 => "Đã hoàn thành",
                 _ => "Không xác định"
             };
         }

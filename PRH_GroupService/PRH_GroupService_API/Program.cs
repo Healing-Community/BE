@@ -2,7 +2,6 @@
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Persistence;
 using PRH_GroupService_API;
 using PRH_GroupService_API.Middleware;
@@ -119,6 +118,7 @@ app.UseAuthorization();
 app.MapGrpcService<GroupGrpcService>(); // Đăng ký GroupGrpcService cho gRPC
 // Thêm endpoint để phục vụ các tệp tĩnh như index.html
 app.UseStaticFiles();
+
 app.MapFallbackToFile("index.html"); // Phục vụ index.html nếu truy cập từ URL
 
 app.MapControllers();

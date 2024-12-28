@@ -20,7 +20,7 @@ namespace Application.Queries.Comments.GetCommentsById
             var response = new BaseResponse<CommentDtoResponse>()
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try

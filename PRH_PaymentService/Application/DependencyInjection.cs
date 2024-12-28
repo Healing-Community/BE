@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Application.Interfaces.Services;
-using Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Net.payOS;
@@ -20,9 +19,9 @@ public static class DependencyInjection
             payOsConfig["PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Checksum key is not configured")
         );
 
-        services.AddSingleton(payOS);
+        services.AddScoped<IGrpcHelper, GrpcHelper>();
 
-        services.AddScoped<IPayOSService, PayOSService>();
+        services.AddSingleton(payOS);
 
         services.AddHttpContextAccessor();
 

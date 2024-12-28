@@ -7,7 +7,6 @@ using MassTransit;
 using Application.Commons;
 using Microsoft.AspNetCore.Mvc;
 using NUlid;
-using PRH_PaymentService_API.Services;
 
 public static class DependencyInjection
 {
@@ -189,8 +188,6 @@ public static class DependencyInjection
                     failureStatus: HealthStatus.Unhealthy
                 );
         #endregion
-
-        services.AddHostedService<PaymentStatusPollingService>();
 
         return services;
     }

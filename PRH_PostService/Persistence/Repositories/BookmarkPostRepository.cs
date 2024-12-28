@@ -38,7 +38,7 @@ public class BookmarkPostRepository(HFDBPostserviceContext context) : IBookmarkP
         return await context.BookmarkPosts.ToListAsync();
     }
 
-    public async Task<IEnumerable<BookmarkPost>?> GetsByPropertyAsync(Expression<Func<BookmarkPost, bool>> predicate)
+    public async Task<IEnumerable<BookmarkPost>?> GetsByPropertyAsync(Expression<Func<BookmarkPost, bool>> predicate , int size = int.MaxValue)
     {
         return await context.BookmarkPosts.AsNoTracking().Where(predicate).ToListAsync();
     }

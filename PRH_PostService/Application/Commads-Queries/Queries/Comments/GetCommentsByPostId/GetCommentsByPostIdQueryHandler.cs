@@ -19,7 +19,7 @@ namespace Application.Queries.Comments.GetCommentsByPostId
             var response = new BaseResponse<List<CommentDtoResponse>>
             {
                 Id = Guid.NewGuid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
 

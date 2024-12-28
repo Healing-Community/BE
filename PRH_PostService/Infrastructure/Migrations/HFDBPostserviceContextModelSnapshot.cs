@@ -119,6 +119,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("PostId")
                         .HasColumnType("text");
 
+                    b.Property<string>("ShareId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -130,6 +133,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ParentId");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("ShareId");
 
                     b.ToTable("Comments");
                 });
@@ -283,7 +288,12 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Platform")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PostId")
@@ -355,9 +365,16 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Domain.Entities.Share", "Share")
+                        .WithMany()
+                        .HasForeignKey("ShareId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("Parent");
 
                     b.Navigation("Post");
+
+                    b.Navigation("Share");
                 });
 
             modelBuilder.Entity("Domain.Entities.Post", b =>

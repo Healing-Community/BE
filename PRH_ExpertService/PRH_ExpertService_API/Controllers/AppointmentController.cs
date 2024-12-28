@@ -7,7 +7,6 @@ using Application.Queries.GetAllAppointments;
 using Application.Queries.GetAppointments;
 using Application.Queries.GetAppointmentsByExpert;
 using Application.Queries.GetAppointmentsByUser;
-using Application.Queries.GetTransactionHistory;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +18,12 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class AppointmentController(ISender sender) : ControllerBase
     {
+        [HttpGet("get-by-id/{appointmentId}")]
+        public async Task<IActionResult> GetAppointment(string appointmentId)
+        {
+            var response = await sender.Send(new GetAppointmentByPropertyQuery(appointmentId));
+            return response.ToActionResult();
+        }
         [Authorize(Roles = "User")]
         [HttpGet("user")]
         public async Task<IActionResult> GetAppointmentsByUser()
@@ -82,14 +87,6 @@ namespace PRH_ExpertService_API.Controllers
         public async Task<IActionResult> DeleteAppointment([FromRoute] string appointmentId)
         {
             var response = await sender.Send(new DeleteAppointmentCommand(appointmentId));
-            return response.ToActionResult();
-        }
-
-        [Authorize]
-        [HttpGet("transaction-history")]
-        public async Task<IActionResult> GetUserTransactionHistory()
-        {
-            var response = await sender.Send(new GetTransactionHistoryQuery());
             return response.ToActionResult();
         }
 

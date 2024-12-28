@@ -51,6 +51,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("MeetLink")
                         .HasColumnType("text");
 
+                    b.Property<int?>("Rating")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RecordingLink")
                         .HasColumnType("text");
 
@@ -153,8 +156,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ExpertAvailabilityId")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("AvailableDate")
                         .HasColumnType("date");

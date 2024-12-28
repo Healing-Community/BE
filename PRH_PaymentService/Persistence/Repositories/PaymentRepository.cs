@@ -31,9 +31,9 @@ namespace Persistence.Repositories
             return await context.Payments.FindAsync(id);
         }
 
-        public async Task<Payment?> GetByOrderCodeAsync(string orderCode)
+        public async Task<Payment?> GetByOrderCodeAsync(long orderCode)
         {
-            return await context.Payments.FirstOrDefaultAsync(p => p.AppointmentId == orderCode);
+            return await context.Payments.FirstOrDefaultAsync(p => p.OrderCode == orderCode);
         }
 
         public async Task<Payment?> GetByPropertyAsync(Expression<Func<Payment, bool>> predicate)

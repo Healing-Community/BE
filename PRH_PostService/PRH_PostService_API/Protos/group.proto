@@ -1,18 +1,41 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "PRH_PostService_API.Protos";
+option csharp_namespace = "GroupServiceGrpc";
 
 package group;
 
+// Service Definition
 service GroupService {
-    // RPC để kiểm tra xem Group có tồn tại không
     rpc CheckGroupExists (CheckGroupRequest) returns (CheckGroupResponse);
+    rpc CheckUserInGroup (CheckUserInGroupRequest) returns (CheckUserInGroupResponse);
+    rpc GetGroupDetails (GetGroupDetailsRequest) returns (GetGroupDetailsResponse);
+    rpc CheckUserInGroupOrPublic (CheckUserInGroupRequest) returns (CheckUserInGroupResponse);
 }
 
+// Messages
 message CheckGroupRequest {
-    string group_id = 1; // ID của Group cần kiểm tra
+    string group_id = 1;
 }
 
 message CheckGroupResponse {
-    bool exists = 1; // Kết quả: true nếu Group tồn tại, false nếu không
+    bool exists = 1;
+}
+
+message CheckUserInGroupRequest {
+    string group_id = 1;
+    string user_id = 2;
+}
+
+message CheckUserInGroupResponse {
+    bool is_member = 1; // Indicates if the user is a member of the group
+    bool has_access = 2; // Indicates if the user has access (public or member)
+}
+
+message GetGroupDetailsRequest {
+    string group_id = 1;
+}
+
+message GetGroupDetailsResponse {
+    string group_id = 1;
+    int32 visibility = 2; // 0: Public, 1: Private
 }

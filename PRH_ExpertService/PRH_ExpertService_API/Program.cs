@@ -3,11 +3,9 @@ using Application;
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Persistence;
 using PRH_ExpertService_API;
 using PRH_ExpertService_API.Middleware;
-using PRH_ExpertService_API.Services;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,8 +47,10 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", builder.Configuration["GeneralSettings:ApiName"]);
+    c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
     c.RoutePrefix = "";
 });
+
 
 #region HealthChecks (Kiểm tra tình trạng hệ thống)
 app.MapHealthChecks("/health/liveness", new HealthCheckOptions
@@ -103,6 +103,9 @@ app.UseHttpMetrics(); // Thu thập HTTP metrics
 app.UseMetricServer(); // Expose metrics trên endpoint mặc định
 #endregion
 
+app.MapGrpcService<ExpertService>();
+
+
 // Chỉ bật HTTPS Redirection trên môi trường Development
 if (builder.Environment.IsDevelopment())
 {
@@ -113,10 +116,10 @@ app.UseCors();
 
 app.UseAuthentication();
 
+app.UseStaticFiles();
+
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapGrpcService<ExpertServiceImpl>();
 
 app.Run();

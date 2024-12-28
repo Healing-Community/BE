@@ -38,7 +38,7 @@ namespace Persistence.Repositories
             return await hFDBPostserviceContext.ReactionTypes.ToListAsync();
         }
 
-        public Task<IEnumerable<ReactionType>?> GetsByPropertyAsync(Expression<Func<ReactionType, bool>> predicate)
+        public Task<IEnumerable<ReactionType>?> GetsByPropertyAsync(Expression<Func<ReactionType, bool>> predicate , int size = int.MaxValue)
         {
             throw new NotImplementedException();
         }

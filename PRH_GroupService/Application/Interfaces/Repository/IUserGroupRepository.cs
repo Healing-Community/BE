@@ -13,6 +13,7 @@ namespace Application.Interfaces.Repository
         Task UpdateRole(string groupId, string userId, RoleInGroup role);
         Task<List<UserGroupByUserIdDto>> GetUserGroupsByUserIdAsync(string userId);
         Task<List<UserGroupByGroupIdDto>> GetUserGroupsByGroupIdAsync(string groupId);
+        Task<RoleCountDto> CountRolesByGroupIdAsync(string groupId);
 
     }
 }

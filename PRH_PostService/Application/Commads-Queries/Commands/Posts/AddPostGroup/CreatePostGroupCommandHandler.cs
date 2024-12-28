@@ -49,7 +49,7 @@ namespace Application.Commands.Posts.AddPostGroup
                     return response;
                 }
 
-                // Kiểm tra sự tồn tại của Category
+                // Validate Category
                 var categoryExists = await categoryRepository.ExistsAsync(request.PostGroupDto.CategoryId);
                 if (!categoryExists)
                 {
@@ -58,7 +58,8 @@ namespace Application.Commands.Posts.AddPostGroup
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
                 }
-                // Kiểm tra sự tồn tại của Group nếu GroupId được cung cấp
+
+                // Validate group
                 if (!string.IsNullOrEmpty(request.PostGroupDto.GroupId))
                 {
                     var groupExists = await groupGrpcClient.CheckGroupExistsAsync(request.PostGroupDto.GroupId);
@@ -67,6 +68,16 @@ namespace Application.Commands.Posts.AddPostGroup
                         response.Success = false;
                         response.Message = "Nhóm không tồn tại.";
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return response;
+                    }
+
+                    // Validate user membership
+                    var isUserInGroup = await groupGrpcClient.CheckUserInGroupAsync(request.PostGroupDto.GroupId, userId);
+                    if (!isUserInGroup)
+                    {
+                        response.Success = false;
+                        response.Message = "Bạn không phải thành viên của nhóm này.";
+                        response.StatusCode = (int)HttpStatusCode.Forbidden;
                         return response;
                     }
                 }

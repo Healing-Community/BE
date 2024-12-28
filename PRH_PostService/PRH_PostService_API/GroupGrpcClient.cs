@@ -1,9 +1,7 @@
 ﻿using Grpc.Net.Client;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http;
-using System.Threading.Tasks;
-using PRH_PostService_API.Protos;
 using Application.Interfaces.Repository;
+using GroupServiceGrpc;
+using Application.Commons.DTOs;
 
 namespace PRH_PostService_API
 {
@@ -52,6 +50,45 @@ namespace PRH_PostService_API
                 Console.WriteLine($"Lỗi khi gọi gRPC: {ex.Status.Detail}");
                 return false; // Trả về false nếu có lỗi xảy ra
             }
+        }
+
+        public async Task<bool> CheckUserInGroupAsync(string groupId, string userId)
+        {
+            var request = new CheckUserInGroupRequest
+            {
+                GroupId = groupId,
+                UserId = userId
+            };
+
+            var response = await _client.CheckUserInGroupAsync(request);
+            return response.IsMember;
+        }
+
+        public async Task<bool> CheckUserInGroupOrPublicAsync(string groupId, string userId)
+        {
+            var request = new CheckUserInGroupRequest
+            {
+                GroupId = groupId,
+                UserId = userId
+            };
+
+            var response = await _client.CheckUserInGroupOrPublicAsync(request);
+            return response.IsMember;
+        }
+
+        public async Task<GroupDetailsDto?> GetGroupDetailsAsync(string groupId)
+        {
+            var request = new GetGroupDetailsRequest { GroupId = groupId };
+
+            var response = await _client.GetGroupDetailsAsync(request);
+
+            return response != null
+                ? new GroupDetailsDto
+                {
+                    GroupId = response.GroupId,
+                    Visibility = response.Visibility
+                }
+                : null;
         }
     }
 }

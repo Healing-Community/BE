@@ -4,7 +4,6 @@ using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
-using PRH_PaymentService_API.Services;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,13 +20,6 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
 
-// Lấy URL từ cấu hình và đăng ký ExpertServiceGrpcClient
-var expertServiceUrl = builder.Configuration["ExpertServiceUrl"];
-if (string.IsNullOrEmpty(expertServiceUrl))
-{
-    throw new ArgumentException("ExpertServiceUrl không được cấu hình trong appsettings.json.");
-}
-builder.Services.AddSingleton(sp => new ExpertServiceGrpcClient(expertServiceUrl));
 
 var app = builder.Build();
 
@@ -49,8 +41,10 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", builder.Configuration["GeneralSettings:ApiName"]);
+    c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
     c.RoutePrefix = "";
 });
+
 
 # region HealthChecks
 app.MapHealthChecks("/health/liveness", new HealthCheckOptions
@@ -105,6 +99,7 @@ app.UseHttpMetrics();
 app.UseMetricServer();
 
 #endregion
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
