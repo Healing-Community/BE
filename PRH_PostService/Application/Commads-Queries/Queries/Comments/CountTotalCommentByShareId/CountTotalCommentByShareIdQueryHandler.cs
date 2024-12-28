@@ -1,23 +1,24 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using NUlid;
 using System.Net;
 
-namespace Application.Queries.Comments.CountTotalCommentByPostId
+namespace Application.Commads_Queries.Queries.Comments.CountTotalCommentByShareId
 {
-    public class CountTotalCommentByPostIdQueryHandler : IRequestHandler<CountTotalCommentByPostIdQuery, BaseResponse<object>>
+    public class CountTotalCommentByShareIdQueryHandler : IRequestHandler<CountTotalCommentByShareIdQuery, BaseResponse<object>>
     {
         private readonly ICommentRepository _commentRepository;
-        private readonly IPostRepository _postRepository; 
+        private readonly IShareRepository _shareRepository;
 
-        public CountTotalCommentByPostIdQueryHandler(ICommentRepository commentRepository, IPostRepository postRepository)
+        public CountTotalCommentByShareIdQueryHandler(ICommentRepository commentRepository, IShareRepository shareRepository)
         {
             _commentRepository = commentRepository;
-            _postRepository = postRepository;
+            _shareRepository = shareRepository;
         }
 
-        public async Task<BaseResponse<object>> Handle(CountTotalCommentByPostIdQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<object>> Handle(CountTotalCommentByShareIdQuery request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse<object>
             {
@@ -28,18 +29,20 @@ namespace Application.Queries.Comments.CountTotalCommentByPostId
 
             try
             {
-                // Kiểm tra PostId có tồn tại không
-                var postExists = await _postRepository.ExistsAsync(request.PostId);
-                if (!postExists)
+                // Kiểm tra ShareId có tồn tại không
+                var shareExists = await _shareRepository.ExistsAsync(request.ShareId);
+                if (!shareExists)
                 {
                     response.Success = false;
-                    response.Message = "Không tìm thấy bài viết để đếm.";
+                    response.Message = "Không tìm thấy bài chia sẻ để đếm bình luận.";
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     return response;
                 }
 
-                // Đếm số lượng comment qua hàm CountCommentsByPostIdAsync
-                var totalComments = await _commentRepository.CountCommentsByPostIdAsync(request.PostId);
+                // Đếm số lượng bình luận qua ShareId
+                var totalComments = await _commentRepository.GetQueryable()
+                    .Where(c => c.ShareId == request.ShareId)
+                    .CountAsync(cancellationToken);
 
                 // Tạo object trả về
                 var result = new

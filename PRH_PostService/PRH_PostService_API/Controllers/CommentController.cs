@@ -1,4 +1,5 @@
 ﻿using Application.Commads_Queries.Commands.Comments.CreateCommentForShare;
+using Application.Commads_Queries.Queries.Comments.CountTotalCommentByShareId;
 using Application.Commads_Queries.Queries.Comments.GetCommentsByShareId;
 using Application.Commands.Comments.AddComment;
 using Application.Commands.Comments.DeleteComment;
@@ -84,10 +85,18 @@ namespace PRH_PostService_API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("count-by-post-id/{postId}")]
+        [HttpGet("count-total-comment-by-post-id/{postId}")]
         public async Task<IActionResult> CountTotalCommentByPostId(string postId)
         {
             var response = await sender.Send(new CountTotalCommentByPostIdQuery(postId));
+            return response.ToActionResult();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("count-total-comment-by-share-id/{shareId}")]
+        public async Task<IActionResult> CountTotalCommentByShareId(string shareId)
+        {
+            var response = await sender.Send(new CountTotalCommentByShareIdQuery(shareId));
             return response.ToActionResult();
         }
     }
