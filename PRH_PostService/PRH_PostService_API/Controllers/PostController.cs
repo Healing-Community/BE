@@ -1,5 +1,6 @@
 ﻿using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByGroupId;
+using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByUserAndGroup;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroups;
 using Application.Commads_Queries.Queries.Posts.GetRelativeCatogoryPost;
 using Application.Commands.Posts.AddPost;
@@ -176,6 +177,19 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> GetPostsInGroupById(string groupId)
         {
             var response = await sender.Send(new GetPostsInGroupByGroupIdQuery(groupId));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy ra các bài viết trong group bằng cách truyền vào GroupID và UserID
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("get-posts-in-group-by-user-and-group")]
+        public async Task<IActionResult> GetPostsInGroupByUserAndGroup([FromQuery] string groupId, [FromQuery] string userId)
+        {
+            var response = await sender.Send(new GetPostsInGroupByUserAndGroupQuery(groupId, userId, HttpContext));
             return response.ToActionResult();
         }
         [Authorize]
