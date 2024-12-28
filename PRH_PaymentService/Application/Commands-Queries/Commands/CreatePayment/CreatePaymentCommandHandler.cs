@@ -11,12 +11,14 @@ using Net.payOS.Types;
 using Grpc.Net.Client;
 using ExpertPaymentService;
 using Microsoft.Extensions.Configuration;
+using Application.Interfaces.Services;
 
 namespace Application.Commands.CreatePayment
 {
     public class CreatePaymentCommandHandler(
         IPaymentRepository paymentRepository,
         IConfiguration configuration,
+        IGrpcHelper grpcHelper,
         PayOS payOSService,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreatePaymentCommand, BaseResponse<string>>
     {
@@ -29,32 +31,15 @@ namespace Application.Commands.CreatePayment
                 {
                     return BaseResponse<string>.Unauthorized();
                 }
-                #region ExpertPaymentService gRPC
                 // Grpc qua expert để lấy thông tin lịch hẹn đồng thời kiểm tra xem lịch hẹn có tồn tại không
-                var expertServiceUrl = configuration["ExpertServiceUrl"];
-                if(expertServiceUrl == null)
-                {
-                    return BaseResponse<string>.InternalServerError("Đã xảy ra lỗi khi tạo yêu cầu thanh toán.");
-                }
-                var httpHandler = new HttpClientHandler
-                {
-                    // For local development only - allows insecure HTTP/2
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                };
-
-                using var channel = GrpcChannel.ForAddress(expertServiceUrl, new GrpcChannelOptions
-                {
-                    HttpHandler = httpHandler
-                });
-
-                var client = new ExpertService.ExpertServiceClient(channel);
-                var reply = await client.GetAppointmentsAsync(new GetAppointmentsRequest { AppointmentId = request.PaymentRequest.AppointmentId });
+                var reply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, GetAppointmentsResponse>(
+                    async client => await client.GetAppointmentsAsync(new GetAppointmentsRequest { AppointmentId = request.PaymentRequest.AppointmentId })
+                );
                 if (reply == null)
                 {
                     return BaseResponse<string>.NotFound("Lịch hẹn không tồn tại.");
                 }
-                //End Grpc
-                #endregion
+                // lấy thông tin lịch hẹn để tạo payment
                 var amount = reply.Amount;
                 var orderCode = GenerateOrderCode();
 
@@ -63,12 +48,12 @@ namespace Application.Commands.CreatePayment
                 {
                     return BaseResponse<string>.InternalServerError("Đã xảy ra lỗi khi tạo yêu cầu thanh toán.");
                 }
-                var cancelApiUrl = GetApiUrl(httpContext, "payment", "redirect", orderCode.ToString(), request.PaymentRequest.RedirectUrl ?? "http://example.com/error", true, request.PaymentRequest.AppointmentId);
-                var returnApiUrl = GetApiUrl(httpContext, "payment", "redirect", orderCode.ToString(), request.PaymentRequest.RedirectUrl ?? "http://example.com/error", false, request.PaymentRequest.AppointmentId);
+                var cancelApiUrl = GetApiUrl(httpContext, "payment", "redirect", orderCode.ToString(), true, request.PaymentRequest.AppointmentId, request.PaymentRequest.RedirectUrl ?? "http://example.com/error");
+                var returnApiUrl = GetApiUrl(httpContext, "payment", "redirect", orderCode.ToString(), false, request.PaymentRequest.AppointmentId, request.PaymentRequest.RedirectUrl ?? "http://example.com/error");
 
                 // convert to UTC+7
                 long expiredAt = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
-                var paymentData = new PaymentData(orderCode, amount, "Thanh toán lịch hẹn", [], cancelApiUrl, returnApiUrl,expiredAt:expiredAt );
+                var paymentData = new PaymentData(orderCode, amount, "Thanh toán lịch hẹn", [], cancelApiUrl, returnApiUrl, expiredAt: expiredAt);
 
                 var payOSResponse = await payOSService.createPaymentLink(paymentData);
 
@@ -111,11 +96,11 @@ namespace Application.Commands.CreatePayment
             }
             return long.Parse(orderCodeString);
         }
-        public string GetApiUrl(HttpContext httpContext, string controllerName = "MyController", string actionName = "GetData", string param = "1", string redirectUrl = "http://localhost:3000", bool isCancel = false, string appointmentId = "1")
+        public string GetApiUrl(HttpContext httpContext, string controllerName = "MyController", string actionName = "GetData", string orderCode = "1", bool isCancel = false, string appointmentId = "1", string redirectUrl = "http://localhost:3000")
         {
             var scheme = httpContext.Request.Scheme;
             var host = httpContext.Request.Host;
-            return $"{scheme}://{host}/api/{controllerName}/{actionName}/{param}/{redirectUrl}/{isCancel}/{appointmentId}";
+            return $"{scheme}://{host}/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Application.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Net.payOS;
@@ -9,10 +10,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationDependencies(this IServiceCollection services, IConfiguration configuration)
     {
-
-        
-
-
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
 
         var payOsConfig = configuration.GetSection("Environment");
@@ -21,6 +18,8 @@ public static class DependencyInjection
             payOsConfig["PAYOS_API_KEY"] ?? throw new Exception("API key is not configured"),
             payOsConfig["PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Checksum key is not configured")
         );
+
+        services.AddScoped<IGrpcHelper, GrpcHelper>();
 
         services.AddSingleton(payOS);
 

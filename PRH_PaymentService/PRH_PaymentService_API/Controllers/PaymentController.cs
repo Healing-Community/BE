@@ -18,7 +18,7 @@ namespace PRH_PaymentService_API.Controllers
         public async Task<IActionResult> CreatePayment(PaymentRequest paymentRequest)
         {
             var response = await sender.Send(new CreatePaymentCommand(paymentRequest));
-            return Ok(response);
+            return response.ToActionResult();
         }
 
         [Authorize(Roles = "User")]
@@ -26,12 +26,13 @@ namespace PRH_PaymentService_API.Controllers
         public async Task<IActionResult> GetPaymentStatus(long orderCode)
         {
             var response = await sender.Send(new GetPaymentStatusQuery(orderCode));
-            return Ok(response);
+            return response.ToActionResult();
         }
 
-        [HttpGet("redirect/{orderCode}/{redirectUrl}/{isCancel}/{appointmentId}")]
-        public async Task<IActionResult> CancelPayment(long orderCode, string redirectUrl, bool isCancel,string appointmentId)
+        [HttpGet("redirect/{orderCode}/{isCancel}/{appointmentId}")]
+        public async Task<IActionResult> CancelPayment(long orderCode, bool isCancel,string appointmentId, string redirectUrl)
         {
+            string status = isCancel ? "cancelled" : "paid";
             if (isCancel)
             {
                 await sender.Send(new UpdatePaymentStatusCommand(orderCode, (int)Domain.Enum.PaymentStatus.Cancelled, appointmentId));
@@ -40,7 +41,7 @@ namespace PRH_PaymentService_API.Controllers
             {
                 await sender.Send(new UpdatePaymentStatusCommand(orderCode, (int)Domain.Enum.PaymentStatus.Paid, appointmentId));
             }
-            return Redirect($"https://{redirectUrl}");
+            return Redirect($"{redirectUrl}?status={status}");
         }
 
         [Authorize(Roles = "User")]
@@ -48,7 +49,7 @@ namespace PRH_PaymentService_API.Controllers
         public async Task<IActionResult> GetTransactionHistory()
         {
             var response = await sender.Send(new GetTransactionHistoryQuery());
-            return Ok(response);
+            return response.ToActionResult();
         }
 
         // [Authorize(Roles = "User")]
