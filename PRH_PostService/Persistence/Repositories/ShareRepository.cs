@@ -22,6 +22,11 @@ public class ShareRepository(HFDBPostserviceContext context) : IShareRepository
         await context.SaveChangesAsync();
     }
 
+    public async Task<bool> ExistsAsync(string shareId)
+    {
+        return await context.Shares.AnyAsync(s => s.ShareId == shareId);
+    }
+
     public async Task<Share> GetByIdAsync(string id)
     {
         return await context.Shares.FirstAsync(x => x.ShareId == id);

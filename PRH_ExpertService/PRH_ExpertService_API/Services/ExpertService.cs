@@ -1,6 +1,8 @@
 using Application.Commands.UpdateAppointmentStatus;
 using Application.Commands.UpdateAvailability.UpdateAvailabilityStatus;
+using Application.Commands_Quereis.Queries.GetAppointmentById;
 using Application.Queries.GetExpertAvailbilityByAppointmentId;
+using Application.Queries.GetExpertProfile;
 using Grpc.Core;
 using MediatR;
 
@@ -8,11 +10,24 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
 {
     public override Task<ExpertPaymentService.GetAppointmentsResponse> GetAppointments(ExpertPaymentService.GetAppointmentsRequest request, ServerCallContext context)
     {
-        var expertAlbility = sender.Send(new GetExpertAvailbilityByAppointmentIdQuery(request.AppointmentId));
+        var appointment = sender.Send(new GetAppointmentByIdQuery(request.AppointmentId));
+        appointment.Wait();
+        var appointmentResult = appointment.Result.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn"));
+        
+        var expertProfile = sender.Send(new GetExpertProfileQuery(appointmentResult.ExpertProfileId));
+        expertProfile.Wait();
+        var expertProfileResult = expertProfile.Result.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin chuyên gia"));
+
+        var expertAlbility = sender.Send(new GetExpertAvailbilityByAppointmentIdQuery(appointmentResult.AppointmentId));
         expertAlbility.Wait();
-        var expertAvailability = expertAlbility.Result ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn"));
+        var expertAvailabilityResult = expertAlbility.Result.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn"));
         return Task.FromResult(new ExpertPaymentService.GetAppointmentsResponse{
-            Amount = expertAvailability.Data.Amount
+            Amount = expertAvailabilityResult.Amount,
+            AppointmentDate = appointmentResult.AppointmentDate.ToString(),
+            EndTime = appointmentResult.EndTime.ToString(),
+            StartTime = appointmentResult.StartTime.ToString(),
+            ExpertEmail = appointmentResult.ExpertEmail,
+            ExpertName = expertProfileResult.Fullname,
         });
     }
     public override Task<ExpertPaymentService.UpdateResponse> UpdateAppointment(ExpertPaymentService.GetAppointmentsRequest request, ServerCallContext context)
