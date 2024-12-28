@@ -41,8 +41,10 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", builder.Configuration["GeneralSettings:ApiName"]);
+    c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
     c.RoutePrefix = "";
 });
+
 
 # region HealthChecks
 app.MapHealthChecks("/health/liveness", new HealthCheckOptions
@@ -97,6 +99,7 @@ app.UseHttpMetrics();
 app.UseMetricServer();
 
 #endregion
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

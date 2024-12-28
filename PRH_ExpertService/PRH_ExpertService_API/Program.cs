@@ -47,8 +47,10 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", builder.Configuration["GeneralSettings:ApiName"]);
+    c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
     c.RoutePrefix = "";
 });
+
 
 #region HealthChecks (Kiểm tra tình trạng hệ thống)
 app.MapHealthChecks("/health/liveness", new HealthCheckOptions
@@ -113,6 +115,8 @@ if (builder.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseAuthentication();
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
