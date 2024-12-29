@@ -1,7 +1,6 @@
 ﻿using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
-using Domain.Enum;
 using MediatR;
 using NUlid;
 
@@ -38,7 +37,7 @@ namespace Application.Queries.Posts.GetPosts
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
                     Description = post.Description,
-                    Status = (int)PostStatus.Public,
+                    Status = post.Status,
                     CreateAt = post.CreateAt,
                     UpdateAt = post.UpdateAt
                 });
