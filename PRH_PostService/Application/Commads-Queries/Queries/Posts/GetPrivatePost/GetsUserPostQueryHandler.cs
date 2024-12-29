@@ -1,26 +1,63 @@
-using Application.Commons;
+﻿using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using NUlid;
 
 namespace Application.Queries.Posts.GetPrivatePost;
 /// <summary>
 /// Get Private Posts Only 
 /// </summary>
-public class GetsUserPostQueryHandler(IPostRepository repository) : IRequestHandler<GetsUserPostQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
+public class GetsUserPostQueryHandler : IRequestHandler<GetsUserPostQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
 {
+    private readonly IPostRepository _repository;
+    private readonly IHttpContextAccessor? _httpContextAccessor;
+
+    public GetsUserPostQueryHandler(IPostRepository repository, IHttpContextAccessor? httpContextAccessor = null)
+    {
+        _repository = repository;
+        _httpContextAccessor = httpContextAccessor;
+    }
+
     public async Task<BaseResponse<IEnumerable<PostRecommendDto>>> Handle(GetsUserPostQuery request, CancellationToken cancellationToken)
     {
+        var response = new BaseResponse<IEnumerable<PostRecommendDto>>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            Timestamp = DateTime.UtcNow.AddHours(7),
+            Errors = new List<string>()
+        };
+
         try
         {
-            var userId = request.UserId;
-            if (string.IsNullOrEmpty(userId))
+            // Lấy UserId từ Claims trong HttpContext
+            var currentUserId = _httpContextAccessor.HttpContext?.User
+                .Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            if (string.IsNullOrEmpty(currentUserId))
             {
-                return BaseResponse<IEnumerable<PostRecommendDto>>.Unauthorized();
+                response.StatusCode = StatusCodes.Status401Unauthorized;
+                response.Message = "Không có quyền truy cập, chưa đăng nhập hoặc phiên làm việc hết hạn.";
+                response.Success = false;
+                return response;
             }
-            var posts = await repository.GetsPostByPropertyPagingAsync(p=>p.UserId == userId, request.PageNumber, request.PageSize);
-            // Map Post to PostDto in a new list
+
+            // Kiểm tra quyền truy cập và lọc bài viết dựa trên điều kiện
+            var posts = request.UserId == currentUserId
+                ? await _repository.GetsPostByPropertyPagingAsync(
+                    p => p.UserId == request.UserId && (p.Status == 0 || p.Status == 1),
+                    request.PageNumber,
+                    request.PageSize
+                  )
+                : await _repository.GetsPostByPropertyPagingAsync(
+                    p => p.UserId == request.UserId && p.Status == 0,
+                    request.PageNumber,
+                    request.PageSize
+                  );
+
+            // Map DTO
             var data = posts.Select(post => new PostRecommendDto
             {
                 PostId = post.PostId,
@@ -33,11 +70,20 @@ public class GetsUserPostQueryHandler(IPostRepository repository) : IRequestHand
                 CreateAt = post.CreateAt,
                 UpdateAt = post.UpdateAt
             });
-            return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(data);
+
+            response.Data = data;
+            response.StatusCode = StatusCodes.Status200OK;
+            response.Message = "Lấy bài viết thành công.";
+            response.Success = true;
         }
         catch (Exception ex)
         {
-            return BaseResponse<IEnumerable<PostRecommendDto>>.InternalServerError(ex.Message);
+            response.StatusCode = StatusCodes.Status500InternalServerError;
+            response.Message = "Đã xảy ra lỗi.";
+            response.Errors.Add(ex.Message);
+            response.Success = false;
         }
+
+        return response;
     }
 }
