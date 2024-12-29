@@ -65,13 +65,14 @@ namespace PRH_PostService_API.Controllers
         }
         /// <summary>
         /// Api này lấy ra các bài viết của user kể cả bài viết private để cho trang cá nhân của user
-        /// </summary>
+        /// </summary>        
+        /// <param name="userId"></param>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("get-user-post")]
+        [HttpGet("get-user-post/{userId}")]
         public async Task<IActionResult> GetsUserPost(string userId)
         {
-            var response = await sender.Send(new GetsUserPostQuery(userId,1, 100));
+            var response = await sender.Send(new GetsUserPostQuery(userId, 1, 100));
             return response.ToActionResult();
         }
         /// <summary>
