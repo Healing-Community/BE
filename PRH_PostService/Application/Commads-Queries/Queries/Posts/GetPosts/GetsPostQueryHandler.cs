@@ -1,11 +1,9 @@
 ﻿using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
-using Domain.Entities;
-using MassTransit;
+using Domain.Enum;
 using MediatR;
 using NUlid;
-using System.Net;
 
 namespace Application.Queries.Posts.GetPosts
 {
@@ -16,7 +14,7 @@ namespace Application.Queries.Posts.GetPosts
             var response = new BaseResponse<IEnumerable<PostDetailDto>>()
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try
@@ -40,7 +38,7 @@ namespace Application.Queries.Posts.GetPosts
                     Title = post.Title,
                     CoverImgUrl = post.CoverImgUrl,
                     Description = post.Description,
-                    Status = post.Status,
+                    Status = (int)PostStatus.Public,
                     CreateAt = post.CreateAt,
                     UpdateAt = post.UpdateAt
                 });
