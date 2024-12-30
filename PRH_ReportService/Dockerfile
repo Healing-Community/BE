@@ -30,4 +30,5 @@ RUN dotnet publish "./PRH_ReportService_API.csproj" -c $BUILD_CONFIGURATION -o /
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENTRYPOINT ["dotnet", "PRH_ReportService_API.dll"]

@@ -19,19 +19,17 @@ builder.Services.AddApplicationDependencies();
 
 # endregion
 
-//builder.WebHost.ConfigureKestrel(options =>
-//{
-//    // Cấu hình lắng nghe HTTP/1.1 và HTTP/2 trên cổng 7098 với HTTPS
-//    options.ListenLocalhost(7098, listenOptions =>
-//    {
-//        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-//        listenOptions.UseHttps(); // Sử dụng HTTPS
-//    });
-//});
-// Cấu hình gRPC Service
+# region appsettings
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+# endregion
+
 builder.Services.AddGrpc();
 
 var app = builder.Build();
+
+Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+
 #region Middleware
 
 app.UseMiddleware<AuthMiddleware>();
