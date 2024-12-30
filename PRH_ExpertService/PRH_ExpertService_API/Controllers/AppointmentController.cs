@@ -1,6 +1,7 @@
 ﻿using Application.Commands.BookAppointment;
 using Application.Commands.CancelAppointment;
 using Application.Commands.DeleteAppointment;
+using Application.Commands.RateExpert;
 using Application.Commands.UpdateAppointment;
 using Application.Commons.Tools;
 using Application.Queries.GetAllAppointments;
@@ -93,6 +94,14 @@ namespace PRH_ExpertService_API.Controllers
         [Authorize(Roles = "User,Expert")]
         [HttpPost("cancel")]
         public async Task<IActionResult> CancelAppointment([FromBody] CancelAppointmentCommand command)
+        {
+            var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPost("rate")]
+        public async Task<IActionResult> RateExpert([FromBody] RateExpertCommand command)
         {
             var response = await sender.Send(command);
             return response.ToActionResult();
