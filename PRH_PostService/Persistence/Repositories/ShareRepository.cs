@@ -8,6 +8,11 @@ namespace Persistence.Repositories;
 
 public class ShareRepository(HFDBPostserviceContext context) : IShareRepository
 {
+    public async Task<int> CountByPostIdAsync(string postId)
+    {
+        return await context.Shares.CountAsync(s => s.PostId == postId);
+    }
+
     public async Task Create(Share entity)
     {
         await context.AddAsync(entity);
