@@ -1,4 +1,5 @@
-﻿using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
+﻿using Application.Commads_Queries.Commands.Posts.UpdatePostInGroup;
+using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByGroupId;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByUserAndGroup;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroups;
@@ -200,7 +201,13 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new UpdatePostCommand(id, post));
             return response.ToActionResult();
         }
-
+        [Authorize]
+        [HttpPut("update-post-in-group/{postId}")]
+        public async Task<IActionResult> UpdatePostInGroup(string postId, PostDto postDto)
+        {
+            var response = await sender.Send(new UpdatePostInGroupCommand(postId, postDto));
+            return response.ToActionResult();
+        }
         [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePost(string id)
