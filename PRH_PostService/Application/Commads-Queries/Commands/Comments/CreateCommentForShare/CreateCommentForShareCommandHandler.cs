@@ -52,7 +52,7 @@ namespace Application.Commads_Queries.Commands.Comments.CreateCommentForShare
                     UserId = userId,
                     Content = request.CommentDto.Content,
                     CoverImgUrl = request.CommentDto.CoverImgUrl,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow.AddHours(7)
                 };
 
                 await _commentRepository.Create(newComment);
