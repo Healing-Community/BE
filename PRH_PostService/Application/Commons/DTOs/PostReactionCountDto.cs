@@ -5,6 +5,7 @@ namespace Application.Commons.DTOs;
 public class PostReactionCountDto
 {
     public string? PostId { get; set; }
+    public string? ShareId { get; set; }
     public Like? Like { get; set; }
     public Love? Love { get; set; }
     public Haha? Haha { get; set; }

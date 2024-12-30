@@ -68,5 +68,12 @@ namespace Persistence.Repositories
             }
             return reactions;
         }
+
+        public async Task<Reaction?> GetReactionByShareIdAsync(string shareId, string userId)
+        {
+            return await hFDBPostserviceContext.Reactions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ShareId == shareId && x.UserId == userId);
+        }
     }
 }

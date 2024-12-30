@@ -7,5 +7,6 @@ namespace Application.Interfaces.Repository
     public interface IReactionRepository :IReadRepository<Reaction>, ICreateRepository<Reaction>, IUpdateRepository<Reaction>, IDeleteRepository
     {
         Task<IEnumerable<Reaction>> GetsMostReactedPost(int top);
+        Task<Reaction?> GetReactionByShareIdAsync(string shareId, string userId);
     }
 }
