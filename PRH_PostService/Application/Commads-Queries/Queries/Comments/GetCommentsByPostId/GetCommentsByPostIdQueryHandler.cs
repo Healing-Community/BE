@@ -2,9 +2,8 @@
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Service;
-using Application.Services;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using NUlid;
 using System.Net;
 
 namespace Application.Queries.Comments.GetCommentsByPostId
@@ -18,7 +17,7 @@ namespace Application.Queries.Comments.GetCommentsByPostId
         {
             var response = new BaseResponse<List<CommentDtoResponse>>
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
