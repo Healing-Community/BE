@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(HFDBGroupServiceContext))]
-    partial class HFDBGroupServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20241231150151_AddGroupCreationRequestTable")]
+    partial class AddGroupCreationRequestTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +73,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("GroupName")
                         .IsRequired()
@@ -90,9 +94,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("GroupId");
-
-                    b.HasIndex("GroupName")
-                        .IsUnique();
 
                     b.ToTable("Groups");
                 });
@@ -119,7 +120,7 @@ namespace Infrastructure.Migrations
                     b.Property<bool?>("IsApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("RequestedAt")
+                    b.Property<DateTime>("RequestedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
@@ -146,10 +147,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("RoleInGroup")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasDefaultValue("User");
+                        .HasColumnType("text");
 
                     b.HasKey("GroupId", "UserId");
 
