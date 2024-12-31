@@ -1,6 +1,7 @@
 ﻿using Application.Commads_Queries.Commands.Reactions.AddReactionForShare;
 using Application.Commads_Queries.Commands.Reactions.DeleteReactionByShareId;
 using Application.Commads_Queries.Queries.Reactions.GetShareReactionCount;
+using Application.Commads_Queries.Queries.Reactions.GetUserReactionByShareId;
 using Application.Commands.Reactions.AddReaction;
 using Application.Commands.Reactions.DeleteReaction;
 using Application.Commands.Reactions.UpdateReaction;
@@ -28,6 +29,17 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> GetUserReactionByPostId(string PostId)
         {
             var response = await sender.Send(new GetUserReactionByPostIdQuery(PostId));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy reaction của user theo share id
+        /// </summary>
+        /// <param name="ShareId"></param>
+        /// <returns></returns>
+        [HttpGet("get-user-reaction-by-share-id/{ShareId}")]
+        public async Task<IActionResult> GetUserReactionByShareId(string ShareId)
+        {
+            var response = await sender.Send(new GetUserReactionByShareIdQuery(ShareId));
             return response.ToActionResult();
         }
         /// <summary>
