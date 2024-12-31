@@ -1,5 +1,6 @@
 ﻿using Application.Commads_Queries.Commands.Posts.UpdatePostInGroup;
 using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
+using Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByGroupId;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByUserAndGroup;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroups;
@@ -167,6 +168,19 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> GetPostsInGroups()
         {
             var response = await sender.Send(new GetPostsInGroupsQuery(HttpContext));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy danh sách các bài viết trong group với nhiều lượt reaction trở xuống
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("get-posts-by-reaction-in-group/{groupId}/{top}")]
+        public async Task<IActionResult> GetPostsByReactionInGroup(string groupId, int top)
+        {
+            var response = await sender.Send(new GetPostsByReactionInGroupQuery(groupId, top));
             return response.ToActionResult();
         }
         /// <summary>
