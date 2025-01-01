@@ -7,7 +7,7 @@ using UserPaymentService;
 
 namespace Application.Commands.CancelPaymentLink
 {
-    public class UpdatePaymentStatusCommandHandler(IGrpcHelper grpcHelper, IPaymentRepository paymentRepository) : IRequestHandler<UpdatePaymentStatusCommand, BaseResponse<string>>
+    public class UpdatePaymentStatusCommandHandler(IPlatformFeeRepository platformFeeRepository,IGrpcHelper grpcHelper, IPaymentRepository paymentRepository) : IRequestHandler<UpdatePaymentStatusCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(UpdatePaymentStatusCommand request, CancellationToken cancellationToken)
         {
@@ -79,9 +79,15 @@ namespace Application.Commands.CancelPaymentLink
                     {
                         return BaseResponse<string>.NotFound("Không tìm thấy thông tin thanh toán.");
                     }
+                    // Get fee
+                    var platformFee = await platformFeeRepository.GetByPropertyAsync(p => p.PlatformFeeName == "PlatformFee");
+                    if (platformFee == null)
+                    {
+                        return BaseResponse<string>.NotFound("Không tìm thấy thông tin phí.");
+                    }
                     // Create QrCode Using vietqr.vn
-                    var userQrCode = CreateQrCode(UserPaymentInfoReply.AccountNumber, UserPaymentInfoReply.BankName, UserPaymentInfoReply.AccountName, GetAppointmentsReply.Amount.ToString(), "Thanh toán lịch hẹn");
-                    var expertQrCode = CreateQrCode(ExpertPaymentInfoReply.AccountNumber, ExpertPaymentInfoReply.BankName, ExpertPaymentInfoReply.AccountName, GetAppointmentsReply.Amount.ToString(), "Thanh toán lịch hẹn");
+                    var userQrCode = CreateQrCode(UserPaymentInfoReply.AccountNumber, UserPaymentInfoReply.BankName, UserPaymentInfoReply.AccountName, GetAppointmentsReply.Amount.ToString(), "Thanh toan lich hen");
+                    var expertQrCode = CreateQrCode(ExpertPaymentInfoReply.AccountNumber, ExpertPaymentInfoReply.BankName, ExpertPaymentInfoReply.AccountName, CaculateAmount(GetAppointmentsReply.Amount, platformFee.PlatformFeeValue).ToString(), "Thanh toan lich hen");
                     // Update payment with QrCode
                     var paymentIndb = await paymentRepository.GetByPropertyAsync(p=>p.AppointmentId == request.AppointmentId);
                     if(paymentIndb == null)
@@ -106,6 +112,11 @@ namespace Application.Commands.CancelPaymentLink
         public string CreateQrCode(string accountNumber,string bankName,string accountName, string amount,string description)
         {
             return $"https://api.viqr.net/vietqr/{bankName}/{accountNumber}/{amount}/compact2.jpg?FullName={accountName}NDck={description}";
+        }
+        public int CaculateAmount(int amount, int percent)
+        {
+            // Caculate amount = amount - (amount * percent)
+            return amount - (amount * percent / 100);
         }
     }
 }

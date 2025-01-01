@@ -16,6 +16,12 @@ namespace PRH_UserService_API.Controllers
             var response = await sender.Send(new GetPaymentInfoQuery());
             return response.ToActionResult();
         }
+        /// <summary>
+        /// This method is obsolete. Use UpdatePaymentInfo instead.
+        /// </summary>
+        /// <param name="paymentInfoDto"></param>
+        /// <returns></returns>
+        [Obsolete]
         [Authorize]
         [HttpPost("create-payment-info")]
         public async Task<IActionResult> CreatePaymentInfo(PaymentInfoDto paymentInfoDto)

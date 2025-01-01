@@ -18,12 +18,13 @@ public partial class PaymentDbContext : DbContext
 
 
     public virtual DbSet<Payment> Payments { get; set; }
+    public virtual DbSet<PlatformFee> PlatformFees { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // PRIMARY KEY
         modelBuilder.Entity<Payment>().HasKey(p => p.PaymentId);
-
+        modelBuilder.Entity<PlatformFee>().HasKey(p => p.PlatformFeeId);
         // Define foreign keys (logical relationship, without physical database constraint)
         modelBuilder.Entity<Payment>()
             .Property(p => p.UserId)
@@ -37,6 +38,7 @@ public partial class PaymentDbContext : DbContext
         //    .Property(p => p.Amount)
         //    .HasColumnType("decimal(10,2)")
         //    .IsRequired();
+
 
         OnModelCreatingPartial(modelBuilder);
     }
