@@ -46,6 +46,7 @@ namespace Application.Commands.RateExpert
 
                 appointment.Rating = request.Rating;
                 appointment.Comment = request.Comment;
+                appointment.UpdatedAt = DateTime.UtcNow.AddHours(7);
                 await appointmentRepository.Update(appointment.AppointmentId, appointment);
 
                 response.Success = true;

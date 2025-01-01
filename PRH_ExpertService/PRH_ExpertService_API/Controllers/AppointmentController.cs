@@ -100,10 +100,18 @@ namespace PRH_ExpertService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPost("rate")]
+        [HttpPost("rate-expert")]
         public async Task<IActionResult> RateExpert([FromBody] RateExpertCommand command)
         {
             var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin,User,Expert")]
+        [HttpGet("get-expert-ratings/{expertProfileId}")]
+        public async Task<IActionResult> GetExpertRatings(string expertProfileId)
+        {
+            var response = await sender.Send(new GetExpertRatingsQuery(expertProfileId));
             return response.ToActionResult();
         }
     }
