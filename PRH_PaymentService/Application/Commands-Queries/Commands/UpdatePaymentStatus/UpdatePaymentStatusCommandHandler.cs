@@ -111,7 +111,7 @@ namespace Application.Commands.CancelPaymentLink
         }
         public string CreateQrCode(string accountNumber,string bankName,string accountName, string amount,string description)
         {
-            return $"https://api.viqr.net/vietqr/{bankName}/{accountNumber}/{amount}/compact2.jpg?FullName={accountName}NDck={description}";
+            return $"https://api.viqr.net/vietqr/{bankName}/{accountNumber}/{amount}/compact2.jpg?FullName={accountName}&NDck={description}";
         }
         public int CaculateAmount(int amount, int percent)
         {
