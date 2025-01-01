@@ -9,6 +9,7 @@ using PRH_ExpertService_API.Extentions;
 using Application.Commands.UploadProfileImage;
 using PRH_ExpertService_API.FileUpload;
 using Application.Queries.GetExpertList;
+using Application.Commands.ApproveExpertProfile;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -73,5 +74,12 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
+        [Authorize(Roles = "Admin,Moderator")]
+        [HttpPut("approve/{expertProfileId}")]
+        public async Task<IActionResult> ApproveExpertProfile(string expertProfileId)
+        {
+            var response = await sender.Send(new ApproveExpertProfileCommand(expertProfileId));
+            return response.ToActionResult();
+        }
     }
 }
