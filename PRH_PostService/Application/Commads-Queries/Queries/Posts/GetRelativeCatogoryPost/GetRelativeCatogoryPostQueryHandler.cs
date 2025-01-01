@@ -1,4 +1,3 @@
-using System;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
@@ -14,7 +13,9 @@ public class GetRelativeCatogoryPostQueryHandler(IPostRepository postRepository)
         {
             var post = await postRepository.GetByIdAsync(request.PostId);
             // Get all post in the same category except the current post
-            var relativeCategoryPost = await postRepository.GetsByPropertyAsync(x => x.CategoryId == post.CategoryId, request.Top);
+            var relativeCategoryPost = await postRepository.GetsByPropertyAsync(
+                x => x.CategoryId == post.CategoryId && x.Status == 0 && x.PostId != post.PostId,
+                request.Top);
             // Remove the current post from the list
             relativeCategoryPost = relativeCategoryPost?.Where(x => x.PostId != post.PostId);
             // Mapping Post to PostRecommendDto

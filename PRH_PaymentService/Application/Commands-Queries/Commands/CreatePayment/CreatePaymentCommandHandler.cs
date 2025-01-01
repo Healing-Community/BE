@@ -17,7 +17,6 @@ namespace Application.Commands.CreatePayment
 {
     public class CreatePaymentCommandHandler(
         IPaymentRepository paymentRepository,
-        IConfiguration configuration,
         IGrpcHelper grpcHelper,
         PayOS payOSService,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreatePaymentCommand, BaseResponse<string>>
@@ -33,6 +32,7 @@ namespace Application.Commands.CreatePayment
                 }
                 // Grpc qua expert để lấy thông tin lịch hẹn đồng thời kiểm tra xem lịch hẹn có tồn tại không
                 var reply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, GetAppointmentsResponse>(
+                    "ExpertServiceUrl",
                     async client => await client.GetAppointmentsAsync(new GetAppointmentsRequest { AppointmentId = request.PaymentRequest.AppointmentId })
                 );
                 if (reply == null)

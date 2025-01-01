@@ -2,6 +2,7 @@ using Application.Commads_Queries.Commands.CreateShare;
 using Application.Commads_Queries.Commands.Share.DeleteShare;
 using Application.Commads_Queries.Commands.Share.UpdateShare;
 using Application.Commads_Queries.Queries.Share;
+using Application.Commads_Queries.Queries.Share.CountShareByPostId;
 using Application.Commons.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,22 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class ShareController(ISender sender) : ControllerBase
     {
+        /// <summary>
+        ///  Đếm tổng lượt chia sẻ của bài Post
+        /// </summary>
+        /// /// <param name="postId"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("count-share/{postId}")]
+        public async Task<IActionResult> CountShareByPostId(string postId)
+        {
+            var postIdOnlyDto = new PostIdOnlyDto
+            {
+                PostId = postId
+            };
+            var response = await sender.Send(new CountShareByPostIdQuery(postIdOnlyDto));
+            return response.ToActionResult();
+        }
         /// <summary>
         ///  Lấy danh sách các bài viết đã chia sẻ chỉ lấy các baì nội bộ
         /// </summary>

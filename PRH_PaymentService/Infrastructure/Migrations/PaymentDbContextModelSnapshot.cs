@@ -34,6 +34,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ExpertPaymentQrCodeLink")
+                        .HasColumnType("text");
+
                     b.Property<long>("OrderCode")
                         .HasColumnType("bigint");
 
@@ -50,9 +53,33 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserPaymentQrCodeLink")
+                        .HasColumnType("text");
+
                     b.HasKey("PaymentId");
 
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlatformFee", b =>
+                {
+                    b.Property<string>("PlatformFeeId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PlatformFeeDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PlatformFeeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PlatformFeeValue")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PlatformFeeId");
+
+                    b.ToTable("PlatformFees");
                 });
 #pragma warning restore 612, 618
         }

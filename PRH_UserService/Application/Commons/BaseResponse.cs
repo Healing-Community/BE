@@ -61,7 +61,7 @@ public class BaseResponse<T>
         };
     }
 
-    internal static BaseResponse<T> BadRequest(string message)
+    internal static BaseResponse<T> BadRequest(string message = "Yêu cầu không hợp lệ")
     {
         return new BaseResponse<T>
         {

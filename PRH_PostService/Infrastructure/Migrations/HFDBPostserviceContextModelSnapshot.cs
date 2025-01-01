@@ -198,6 +198,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ReactionTypeId")
                         .HasColumnType("text");
 
+                    b.Property<string>("ShareId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -209,6 +212,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("PostId");
 
                     b.HasIndex("ReactionTypeId");
+
+                    b.HasIndex("ShareId");
 
                     b.ToTable("Reactions");
                 });
@@ -397,9 +402,16 @@ namespace Infrastructure.Migrations
                         .WithMany("Reactions")
                         .HasForeignKey("ReactionTypeId");
 
+                    b.HasOne("Domain.Entities.Share", "Share")
+                        .WithMany()
+                        .HasForeignKey("ShareId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("Post");
 
                     b.Navigation("ReactionType");
+
+                    b.Navigation("Share");
                 });
 
             modelBuilder.Entity("Domain.Entities.Report", b =>

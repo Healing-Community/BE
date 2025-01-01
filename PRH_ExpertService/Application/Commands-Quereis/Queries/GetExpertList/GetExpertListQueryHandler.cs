@@ -57,13 +57,17 @@ namespace Application.Queries.GetExpertList
                     expertDetailsDtos.Add(expertDetailsDto);
                 }
 
-                var pagedExpertDetailsDtos = expertDetailsDtos
+                // Sắp xếp danh sách chuyên gia theo tiêu chí
+                var sortedExpertDetailsDtos = expertDetailsDtos
+                    .OrderByDescending(e => e.AverageRating)
+                    .ThenByDescending(e => e.TotalRatings)
+                    .ThenByDescending(e => e.TotalAppointments)
                     .Skip((request.PageNumber - 1) * request.PageSize)
                     .Take(request.PageSize)
                     .ToList();
 
                 response.Success = true;
-                response.Data = pagedExpertDetailsDtos;
+                response.Data = sortedExpertDetailsDtos;
                 response.StatusCode = 200;
                 response.Message = "Lấy danh sách thông tin chuyên gia thành công.";
             }

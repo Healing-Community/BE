@@ -1,11 +1,8 @@
 ﻿using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
-using Domain.Entities;
-using MassTransit;
 using MediatR;
 using NUlid;
-using System.Net;
 
 namespace Application.Queries.Posts.GetPosts
 {
@@ -16,7 +13,7 @@ namespace Application.Queries.Posts.GetPosts
             var response = new BaseResponse<IEnumerable<PostDetailDto>>()
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };
             try

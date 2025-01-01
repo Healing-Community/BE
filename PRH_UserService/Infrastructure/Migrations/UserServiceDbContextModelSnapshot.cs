@@ -49,6 +49,41 @@ namespace Infrastructure.Migrations
                     b.ToTable("Followers");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PaymentInfo", b =>
+                {
+                    b.Property<string>("PaymentInfoId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankAccountName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PaymentInfoId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("PaymentInfos");
+                });
+
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("RoleId")
@@ -201,6 +236,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PaymentInfo", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithOne("PaymentInfo")
+                        .HasForeignKey("Domain.Entities.PaymentInfo", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.SocialLink", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -242,6 +288,9 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Followers");
+
+                    b.Navigation("PaymentInfo")
+                        .IsRequired();
 
                     b.Navigation("SocialLinks");
 

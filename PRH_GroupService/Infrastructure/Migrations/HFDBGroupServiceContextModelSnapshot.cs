@@ -70,8 +70,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("GroupName")
                         .IsRequired()
@@ -92,7 +91,46 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("GroupId");
 
+                    b.HasIndex("GroupName")
+                        .IsUnique();
+
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("Domain.Entities.GroupCreationRequest", b =>
+                {
+                    b.Property<string>("GroupRequestId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ApprovedById")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("IsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("RequestedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("RequestedById")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("GroupRequestId");
+
+                    b.ToTable("GroupCreationRequests");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserGroup", b =>
@@ -108,7 +146,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("RoleInGroup")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("User");
 
                     b.HasKey("GroupId", "UserId");
 

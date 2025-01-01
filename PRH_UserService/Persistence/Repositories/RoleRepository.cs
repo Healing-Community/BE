@@ -19,9 +19,9 @@ public class RoleRepository(UserServiceDbContext hFDbContext) : IRoleRepository
         throw new NotImplementedException();
     }
 
-    public Task<Role?> GetByIdAsync(string id)
+    public async Task<Role?> GetByIdAsync(string id)
     {
-        throw new NotImplementedException();
+        return await hFDbContext.Roles.FirstOrDefaultAsync(x => x.RoleId == int.Parse(id));
     }
 
     public async Task<Role?> GetByPropertyAsync(Expression<Func<Role, bool>> predicate)
@@ -34,9 +34,9 @@ public class RoleRepository(UserServiceDbContext hFDbContext) : IRoleRepository
         return await hFDbContext.Roles.ToListAsync();
     }
 
-    public Task<IEnumerable<Role>?> GetsByPropertyAsync(Expression<Func<Role, bool>> predicate)
+    public async Task<IEnumerable<Role>?> GetsByPropertyAsync(Expression<Func<Role, bool>> predicate)
     {
-        throw new NotImplementedException();
+        return await hFDbContext.Roles.AsNoTracking().Where(predicate).ToListAsync();
     }
 
     public Task UpdateAsync(string id, Role entity)

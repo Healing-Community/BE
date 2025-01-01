@@ -4,6 +4,7 @@ using Application.Interfaces.Repository;
 using Application.Interfaces.Service;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NUlid;
 using System.Net;
 
 
@@ -24,7 +25,7 @@ namespace Application.Commads_Queries.Queries.Comments.GetCommentsByShareId
         {
             var response = new BaseResponse<List<CommentDtoResponse>>
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = new List<string>()
             };

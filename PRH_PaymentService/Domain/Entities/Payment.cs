@@ -8,6 +8,8 @@
         public long OrderCode { get; set; }
         public int Amount { get; set; }
         public int Status { get; set; }
+        public string? UserPaymentQrCodeLink { get; set; }
+        public string? ExpertPaymentQrCodeLink { get; set; }
         public DateTime PaymentDate { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

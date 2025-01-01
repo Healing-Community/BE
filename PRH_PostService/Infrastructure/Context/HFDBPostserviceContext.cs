@@ -55,6 +55,12 @@ namespace Infrastructure.Context
                 .HasOne(r => r.ReactionType)
                 .WithMany(rt => rt.Reactions)
                 .HasForeignKey(r => r.ReactionTypeId);
+            modelBuilder.Entity<Reaction>()
+                .HasOne(r => r.Share)
+                .WithMany()  
+                .HasForeignKey(r => r.ShareId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // ReactionType
             modelBuilder.Entity<ReactionType>().HasKey(rt => rt.ReactionTypeId);

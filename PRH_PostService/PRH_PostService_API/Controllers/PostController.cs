@@ -1,4 +1,6 @@
-﻿using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
+﻿using Application.Commads_Queries.Commands.Posts.UpdatePostInGroup;
+using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
+using Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByGroupId;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByUserAndGroup;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroups;
@@ -65,13 +67,14 @@ namespace PRH_PostService_API.Controllers
         }
         /// <summary>
         /// Api này lấy ra các bài viết của user kể cả bài viết private để cho trang cá nhân của user
-        /// </summary>
+        /// </summary>        
+        /// <param name="userId"></param>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("get-user-post")]
+        [HttpGet("get-user-post/{userId}")]
         public async Task<IActionResult> GetsUserPost(string userId)
         {
-            var response = await sender.Send(new GetsUserPostQuery(userId,1, 100));
+            var response = await sender.Send(new GetsUserPostQuery(userId, 1, 100));
             return response.ToActionResult();
         }
         /// <summary>
@@ -168,6 +171,19 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
         /// <summary>
+        /// Lấy danh sách các bài viết trong group với nhiều lượt reaction trở xuống
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="top"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("get-posts-by-reaction-in-group/{groupId}/{top}")]
+        public async Task<IActionResult> GetPostsByReactionInGroup(string groupId, int top)
+        {
+            var response = await sender.Send(new GetPostsByReactionInGroupQuery(groupId, top));
+            return response.ToActionResult();
+        }
+        /// <summary>
         /// Lấy danh sách các bài viết trong group bằng cách truyền vào GroupId - với GroupVisibility = 0 (public) - GroupVisibility = 1 (private) sẽ không thấy
         /// </summary>
         /// <param name="groupId"></param>
@@ -199,7 +215,13 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new UpdatePostCommand(id, post));
             return response.ToActionResult();
         }
-
+        [Authorize]
+        [HttpPut("update-post-in-group/{postId}")]
+        public async Task<IActionResult> UpdatePostInGroup(string postId, PostDto postDto)
+        {
+            var response = await sender.Send(new UpdatePostInGroupCommand(postId, postDto));
+            return response.ToActionResult();
+        }
         [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePost(string id)
