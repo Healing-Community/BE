@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Application.Commands_Queries.Commands.GetPaymentInfo;
 using Application.Commons;
 using Application.Interfaces.Repository;
 using Domain.Entities;

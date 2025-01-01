@@ -1,7 +1,7 @@
-using Application.Commands_Queries.Commands.GetPaymentInfo;
 using Application.Commands_Queries.Commands.PaymentInfos.CreatePaymentInfo;
 using Application.Commands_Queries.Commands.PaymentInfos.DeletePaymentInfo;
 using Application.Commands_Queries.Commands.PaymentInfos.UpdatePaymentInfo;
+using Application.Commands_Queries.Queries.GetPaymentInfo;
 
 namespace PRH_UserService_API.Controllers
 {

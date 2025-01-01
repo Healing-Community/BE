@@ -22,6 +22,8 @@ message GetAppointmentsResponse {
     string appointmentDate = 4;
     string startTime = 5;
     string endTime = 6;
+    string userId = 7;
+    string expertId = 8;
 }
 
 message UpdateResponse {

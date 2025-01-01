@@ -17,7 +17,6 @@ namespace Application.Commands.CreatePayment
 {
     public class CreatePaymentCommandHandler(
         IPaymentRepository paymentRepository,
-        IConfiguration configuration,
         IGrpcHelper grpcHelper,
         PayOS payOSService,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreatePaymentCommand, BaseResponse<string>>

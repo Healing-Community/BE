@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "UserPaymentService";
+
+package user;
+
+service UserService {
+    rpc GetUserPaymentInfo(GetUserPaymentInfoRequest) returns (GetPaymentInfoResponse);
+}   
+
+message GetUserPaymentInfoRequest {
+    string userId = 1;
+}
+
+message GetPaymentInfoResponse {
+    string bankName = 1;
+    string accountNumber = 2;
+    string accountName = 3;
+}

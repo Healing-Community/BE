@@ -13,8 +13,8 @@ public partial class PaymentDbContext : DbContext
     {
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.xdqkzkedyxzuajhxerjt; Password=ProjectHealing@1234");
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //         => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.xdqkzkedyxzuajhxerjt; Password=ProjectHealing@1234");
 
 
     public virtual DbSet<Payment> Payments { get; set; }
