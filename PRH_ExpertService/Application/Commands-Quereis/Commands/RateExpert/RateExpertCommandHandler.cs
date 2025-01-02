@@ -1,12 +1,15 @@
 ﻿using Application.Commons;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
 
 namespace Application.Commands.RateExpert
 {
     public class RateExpertCommandHandler(
-        IAppointmentRepository appointmentRepository) : IRequestHandler<RateExpertCommand, BaseResponse<bool>>
+        IAppointmentRepository appointmentRepository,
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<RateExpertCommand, BaseResponse<bool>>
     {
         public async Task<BaseResponse<bool>> Handle(RateExpertCommand request, CancellationToken cancellationToken)
         {
@@ -19,12 +22,38 @@ namespace Application.Commands.RateExpert
 
             try
             {
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = 400;
+                    return response;
+                }
+
+                var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không xác định được người dùng hiện tại.";
+                    response.StatusCode = 401;
+                    return response;
+                }
+
                 var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
                 if (appointment == null)
                 {
                     response.Success = false;
                     response.Message = "Không tìm thấy lịch hẹn.";
                     response.StatusCode = 404;
+                    return response;
+                }
+
+                if (appointment.UserId != userId)
+                {
+                    response.Success = false;
+                    response.Message = "Người dùng không có quyền đánh giá lịch hẹn này.";
+                    response.StatusCode = 403;
                     return response;
                 }
 
