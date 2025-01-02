@@ -5,9 +5,11 @@ using Application.Commands.RateExpert;
 using Application.Commands.UpdateAppointment;
 using Application.Commons.Tools;
 using Application.Queries.GetAllAppointments;
+using Application.Queries.GetAppointmentRatingStatus;
 using Application.Queries.GetAppointments;
 using Application.Queries.GetAppointmentsByExpert;
 using Application.Queries.GetAppointmentsByUser;
+using MassTransit.Mediator;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -112,6 +114,14 @@ namespace PRH_ExpertService_API.Controllers
         public async Task<IActionResult> GetExpertRatings(string expertProfileId)
         {
             var response = await sender.Send(new GetExpertRatingsQuery(expertProfileId));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpGet("rating-status/{appointmentId}")]
+        public async Task<IActionResult> GetAppointmentRatingStatus(string appointmentId)
+        {
+            var response = await sender.Send(new GetAppointmentRatingStatusQuery { AppointmentId = appointmentId });
             return response.ToActionResult();
         }
     }
