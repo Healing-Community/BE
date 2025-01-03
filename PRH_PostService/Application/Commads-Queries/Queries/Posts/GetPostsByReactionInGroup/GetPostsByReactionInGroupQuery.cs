@@ -4,6 +4,6 @@ using MediatR;
 
 namespace Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup
 {
-    public record GetPostsByReactionInGroupQuery(string GroupId, int Top) : IRequest<BaseResponse<IEnumerable<PostReactionCountDto>>>;
+    public record GetPostsByReactionInGroupQuery(string GroupId) : IRequest<BaseResponse<IEnumerable<PostReactionGroupDto>>>;
 
 }
