@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Commands_Queries.Queries.GetPlatformFee;
 
-public record GetPlatformFeeQuery : IRequest<BaseResponse<IEnumerable<PlatformFee>>>;
+public record GetPlatformFeeQuery : IRequest<BaseResponse<PlatformFee>>;
