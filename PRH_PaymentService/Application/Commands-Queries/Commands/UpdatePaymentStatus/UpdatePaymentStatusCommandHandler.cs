@@ -95,15 +95,16 @@ namespace Application.Commands.CancelPaymentLink
                     {
                         return BaseResponse<string>.NotFound("Không tìm thấy thông tin phí.");
                     }
-                    // Create QrCode Using vietqr.vn từ thông tin thanh toán của user và expert và thông tin lịch hẹn
-                    var userQrCode = CreateQrCode(UserPaymentInfoReply.AccountNumber, UserPaymentInfoReply.BankName, UserPaymentInfoReply.AccountName, GetAppointmentsReply.Amount.ToString(), "Thanh toan lich hen");
-                    var expertQrCode = CreateQrCode(ExpertPaymentInfoReply.AccountNumber, ExpertPaymentInfoReply.BankName, ExpertPaymentInfoReply.AccountName, CaculateAmount(GetAppointmentsReply.Amount, platformFee.PlatformFeeValue).ToString(), "Thanh toan lich hen");
-                    // Update payment with QrCode
                     var paymentIndb = await paymentRepository.GetByPropertyAsync(p=>p.AppointmentId == request.AppointmentId);
                     if(paymentIndb == null)
                     {
                         return BaseResponse<string>.NotFound("Không tìm thấy thông tin thanh toán.");
                     }
+                    // Create QrCode Using vietqr.vn từ thông tin thanh toán của user và expert và thông tin lịch hẹn
+                    var userQrCode = CreateQrCode(UserPaymentInfoReply.AccountNumber, UserPaymentInfoReply.BankName, UserPaymentInfoReply.AccountName, GetAppointmentsReply.Amount.ToString(),$"USER{paymentIndb.OrderCode}" );
+                    var expertQrCode = CreateQrCode(ExpertPaymentInfoReply.AccountNumber, ExpertPaymentInfoReply.BankName, ExpertPaymentInfoReply.AccountName, CaculateAmount(GetAppointmentsReply.Amount, platformFee.PlatformFeeValue).ToString(), $"EXPERT{paymentIndb.OrderCode}");
+                    // Update payment with QrCode
+                    
                     paymentIndb.UserPaymentQrCodeLink = userQrCode;
                     paymentIndb.ExpertPaymentQrCodeLink = expertQrCode;
         

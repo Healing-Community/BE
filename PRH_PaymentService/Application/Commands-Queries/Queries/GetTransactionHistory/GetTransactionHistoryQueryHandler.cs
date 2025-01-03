@@ -1,7 +1,6 @@
 ﻿using Application.Commons;
 using Application.Commons.Tools;
 using Application.Interfaces.Repositories;
-using Domain.Contracts;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
