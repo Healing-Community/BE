@@ -8,5 +8,6 @@ namespace Application.Interfaces.Repository
         Task<IEnumerable<Appointment>> GetByExpertProfileIdAsync(string expertProfileId);
         Task<IEnumerable<Appointment>> GetOverlappingAppointmentsAsync(string expertProfileId, DateOnly appointmentDate, TimeOnly startTime, TimeOnly endTime);
         Task<IEnumerable<Appointment>> GetByUserIdAsync(string userId);
+        Task<IEnumerable<Appointment>> GetAppointmentsToCompleteAsync(DateTime currentTime);
     }
 }

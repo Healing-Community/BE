@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Application;
+using Application.Jobs;
 using Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -7,11 +8,9 @@ using Persistence;
 using PRH_ExpertService_API;
 using PRH_ExpertService_API.Middleware;
 using Prometheus;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Nạp cấu hình từ appsettings.json
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 #region Thêm các dependency theo tầng
 
@@ -22,17 +21,31 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 #endregion
 
-# region appsettings
+#region appsettings
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                      .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-# endregion
+#endregion
 
 // Thêm dịch vụ gRPC
 builder.Services.AddGrpc();
 
-var app = builder.Build();
+#region Quartz.NET
 
-Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+builder.Services.AddQuartz(q =>
+{
+    // Định nghĩa một job và trigger
+    q.ScheduleJob<AppointmentStatusJob>(trigger => trigger
+        .WithIdentity("AppointmentStatusJobTrigger")
+        .StartNow()
+        .WithCronSchedule("0 * * * * ?"));
+});
+
+// Thêm Quartz.NET Hosted Service
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+#endregion
+
+var app = builder.Build();
 
 #region Middleware
 
@@ -57,7 +70,6 @@ app.UseSwaggerUI(c =>
     c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
     c.RoutePrefix = "";
 });
-
 
 #region HealthChecks (Kiểm tra tình trạng hệ thống)
 app.MapHealthChecks("/health/liveness", new HealthCheckOptions
@@ -111,7 +123,6 @@ app.UseMetricServer(); // Expose metrics trên endpoint mặc định
 #endregion
 
 app.MapGrpcService<ExpertService>();
-
 
 // Chỉ bật HTTPS Redirection trên môi trường Development
 if (builder.Environment.IsDevelopment())
