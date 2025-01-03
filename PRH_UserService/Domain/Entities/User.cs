@@ -14,8 +14,10 @@ public class User
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; set; }
     public int Status { get; set; }
+    // Navigation Property
     public Role Role { get; set; } = null!;
     public ICollection<Token> Tokens { get; set; } = [];
     public ICollection<SocialLink> SocialLinks { get; set; } = [];
     public ICollection<Follower> Followers { get; set; } = [];
+    public PaymentInfo PaymentInfo { get; set; } = null!;
 }

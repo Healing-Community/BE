@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces.AMQP;
+using Application.Interfaces.GenericRepository;
 using Application.Interfaces.Redis;
 using Application.Interfaces.Repository;
+using Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.AMQP;
 using Persistence.Cache;
@@ -15,6 +17,7 @@ public static class DependencyInjection
         // AMQP
         services.AddScoped<IMessagePublisher, MessagePublisher>();
         // Repositories
+        services.AddScoped<IPaymentInfoRepository, PaymentInfoRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IEmailRepository, EmailRepository>();

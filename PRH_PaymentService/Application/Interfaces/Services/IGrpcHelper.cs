@@ -5,6 +5,7 @@ namespace Application.Interfaces.Services;
 public interface IGrpcHelper
 {
     Task<TResponse?> ExecuteGrpcCallAsync<TClient, TRequest, TResponse>(
+        string serviceUrlKey,
         Func<TClient, Task<TResponse>> grpcCall,
         Func<HttpClientHandler>? configureHttpHandler = null)
         where TClient : class

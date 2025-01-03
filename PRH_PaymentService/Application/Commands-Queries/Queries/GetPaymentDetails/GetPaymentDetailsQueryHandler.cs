@@ -20,6 +20,7 @@ public class GetPaymentDetailsQueryHandler(IGrpcHelper grpcHelper, IPaymentRepos
             }
             // Lấy thông tin Appointment từ AppointmentService dùng grpc
             var appointmentDataReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, GetAppointmentsResponse>(
+                    "ExpertServiceUrl",
                     async client => await client.GetAppointmentsAsync(new GetAppointmentsRequest { AppointmentId = payment.AppointmentId })
                 );
             if (appointmentDataReply == null)
