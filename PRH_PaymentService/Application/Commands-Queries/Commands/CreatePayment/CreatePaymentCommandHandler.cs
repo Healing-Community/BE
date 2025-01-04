@@ -100,7 +100,8 @@ namespace Application.Commands.CreatePayment
         {
             var scheme = httpContext.Request.Scheme;
             var host = httpContext.Request.Host;
-            return $"{scheme}://{host}/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
+            //return $"{scheme}://{host}/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
+            return $"http://localhost:8000/payment/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
         }
     }
 }

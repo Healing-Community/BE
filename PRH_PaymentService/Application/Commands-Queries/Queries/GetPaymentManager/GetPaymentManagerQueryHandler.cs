@@ -19,6 +19,7 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
             {
                 return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin thanh toán.");
             }
+            var paymentManagerDtos = new List<PaymentManagerDto>(); 
             // Get Appointment from AppointmentService using grpc
             foreach (var payment in payments)
             {
@@ -65,8 +66,9 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
                     PaymentDate = payment.PaymentDate,
                     UpdatedAt = payment.UpdatedAt
                 };
+                paymentManagerDtos.Add(paymentManagerDto);
             }
-            return BaseResponse<IEnumerable<PaymentManagerDto>>.SuccessReturn();
+            return BaseResponse<IEnumerable<PaymentManagerDto>>.SuccessReturn(paymentManagerDtos);
         }
         catch (Exception e)
         {
