@@ -16,4 +16,6 @@ message GetPaymentInfoResponse {
     string bankName = 1;
     string accountNumber = 2;
     string accountName = 3;
+    string userName = 4;
+    string userEmail = 5;
 }
