@@ -20,7 +20,7 @@ namespace Application.Commands.CreateAvailability
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<ErrorDetail>()
             };
 
             try
@@ -30,7 +30,7 @@ namespace Application.Commands.CreateAvailability
                 {
                     response.Success = false;
                     response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
-                    response.StatusCode = 400;
+                    response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
 
@@ -39,7 +39,7 @@ namespace Application.Commands.CreateAvailability
                 {
                     response.Success = false;
                     response.Message = "Không thể xác định UserId từ yêu cầu.";
-                    response.StatusCode = 401;
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
 
@@ -49,7 +49,7 @@ namespace Application.Commands.CreateAvailability
                 {
                     response.Success = false;
                     response.Message = "Hồ sơ chuyên gia không tồn tại.";
-                    response.StatusCode = 404;
+                    response.StatusCode = StatusCodes.Status404NotFound;
                     return response;
                 }
 
@@ -57,7 +57,7 @@ namespace Application.Commands.CreateAvailability
                 {
                     response.Success = false;
                     response.Message = "Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.";
-                    response.StatusCode = 403;
+                    response.StatusCode = StatusCodes.Status403Forbidden;
                     return response;
                 }
 
@@ -69,9 +69,6 @@ namespace Application.Commands.CreateAvailability
                         Message = "Thời gian kết thúc phải sau thời gian bắt đầu.",
                         Field = "EndTime"
                     });
-                    response.Success = false;
-                    response.StatusCode = 400;
-                    return response;
                 }
 
                 // Kiểm tra thời gian đặt lịch phải trên hoặc bằng 30 phút
@@ -82,9 +79,6 @@ namespace Application.Commands.CreateAvailability
                         Message = "Thời gian đặt lịch phải trên hoặc bằng 30 phút.",
                         Field = "TimeRange"
                     });
-                    response.Success = false;
-                    response.StatusCode = 400;
-                    return response;
                 }
 
                 // Kiểm tra ngày và thời gian của lịch trống phải là trong tương lai
@@ -97,9 +91,6 @@ namespace Application.Commands.CreateAvailability
                         Message = "Ngày và thời gian của lịch trống phải là trong tương lai.",
                         Field = "AvailableDate"
                     });
-                    response.Success = false;
-                    response.StatusCode = 400;
-                    return response;
                 }
 
                 // Kiểm tra giá tiền tối thiểu
@@ -110,8 +101,13 @@ namespace Application.Commands.CreateAvailability
                         Message = "Giá tiền tối thiểu là 10,000 VND.",
                         Field = "Amount"
                     });
+                }
+
+                if (response.Errors.Any())
+                {
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -127,7 +123,8 @@ namespace Application.Commands.CreateAvailability
                         Field = "TimeRange"
                     });
                     response.Success = false;
-                    response.StatusCode = 409;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -150,7 +147,7 @@ namespace Application.Commands.CreateAvailability
                 response.Success = true;
                 response.Message = "Lịch trống đã được tạo thành công.";
                 response.Data = newAvailability.ExpertAvailabilityId;
-                response.StatusCode = 200;
+                response.StatusCode = StatusCodes.Status200OK;
             }
             catch (Exception ex)
             {
@@ -161,7 +158,7 @@ namespace Application.Commands.CreateAvailability
                 });
                 response.Success = false;
                 response.Message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu.";
-                response.StatusCode = 500;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             return response;

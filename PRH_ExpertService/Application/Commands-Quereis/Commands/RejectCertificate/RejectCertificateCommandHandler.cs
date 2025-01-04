@@ -5,14 +5,13 @@ using NUlid;
 using Microsoft.AspNetCore.Http;
 using Application.Commons.Tools;
 
-namespace Application.Commands.UpdateCertificate
+namespace Application.Commands.RejectCertificate
 {
-    public class UpdateCertificateCommandHandler(
+    public class RejectCertificateCommandHandler(
         ICertificateRepository certificateRepository,
-        ICertificateTypeRepository certificateTypeRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateCertificateCommand, DetailBaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<RejectCertificateCommand, DetailBaseResponse<bool>>
     {
-        public async Task<DetailBaseResponse<bool>> Handle(UpdateCertificateCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<bool>> Handle(RejectCertificateCommand request, CancellationToken cancellationToken)
         {
             var response = new DetailBaseResponse<bool>
             {
@@ -55,26 +54,10 @@ namespace Application.Commands.UpdateCertificate
                     return response;
                 }
 
-                if (!string.IsNullOrEmpty(request.CertificateTypeId))
-                {
-                    var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificateTypeId);
-                    if (certificateType == null)
-                    {
-                        response.Errors.Add(new ErrorDetail
-                        {
-                            Message = "Loại chứng chỉ không hợp lệ.",
-                            Field = "CertificateTypeId"
-                        });
-                        response.Success = false;
-                        response.Message = "Có lỗi trong dữ liệu đầu vào.";
-                        response.StatusCode = StatusCodes.Status422UnprocessableEntity;
-                        return response;
-                    }
-                    certificate.CertificateTypeId = request.CertificateTypeId;
-                }
-
-                certificate.IssueDate = request.IssueDate ?? certificate.IssueDate;
-                certificate.ExpirationDate = request.ExpirationDate ?? certificate.ExpirationDate;
+                // Cập nhật trạng thái chứng chỉ
+                certificate.Status = 3; // Rejected
+                certificate.VerifiedByAdminId = userId;
+                certificate.VerifiedAt = DateTime.UtcNow.AddHours(7);
                 certificate.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await certificateRepository.Update(certificate.CertificateId, certificate);
@@ -82,7 +65,7 @@ namespace Application.Commands.UpdateCertificate
                 response.Success = true;
                 response.Data = true;
                 response.StatusCode = StatusCodes.Status200OK;
-                response.Message = "Cập nhật chứng chỉ thành công.";
+                response.Message = "Chứng chỉ đã bị từ chối.";
             }
             catch (Exception ex)
             {
@@ -92,7 +75,7 @@ namespace Application.Commands.UpdateCertificate
                     Field = "Exception"
                 });
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra khi cập nhật chứng chỉ.";
+                response.Message = "Có lỗi xảy ra khi từ chối chứng chỉ.";
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

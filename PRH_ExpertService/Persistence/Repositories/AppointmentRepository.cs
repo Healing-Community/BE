@@ -75,5 +75,20 @@ namespace Persistence.Repositories
                     .Where(a => a.UserId == userId)
                     .ToListAsync();
         }
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsToCompleteAsync(DateTime currentTime)
+        {
+            // 1) Lấy hết những cuộc hẹn có Status == 1
+            var all = await context.Appointments
+                .Where(a => a.Status == 1)
+                .ToListAsync();
+
+            // 2) Lọc cục bộ 
+            // So sánh AppointmentDate.ToDateTime(EndTime) <= currentTime
+            var filtered = all
+                .Where(a => a.AppointmentDate.ToDateTime(a.EndTime) <= currentTime);
+
+            return filtered;
+        }
     }
 }

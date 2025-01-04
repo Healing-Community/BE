@@ -1,8 +1,8 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
-using Domain.Entities;
 using NUlid;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.UpdateCertificateType
 {
@@ -15,11 +15,12 @@ namespace Application.Commands.UpdateCertificateType
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<ErrorDetail>()
             };
 
             try
             {
+                // Kiểm tra xem loại chứng chỉ có tồn tại không
                 var certificateType = await certificateTypeRepository.GetByIdAsync(request.CertificateTypeId);
                 if (certificateType == null)
                 {
@@ -29,23 +30,27 @@ namespace Application.Commands.UpdateCertificateType
                         Field = "CertificateTypeId"
                     });
                     response.Success = false;
-                    response.StatusCode = 404;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
+                // Cập nhật thông tin loại chứng chỉ
                 certificateType.Name = request.Name;
                 certificateType.Description = request.Description;
                 certificateType.IsMandatory = request.IsMandatory;
 
                 await certificateTypeRepository.Update(request.CertificateTypeId, certificateType);
 
+                // Trả về kết quả thành công
                 response.Success = true;
                 response.Data = true;
                 response.Message = "Cập nhật loại chứng chỉ thành công.";
-                response.StatusCode = 200;
+                response.StatusCode = StatusCodes.Status200OK;
             }
             catch (Exception ex)
             {
+                // Xử lý lỗi hệ thống
                 response.Errors.Add(new ErrorDetail
                 {
                     Message = ex.Message,
@@ -53,7 +58,7 @@ namespace Application.Commands.UpdateCertificateType
                 });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật loại chứng chỉ.";
-                response.StatusCode = 500;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             return response;

@@ -19,7 +19,7 @@ namespace Application.Commands.CreateExpertProfile
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<ErrorDetail>()
             };
 
             try
@@ -27,13 +27,9 @@ namespace Application.Commands.CreateExpertProfile
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
-                        Field = "HttpContext"
-                    });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
 
@@ -41,13 +37,9 @@ namespace Application.Commands.CreateExpertProfile
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Không xác định được người dùng hiện tại.",
-                        Field = "UserId"
-                    });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
 
@@ -61,7 +53,8 @@ namespace Application.Commands.CreateExpertProfile
                         Field = "Email"
                     });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -75,7 +68,8 @@ namespace Application.Commands.CreateExpertProfile
                         Field = "ExpertProfile"
                     });
                     response.Success = false;
-                    response.StatusCode = 409;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -98,7 +92,7 @@ namespace Application.Commands.CreateExpertProfile
                 response.Success = true;
                 response.Message = "Hồ sơ chuyên gia đã được tạo thành công.";
                 response.Data = newExpertProfile.ExpertProfileId;
-                response.StatusCode = 200;
+                response.StatusCode = StatusCodes.Status200OK;
             }
             catch (Exception ex)
             {
@@ -109,7 +103,7 @@ namespace Application.Commands.CreateExpertProfile
                 });
                 response.Success = false;
                 response.Message = "Đã xảy ra lỗi trong quá trình tạo hồ sơ chuyên gia.";
-                response.StatusCode = 500;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             return response;
