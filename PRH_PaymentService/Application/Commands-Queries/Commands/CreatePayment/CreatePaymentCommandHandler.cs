@@ -8,10 +8,9 @@ using NUlid;
 using System.Security.Claims;
 using Net.payOS;
 using Net.payOS.Types;
-using Grpc.Net.Client;
 using ExpertPaymentService;
-using Microsoft.Extensions.Configuration;
 using Application.Interfaces.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Commands.CreatePayment
 {
@@ -19,6 +18,7 @@ namespace Application.Commands.CreatePayment
         IPaymentRepository paymentRepository,
         IGrpcHelper grpcHelper,
         PayOS payOSService,
+        IConfiguration configuration,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreatePaymentCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
@@ -98,10 +98,14 @@ namespace Application.Commands.CreatePayment
         }
         public string GetApiUrl(HttpContext httpContext, string controllerName = "MyController", string actionName = "GetData", string orderCode = "1", bool isCancel = false, string appointmentId = "1", string redirectUrl = "http://localhost:3000")
         {
-            var scheme = httpContext.Request.Scheme;
-            var host = httpContext.Request.Host;
+            // var scheme = httpContext.Request.Scheme;
+            // var host = httpContext.Request.Host;
+
             //return $"{scheme}://{host}/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
-            return $"http://localhost:8000/payment/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
+            var callbackUrl = configuration.GetSection("CallbackUrls");
+            var host = callbackUrl["Host"];
+            var port = callbackUrl["Port"];
+            return $"http://{host}:{port}/payment/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
         }
     }
 }
