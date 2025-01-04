@@ -1,4 +1,4 @@
-using Application.Commands.UpdateAppointmentStatus;
+using Application.Commands.UpdateAppointment.UpdateAppointmentStatus;
 using Application.Commands.UpdateAvailability.UpdateAvailabilityStatus;
 using Application.Commands_Quereis.Queries.GetAppointmentById;
 using Application.Queries.GetExpertAvailbilityByAppointmentId;
