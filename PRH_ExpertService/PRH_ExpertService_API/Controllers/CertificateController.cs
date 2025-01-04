@@ -1,4 +1,6 @@
-﻿using Application.Commands.DeleteCertificate;
+﻿using Application.Commands.ApproveCertificate;
+using Application.Commands.DeleteCertificate;
+using Application.Commands.RejectCertificate;
 using Application.Commands.UpdateCertificate;
 using Application.Commands.UploadCertificate;
 using Application.Queries.GetAllCertificates;
@@ -61,6 +63,22 @@ namespace PRH_ExpertService_API.Controllers
         public async Task<IActionResult> DeleteCertificate([FromRoute] string certificateId)
         {
             var response = await sender.Send(new DeleteCertificateCommand(certificateId));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin,Moderator")]
+        [HttpPost("approve")]
+        public async Task<IActionResult> ApproveCertificate([FromBody] ApproveCertificateCommand command)
+        {
+            var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin,Moderator")]
+        [HttpPost("reject")]
+        public async Task<IActionResult> RejectCertificate([FromBody] RejectCertificateCommand command)
+        {
+            var response = await sender.Send(command);
             return response.ToActionResult();
         }
     }
