@@ -10,6 +10,7 @@ service GroupService {
     rpc CheckUserInGroup (CheckUserInGroupRequest) returns (CheckUserInGroupResponse);
     rpc GetGroupDetails (GetGroupDetailsRequest) returns (GetGroupDetailsResponse);
     rpc CheckUserInGroupOrPublic (CheckUserInGroupRequest) returns (CheckUserInGroupResponse);
+    rpc GetUserRoleInGroup (GetUserRoleInGroupRequest) returns (GetUserRoleInGroupResponse);
 }
 
 // Messages
@@ -38,4 +39,15 @@ message GetGroupDetailsRequest {
 message GetGroupDetailsResponse {
     string group_id = 1;
     int32 visibility = 2; // 0: Public, 1: Private
+}
+
+message GetUserRoleInGroupRequest { 
+    string group_id = 1;
+    string user_id = 2;
+}
+
+message GetUserRoleInGroupResponse { 
+    string group_id = 1;
+    string user_id = 2;
+    string role = 3; // "Owner", "Moderator", "User"
 }

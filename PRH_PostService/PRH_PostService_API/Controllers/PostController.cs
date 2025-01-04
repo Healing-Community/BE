@@ -174,13 +174,12 @@ namespace PRH_PostService_API.Controllers
         /// Lấy danh sách các bài viết trong group với nhiều lượt reaction trở xuống
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="top"></param>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("get-posts-by-reaction-in-group/{groupId}/{top}")]
-        public async Task<IActionResult> GetPostsByReactionInGroup(string groupId, int top)
+        [HttpGet("get-posts-by-reaction-in-group/{groupId}")]
+        public async Task<IActionResult> GetPostsByReactionInGroup(string groupId)
         {
-            var response = await sender.Send(new GetPostsByReactionInGroupQuery(groupId, top));
+            var response = await sender.Send(new GetPostsByReactionInGroupQuery(groupId));
             return response.ToActionResult();
         }
         /// <summary>

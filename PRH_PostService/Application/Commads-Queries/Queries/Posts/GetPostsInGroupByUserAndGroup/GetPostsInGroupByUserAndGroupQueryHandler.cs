@@ -1,6 +1,4 @@
-﻿
-
-using Application.Commons.DTOs;
+﻿using Application.Commons.DTOs;
 using Application.Commons.Tools;
 using Application.Commons;
 using Application.Interfaces.Repository;
@@ -47,7 +45,7 @@ namespace Application.Commads_Queries.Queries.Posts.GetPostsInGroupByUserAndGrou
                 }
 
                 // Check if the user has access to the group
-                var hasAccess = await groupGrpcClient.CheckUserInGroupOrPublicAsync(request.GroupId, request.UserId);
+                var hasAccess = await groupGrpcClient.CheckUserInGroupOrPublicAsync(request.GroupId, authenticatedUserId);
                 if (!hasAccess)
                 {
                     response.Success = false;
@@ -56,15 +54,15 @@ namespace Application.Commads_Queries.Queries.Posts.GetPostsInGroupByUserAndGrou
                     return response;
                 }
 
-                // Fetch posts by group ID
+                // Fetch posts by group ID and User ID
                 var posts = await postRepository.GetsByPropertyAsync(
-                    p => p.GroupId == request.GroupId && p.Status == (int)PostStatus.Group
+                    p => p.GroupId == request.GroupId && p.UserId == request.UserId && p.Status == (int)PostStatus.Group
                 );
 
                 if (!posts.Any())
                 {
                     response.Success = true;
-                    response.Message = "Không có bài viết nào trong nhóm.";
+                    response.Message = "Không có bài viết nào trong nhóm từ người dùng này.";
                     response.Data = new List<PostGroupWithoutGroupIDAndUserID>();
                     response.StatusCode = (int)HttpStatusCode.OK;
                     return response;
@@ -79,11 +77,11 @@ namespace Application.Commads_Queries.Queries.Posts.GetPostsInGroupByUserAndGrou
                     CoverImgUrl = p.CoverImgUrl,
                     CreateAt = p.CreateAt,
                     UpdateAt = p.UpdateAt,
-                    Status = p.Status,
+                    Status = p.Status
                 }).ToList();
 
                 response.Success = true;
-                response.Message = "Lấy danh sách bài viết trong nhóm thành công.";
+                response.Message = "Lấy danh sách bài viết trong nhóm từ người dùng thành công.";
                 response.StatusCode = (int)HttpStatusCode.OK;
             }
             catch (Exception ex)
