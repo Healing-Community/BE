@@ -12,5 +12,6 @@
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
         public int ReactionCount { get; set; }
+        public string RoleInGroup { get; set; } = string.Empty;
     }
 }

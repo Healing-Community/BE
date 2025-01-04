@@ -80,5 +80,27 @@ namespace PRH_GroupService_API
                 IsMember = hasAccess
             };
         }
+
+        public override async Task<GetUserRoleInGroupResponse> GetUserRoleInGroup(GetUserRoleInGroupRequest request, ServerCallContext context)
+        {
+            var userGroup = await _userGroupRepository.GetByGroupAndUserIdAsync(request.GroupId, request.UserId);
+
+            if (userGroup == null)
+            {
+                return new GetUserRoleInGroupResponse
+                {
+                    GroupId = request.GroupId,
+                    UserId = request.UserId,
+                    Role = "None" // Nếu không tồn tại trong nhóm
+                };
+            }
+
+            return new GetUserRoleInGroupResponse
+            {
+                GroupId = request.GroupId,
+                UserId = request.UserId,
+                Role = userGroup.RoleInGroup
+            };
+        }
     }
 }
