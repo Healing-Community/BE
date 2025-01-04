@@ -9,15 +9,15 @@ namespace Application.Commands.RejectCertificate
 {
     public class RejectCertificateCommandHandler(
         ICertificateRepository certificateRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<RejectCertificateCommand, BaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<RejectCertificateCommand, DetailBaseResponse<bool>>
     {
-        public async Task<BaseResponse<bool>> Handle(RejectCertificateCommand request, CancellationToken cancellationToken)
+        public async Task<DetailBaseResponse<bool>> Handle(RejectCertificateCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
+            var response = new DetailBaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<string>()
+                Errors = new List<ErrorDetail>()
             };
 
             try
@@ -25,8 +25,8 @@ namespace Application.Commands.RejectCertificate
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
-                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
                     response.Success = false;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -34,8 +34,8 @@ namespace Application.Commands.RejectCertificate
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
                     response.Success = false;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -43,12 +43,18 @@ namespace Application.Commands.RejectCertificate
                 var certificate = await certificateRepository.GetByIdAsync(request.CertificateId);
                 if (certificate == null)
                 {
-                    response.Errors.Add("Chứng chỉ không tồn tại.");
+                    response.Errors.Add(new ErrorDetail
+                    {
+                        Message = "Chứng chỉ không tồn tại.",
+                        Field = "CertificateId"
+                    });
                     response.Success = false;
-                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
+                // Cập nhật trạng thái chứng chỉ
                 certificate.Status = 3; // Rejected
                 certificate.VerifiedByAdminId = userId;
                 certificate.VerifiedAt = DateTime.UtcNow.AddHours(7);
@@ -63,7 +69,11 @@ namespace Application.Commands.RejectCertificate
             }
             catch (Exception ex)
             {
-                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Errors.Add(new ErrorDetail
+                {
+                    Message = ex.Message,
+                    Field = "Exception"
+                });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi từ chối chứng chỉ.";
                 response.StatusCode = StatusCodes.Status500InternalServerError;

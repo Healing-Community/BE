@@ -18,7 +18,7 @@ namespace Application.Commands.UpdateCertificate
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<ErrorDetail>()
             };
 
             try
@@ -26,17 +26,20 @@ namespace Application.Commands.UpdateCertificate
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
-                        Field = "HttpContext"
-                    });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return response;
+                }
 
                 var certificate = await certificateRepository.GetByIdAsync(request.CertificateId);
                 if (certificate == null)
@@ -47,7 +50,8 @@ namespace Application.Commands.UpdateCertificate
                         Field = "CertificateId"
                     });
                     response.Success = false;
-                    response.StatusCode = 404;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -62,7 +66,8 @@ namespace Application.Commands.UpdateCertificate
                             Field = "CertificateTypeId"
                         });
                         response.Success = false;
-                        response.StatusCode = 400;
+                        response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                        response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                         return response;
                     }
                     certificate.CertificateTypeId = request.CertificateTypeId;
@@ -76,7 +81,7 @@ namespace Application.Commands.UpdateCertificate
 
                 response.Success = true;
                 response.Data = true;
-                response.StatusCode = 200;
+                response.StatusCode = StatusCodes.Status200OK;
                 response.Message = "Cập nhật chứng chỉ thành công.";
             }
             catch (Exception ex)
@@ -88,7 +93,7 @@ namespace Application.Commands.UpdateCertificate
                 });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật chứng chỉ.";
-                response.StatusCode = 500;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             return response;

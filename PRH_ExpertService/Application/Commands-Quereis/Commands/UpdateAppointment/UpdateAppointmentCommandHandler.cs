@@ -17,7 +17,7 @@ namespace Application.Commands.UpdateAppointment
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<ErrorDetail>()
             };
 
             try
@@ -25,17 +25,20 @@ namespace Application.Commands.UpdateAppointment
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
-                        Field = "HttpContext"
-                    });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    response.Success = false;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return response;
+                }
 
                 var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
                 if (appointment == null)
@@ -46,11 +49,12 @@ namespace Application.Commands.UpdateAppointment
                         Field = "AppointmentId"
                     });
                     response.Success = false;
-                    response.StatusCode = 404;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
-                if (appointment.Status == 1 || appointment.Status == 2)
+                if (appointment.Status == 1 || appointment.Status == 2) // 1 = Completed, 2 = Cancelled
                 {
                     response.Errors.Add(new ErrorDetail
                     {
@@ -58,7 +62,8 @@ namespace Application.Commands.UpdateAppointment
                         Field = "Status"
                     });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -70,7 +75,8 @@ namespace Application.Commands.UpdateAppointment
                         Field = "EndTime"
                     });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -83,7 +89,8 @@ namespace Application.Commands.UpdateAppointment
                         Field = "AppointmentDate"
                     });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -98,10 +105,12 @@ namespace Application.Commands.UpdateAppointment
                         Field = "TimeRange"
                     });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
+                // Cập nhật lịch hẹn
                 appointment.AppointmentDate = request.NewAppointmentDate;
                 appointment.StartTime = request.NewStartTime;
                 appointment.EndTime = request.NewEndTime;
@@ -111,7 +120,7 @@ namespace Application.Commands.UpdateAppointment
 
                 response.Success = true;
                 response.Data = true;
-                response.StatusCode = 200;
+                response.StatusCode = StatusCodes.Status200OK;
                 response.Message = "Cập nhật lịch hẹn thành công.";
             }
             catch (Exception ex)
@@ -123,7 +132,7 @@ namespace Application.Commands.UpdateAppointment
                 });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra khi cập nhật lịch hẹn.";
-                response.StatusCode = 500;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             return response;

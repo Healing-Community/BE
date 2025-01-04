@@ -87,7 +87,7 @@ namespace Application.Commands.UploadProfileImage
             {
                 response.Success = false;
                 response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
-                response.StatusCode = StatusCodes.Status400BadRequest;
+                response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                 return response;
             }
 
