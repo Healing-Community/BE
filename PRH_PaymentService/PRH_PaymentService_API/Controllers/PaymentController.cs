@@ -1,6 +1,8 @@
 ﻿using Application.Commands.CancelPaymentLink;
 using Application.Commands.CreatePayment;
 using Application.Commands_Queries.Queries.GetPaymentDetails;
+using Application.Commands_Queries.Queries.GetPaymentInfo;
+using Application.Commands_Queries.Queries.GetPaymentManager;
 using Application.Queries.GetPaymentStatus;
 using Application.Queries.GetTransactionHistory;
 using Domain.Contracts;
@@ -60,5 +62,19 @@ namespace PRH_PaymentService_API.Controllers
             var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
             return response.ToActionResult();
         }
+        [Authorize(Roles = "Moderator")]
+        [HttpGet("manager-payment")]
+        public async Task<IActionResult> GetPaymentManager()
+        {
+            var response = await sender.Send(new GetPaymentManagerQuery());
+            return response.ToActionResult();
+        }
+        // [Authorize]
+        // [HttpGet("test")]
+        // public async Task<IActionResult> Test(string appointmentId)
+        // {
+        //     var response = await sender.Send(new GetPaymentInfoQuery(appointmentId));
+        //     return response.ToActionResult();
+        // }
     }
 }

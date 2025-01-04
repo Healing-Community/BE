@@ -7,29 +7,34 @@ namespace Application.Interfaces.Services;
 public class GrpcHelper(IConfiguration configuration) : IGrpcHelper
 {
     public async Task<TResponse?> ExecuteGrpcCallAsync<TClient, TRequest, TResponse>(
+        string serviceUrlKey,
         Func<TClient, Task<TResponse>> grpcCall,
         Func<HttpClientHandler>? configureHttpHandler = null)
         where TClient : class
         where TRequest : class
         where TResponse : class
     {
-        var serviceUrl = configuration["ExpertServiceUrl"];
+        // Retrieve the URL from configuration
+        var serviceUrl = configuration[serviceUrlKey];
         if (string.IsNullOrEmpty(serviceUrl))
         {
-            throw new ArgumentException("Service URL cannot be null or empty.", nameof(serviceUrl));
+            throw new ArgumentException($"Service URL for key '{serviceUrlKey}' cannot be null or empty.", nameof(serviceUrlKey));
         }
 
+        // Create or configure the HTTP handler
         var httpHandler = configureHttpHandler?.Invoke() ?? new HttpClientHandler
         {
             // Default: allow insecure HTTP/2 for local development
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
 
+        // Create the gRPC channel
         using var channel = GrpcChannel.ForAddress(serviceUrl, new GrpcChannelOptions
         {
             HttpHandler = httpHandler
         });
 
+        // Create the gRPC client
         var client = Activator.CreateInstance(typeof(TClient), channel) as TClient;
 
         if (client == null)
@@ -39,6 +44,7 @@ public class GrpcHelper(IConfiguration configuration) : IGrpcHelper
 
         try
         {
+            // Execute the gRPC call
             return await grpcCall(client);
         }
         catch (RpcException ex)

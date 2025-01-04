@@ -26,7 +26,6 @@ public class GetUserReactionByPostIdQueryHandler(IReactionTypeRepository reactio
                 ReactionTypeId = reaction?.ReactionTypeId ?? "1",
                 Name = reactionTypeIndb.Name,
                 Icon = reactionTypeIndb.Icon
-
             };
             if (reaction == null)
             {

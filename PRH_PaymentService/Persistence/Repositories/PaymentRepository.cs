@@ -48,12 +48,9 @@ namespace Persistence.Repositories
 
         public async Task Update(string id, Payment entity)
         {
-            var existingPayment = await context.Payments.FindAsync(id);
-            if (existingPayment != null)
-            {
-                context.Entry(existingPayment).CurrentValues.SetValues(entity);
-                await context.SaveChangesAsync();
-            }
+            var existingPayment = await context.Payments.FindAsync(id) ?? throw new ArgumentException("Payment not found");
+            context.Entry(existingPayment).CurrentValues.SetValues(entity);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateStatus(long orderCode, PaymentStatus status)

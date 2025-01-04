@@ -28,6 +28,8 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
             StartTime = appointmentResult.StartTime.ToString(),
             ExpertEmail = appointmentResult.ExpertEmail,
             ExpertName = expertProfileResult.Fullname,
+            ExpertId = appointmentResult.ExpertProfileId,
+            UserId = appointmentResult.UserId,
         });
     }
     public override Task<ExpertPaymentService.UpdateResponse> UpdateAppointment(ExpertPaymentService.GetAppointmentsRequest request, ServerCallContext context)

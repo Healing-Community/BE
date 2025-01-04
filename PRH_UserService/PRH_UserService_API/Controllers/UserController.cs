@@ -1,15 +1,14 @@
-using Application.Commands_Queries.Commands.Users.AddUser;
 using Application.Commands_Queries.Commands.Users.DeleteUser;
 using Application.Commands_Queries.Commands.Users.LoginUser;
 using Application.Commands_Queries.Commands.Users.Logout;
 using Application.Commands_Queries.Commands.Users.RegisterUser;
 using Application.Commands_Queries.Commands.Users.ResetPassword;
-using Application.Commands_Queries.Commands.Users.UpdateUser;
 using Application.Commands_Queries.Commands.Users.UpdateUserProfile;
 using Application.Commands_Queries.Commands.Users.UpdateUserProfile.DeleteUserSocialLink;
 using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateProfilePicture;
 using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateSocialMediaLink;
 using Application.Commands_Queries.Commands.Users.VerifyUser;
+using Application.Commands_Queries.Queries.Users.GetUserManager;
 using Application.Commands_Queries.Queries.Users.GetUsers;
 using Application.Commands_Queries.Queries.Users.GetUsersById;
 
@@ -19,11 +18,25 @@ namespace PRH_UserService_API.Controllers;
 [ApiController]
 public class UserController(ISender sender, IHttpContextAccessor accessor) : ControllerBase
 {
-    //[Authorize(Roles = "User")]
+    /// <summary>
+    /// Lấy tất cả người dùng
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
         var response = await sender.Send(new GetUsersQuery());
+        return response.ToActionResult();
+    }
+    /// <summary>
+    /// Nếu role là Admin thì lấy moderator, nếu là Moderator thì lấy user và expert
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(Roles = "Admin, Moderator")]
+    [HttpGet("get-user-manager")]
+    public async Task<IActionResult> GetUserManager()
+    {
+        var response = await sender.Send(new GetUserManagerQuery());
         return response.ToActionResult();
     }
     [Obsolete("This method is deprecated, please use get-user-profile method instead.")]
@@ -46,13 +59,6 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     public async Task<IActionResult> GetUserProfile(string userId)
     {
         var response = await sender.Send(new GetUserProfileQuery(userId));
-        return response.ToActionResult();
-    }
-    [Obsolete]
-    [HttpPost("create")]
-    private async Task<IActionResult> AddUser(UserDto user)
-    {
-        var response = await sender.Send(new CreateUserCommand(user));
         return response.ToActionResult();
     }
     [Authorize(Roles = "User, Expert, Admin, Moderator")]
@@ -99,13 +105,11 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         var response = await sender.Send(new UpdateProfilePictureCommand(formFile));
         return response.ToActionResult();
     }
-    [Obsolete]
-    [HttpPut("update/{id}")]
-    private async Task<IActionResult> UpdateUser(string id, UserDto user)
-    {
-        var response = await sender.Send(new UpdateUserCommand(id, user));
-        return response.ToActionResult();
-    }
+    /// <summary>
+    ///  Xóa người dùng
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [Authorize]
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUser(string id)

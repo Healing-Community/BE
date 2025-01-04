@@ -23,4 +23,5 @@ RUN dotnet publish "PRH_ChatService_API.csproj" -c $BUILD_CONFIGURATION -o /app/
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENTRYPOINT ["dotnet", "PRH_ChatService_API.dll"]

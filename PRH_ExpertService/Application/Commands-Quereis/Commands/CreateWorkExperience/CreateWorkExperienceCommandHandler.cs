@@ -10,7 +10,8 @@ namespace Application.Commands.CreateWorkExperience
 {
     public class CreateWorkExperienceCommandHandler(
         IWorkExperienceRepository workExperienceRepository,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IExpertProfileRepository expertProfileRepository)
         : IRequestHandler<CreateWorkExperienceCommand, DetailBaseResponse<string>>
     {
         public async Task<DetailBaseResponse<string>> Handle(CreateWorkExperienceCommand request, CancellationToken cancellationToken)
@@ -47,6 +48,24 @@ namespace Application.Commands.CreateWorkExperience
                     });
                     response.Success = false;
                     response.StatusCode = 401;
+                    return response;
+                }
+
+                // Kiểm tra trạng thái hồ sơ chuyên gia
+                var expertProfile = await expertProfileRepository.GetByIdAsync(userId);
+                if (expertProfile == null)
+                {
+                    response.Success = false;
+                    response.Message = "Hồ sơ chuyên gia không tồn tại.";
+                    response.StatusCode = 404;
+                    return response;
+                }
+
+                if (expertProfile.Status != 1) // Approved
+                {
+                    response.Success = false;
+                    response.Message = "Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.";
+                    response.StatusCode = 403;
                     return response;
                 }
 

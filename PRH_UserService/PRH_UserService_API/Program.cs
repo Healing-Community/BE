@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Persistence;
 using PRH_UserService_API;
 using PRH_UserService_API.Middleware;
+using PRH_UserService_API.Service;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,18 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
 
+// Thêm dịch vụ gRPC
+builder.Services.AddGrpc();
+
+
+# region appsettings
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+# endregion
+
 var app = builder.Build();
+
+Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
 
 #region Middleware
 
@@ -97,6 +109,12 @@ app.MapHealthChecks("/health/readiness", new HealthCheckOptions
 app.UseHttpMetrics();
 
 app.UseMetricServer();
+
+#endregion
+
+#region Grpc-Service
+
+app.MapGrpcService<UserService>();
 
 #endregion
 

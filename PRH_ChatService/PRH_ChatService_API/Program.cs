@@ -17,7 +17,14 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
 
+# region appsettings
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+# endregion
+
 var app = builder.Build();
+
+Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
 
 #region Middleware
 

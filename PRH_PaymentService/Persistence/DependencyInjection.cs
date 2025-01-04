@@ -10,5 +10,6 @@ public static class DependencyInjection
     public static void AddPersistenceDependencies(this IServiceCollection services)
     {
         services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IPlatformFeeRepository, PlatformFeeRepository>();
     }
 }

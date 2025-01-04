@@ -4,8 +4,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
-
+EXPOSE 8080 5005
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -30,4 +29,5 @@ RUN dotnet publish "./PRH_UserService_API.csproj" -c $BUILD_CONFIGURATION -o /ap
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENTRYPOINT ["dotnet", "PRH_UserService_API.dll"]

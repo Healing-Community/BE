@@ -1,12 +1,15 @@
 ﻿using Application.Commands.BookAppointment;
 using Application.Commands.CancelAppointment;
 using Application.Commands.DeleteAppointment;
+using Application.Commands.RateExpert;
 using Application.Commands.UpdateAppointment;
 using Application.Commons.Tools;
 using Application.Queries.GetAllAppointments;
+using Application.Queries.GetAppointmentRatingStatus;
 using Application.Queries.GetAppointments;
 using Application.Queries.GetAppointmentsByExpert;
 using Application.Queries.GetAppointmentsByUser;
+using MassTransit.Mediator;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -95,6 +98,30 @@ namespace PRH_ExpertService_API.Controllers
         public async Task<IActionResult> CancelAppointment([FromBody] CancelAppointmentCommand command)
         {
             var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPost("rate-expert")]
+        public async Task<IActionResult> RateExpert([FromBody] RateExpertCommand command)
+        {
+            var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin,User,Expert")]
+        [HttpGet("get-expert-ratings/{expertProfileId}")]
+        public async Task<IActionResult> GetExpertRatings(string expertProfileId)
+        {
+            var response = await sender.Send(new GetExpertRatingsQuery(expertProfileId));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpGet("rating-status/{appointmentId}")]
+        public async Task<IActionResult> GetAppointmentRatingStatus(string appointmentId)
+        {
+            var response = await sender.Send(new GetAppointmentRatingStatusQuery { AppointmentId = appointmentId });
             return response.ToActionResult();
         }
     }

@@ -17,10 +17,11 @@ public partial class UserServiceDbContext : DbContext
     public virtual DbSet<Token> Tokens { get; set; } = null!;
     public virtual DbSet<Follower> Followers { get; set; } = null!;
     public virtual DbSet<SocialLink> SocialLinks { get; set; } = null!;
+    public virtual DbSet<PaymentInfo> PaymentInfos { get; set; } = null!;
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-       => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
-
+    // this method when production because it will load from the configuration file
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //    => optionsBuilder.UseNpgsql("Host=aws-0-ap-southeast-1.pooler.supabase.com; Database=postgres; Username=postgres.cggerynfjmvyretpnrzy; Password=ProjectHealing@1234");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,10 +82,18 @@ public partial class UserServiceDbContext : DbContext
             .HasForeignKey(f => f.UserId)
             .HasForeignKey(f => f.FollowerId)
             .OnDelete(DeleteBehavior.Cascade);
-        // Add unique constraint to prevent duplicate follows
-        modelBuilder.Entity<Follower>()
+        modelBuilder.Entity<Follower>() // Add unique constraint to prevent duplicate follows
             .HasIndex(f => new { f.FollowerId, f.UserId })
             .IsUnique();
+        // PaymentInfo configuration
+        modelBuilder.Entity<PaymentInfo>()
+            .HasKey(pi => pi.PaymentInfoId);
+        modelBuilder.Entity<PaymentInfo>()
+            .HasOne(pi => pi.User)
+            .WithOne(u => u.PaymentInfo)
+            .HasForeignKey<PaymentInfo>(pi => pi.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        // Other configurations
         OnModelCreatingPartial(modelBuilder);
     }
 
