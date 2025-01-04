@@ -10,7 +10,7 @@
         public DateOnly? IssueDate { get; set; }
         public DateOnly? ExpirationDate { get; set; }
         public int Status { get; set; }
-        public DateTime VerifiedAt { get; set; }
+        public DateTime? VerifiedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
