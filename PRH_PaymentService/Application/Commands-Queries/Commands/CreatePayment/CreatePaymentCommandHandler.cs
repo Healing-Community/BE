@@ -104,8 +104,7 @@ namespace Application.Commands.CreatePayment
             //return $"{scheme}://{host}/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
             var callbackUrl = configuration.GetSection("CallbackUrls");
             var host = callbackUrl["Host"];
-            var port = callbackUrl["Port"];
-            return $"{host}:{port}/payment/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
+            return $"{host}/payment/api/{controllerName}/{actionName}/{orderCode}/{isCancel}/{appointmentId}?redirectUrl={redirectUrl}";
         }
     }
 }
