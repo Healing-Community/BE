@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Http;
 namespace Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup
 {
     public class GetPostsByReactionInGroupQueryHandler(
-        IPostRepository postRepository,
-        IReactionRepository reactionRepository,
-        IGroupGrpcClient groupGrpcClient,
-        IHttpContextAccessor httpContextAccessor
-    ) : IRequestHandler<GetPostsByReactionInGroupQuery, BaseResponse<IEnumerable<PostReactionGroupDto>>>
+    IPostRepository postRepository,
+    IReactionRepository reactionRepository,
+    IGroupGrpcClient groupGrpcClient,
+    IHttpContextAccessor httpContextAccessor
+) : IRequestHandler<GetPostsByReactionInGroupQuery, BaseResponse<IEnumerable<PostReactionGroupDto>>>
     {
         public async Task<BaseResponse<IEnumerable<PostReactionGroupDto>>> Handle(GetPostsByReactionInGroupQuery request, CancellationToken cancellationToken)
         {
@@ -31,7 +31,7 @@ namespace Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup
                     return BaseResponse<IEnumerable<PostReactionGroupDto>>.NotFound("Group không tồn tại.");
                 }
 
-                // Validate quyền truy cập
+                // Validate quyền truy cập vào Group
                 if (groupDetails.Visibility == 1) // Private group
                 {
                     var hasAccess = await groupGrpcClient.CheckUserInGroupOrPublicAsync(request.GroupId, userId);
@@ -41,44 +41,67 @@ namespace Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup
                     }
                 }
 
-                // Fetch all posts in the group
+                // Fetch tất cả bài viết trong group
                 var postsInGroup = await postRepository.GetPostsByGroupIdAsync(request.GroupId);
 
-                // Fetch all reactions for posts in the group
-                var reactions = await reactionRepository.GetsByPropertyAsync(r => postsInGroup.Select(p => p.PostId).Contains(r.PostId));
+                if (!postsInGroup.Any())
+                {
+                    return BaseResponse<IEnumerable<PostReactionGroupDto>>.SuccessReturn(new List<PostReactionGroupDto>(), "Không có bài viết nào trong group.");
+                }
 
-                // Group reactions by PostId
-                var reactionsGrouped = reactions.GroupBy(r => r.PostId)
-                    .Select(g => new
-                    {
-                        PostId = g.Key,
-                        ReactionCount = g.Count()
-                    }).ToList();
+                // Phân loại bài viết theo vai trò của người tạo bài viết
+                var ownerAndModeratorPosts = new List<PostReactionGroupDto>();
+                var userPosts = new List<PostReactionGroupDto>();
 
-                // Combine posts and reaction counts
-                var postDtos = postsInGroup
-                    .Select(post =>
+                foreach (var post in postsInGroup)
+                {
+                    // Lấy vai trò của người tạo bài viết trong group
+                    var roleOfPostOwner = await groupGrpcClient.GetUserRoleInGroupAsync(request.GroupId, post.UserId ?? string.Empty);
+
+                    // Fetch số lượng reaction
+                    var reactions = await reactionRepository.GetsByPropertyAsync(r => r.PostId == post.PostId);
+
+                    var postDto = new PostReactionGroupDto
                     {
-                        var reactionData = reactionsGrouped.FirstOrDefault(r => r.PostId == post.PostId);
-                        return new PostReactionGroupDto
-                        {
-                            PostId = post.PostId,
-                            UserId = post.UserId,
-                            CategoryId = post.CategoryId,
-                            Title = post.Title,
-                            CoverImgUrl = post.CoverImgUrl,
-                            Description = post.Description,
-                            Status = post.Status,
-                            CreateAt = post.CreateAt,
-                            UpdateAt = post.UpdateAt,
-                            ReactionCount = reactionData?.ReactionCount ?? 0
-                        };
-                    })
-                    .OrderByDescending(p => p.ReactionCount >= 10) 
-                    .ThenByDescending(p => p.ReactionCount) 
-                    .ThenBy(p => p.CreateAt) 
+                        PostId = post.PostId,
+                        UserId = post.UserId,
+                        CategoryId = post.CategoryId,
+                        Title = post.Title,
+                        CoverImgUrl = post.CoverImgUrl,
+                        Description = post.Description,
+                        Status = post.Status,
+                        CreateAt = post.CreateAt,
+                        UpdateAt = post.UpdateAt,
+                        ReactionCount = reactions.Count(),
+                        RoleInGroup = roleOfPostOwner
+                    };
+
+                    // Phân loại bài viết theo vai trò
+                    if (roleOfPostOwner == "Owner" || roleOfPostOwner == "Moderator")
+                    {
+                        ownerAndModeratorPosts.Add(postDto);
+                    }
+                    else if (roleOfPostOwner == "User" && postDto.ReactionCount > 10)
+                    {
+                        userPosts.Add(postDto);
+                    }
+                }
+
+                // Sắp xếp bài viết
+                var sortedOwnerAndModeratorPosts = ownerAndModeratorPosts
+                    .OrderByDescending(p => p.ReactionCount) // Sắp xếp theo reaction từ lớn đến bé
+                    .ThenByDescending(p => p.CreateAt)      // Sau đó theo thời gian đăng bài mới nhất
                     .ToList();
-                return BaseResponse<IEnumerable<PostReactionGroupDto>>.SuccessReturn(postDtos, "Lấy danh sách bài viết thành công.");
+
+                var sortedUserPosts = userPosts
+                    .OrderByDescending(p => p.ReactionCount) // Chỉ lấy bài có reaction > 10
+                    .ThenByDescending(p => p.CreateAt)
+                    .ToList();
+
+                // Gộp danh sách bài viết
+                var result = sortedOwnerAndModeratorPosts.Concat(sortedUserPosts).ToList();
+
+                return BaseResponse<IEnumerable<PostReactionGroupDto>>.SuccessReturn(result, "Lấy danh sách bài viết thành công.");
             }
             catch (Exception ex)
             {
@@ -86,4 +109,5 @@ namespace Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup
             }
         }
     }
+
 }
