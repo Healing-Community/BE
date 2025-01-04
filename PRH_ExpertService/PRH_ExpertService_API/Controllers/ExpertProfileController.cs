@@ -17,7 +17,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class ExpertProfileController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Admin,Expert")]
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllExpertProfiles()
         {

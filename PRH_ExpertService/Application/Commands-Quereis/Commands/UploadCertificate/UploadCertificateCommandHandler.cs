@@ -128,7 +128,7 @@ public class UploadCertificateCommandHandler(
             await certificateRepository.Create(certificate);
 
             response.Success = true;
-            response.Message = "Tệp đã được tải lên thành công.";
+            response.Message = "Tệp đã được tải lên thành công. Vui lòng hoàn tất thông tin cá nhân và chờ phê duyệt.";
             response.Data = new UploadCertificateResponse
             {
                 FileUrl = fileUrl,

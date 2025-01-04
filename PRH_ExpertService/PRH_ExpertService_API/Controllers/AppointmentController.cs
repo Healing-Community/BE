@@ -53,7 +53,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin,User,Expert")]
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAppointments()
         {
