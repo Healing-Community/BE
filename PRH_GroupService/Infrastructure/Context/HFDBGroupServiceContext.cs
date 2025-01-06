@@ -70,6 +70,7 @@ namespace Infrastructure.Context
                 entity.Property(gc => gc.IsApproved).HasDefaultValue(null);
                 entity.Property(gc => gc.ApprovedAt).IsRequired(false);
                 entity.Property(gc => gc.ApprovedById).IsRequired(false);
+                entity.Property(gc => gc.CoverImg).HasMaxLength(255).IsRequired(false);
             });
 
 
