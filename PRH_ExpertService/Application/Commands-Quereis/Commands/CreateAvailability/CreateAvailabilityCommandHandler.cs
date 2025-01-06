@@ -53,6 +53,14 @@ namespace Application.Commands.CreateAvailability
                     return response;
                 }
 
+                if (expertProfile.Status == 2) // Rejected
+                {
+                    response.Success = false;
+                    response.Message = "Hồ sơ của bạn đã bị từ chối. Bạn không thể tạo lịch trống.";
+                    response.StatusCode = StatusCodes.Status403Forbidden;
+                    return response;
+                }
+
                 if (expertProfile.Status != 1) // Approved
                 {
                     response.Success = false;

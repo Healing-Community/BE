@@ -10,6 +10,7 @@ namespace Application.Commands.UpdateExpertProfile
 {
     public class UpdateExpertProfileCommandHandler(
         IExpertProfileRepository expertProfileRepository,
+        ICertificateRepository certificateRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateExpertProfileCommand, DetailBaseResponse<bool>>
     {
         public async Task<DetailBaseResponse<bool>> Handle(UpdateExpertProfileCommand request, CancellationToken cancellationToken)
