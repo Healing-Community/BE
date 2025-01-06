@@ -81,21 +81,6 @@ namespace Application.Commands.UpdateExpertProfile
                 expertProfile.Fullname = request.Fullname;
                 expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
-                // Kiểm tra trạng thái của chứng chỉ
-                var certificates = await certificateRepository.GetByExpertProfileIdAsync(userId);
-                if (certificates.Any(c => c.Status == 1)) // Verified
-                {
-                    expertProfile.Status = 1; // Approved
-                }
-                else if (certificates.Any(c => c.Status == 3)) // Rejected
-                {
-                    expertProfile.Status = 2; // Rejected
-                }
-                else
-                {
-                    expertProfile.Status = 0; // PendingApproval
-                }
-
                 await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
 
                 response.Success = true;

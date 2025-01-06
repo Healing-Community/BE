@@ -9,6 +9,7 @@ namespace Application.Commands.ApproveCertificate
 {
     public class ApproveCertificateCommandHandler(
         ICertificateRepository certificateRepository,
+        IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<ApproveCertificateCommand, DetailBaseResponse<bool>>
     {
         public async Task<DetailBaseResponse<bool>> Handle(ApproveCertificateCommand request, CancellationToken cancellationToken)
@@ -62,6 +63,15 @@ namespace Application.Commands.ApproveCertificate
                 certificate.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await certificateRepository.Update(certificate.CertificateId, certificate);
+
+                // Cập nhật trạng thái hồ sơ chuyên gia
+                var expertProfile = await expertProfileRepository.GetByIdAsync(certificate.ExpertProfileId);
+                if (expertProfile != null)
+                {
+                    expertProfile.Status = 1; // Approved
+                    expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                    await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
+                }
 
                 response.Success = true;
                 response.Data = true;

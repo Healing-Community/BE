@@ -9,6 +9,7 @@ namespace Application.Commands.RejectCertificate
 {
     public class RejectCertificateCommandHandler(
         ICertificateRepository certificateRepository,
+        IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<RejectCertificateCommand, DetailBaseResponse<bool>>
     {
         public async Task<DetailBaseResponse<bool>> Handle(RejectCertificateCommand request, CancellationToken cancellationToken)
@@ -61,6 +62,20 @@ namespace Application.Commands.RejectCertificate
                 certificate.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
                 await certificateRepository.Update(certificate.CertificateId, certificate);
+
+                // Cập nhật trạng thái hồ sơ chuyên gia
+                var expertProfile = await expertProfileRepository.GetByIdAsync(certificate.ExpertProfileId);
+                if (expertProfile != null)
+                {
+                    // Kiểm tra nếu có bất kỳ chứng chỉ nào được duyệt
+                    var certificates = await certificateRepository.GetByExpertProfileIdAsync(expertProfile.ExpertProfileId);
+                    if (!certificates.Any(c => c.Status == 1)) // No Verified certificates
+                    {
+                        expertProfile.Status = 2; // Rejected
+                    }
+                    expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                    await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
+                }
 
                 response.Success = true;
                 response.Data = true;
