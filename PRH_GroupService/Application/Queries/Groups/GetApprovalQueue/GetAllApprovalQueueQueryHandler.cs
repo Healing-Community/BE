@@ -73,14 +73,6 @@ namespace Application.Queries.Groups.GetApprovalQueue
                 // Lấy danh sách hàng chờ phê duyệt
                 var approvalQueue = await _approvalQueueRepository.GetAllByGroupIdAsync(request.GroupId);
 
-                if (approvalQueue == null || !approvalQueue.Any())
-                {
-                    response.Success = false;
-                    response.Message = "Không có thành viên nào trong hàng chờ phê duyệt.";
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                    return response;
-                }
-
                 response.Data = approvalQueue.Select(x => new ApprovalQueueDto
                 {
                     QueueId = x.QueueId,
