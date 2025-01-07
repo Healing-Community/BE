@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "ExpertPaymentService";
 
@@ -10,11 +11,15 @@ service ExpertService {
     rpc GetAppointmentsByExpert(GetAppointmentsByExpertRequest) returns (GetAppointmentsListResponse);
     rpc GetAppointmentsByUser(GetAppointmentsByUserRequest) returns (GetAppointmentsListResponse);
     
+    rpc GetAllAppointments(GetAppointmentsRequestRepeated) returns (GetAppointmentsListResponse);
+
     rpc UpdateAppointment(GetAppointmentsRequest) returns (UpdateResponse);
     rpc UpdateExpertAvailability(GetAppointmentsRequest) returns (UpdateResponse);
 }   
 
-
+message GetAppointmentsRequestRepeated {
+    repeated string appointmentIds = 1;
+}
 
 message GetAppointmentsRequest {
     string appointmentId = 1;

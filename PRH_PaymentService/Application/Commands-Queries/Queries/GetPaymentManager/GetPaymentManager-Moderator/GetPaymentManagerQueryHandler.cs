@@ -19,31 +19,56 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
             {
                 return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin thanh toán.");
             }
+
+            var userIds = payments.Select(p => p.UserId).Distinct().ToList();
+
+            var userDataReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRepeatedRequest, GetPaymentInfoListResponse>(
+                "UserServiceUrl",
+                async client => await client.GetUserPaymentInfoRepeatedAsync(new GetUserPaymentInfoRepeatedRequest { UserIds = { userIds } })
+            );
+            var userInfoResult = userDataReply?.PaymentInfos.ToDictionary(u => u.UserId);
+
+            if (userInfoResult == null || !userInfoResult.Any())
+            {
+                return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin người dùng.");
+            }
+
+            var appointmentIds = payments.Select(a => a.AppointmentId).Distinct().ToList();
+
+            var appointmentDataReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequestRepeated, GetAppointmentsListResponse>(
+                "ExpertServiceUrl",
+                async client => await client.GetAllAppointmentsAsync(new GetAppointmentsRequestRepeated { AppointmentIds = { appointmentIds } })
+            );
+            var appointments = appointmentDataReply?.Appointments.ToList();
+
+            if (appointments == null || !appointments.Any())
+            {
+                return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin lịch hẹn. Payment-Service");
+            }
+
             var paymentManagerDtos = new List<PaymentManagerDto>(); 
             // Get Appointment from AppointmentService using grpc
             foreach (var payment in payments)
             {
-                var appointmentDataReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, GetAppointmentsResponse>(
-                    "ExpertServiceUrl",
-                    async client => await client.GetAppointmentsAsync(new GetAppointmentsRequest { AppointmentId = payment.AppointmentId })
-                );
+                // Get appointment data
 
-                var userDataReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
-                    "UserServiceUrl",
-                    async client => await client.GetUserPaymentInfoAsync(new GetUserPaymentInfoRequest { UserId = payment.UserId })
-                );
-
-                if (appointmentDataReply == null || userDataReply == null)
+                var appointmentData = appointmentDataReply.Appointments.FirstOrDefault(a => a.AppointmentId == payment.AppointmentId);
+                if (appointmentData == null)
                 {
-                    return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Lịch hẹn không tồn tại.");
+                    return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin lịch hẹn. Payment-Service");
+                }
+                var userData = userInfoResult[payment.UserId];
+                if (userData == null)
+                {
+                    return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin người dùng.");
                 }
                 // Mapping
                 var paymentManagerDto = new PaymentManagerDto
                 {
                     // User
                     UserId = payment.UserId,
-                    UserEmail = userDataReply.UserEmail,
-                    UserName = userDataReply.UserName,
+                    UserEmail = userData.UserEmail,
+                    UserName = userData.UserName,
 
                     // Payment
                     PaymentId = payment.PaymentId,
@@ -56,11 +81,11 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
                     PaymentDetail = payment.PaymentDetail,
 
                     // Appointment
-                    ExpertName = appointmentDataReply.ExpertName,
-                    ExpertEmail = appointmentDataReply.ExpertEmail,
-                    AppointmentDate = appointmentDataReply.AppointmentDate,
-                    StartTime = appointmentDataReply.StartTime,
-                    EndTime = appointmentDataReply.EndTime,
+                    ExpertName = appointmentData.ExpertName,
+                    ExpertEmail = appointmentData.ExpertEmail,
+                    AppointmentDate = appointmentData.AppointmentDate,
+                    StartTime = appointmentData.StartTime,
+                    EndTime = appointmentData.EndTime,
 
                     // Modified
                     PaymentDate = payment.PaymentDate,

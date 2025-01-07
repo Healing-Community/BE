@@ -1,15 +1,66 @@
 using Application.Commands.UpdateAppointment.UpdateAppointmentStatus;
 using Application.Commands.UpdateAvailability.UpdateAvailabilityStatus;
 using Application.Commands_Quereis.Queries.GetAppointmentById;
+using Application.Commands_Quereis.Queries.GetAppointments.GetAllAppointment;
 using Application.Commands_Quereis.Queries.GetAppointments.GetAppointmentsByUserId;
 using Application.Queries.GetAppointments;
 using Application.Queries.GetExpertAvailbilityByAppointmentId;
 using Application.Queries.GetExpertProfile;
+using Domain.Entities;
+using ExpertPaymentService;
 using Grpc.Core;
 using MediatR;
 
 public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.ExpertServiceBase
 {
+    public async override Task<ExpertPaymentService.GetAppointmentsListResponse> GetAllAppointments(GetAppointmentsRequestRepeated request, ServerCallContext context)
+    {
+        // Lấy tất cả lịch hẹn với status khác 0 (pending payment)
+        var appointments = new List<Appointment>();
+        foreach (var appointmentId in request.AppointmentIds)
+        {
+            var appointmentTask = await sender.Send(new GetAppointmentByIdQuery(appointmentId));
+
+            var appointmentResult = appointmentTask.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn"));
+
+            appointments.Add(appointmentResult);
+        }
+        // Map thông tin lịch hẹn và số tiền
+        var mappedAppointments = new List<ExpertPaymentService.GetAppointmentsResponse>();
+
+        foreach (var appointment in appointments)
+        {
+            // Lấy thông tin số tiền của lịch hẹn từ bảng ExpertAvailability
+            var expertAvailabilityTask = await sender.Send(new GetExpertAvailbilityByAppointmentIdQuery(appointment.AppointmentId));
+            
+            var expertAvailabilityResult = expertAvailabilityTask.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn"));
+
+            var expertProfileTask = await sender.Send(new GetExpertProfileQuery(appointment.ExpertProfileId));
+
+            // Tạo response cho mỗi lịch hẹn
+            var appointmentResponse = new ExpertPaymentService.GetAppointmentsResponse
+            {
+                AppointmentId = appointment.AppointmentId,
+                StartTime = appointment.StartTime.ToString(),
+                EndTime = appointment.EndTime.ToString(),
+                AppointmentDate = appointment.AppointmentDate.ToString(),
+                ExpertEmail = appointment.ExpertEmail,
+                Status = appointment.Status,
+                ExpertName = expertProfileTask?.Data?.Fullname,
+                UserId = appointment.UserId,
+                ExpertId = appointment.ExpertProfileId,
+                Amount = expertAvailabilityResult.Amount // Map số tiền vào response
+            };
+
+            mappedAppointments.Add(appointmentResponse);
+        }
+
+        // Trả về danh sách response
+        return new ExpertPaymentService.GetAppointmentsListResponse
+        {
+            Appointments = { mappedAppointments }
+        };
+    }
     public async override Task<ExpertPaymentService.GetAppointmentsListResponse> GetAppointmentsByUser(ExpertPaymentService.GetAppointmentsByUserRequest request, ServerCallContext context)
     {
         // Lấy các lịch hẹn của user với status khác 0 (pending payment)
