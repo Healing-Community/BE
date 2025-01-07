@@ -1,10 +1,10 @@
 ﻿using Application.Commons;
-using Application.Interfaces.Repository;
-using MediatR;
-using NUlid;
-using Domain.Entities;
 using Application.Commons.Tools;
+using Application.Interfaces.Repository;
+using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Http;
+using NUlid;
 
 namespace Application.Commands.CreateAvailability
 {
@@ -12,15 +12,15 @@ namespace Application.Commands.CreateAvailability
         IExpertAvailabilityRepository expertAvailabilityRepository,
         IHttpContextAccessor httpContextAccessor,
         IExpertProfileRepository expertProfileRepository)
-        : IRequestHandler<CreateAvailabilityCommand, DetailBaseResponse<string>>
+        : IRequestHandler<CreateAvailabilityCommand, BaseResponse<string>>
     {
-        public async Task<DetailBaseResponse<string>> Handle(CreateAvailabilityCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(CreateAvailabilityCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<string>
+            var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -29,7 +29,8 @@ namespace Application.Commands.CreateAvailability
                 if (httpContext == null)
                 {
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -38,7 +39,8 @@ namespace Application.Commands.CreateAvailability
                 if (string.IsNullOrEmpty(userId))
                 {
                     response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -48,7 +50,8 @@ namespace Application.Commands.CreateAvailability
                 if (expertProfile == null)
                 {
                     response.Success = false;
-                    response.Message = "Hồ sơ chuyên gia không tồn tại.";
+                    response.Errors.Add("Hồ sơ chuyên gia không tồn tại.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status404NotFound;
                     return response;
                 }
@@ -56,37 +59,31 @@ namespace Application.Commands.CreateAvailability
                 if (expertProfile.Status == 2) // Rejected
                 {
                     response.Success = false;
-                    response.Message = "Hồ sơ của bạn đã bị từ chối. Bạn không thể tạo lịch trống.";
-                    response.StatusCode = StatusCodes.Status403Forbidden;
+                    response.Errors.Add("Hồ sơ của bạn đã bị từ chối. Bạn không thể tạo lịch trống.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
                 if (expertProfile.Status != 1) // Approved
                 {
                     response.Success = false;
-                    response.Message = "Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.";
-                    response.StatusCode = StatusCodes.Status403Forbidden;
+                    response.Errors.Add("Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
                 // Kiểm tra thời gian kết thúc phải sau thời gian bắt đầu
                 if (request.EndTime <= request.StartTime)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Thời gian kết thúc phải sau thời gian bắt đầu.",
-                        Field = "EndTime"
-                    });
+                    response.Errors.Add("Thời gian kết thúc phải sau thời gian bắt đầu.");
                 }
 
                 // Kiểm tra thời gian đặt lịch phải trên hoặc bằng 30 phút
                 if ((request.EndTime - request.StartTime).TotalMinutes < 30)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Thời gian đặt lịch phải trên hoặc bằng 30 phút.",
-                        Field = "TimeRange"
-                    });
+                    response.Errors.Add("Thời gian đặt lịch phải trên hoặc bằng 30 phút.");
                 }
 
                 // Kiểm tra ngày và thời gian của lịch trống phải là trong tương lai
@@ -94,27 +91,19 @@ namespace Application.Commands.CreateAvailability
                     (request.AvailableDate == DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) &&
                      request.EndTime <= TimeOnly.FromDateTime(DateTime.UtcNow.AddHours(7))))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Ngày và thời gian của lịch trống phải là trong tương lai.",
-                        Field = "AvailableDate"
-                    });
+                    response.Errors.Add("Ngày và thời gian của lịch trống phải là trong tương lai.");
                 }
 
                 // Kiểm tra giá tiền tối thiểu
                 if (request.Amount < 10000)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Giá tiền tối thiểu là 10,000 VND.",
-                        Field = "Amount"
-                    });
+                    response.Errors.Add("Giá tiền tối thiểu là 10,000 VND.");
                 }
 
                 if (response.Errors.Any())
                 {
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -125,13 +114,9 @@ namespace Application.Commands.CreateAvailability
 
                 if (overlappingAvailability != null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Khoảng thời gian này đã trùng với lịch trống hiện tại. Vui lòng chọn thời gian khác.",
-                        Field = "TimeRange"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Khoảng thời gian này đã trùng với lịch trống hiện tại. Vui lòng chọn thời gian khác.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -159,13 +144,9 @@ namespace Application.Commands.CreateAvailability
             }
             catch (Exception ex)
             {
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.BookAppointment
 {
-    public record BookAppointmentCommand(string ExpertAvailabilityId) : IRequest<DetailBaseResponse<string>>;
+    public record BookAppointmentCommand(string ExpertAvailabilityId) : IRequest<BaseResponse<string>>;
 }
