@@ -1,4 +1,3 @@
-using Application.Commands.UpdateAppointmentStatus;
 using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;

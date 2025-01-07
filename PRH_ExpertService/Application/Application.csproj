@@ -1,23 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="Google.Cloud.Storage.V1" Version="4.10.0" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.0" />
-        <PackageReference Include="MediatR" Version="12.4.1" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.3.0" />
+		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
 		<PackageReference Include="NUlid" Version="1.7.2" />
+		<PackageReference Include="Quartz" Version="3.13.1" />
+		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.13.1" />
+		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.13.1" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
+		<PackageReference Include="Google.Protobuf" Version="3.29.2" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.68.1"/>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Domain\Domain.csproj" />
+		<ProjectReference Include="..\Domain\Domain.csproj" />
+		<Protobuf Include="Protos\payment.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 </Project>

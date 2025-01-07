@@ -37,7 +37,7 @@ namespace PRH_GroupService_API.Controllers
             return response.ToActionResult();
         }
         [Authorize]
-        [HttpGet("approval-queue/{groupId}")]
+        [HttpGet("get-approval-queue/{groupId}")]
         public async Task<IActionResult> GetApprovalQueue(string groupId)
         {
             var response = await sender.Send(new GetAllApprovalQueueQuery(groupId, HttpContext));
@@ -84,7 +84,7 @@ namespace PRH_GroupService_API.Controllers
         [HttpPost("create-request-group")]
         public async Task<IActionResult> CreateGroupRequest(CreateGroupRequestDto request)
         {
-            var response = await sender.Send(new CreateGroupRequestCommand(request.GroupName, request.Description));
+            var response = await sender.Send(new CreateGroupRequestCommand(request.GroupName, request.Description, request.CoverImg));
             return response.ToActionResult();
         }
         /// <summary>

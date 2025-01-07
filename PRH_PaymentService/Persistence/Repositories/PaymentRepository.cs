@@ -80,5 +80,12 @@ namespace Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Payment>> GetsByPropertyAsync(Expression<Func<Payment, bool>> predicate)
+        {
+            return await context.Payments
+                .AsNoTracking()
+                .Where(predicate)
+                .ToListAsync();
+        }
     }
 }

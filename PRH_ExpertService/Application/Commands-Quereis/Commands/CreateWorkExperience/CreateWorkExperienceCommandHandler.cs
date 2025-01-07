@@ -10,7 +10,8 @@ namespace Application.Commands.CreateWorkExperience
 {
     public class CreateWorkExperienceCommandHandler(
         IWorkExperienceRepository workExperienceRepository,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IExpertProfileRepository expertProfileRepository)
         : IRequestHandler<CreateWorkExperienceCommand, DetailBaseResponse<string>>
     {
         public async Task<DetailBaseResponse<string>> Handle(CreateWorkExperienceCommand request, CancellationToken cancellationToken)
@@ -19,7 +20,7 @@ namespace Application.Commands.CreateWorkExperience
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = []
+                Errors = new List<ErrorDetail>()
             };
 
             try
@@ -27,26 +28,36 @@ namespace Application.Commands.CreateWorkExperience
                 var httpContext = httpContextAccessor.HttpContext;
                 if (httpContext == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.",
-                        Field = "HttpContext"
-                    });
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
 
                 var userId = Authentication.GetUserIdFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userId))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Không xác định được người dùng hiện tại.",
-                        Field = "UserId"
-                    });
                     response.Success = false;
-                    response.StatusCode = 401;
+                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return response;
+                }
+
+                // Kiểm tra trạng thái hồ sơ chuyên gia
+                var expertProfile = await expertProfileRepository.GetByIdAsync(userId);
+                if (expertProfile == null)
+                {
+                    response.Success = false;
+                    response.Message = "Hồ sơ chuyên gia không tồn tại.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                    return response;
+                }
+
+                if (expertProfile.Status != 1) // Approved
+                {
+                    response.Success = false;
+                    response.Message = "Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.";
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
@@ -78,10 +89,10 @@ namespace Application.Commands.CreateWorkExperience
                     });
                 }
 
-                if (response.Errors.Count > 0)
+                if (response.Errors.Any())
                 {
                     response.Success = false;
-                    response.StatusCode = 400;
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     response.Message = "Dữ liệu đầu vào không hợp lệ.";
                     return response;
                 }
@@ -102,7 +113,7 @@ namespace Application.Commands.CreateWorkExperience
                         Field = "WorkExperience"
                     });
                     response.Success = false;
-                    response.StatusCode = 409;
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     response.Message = "Kinh nghiệm làm việc trùng lặp.";
                     return response;
                 }
@@ -118,7 +129,7 @@ namespace Application.Commands.CreateWorkExperience
                         Field = "TimeConflict"
                     });
                     response.Success = false;
-                    response.StatusCode = 409; // Conflict
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     response.Message = "Xung đột thời gian với kinh nghiệm làm việc khác.";
                     return response;
                 }
@@ -141,7 +152,7 @@ namespace Application.Commands.CreateWorkExperience
                 response.Success = true;
                 response.Data = workExperience.WorkExperienceId;
                 response.Message = "Tạo kinh nghiệm làm việc thành công.";
-                response.StatusCode = 200;
+                response.StatusCode = StatusCodes.Status200OK;
             }
             catch (Exception ex)
             {
@@ -152,7 +163,7 @@ namespace Application.Commands.CreateWorkExperience
                 });
                 response.Success = false;
                 response.Message = "Có lỗi xảy ra trong quá trình tạo kinh nghiệm làm việc.";
-                response.StatusCode = 500;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
             return response;

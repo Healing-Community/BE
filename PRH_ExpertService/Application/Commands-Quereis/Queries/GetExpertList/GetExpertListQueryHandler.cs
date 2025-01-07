@@ -26,6 +26,12 @@ namespace Application.Queries.GetExpertList
 
                 foreach (var expertProfile in expertProfiles)
                 {
+                    // Kiểm tra trạng thái hồ sơ chuyên gia
+                    if (expertProfile.Status != 1) // Approved
+                    {
+                        continue; // Bỏ qua các hồ sơ chưa được duyệt
+                    }
+
                     // Lấy tất cả các cuộc hẹn của chuyên gia
                     var appointments = await appointmentRepository.GetByExpertProfileIdAsync(expertProfile.ExpertProfileId);
                     var completedAppointments = appointments.Where(a => a.Status == 3).ToList();

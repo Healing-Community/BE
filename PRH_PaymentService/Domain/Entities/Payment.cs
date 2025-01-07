@@ -10,6 +10,7 @@
         public int Status { get; set; }
         public string? UserPaymentQrCodeLink { get; set; }
         public string? ExpertPaymentQrCodeLink { get; set; }
+        public string PaymentDetail { get; set; } = string.Empty;
         public DateTime PaymentDate { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

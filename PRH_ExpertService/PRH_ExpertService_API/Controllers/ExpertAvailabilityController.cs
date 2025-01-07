@@ -23,7 +23,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin,Expert,User")]
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllExpertAvailabilities()
         {

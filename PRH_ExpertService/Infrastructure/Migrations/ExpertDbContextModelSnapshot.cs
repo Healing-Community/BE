@@ -118,7 +118,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("VerifiedAt")
+                    b.Property<DateTime?>("VerifiedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("VerifiedByAdminId")

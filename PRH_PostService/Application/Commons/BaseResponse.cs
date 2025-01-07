@@ -71,4 +71,16 @@ public class BaseResponse<T>
             Timestamp = DateTime.UtcNow + TimeSpan.FromHours(7)
         };
     }
+
+    internal static BaseResponse<T> Forbidden(string message = "Bạn không có quyền truy cập vào đây.")
+    {
+        return new BaseResponse<T>
+        {
+            Id = Ulid.NewUlid().ToString(),
+            StatusCode = StatusCodes.Status403Forbidden,
+            Message = message,
+            Success = false,
+            Timestamp = DateTime.UtcNow + TimeSpan.FromHours(7)
+        };
+    }
 }

@@ -108,6 +108,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ApprovedById")
                         .HasColumnType("text");
 
+                    b.Property<string>("CoverImg")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");

@@ -51,7 +51,6 @@ namespace PRH_PostService_API
                 return false; // Trả về false nếu có lỗi xảy ra
             }
         }
-
         public async Task<bool> CheckUserInGroupAsync(string groupId, string userId)
         {
             var request = new CheckUserInGroupRequest
@@ -63,7 +62,6 @@ namespace PRH_PostService_API
             var response = await _client.CheckUserInGroupAsync(request);
             return response.IsMember;
         }
-
         public async Task<bool> CheckUserInGroupOrPublicAsync(string groupId, string userId)
         {
             var request = new CheckUserInGroupRequest
@@ -75,7 +73,6 @@ namespace PRH_PostService_API
             var response = await _client.CheckUserInGroupOrPublicAsync(request);
             return response.IsMember;
         }
-
         public async Task<GroupDetailsDto?> GetGroupDetailsAsync(string groupId)
         {
             var request = new GetGroupDetailsRequest { GroupId = groupId };
@@ -89,6 +86,25 @@ namespace PRH_PostService_API
                     Visibility = response.Visibility
                 }
                 : null;
+        }
+        public async Task<string?> GetUserRoleInGroupAsync(string groupId, string userId)
+        {
+            var request = new GetUserRoleInGroupRequest
+            {
+                GroupId = groupId,
+                UserId = userId
+            };
+
+            try
+            {
+                var response = await _client.GetUserRoleInGroupAsync(request);
+                return response.Role; // Trả về vai trò của user
+            }
+            catch (Grpc.Core.RpcException ex)
+            {
+                Console.WriteLine($"Lỗi khi gọi gRPC: {ex.Status.Detail}");
+                return null; // Trả về null nếu lỗi
+            }
         }
     }
 }

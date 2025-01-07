@@ -9,6 +9,8 @@ using PRH_ExpertService_API.Extentions;
 using Application.Commands.UploadProfileImage;
 using PRH_ExpertService_API.FileUpload;
 using Application.Queries.GetExpertList;
+using Application.Commands.ApproveExpertProfile;
+using Application.Commands.RejectExpertProfile;
 
 namespace PRH_ExpertService_API.Controllers
 {
@@ -16,7 +18,7 @@ namespace PRH_ExpertService_API.Controllers
     [ApiController]
     public class ExpertProfileController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Admin,Expert")]
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllExpertProfiles()
         {
@@ -73,5 +75,20 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
+        //[Authorize(Roles = "Admin,Moderator")]
+        //[HttpPut("approve-expert-profile/{expertProfileId}")]
+        //public async Task<IActionResult> ApproveExpertProfile(string expertProfileId)
+        //{
+        //    var response = await sender.Send(new ApproveExpertProfileCommand(expertProfileId));
+        //    return response.ToActionResult();
+        //}
+
+        //[Authorize(Roles = "Admin,Moderator")]
+        //[HttpPut("reject-expert-profile/{expertProfileId}")]
+        //public async Task<IActionResult> RejectExpertProfile(string expertProfileId)
+        //{
+        //    var response = await sender.Send(new RejectExpertProfileCommand(expertProfileId));
+        //    return response.ToActionResult();
+        //}
     }
 }

@@ -4,10 +4,14 @@ using Application.Commands.DeleteAppointment;
 using Application.Commands.RateExpert;
 using Application.Commands.UpdateAppointment;
 using Application.Commons.Tools;
+using Application.Queries.GetActivityReport;
 using Application.Queries.GetAllAppointments;
+using Application.Queries.GetAppointmentRatingStatus;
 using Application.Queries.GetAppointments;
 using Application.Queries.GetAppointmentsByExpert;
 using Application.Queries.GetAppointmentsByUser;
+using Application.Queries.GetExpertStatistics;
+using Application.Queries.GetRecentRatings;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,7 +55,7 @@ namespace PRH_ExpertService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin,User,Expert")]
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAppointments()
         {
@@ -100,10 +104,49 @@ namespace PRH_ExpertService_API.Controllers
         }
 
         [Authorize(Roles = "User")]
-        [HttpPost("rate")]
+        [HttpPost("rate-expert")]
         public async Task<IActionResult> RateExpert([FromBody] RateExpertCommand command)
         {
             var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin,User,Expert")]
+        [HttpGet("get-expert-ratings/{expertProfileId}")]
+        public async Task<IActionResult> GetExpertRatings(string expertProfileId)
+        {
+            var response = await sender.Send(new GetExpertRatingsQuery(expertProfileId));
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpGet("rating-status/{appointmentId}")]
+        public async Task<IActionResult> GetAppointmentRatingStatus(string appointmentId)
+        {
+            var response = await sender.Send(new GetAppointmentRatingStatusQuery { AppointmentId = appointmentId });
+            return response.ToActionResult();
+        }
+        [Authorize(Roles = "Expert")]
+        [HttpGet("statistics")]
+        public async Task<IActionResult> GetExpertStatistics()
+        {
+            var response = await sender.Send(new GetExpertStatisticsQuery());
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Expert")]
+        [HttpGet("recent-ratings")]
+        public async Task<IActionResult> GetRecentRatings()
+        {
+            var response = await sender.Send(new GetRecentRatingsQuery());
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Expert")]
+        [HttpGet("activity-report")]
+        public async Task<IActionResult> GetActivityReport()
+        {
+            var response = await sender.Send(new GetActivityReportQuery());
             return response.ToActionResult();
         }
     }

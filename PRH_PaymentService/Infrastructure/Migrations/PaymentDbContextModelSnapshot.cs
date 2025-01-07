@@ -43,6 +43,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("PaymentDetail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 

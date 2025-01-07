@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "ExpertPaymentService";
 
@@ -6,14 +7,32 @@ package expert;
 
 service ExpertService {
     rpc GetAppointments(GetAppointmentsRequest) returns (GetAppointmentsResponse);
+    
+    rpc GetAppointmentsByExpert(GetAppointmentsByExpertRequest) returns (GetAppointmentsListResponse);
+    rpc GetAppointmentsByUser(GetAppointmentsByUserRequest) returns (GetAppointmentsListResponse);
+    
+    rpc GetAllAppointments(GetAppointmentsRequestRepeated) returns (GetAppointmentsListResponse);
+
     rpc UpdateAppointment(GetAppointmentsRequest) returns (UpdateResponse);
     rpc UpdateExpertAvailability(GetAppointmentsRequest) returns (UpdateResponse);
 }   
 
+message GetAppointmentsRequestRepeated {
+    repeated string appointmentIds = 1;
+}
+
 message GetAppointmentsRequest {
     string appointmentId = 1;
-    int32 status = 2;
+    int32 status = 3;
 }
+
+message GetAppointmentsByExpertRequest {
+    string expertId = 1;
+}
+message GetAppointmentsByUserRequest {
+    string userId = 1;
+}
+
 
 message GetAppointmentsResponse {
     int32 amount = 1;
@@ -24,6 +43,12 @@ message GetAppointmentsResponse {
     string endTime = 6;
     string userId = 7;
     string expertId = 8;
+    string appointmentId = 9;
+    int32 status = 10;
+}
+
+message GetAppointmentsListResponse {
+    repeated GetAppointmentsResponse appointments = 1;
 }
 
 message UpdateResponse {

@@ -2,6 +2,7 @@
 using Application.Commands.UserGroups.LeaveGroups;
 using Application.Commons.DTOs;
 using Application.Queries.UserGroups.GetRoleInGroup;
+using Application.Queries.UserGroups.GetRoleInGroupByGroupIdAndUserId;
 using Application.Queries.UserGroups.GetUserGroups;
 using Application.Queries.UserGroups.GetUserGroupsByGroupId;
 using Application.Queries.UserGroups.GetUserGroupsById;
@@ -80,5 +81,18 @@ namespace PRH_GroupService_API.Controllers
             return response.ToActionResult();
         }
 
+        /// <summary>
+        /// Lấy RoleInGroup của User trong một Group
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        [HttpGet("get-role-in-group")]
+        [Authorize]
+        public async Task<IActionResult> GetRoleInGroup([FromQuery] string userId, [FromQuery] string groupId)
+        {
+            var response = await _sender.Send(new GetRoleInGroupQuery(userId, groupId));
+            return response.ToActionResult();
+        }
     }
 }

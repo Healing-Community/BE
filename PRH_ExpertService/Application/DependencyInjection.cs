@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Application.Interfaces.Services;
+using Application.Jobs;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,11 +12,12 @@ public static class DependencyInjection
     {
         services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<AppointmentStatusJob>();
 
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
 
         services.AddHttpContextAccessor();
-
+        services.AddScoped<IGrpcHelper, GrpcHelper>();
         return services;
     }
 }

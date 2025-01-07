@@ -42,6 +42,7 @@ namespace Application.Commands.GroupRequests.CreateGroupRequest
                 RequestedById = userId,
                 GroupName = request.GroupName,
                 Description = request.Description,
+                CoverImg = request.CoverImg,
                 RequestedAt = DateTime.UtcNow.AddHours(7)
             };
 

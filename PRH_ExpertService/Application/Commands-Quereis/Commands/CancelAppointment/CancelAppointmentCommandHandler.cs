@@ -1,58 +1,82 @@
-﻿using Application.Commons;
+﻿using System.Security.Claims;
+using Application.Commons;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using NUlid;
+using PaymentExpertService;
 
 namespace Application.Commands.CancelAppointment
 {
     public class CancelAppointmentCommandHandler(
-        IAppointmentRepository appointmentRepository,
+        IAppointmentRepository appointmentRepository, IGrpcHelper grpcHelper, IHttpContextAccessor accessor,
         IExpertAvailabilityRepository availabilityRepository) : IRequestHandler<CancelAppointmentCommand, BaseResponse<bool>>
     {
         public async Task<BaseResponse<bool>> Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseResponse<bool>
-            {
-                Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<string>()
-            };
-
             try
             {
-                var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
+                var userRole = accessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
+                var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
+                if (appointment == null)
+                {
+                    return BaseResponse<bool>.NotFound("Lịch hẹn không tồn tại.");
+                }
                 // Kiểm tra trạng thái. Nếu Completed(3) hoặc Cancelled(2) thì không thể hủy.
                 if (appointment.Status == 3 || appointment.Status == 2)
                 {
-                    response.Success = false;
-                    response.Message = "Không thể hủy cuộc hẹn đã hoàn thành hoặc đã bị hủy.";
-                    response.StatusCode = 400;
-                    return response;
+                    return BaseResponse<bool>.BadRequest("Lịch hẹn đã hoàn thành hoặc đã bị hủy trước đó.");
+                }
+
+                // Kiểm tra lịch hẹn với thời gian hiện tại xem đã qua 24h kể từ lúc hẹn chưa.
+                // Assuming AppointmentDate is a date-only property (e.g., DateOnly in C# 10 or a DateTime with time truncated)
+                var appointmentDateTime = appointment.AppointmentDate.ToDateTime(TimeOnly.MinValue).AddHours(24);
+                if (DateTime.UtcNow.AddHours(7) > appointmentDateTime)
+                {
+                    return BaseResponse<bool>.BadRequest("Không thể hủy lịch hẹn sau 24h kể từ thời gian hẹn.");
                 }
 
                 appointment.Status = 2; // Cancelled
                 await appointmentRepository.Update(appointment.AppointmentId, appointment);
 
                 var availability = await availabilityRepository.GetByIdAsync(appointment.ExpertAvailabilityId);
-                if (availability != null)
+
+                if (availability == null)
                 {
-                    availability.Status = 0; // Available
-                    await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
+                    return BaseResponse<bool>.NotFound("Không tìm thấy thông tin lịch hẹn.");
+                }
+                availability.Status = 0; // Available
+                await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
+
+
+                var status = userRole == "User" ? 5 : userRole == "Expert" ? 6 : throw new ArgumentException("Invalid role", nameof(userRole));
+                // Grpc call to Payment service to refund the payment
+                var reply = await grpcHelper.ExecuteGrpcCallAsync<PaymentService.PaymentServiceClient, UpdatePaymentAppointmentRequest, UpdatePaymentAppointResponse>(
+                    "PaymentService",
+                    async client => await client.UpdatePaymentAsync(new UpdatePaymentAppointmentRequest { AppointmentId = appointment.AppointmentId, Status = status })
+                );
+
+                if (reply == null)
+                {
+                    return BaseResponse<bool>.InternalServerError("Có lỗi xảy ra khi hủy lịch hẹn.");
                 }
 
-                response.Success = true;
-                response.Data = true;
-                response.StatusCode = 200;
+                if (userRole == "Expert")
+                {
+
+                    return BaseResponse<bool>.SuccessReturn(reply.IsSucess, "Hủy lịch hẹn thành công điểm sẽ bị trừ n điểm.");
+                }
+                else
+                {
+                    return BaseResponse<bool>.SuccessReturn(reply.IsSucess, "Hủy lịch hẹn thành công tiền sẽ được hoàn trả trong vòng 1-5 ngày.");
+                }
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-                response.StatusCode = 500;
+                return BaseResponse<bool>.InternalServerError(ex.Message);
             }
-
-            return response;
         }
     }
 }
