@@ -13,7 +13,7 @@ using MediatR;
 
 public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.ExpertServiceBase
 {
-    public async override Task<ExpertPaymentService.GetAppointmentsListResponse> GetAllAppointments(GetAppointmentsRequestRepeated request, ServerCallContext context)
+    public async override Task<GetAppointmentsListResponse> GetAllAppointments(GetAppointmentsRequestRepeated request, ServerCallContext context)
     {
         // Lấy tất cả lịch hẹn với status khác 0 (pending payment)
         var appointments = new List<Appointment>();
@@ -26,7 +26,7 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
             appointments.Add(appointmentResult);
         }
         // Map thông tin lịch hẹn và số tiền
-        var mappedAppointments = new List<ExpertPaymentService.GetAppointmentsResponse>();
+        var mappedAppointments = new List<GetAppointmentsResponse>();
 
         foreach (var appointment in appointments)
         {
@@ -38,7 +38,7 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
             var expertProfileTask = await sender.Send(new GetExpertProfileQuery(appointment.ExpertProfileId));
 
             // Tạo response cho mỗi lịch hẹn
-            var appointmentResponse = new ExpertPaymentService.GetAppointmentsResponse
+            var appointmentResponse = new GetAppointmentsResponse
             {
                 AppointmentId = appointment.AppointmentId,
                 StartTime = appointment.StartTime.ToString(),
@@ -56,19 +56,19 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
         }
 
         // Trả về danh sách response
-        return new ExpertPaymentService.GetAppointmentsListResponse
+        return new GetAppointmentsListResponse
         {
             Appointments = { mappedAppointments }
         };
     }
-    public async override Task<ExpertPaymentService.GetAppointmentsListResponse> GetAppointmentsByUser(ExpertPaymentService.GetAppointmentsByUserRequest request, ServerCallContext context)
+    public async override Task<GetAppointmentsListResponse> GetAppointmentsByUser(GetAppointmentsByUserRequest request, ServerCallContext context)
     {
         // Lấy các lịch hẹn của user với status khác 0 (pending payment)
         var appointments = await sender.Send(new GetAppointmentsByUserIdQuery(request.UserId));
         var appointmentsResult = appointments.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn. Expert-Service"));
 
         // Map thông tin lịch hẹn và số tiền
-        var mappedAppointments = new List<ExpertPaymentService.GetAppointmentsResponse>();
+        var mappedAppointments = new List<GetAppointmentsResponse>();
 
         foreach (var appointment in appointmentsResult)
         {
@@ -80,7 +80,7 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
             var expertProfileTask = await sender.Send(new GetExpertProfileQuery(appointment.ExpertProfileId));
 
             // Tạo response cho mỗi lịch hẹn
-            var appointmentResponse = new ExpertPaymentService.GetAppointmentsResponse
+            var appointmentResponse = new GetAppointmentsResponse
             {
                 AppointmentId = appointment.AppointmentId,
                 StartTime = appointment.StartTime.ToString(),
@@ -96,19 +96,19 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
 
             mappedAppointments.Add(appointmentResponse);
         }
-        return new ExpertPaymentService.GetAppointmentsListResponse
+        return new GetAppointmentsListResponse
         {
             Appointments = { mappedAppointments }
         };
     }
-    public async override Task<ExpertPaymentService.GetAppointmentsListResponse> GetAppointmentsByExpert(ExpertPaymentService.GetAppointmentsByExpertRequest request, ServerCallContext context)
+    public async override Task<GetAppointmentsListResponse> GetAppointmentsByExpert(GetAppointmentsByExpertRequest request, ServerCallContext context)
     {
         // Lấy các lịch hẹn của chuyên gia với status khác 0 (pending payment)
         var appointments = await sender.Send(new GetAppointmentsQuery(request.ExpertId));
         var appointmentsResult = appointments.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn. Expert-Service"));
 
         // Map thông tin lịch hẹn và số tiền
-        var mappedAppointments = new List<ExpertPaymentService.GetAppointmentsResponse>();
+        var mappedAppointments = new List<GetAppointmentsResponse>();
 
         foreach (var appointment in appointmentsResult)
         {
@@ -138,13 +138,13 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
         }
 
         // Trả về danh sách response
-        return new ExpertPaymentService.GetAppointmentsListResponse
+        return new GetAppointmentsListResponse
         {
             Appointments = { mappedAppointments }
         };
     }
 
-    public override Task<ExpertPaymentService.GetAppointmentsResponse> GetAppointments(ExpertPaymentService.GetAppointmentsRequest request, ServerCallContext context)
+    public override Task<GetAppointmentsResponse> GetAppointments(GetAppointmentsRequest request, ServerCallContext context)
     {
         var appointment = sender.Send(new GetAppointmentByIdQuery(request.AppointmentId));
         appointment.Wait();
@@ -157,7 +157,7 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
         var expertAlbility = sender.Send(new GetExpertAvailbilityByAppointmentIdQuery(appointmentResult.AppointmentId));
         expertAlbility.Wait();
         var expertAvailabilityResult = expertAlbility.Result.Data ?? throw new RpcException(new Status(StatusCode.NotFound, "không tìm thấy thông tin lịch hẹn"));
-        return Task.FromResult(new ExpertPaymentService.GetAppointmentsResponse
+        return Task.FromResult(new GetAppointmentsResponse
         {
             Amount = expertAvailabilityResult.Amount,
             AppointmentDate = appointmentResult.AppointmentDate.ToString(),
@@ -169,7 +169,7 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
             UserId = appointmentResult.UserId,
         });
     }
-    public override Task<ExpertPaymentService.UpdateResponse> UpdateAppointment(ExpertPaymentService.GetAppointmentsRequest request, ServerCallContext context)
+    public override Task<UpdateResponse> UpdateAppointment(GetAppointmentsRequest request, ServerCallContext context)
     {
         //Update status for appointment and expert availability
         var appointmentId = request.AppointmentId;
@@ -179,12 +179,12 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
         updateAppointmentStatus.Wait();
         var updateAppointmentStatusResponse = updateAppointmentStatus.Result ?? throw new RpcException(new Status(StatusCode.Internal, "Cập nhật trạng thái lịch hẹn thất bại"));
 
-        return Task.FromResult(new ExpertPaymentService.UpdateResponse
+        return Task.FromResult(new UpdateResponse
         {
             IsSucess = updateAppointmentStatusResponse.Success
         });
     }
-    public override Task<ExpertPaymentService.UpdateResponse> UpdateExpertAvailability(ExpertPaymentService.GetAppointmentsRequest request, ServerCallContext context)
+    public override Task<UpdateResponse> UpdateExpertAvailability(GetAppointmentsRequest request, ServerCallContext context)
     {
         //Update status for expert availability
         var appointmentId = request.AppointmentId;
@@ -194,7 +194,7 @@ public class ExpertService(ISender sender) : ExpertPaymentService.ExpertService.
         updateExpertAvailabilityStatus.Wait();
         var updateExpertAvailabilityStatusResponse = updateExpertAvailabilityStatus.Result ?? throw new RpcException(new Status(StatusCode.Internal, "Cập nhật trạng thái lịch hẹn thất bại"));
 
-        return Task.FromResult(new ExpertPaymentService.UpdateResponse
+        return Task.FromResult(new UpdateResponse
         {
             IsSucess = updateExpertAvailabilityStatusResponse.Success
         });
