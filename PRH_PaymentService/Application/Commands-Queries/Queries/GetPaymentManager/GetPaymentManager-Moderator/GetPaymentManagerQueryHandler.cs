@@ -17,7 +17,7 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
             var payments = await paymentRepository.GetsAsync();
             if (payments == null)
             {
-                return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin thanh toán.");
+                return BaseResponse<IEnumerable<PaymentManagerDto>>.SuccessReturn([],"Không tìm thấy thông tin thanh toán.");
             }
 
             var userIds = payments.Select(p => p.UserId).Distinct().ToList();
@@ -30,7 +30,7 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
 
             if (userInfoResult == null || !userInfoResult.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin người dùng.");
+                return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin người dùng. Có thể do người dùng này đã bị xóa.");
             }
 
             var appointmentIds = payments.Select(a => a.AppointmentId).Distinct().ToList();
@@ -43,7 +43,7 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
 
             if (appointments == null || !appointments.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin lịch hẹn. Payment-Service");
+                return BaseResponse<IEnumerable<PaymentManagerDto>>.SuccessReturn([],"Không tìm thấy thông tin lịch hẹn. Payment-Service");
             }
 
             var paymentManagerDtos = new List<PaymentManagerDto>(); 
@@ -55,12 +55,12 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
                 var appointmentData = appointmentDataReply.Appointments.FirstOrDefault(a => a.AppointmentId == payment.AppointmentId);
                 if (appointmentData == null)
                 {
-                    return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin lịch hẹn. Payment-Service");
+                    return BaseResponse<IEnumerable<PaymentManagerDto>>.SuccessReturn([],"Không tìm thấy thông tin lịch hẹn. Payment-Service");
                 }
                 var userData = userInfoResult[payment.UserId];
                 if (userData == null)
                 {
-                    return BaseResponse<IEnumerable<PaymentManagerDto>>.NotFound("Không tìm thấy thông tin người dùng.");
+                    return BaseResponse<IEnumerable<PaymentManagerDto>>.SuccessReturn([],"Không tìm thấy thông tin người dùng.");
                 }
                 // Mapping
                 var paymentManagerDto = new PaymentManagerDto

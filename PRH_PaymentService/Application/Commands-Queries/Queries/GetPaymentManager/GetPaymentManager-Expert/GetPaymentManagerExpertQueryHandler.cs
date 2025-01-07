@@ -30,7 +30,7 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
 
             if (appointments == null || !appointments.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin lịch hẹn. Payment-Service");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn([],"Không tìm thấy thông tin lịch hẹn. Payment-Service");
             }
 
             // Collect all appointmentIds for querying payments
@@ -40,7 +40,7 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
             var payments = await paymentRepository.GetsByPropertyAsync(x => appointmentIds.Contains(x.AppointmentId));
             if (payments == null || !payments.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin thanh toán.");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn([],"Không tìm thấy thông tin thanh toán.");
             }
 
             // Collect all userIds from payments
@@ -55,7 +55,7 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
             var userInfoResult = userDataReply?.PaymentInfos.ToDictionary(u => u.UserId);
             if (userInfoResult == null || !userInfoResult.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin người dùng.");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn([],"Không tìm thấy thông tin người dùng.");
             }
 
             var paymentManagerUserDtos = new List<PaymentManagerUserDto>();
@@ -104,7 +104,7 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
 
             if (!paymentManagerUserDtos.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không có lịch hẹn nào có thông tin đầy đủ.");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn([],"Không có lịch hẹn nào có thông tin đầy đủ.");
             }
 
             return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn(paymentManagerUserDtos);

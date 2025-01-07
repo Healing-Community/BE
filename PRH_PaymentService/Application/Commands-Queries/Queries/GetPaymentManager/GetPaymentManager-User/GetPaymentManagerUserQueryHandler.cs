@@ -29,7 +29,7 @@ public class GetPaymentManagerUserQueryHandler(IHttpContextAccessor accessor, IG
 
             if (appointments == null || !appointments.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin lịch hẹn. Payment-Service");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn([],"Không tìm thấy thông tin lịch hẹn. Payment-Service");
             }
 
             // Collect all appointmentIds for querying payments
@@ -38,7 +38,7 @@ public class GetPaymentManagerUserQueryHandler(IHttpContextAccessor accessor, IG
             var payments = await paymentRepository.GetsByPropertyAsync(x => appointmentIds.Contains(x.AppointmentId));
             if (payments == null || !payments.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin thanh toán.");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn([],"Không tìm thấy thông tin thanh toán.");
             }
 
             var userIds = payments.Select(p => p.UserId).Distinct().ToList();
@@ -53,7 +53,7 @@ public class GetPaymentManagerUserQueryHandler(IHttpContextAccessor accessor, IG
 
             if (userInfoResult == null || !userInfoResult.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin người dùng.");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn([],"Không tìm thấy thông tin người dùng.");
             }
 
 
