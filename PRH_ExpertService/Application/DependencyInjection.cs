@@ -17,7 +17,7 @@ public static class DependencyInjection
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
 
         services.AddHttpContextAccessor();
-
+        services.AddScoped<IGrpcHelper, GrpcHelper>();
         return services;
     }
 }

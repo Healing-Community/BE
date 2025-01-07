@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "PaymentExpertService";
+
+package payment;
+
+service PaymentService {
+    rpc UpdatePayment(UpdatePaymentAppointmentRequest) returns (UpdatePaymentAppointResponse);
+}   
+
+message UpdatePaymentAppointmentRequest{
+    string appointmentId = 1;
+    int32 status = 2;
+}
+
+message UpdatePaymentAppointResponse {
+    bool isSucess = 1;
+}

@@ -20,6 +20,8 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 # endregion
 
+builder.Services.AddGrpc();
+
 # region appsettings
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                      .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
@@ -99,6 +101,8 @@ app.MapHealthChecks("/health/readiness", new HealthCheckOptions
 # endregion
 
 #region Prometheus
+
+app.MapGrpcService<PaymentService>();
 
 app.UseHttpMetrics();
 
