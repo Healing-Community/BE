@@ -3,6 +3,8 @@ using Application.Commands.CreatePayment;
 using Application.Commands_Queries.Queries.GetPaymentDetails;
 using Application.Commands_Queries.Queries.GetPaymentInfo;
 using Application.Commands_Queries.Queries.GetPaymentManager;
+using Application.Commands_Queries.Queries.GetPaymentManager.GetPaymentManager_Expert;
+using Application.Commands_Queries.Queries.GetPaymentManager.GetPaymentManager_User;
 using Application.Queries.GetPaymentStatus;
 using Application.Queries.GetTransactionHistory;
 using Domain.Contracts;
@@ -63,10 +65,24 @@ namespace PRH_PaymentService_API.Controllers
             return response.ToActionResult();
         }
         [Authorize(Roles = "Moderator")]
-        [HttpGet("manager-payment")]
+        [HttpGet("manager-payment-moderator")]
         public async Task<IActionResult> GetPaymentManager()
         {
             var response = await sender.Send(new GetPaymentManagerQuery());
+            return response.ToActionResult();
+        }
+        [Authorize(Roles = "Expert")]
+        [HttpGet("get-payments-manager-expert")]
+        public async Task<IActionResult> GetPaymentManagerExpert()
+        {
+            var response = await sender.Send(new GetPaymentManagerExpertQuery());
+            return response.ToActionResult();
+        }
+        [Authorize(Roles = "User")]
+        [HttpGet("get-payments-manager-user")]
+        public async Task<IActionResult> GetPaymentManagerUser()
+        {
+            var response = await sender.Send(new GetPaymentManagerUserQuery());
             return response.ToActionResult();
         }
         // [Authorize]

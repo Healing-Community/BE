@@ -2,8 +2,8 @@
 {
     public class ExpertAvailability
     {
-        public required string ExpertAvailabilityId { get; set; }
-        public required string ExpertProfileId { get; set; }
+        public string? ExpertAvailabilityId { get; set; }
+        public string? ExpertProfileId { get; set; }
         public DateOnly AvailableDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
