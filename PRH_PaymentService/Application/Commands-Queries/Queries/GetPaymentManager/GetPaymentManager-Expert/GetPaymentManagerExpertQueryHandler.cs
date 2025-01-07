@@ -7,6 +7,7 @@ using Application.Interfaces.Services;
 using ExpertPaymentService;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using NUlid;
 using UserPaymentService;
 
 namespace Application.Commands_Queries.Queries.GetPaymentManager.GetPaymentManager_Expert;
@@ -24,13 +25,13 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
                     "ExpertServiceUrl",
                     async client => await client.GetAppointmentsByExpertAsync(new GetAppointmentsByExpertRequest { ExpertId = userId })
                 );
+
             var appointments = appointmentsDataReply?.Appointments.ToList();
+
             if (appointments == null || !appointments.Any())
             {
-                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin lịch hẹn.");
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin lịch hẹn. Payment-Service");
             }
-
-            var paymentManagerUserDtos = new List<PaymentManagerUserDto>();
 
             // Collect all appointmentIds for querying payments
             var appointmentIds = appointments.Select(a => a.AppointmentId).Distinct().ToList();
@@ -41,7 +42,7 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
             {
                 return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin thanh toán.");
             }
-            
+
             // Collect all userIds from payments
             var userIds = payments.Select(p => p.UserId).Distinct().ToList();
 
@@ -51,49 +52,59 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
                 async client => await client.GetUserPaymentInfoRepeatedAsync(new GetUserPaymentInfoRepeatedRequest { UserIds = { userIds } })
             );
 
-
             var userInfoResult = userDataReply?.PaymentInfos.ToDictionary(u => u.UserId);
             if (userInfoResult == null || !userInfoResult.Any())
             {
                 return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không tìm thấy thông tin người dùng.");
             }
 
+            var paymentManagerUserDtos = new List<PaymentManagerUserDto>();
+
             // Map to collection of PaymentManagerUserDto
             foreach (var appointment in appointments)
             {
-                var relatedPayments = payments.Where(p => p.AppointmentId == appointment.AppointmentId).ToList();
-
-                foreach (var pay in relatedPayments)
+                if (!userInfoResult.TryGetValue(appointment.UserId, out var userInfo))
                 {
-                    if (userInfoResult.TryGetValue(pay.UserId, out var userInfo))
-                    {
-                        var paymentManagerUserDto = new PaymentManagerUserDto
-                        {
-                            // User
-                            UserId = pay.UserId,
-                            UserEmail = userInfo.UserEmail,
-                            UserName = userInfo.UserName,
-
-                            // Payment
-                            PaymentId = pay.PaymentId,
-                            AppointmentId = pay.AppointmentId,
-                            Amount = pay.Amount,
-                            OrderCode = pay.OrderCode,
-                            Status = pay.Status,
-                            PaymentDetail = pay.PaymentDetail,
-
-                            // Appointment
-                            ExpertName = appointment.ExpertName,
-                            ExpertEmail = appointment.ExpertEmail,
-                            AppointmentDate = appointment.AppointmentDate,
-                            StartTime = appointment.StartTime,
-                            EndTime = appointment.EndTime,
-                            PaymentDate = pay.PaymentDate,
-                            UpdatedAt = pay.UpdatedAt
-                        };
-                        paymentManagerUserDtos.Add(paymentManagerUserDto);
-                    }
+                    // Nếu không tìm thấy userInfo, bỏ qua appointment này và tiếp tục.
+                    continue;
                 }
+                if(!payments.Any(p => p.AppointmentId == appointment.AppointmentId))
+                {
+                    // Nếu không tìm thấy payment, bỏ qua appointment này và tiếp tục.
+                    continue;
+                }
+
+                var paymentManagerUserDto = new PaymentManagerUserDto
+                {
+                    // User
+                    UserId = appointment.UserId,
+                    UserEmail = userInfo.UserEmail,
+                    UserName = userInfo.UserName,
+
+                    // Payment
+                    PaymentId = payments.First(p => p.AppointmentId == appointment.AppointmentId).PaymentId,
+                    OrderCode = payments.First(p => p.AppointmentId == appointment.AppointmentId).OrderCode,
+                    PaymentDate = payments.First(p => p.AppointmentId == appointment.AppointmentId).PaymentDate,
+                    // Appointment
+                    Amount = appointment.Amount,
+                    AppointmentId = appointment.AppointmentId,
+                    Status = appointment.Status, // Lấy status từ lịch hẹn (Appointment)
+                    ExpertName = appointment.ExpertName,
+                    ExpertEmail = appointment.ExpertEmail,
+                    AppointmentDate = appointment.AppointmentDate,
+                    StartTime = appointment.StartTime,
+                    EndTime = appointment.EndTime,
+
+                    // General
+                    UpdatedAt = payments.First(p => p.AppointmentId == appointment.AppointmentId).UpdatedAt
+                };
+
+                paymentManagerUserDtos.Add(paymentManagerUserDto);
+            }
+
+            if (!paymentManagerUserDtos.Any())
+            {
+                return BaseResponse<IEnumerable<PaymentManagerUserDto>>.NotFound("Không có lịch hẹn nào có thông tin đầy đủ.");
             }
 
             return BaseResponse<IEnumerable<PaymentManagerUserDto>>.SuccessReturn(paymentManagerUserDtos);
@@ -103,4 +114,5 @@ public class GetPaymentManagerExpertQueryHandler(IHttpContextAccessor accessor, 
             return BaseResponse<IEnumerable<PaymentManagerUserDto>>.InternalServerError(e.Message);
         }
     }
+
 }
