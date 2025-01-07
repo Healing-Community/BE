@@ -12,15 +12,15 @@ namespace Application.Commands.BookAppointment
         IExpertAvailabilityRepository availabilityRepository,
         IAppointmentRepository appointmentRepository,
         IExpertProfileRepository expertProfileRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<BookAppointmentCommand, DetailBaseResponse<string>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<BookAppointmentCommand, BaseResponse<string>>
     {
-        public async Task<DetailBaseResponse<string>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<string>
+            var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -29,7 +29,8 @@ namespace Application.Commands.BookAppointment
                 if (httpContext == null)
                 {
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -38,7 +39,8 @@ namespace Application.Commands.BookAppointment
                 if (string.IsNullOrEmpty(userId))
                 {
                     response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -46,13 +48,9 @@ namespace Application.Commands.BookAppointment
                 var userEmail = Authentication.GetUserEmailFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(userEmail))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Không tìm thấy email người dùng.",
-                        Field = "UserEmail"
-                    });
+                    response.Errors.Add("Không tìm thấy email người dùng.");
                     response.Success = false;
-                    response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -60,13 +58,9 @@ namespace Application.Commands.BookAppointment
                 var availability = await availabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
                 if (availability == null || availability.Status != 0) // 0 = Available
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Lịch trống không tồn tại hoặc không khả dụng.",
-                        Field = "ExpertAvailabilityId"
-                    });
+                    response.Errors.Add("Lịch trống không tồn tại hoặc không khả dụng.");
                     response.Success = false;
-                    response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -74,13 +68,9 @@ namespace Application.Commands.BookAppointment
                 var expertProfile = await expertProfileRepository.GetByIdAsync(availability.ExpertProfileId);
                 if (expertProfile == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Không tìm thấy hồ sơ chuyên gia.",
-                        Field = "ExpertProfileId"
-                    });
+                    response.Errors.Add("Không tìm thấy hồ sơ chuyên gia.");
                     response.Success = false;
-                    response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -124,13 +114,9 @@ namespace Application.Commands.BookAppointment
             catch (Exception ex)
             {
                 // Xử lý lỗi hệ thống
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = $"Chi tiết lỗi: {ex.Message}",
-                    Field = "Exception"
-                });
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi khi đặt lịch hẹn.";
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

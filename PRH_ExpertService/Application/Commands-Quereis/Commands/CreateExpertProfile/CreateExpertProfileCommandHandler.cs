@@ -11,15 +11,15 @@ namespace Application.Commands.CreateExpertProfile
     public class CreateExpertProfileCommandHandler(
         IExpertProfileRepository expertProfileRepository,
         IHttpContextAccessor httpContextAccessor)
-        : IRequestHandler<CreateExpertProfileCommand, DetailBaseResponse<string>>
+        : IRequestHandler<CreateExpertProfileCommand, BaseResponse<string>>
     {
-        public async Task<DetailBaseResponse<string>> Handle(CreateExpertProfileCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(CreateExpertProfileCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<string>
+            var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -28,7 +28,8 @@ namespace Application.Commands.CreateExpertProfile
                 if (httpContext == null)
                 {
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -38,7 +39,8 @@ namespace Application.Commands.CreateExpertProfile
                 if (string.IsNullOrEmpty(userId))
                 {
                     response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -47,13 +49,9 @@ namespace Application.Commands.CreateExpertProfile
                 var email = Authentication.GetUserEmailFromHttpContext(httpContext);
                 if (string.IsNullOrEmpty(email))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Không xác định được email của người dùng hiện tại.",
-                        Field = "Email"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Không xác định được email của người dùng hiện tại.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -62,13 +60,9 @@ namespace Application.Commands.CreateExpertProfile
                 var existingProfile = await expertProfileRepository.GetByIdAsync(userId);
                 if (existingProfile != null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Hồ sơ chuyên gia đã tồn tại.",
-                        Field = "ExpertProfile"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Hồ sơ chuyên gia đã tồn tại.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -96,13 +90,9 @@ namespace Application.Commands.CreateExpertProfile
             }
             catch (Exception ex)
             {
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi trong quá trình tạo hồ sơ chuyên gia.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

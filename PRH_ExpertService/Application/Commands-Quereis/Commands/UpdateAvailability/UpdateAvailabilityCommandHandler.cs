@@ -9,15 +9,15 @@ namespace Application.Commands.UpdateAvailability
 {
     public class UpdateAvailabilityCommandHandler(
         IExpertAvailabilityRepository expertAvailabilityRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateAvailabilityCommand, DetailBaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateAvailabilityCommand, BaseResponse<bool>>
     {
-        public async Task<DetailBaseResponse<bool>> Handle(UpdateAvailabilityCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<bool>> Handle(UpdateAvailabilityCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<bool>
+            var response = new BaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -26,7 +26,8 @@ namespace Application.Commands.UpdateAvailability
                 if (httpContext == null)
                 {
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -35,7 +36,8 @@ namespace Application.Commands.UpdateAvailability
                 if (string.IsNullOrEmpty(userId))
                 {
                     response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -43,26 +45,18 @@ namespace Application.Commands.UpdateAvailability
                 var availability = await expertAvailabilityRepository.GetByIdAsync(request.ExpertAvailabilityId);
                 if (availability == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Lịch trống không tồn tại.",
-                        Field = "AvailabilityId"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Lịch trống không tồn tại.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
                 if (request.NewEndTime <= request.NewStartTime)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Thời gian kết thúc phải sau thời gian bắt đầu.",
-                        Field = "EndTime"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Thời gian kết thúc phải sau thời gian bắt đầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -71,13 +65,9 @@ namespace Application.Commands.UpdateAvailability
                    (request.NewAvailableDate == DateOnly.FromDateTime(DateTime.UtcNow.AddHours(7)) &&
                     request.NewEndTime <= TimeOnly.FromDateTime(DateTime.UtcNow.AddHours(7))))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Ngày và thời gian của lịch trống phải là trong tương lai.",
-                        Field = "AvailableDate"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Ngày và thời gian của lịch trống phải là trong tương lai.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -87,13 +77,9 @@ namespace Application.Commands.UpdateAvailability
 
                 if (overlapping != null && overlapping.ExpertAvailabilityId != availability.ExpertAvailabilityId)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Thời gian trống bị trùng lặp với một lịch trống khác.",
-                        Field = "TimeRange"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Thời gian trống bị trùng lặp với một lịch trống khác.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -113,13 +99,9 @@ namespace Application.Commands.UpdateAvailability
             }
             catch (Exception ex)
             {
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra khi cập nhật lịch trống.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

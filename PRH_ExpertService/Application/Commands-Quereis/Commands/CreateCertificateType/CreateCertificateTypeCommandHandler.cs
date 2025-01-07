@@ -8,15 +8,15 @@ using Microsoft.AspNetCore.Http;
 namespace Application.Commands.CreateCertificateType
 {
     public class CreateCertificateTypeCommandHandler(
-        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<CreateCertificateTypeCommand, DetailBaseResponse<string>>
+        ICertificateTypeRepository certificateTypeRepository) : IRequestHandler<CreateCertificateTypeCommand, BaseResponse<string>>
     {
-        public async Task<DetailBaseResponse<string>> Handle(CreateCertificateTypeCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(CreateCertificateTypeCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<string>
+            var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -24,14 +24,10 @@ namespace Application.Commands.CreateCertificateType
                 // Kiểm tra đầu vào
                 if (string.IsNullOrWhiteSpace(request.Name))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Tên chứng chỉ không được để trống.",
-                        Field = "Name"
-                    });
+                    response.Errors.Add("Tên chứng chỉ không được để trống.");
                     response.Success = false;
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     return response;
                 }
 
@@ -55,13 +51,9 @@ namespace Application.Commands.CreateCertificateType
             catch (Exception ex)
             {
                 // Xử lý lỗi hệ thống
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra trong quá trình tạo loại chứng chỉ.";
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 
