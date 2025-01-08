@@ -102,5 +102,27 @@ namespace PRH_GroupService_API
                 Role = userGroup.RoleInGroup
             };
         }
+
+        public override async Task<GetGroupInfoResponse> GetGroupInfo(GetGroupInfoRequest request, ServerCallContext context)
+        {
+            var group = await _groupRepository.GetByIdAsync(request.GroupId);
+
+            if (group == null)
+            {
+                return new GetGroupInfoResponse
+                {
+                    GroupId = request.GroupId,
+                    GroupName = string.Empty, // Trả về chuỗi rỗng nếu không tìm thấy
+                    Visibility = 1 // Default to private if the group does not exist
+                };
+            }
+
+            return new GetGroupInfoResponse
+            {
+                GroupId = group.GroupId,
+                GroupName = group.GroupName, // Trả về GroupName
+                Visibility = group.GroupVisibility // 0: Public, 1: Private
+            };
+        }
     }
 }

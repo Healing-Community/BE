@@ -4,5 +4,5 @@ using Application.Commons;
 
 namespace Application.Commands.UploadProfileImage
 {
-    public record UploadProfileImageCommand(IFormFile File) : IRequest<DetailBaseResponse<string>>;
+    public record UploadProfileImageCommand(IFormFile File) : IRequest<BaseResponse<string>>;
 }

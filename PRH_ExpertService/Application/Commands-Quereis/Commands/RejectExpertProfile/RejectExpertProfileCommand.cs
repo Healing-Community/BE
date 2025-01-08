@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Commands.RejectExpertProfile
 {
-    public record RejectExpertProfileCommand(string ExpertProfileId) : IRequest<DetailBaseResponse<bool>>;
+    public record RejectExpertProfileCommand(string ExpertProfileId) : IRequest<BaseResponse<bool>>;
 }

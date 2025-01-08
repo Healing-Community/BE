@@ -3,23 +3,23 @@ using Application.Interfaces.Repository;
 using MediatR;
 using Domain.Entities;
 using NUlid;
-using Application.Commons.Tools;
 using Microsoft.AspNetCore.Http;
+using Application.Commons.Tools;
 
 namespace Application.Commands.UpdateWorkExperience
 {
     public class UpdateWorkExperienceCommandHandler(
         IWorkExperienceRepository workExperienceRepository,
         IHttpContextAccessor httpContextAccessor)
-        : IRequestHandler<UpdateWorkExperienceCommand, DetailBaseResponse<bool>>
+        : IRequestHandler<UpdateWorkExperienceCommand, BaseResponse<bool>>
     {
-        public async Task<DetailBaseResponse<bool>> Handle(UpdateWorkExperienceCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<bool>> Handle(UpdateWorkExperienceCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<bool>
+            var response = new BaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -28,7 +28,8 @@ namespace Application.Commands.UpdateWorkExperience
                 if (httpContext == null)
                 {
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -37,7 +38,8 @@ namespace Application.Commands.UpdateWorkExperience
                 if (string.IsNullOrEmpty(userId))
                 {
                     response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -45,63 +47,43 @@ namespace Application.Commands.UpdateWorkExperience
                 var workExperience = await workExperienceRepository.GetByIdAsync(request.WorkExperienceId);
                 if (workExperience == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Kinh nghiệm làm việc không tồn tại.",
-                        Field = "WorkExperienceId"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Kinh nghiệm làm việc không tồn tại.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
                 if (workExperience.ExpertProfileId != userId)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Người dùng không có quyền cập nhật kinh nghiệm làm việc này.",
-                        Field = "Authorization"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
-                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                    response.Errors.Add("Người dùng không có quyền cập nhật kinh nghiệm làm việc này.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.StatusCode = StatusCodes.Status403Forbidden;
                     return response;
                 }
 
                 // Validate input
                 if (string.IsNullOrWhiteSpace(request.CompanyName))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Tên công ty không được để trống.",
-                        Field = "CompanyName"
-                    });
+                    response.Errors.Add("Tên công ty không được để trống.");
                 }
 
                 if (string.IsNullOrWhiteSpace(request.PositionTitle))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Chức danh không được để trống.",
-                        Field = "PositionTitle"
-                    });
+                    response.Errors.Add("Chức danh không được để trống.");
                 }
 
                 if (request.StartDate >= request.EndDate)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.",
-                        Field = "StartDate"
-                    });
+                    response.Errors.Add("Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
                 }
 
-                if (response.Errors.Count > 0)
+                if (response.Errors.Any())
                 {
                     response.Success = false;
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
-                    response.Message = "Dữ liệu đầu vào không hợp lệ.";
                     return response;
                 }
 
@@ -110,41 +92,30 @@ namespace Application.Commands.UpdateWorkExperience
                 // Loại bỏ bản ghi hiện tại khỏi danh sách kiểm tra
                 existingExperiences = existingExperiences.Where(e => e.WorkExperienceId != request.WorkExperienceId);
 
-                bool isDuplicate = existingExperiences.Any(e =>
+                if (existingExperiences.Any(e =>
                     e.CompanyName == request.CompanyName &&
                     e.PositionTitle == request.PositionTitle &&
                     e.StartDate == request.StartDate &&
-                    e.EndDate == request.EndDate);
-
-                if (isDuplicate)
+                    e.EndDate == request.EndDate))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Kinh nghiệm làm việc này đã tồn tại.",
-                        Field = "WorkExperience"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Kinh nghiệm làm việc này đã tồn tại.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
-                bool hasTimeConflict = existingExperiences.Any(e =>
-                    e.StartDate < request.EndDate && e.EndDate > request.StartDate);
-
-                if (hasTimeConflict)
+                if (existingExperiences.Any(e =>
+                    e.StartDate < request.EndDate && e.EndDate > request.StartDate))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Khoảng thời gian này xung đột với một kinh nghiệm làm việc khác.",
-                        Field = "TimeConflict"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Khoảng thời gian này xung đột với một kinh nghiệm làm việc khác.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
+                // Cập nhật kinh nghiệm làm việc
                 workExperience.CompanyName = request.CompanyName;
                 workExperience.PositionTitle = request.PositionTitle;
                 workExperience.StartDate = request.StartDate;
@@ -161,13 +132,9 @@ namespace Application.Commands.UpdateWorkExperience
             }
             catch (Exception ex)
             {
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra khi cập nhật kinh nghiệm làm việc.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

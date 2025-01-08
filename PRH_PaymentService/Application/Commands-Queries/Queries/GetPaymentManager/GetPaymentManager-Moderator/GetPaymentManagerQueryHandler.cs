@@ -75,12 +75,13 @@ public class GetPaymentManagerQueryHandler(IGrpcHelper grpcHelper,IPaymentReposi
                     AppointmentId = payment.AppointmentId,
                     Amount = payment.Amount,
                     OrderCode = payment.OrderCode,
-                    Status = payment.Status,
+                    PaymemtStatus = payment.Status,
                     ExpertPaymentQrCodeLink = payment.ExpertPaymentQrCodeLink,
                     UserPaymentQrCodeLink = payment.UserPaymentQrCodeLink,
                     PaymentDetail = payment.PaymentDetail,
 
                     // Appointment
+                    AppointmentStatus = appointmentData.Status,
                     ExpertName = appointmentData.ExpertName,
                     ExpertEmail = appointmentData.ExpertEmail,
                     AppointmentDate = appointmentData.AppointmentDate,

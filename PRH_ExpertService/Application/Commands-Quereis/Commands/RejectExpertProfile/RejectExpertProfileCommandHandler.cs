@@ -7,15 +7,15 @@ using NUlid;
 namespace Application.Commands.RejectExpertProfile
 {
     public class RejectExpertProfileCommandHandler(
-        IExpertProfileRepository expertProfileRepository) : IRequestHandler<RejectExpertProfileCommand, DetailBaseResponse<bool>>
+        IExpertProfileRepository expertProfileRepository) : IRequestHandler<RejectExpertProfileCommand, BaseResponse<bool>>
     {
-        public async Task<DetailBaseResponse<bool>> Handle(RejectExpertProfileCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<bool>> Handle(RejectExpertProfileCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<bool>
+            var response = new BaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -24,13 +24,9 @@ namespace Application.Commands.RejectExpertProfile
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
                 if (expertProfile == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = $"Hồ sơ chuyên gia với ID '{request.ExpertProfileId}' không tồn tại.",
-                        Field = "ExpertProfileId"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
+                    response.Errors.Add($"Hồ sơ chuyên gia với ID '{request.ExpertProfileId}' không tồn tại.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -49,13 +45,9 @@ namespace Application.Commands.RejectExpertProfile
             catch (Exception ex)
             {
                 // Xử lý lỗi hệ thống
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = $"Chi tiết lỗi: {ex.Message}",
-                    Field = "Exception"
-                });
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi trong quá trình từ chối hồ sơ.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

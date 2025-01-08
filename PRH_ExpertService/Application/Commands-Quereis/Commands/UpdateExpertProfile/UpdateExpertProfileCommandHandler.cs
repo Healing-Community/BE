@@ -3,23 +3,23 @@ using Application.Interfaces.Repository;
 using MediatR;
 using NUlid;
 using Domain.Entities;
-using Application.Commons.Tools;
 using Microsoft.AspNetCore.Http;
+using Application.Commons.Tools;
 
 namespace Application.Commands.UpdateExpertProfile
 {
     public class UpdateExpertProfileCommandHandler(
         IExpertProfileRepository expertProfileRepository,
         ICertificateRepository certificateRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateExpertProfileCommand, DetailBaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UpdateExpertProfileCommand, BaseResponse<bool>>
     {
-        public async Task<DetailBaseResponse<bool>> Handle(UpdateExpertProfileCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<bool>> Handle(UpdateExpertProfileCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<bool>
+            var response = new BaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -28,7 +28,8 @@ namespace Application.Commands.UpdateExpertProfile
                 if (httpContext == null)
                 {
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -40,7 +41,8 @@ namespace Application.Commands.UpdateExpertProfile
                 if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email))
                 {
                     response.Success = false;
-                    response.Message = "Không thể xác định thông tin người dùng từ token.";
+                    response.Errors.Add("Không thể xác định thông tin người dùng từ token.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -90,13 +92,9 @@ namespace Application.Commands.UpdateExpertProfile
             }
             catch (Exception ex)
             {
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra khi xử lý hồ sơ chuyên gia.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

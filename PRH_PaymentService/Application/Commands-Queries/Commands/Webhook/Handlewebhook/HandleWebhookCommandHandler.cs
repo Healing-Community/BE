@@ -28,23 +28,28 @@ public class HandleWebhookCommandHandler(IGrpcHelper grpcHelper, IPaymentReposit
             var paymentInDb = await paymentRepository.GetByPropertyAsync(p => p.OrderCode == long.Parse(orderCode));
             if (paymentInDb == null)
             {
-                return BaseResponse<string>.NotFound("Payment not found");
+                return BaseResponse<string>.NotFound("Không tìm thấy thông tin thanh toán.");
             }
 
             if (role == "EXPERT")
             {
-                // Gửi appointmentId để update status của appointment về đã hủy
+                // Gửi appointmentId để update status của appointment về đã hoàn thành
                 var UpdateAppointmentReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(
                     "ExpertServiceUrl",
-                    async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = paymentInDb.AppointmentId, Status = 3 })
+                    async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = paymentInDb.AppointmentId, Status = (int)AppointmentStatus.Completed })
                 );
                 paymentInDb.Status = (int)PaymentStatus.Completed;
-                //paymentInDb.PaymentDetail = "Đã thanh toán tiền thành công cho Chuyên gia";
+                paymentInDb.PaymentDetail = "Đã thanh toán tiền thành công cho Chuyên gia";
             }
             else if (role == "USER")
             {
+                // Gửi appointmentId để update status của appointment về đã hoàn tiền cho người dùng
+                var UpdateAppointmentReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(
+                    "ExpertServiceUrl",
+                    async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = paymentInDb.AppointmentId, Status = (int)AppointmentStatus.Refunded })
+                );
                 paymentInDb.Status = (int)PaymentStatus.Refunded;
-                //paymentInDb.PaymentDetail = "Đã hoàn tiền cho người dùng";
+                paymentInDb.PaymentDetail = "Đã hoàn tiền cho người dùng";
             }
             await paymentRepository.Update(paymentInDb.PaymentId, paymentInDb);
 

@@ -12,7 +12,7 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class ReportTypeController(ISender sender) : ControllerBase
     {
-
+        [Obsolete]
         [Authorize]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetReportType()
@@ -20,7 +20,7 @@ namespace PRH_PostService_API.Controllers
             var response = await sender.Send(new GetReportTypesQuery());
             return response.ToActionResult();
         }
-
+        [Obsolete]
         [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateReportType(ReportTypeDto reportType)

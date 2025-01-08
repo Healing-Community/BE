@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Domain.Enum;
 using ExpertPaymentService;
 using MediatR;
 using UserPaymentService;
@@ -25,16 +26,17 @@ namespace Application.Commands.CancelPaymentLink
                     // Grpc qua expert để lấy thông tin lịch hẹn đồng thời kiểm tra xem lịch hẹn có tồn tại không
                     // Gửi appointmentId qua expert-service để update status của appointment và expertAvailability về đã hủy
 
-                    // Gửi appointmentId để update status của appointment về đã hủy
+                    // Gửi appointmentId để update status của appointment về đã hủy thanh toán
                     var UpdateAppointmentReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(
                         "ExpertServiceUrl",
-                        async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = 2 })
+                        async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = (int)AppointmentStatus.CancelPayment })
                     );
                     // Gửi appointmentId để update status lịch hẹn về trạng thái có thể đặt lịch hẹn
                     var UpdateExpertAvailabilityReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(
                         "ExpertServiceUrl",
-                        async client => await client.UpdateExpertAvailabilityAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = 0 })
+                        async client => await client.UpdateExpertAvailabilityAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = (int)ExpertAvailabilityStatus.Available })
                     );
+                    
                     if (UpdateAppointmentReply == null || UpdateExpertAvailabilityReply == null)
                     {
                         return BaseResponse<string>.NotFound("Lịch hẹn không tồn tại.");

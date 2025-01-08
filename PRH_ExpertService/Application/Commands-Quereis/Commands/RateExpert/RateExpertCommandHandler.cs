@@ -9,15 +9,15 @@ namespace Application.Commands.RateExpert
 {
     public class RateExpertCommandHandler(
         IAppointmentRepository appointmentRepository,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<RateExpertCommand, DetailBaseResponse<bool>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<RateExpertCommand, BaseResponse<bool>>
     {
-        public async Task<DetailBaseResponse<bool>> Handle(RateExpertCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<bool>> Handle(RateExpertCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<bool>
+            var response = new BaseResponse<bool>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             try
@@ -26,7 +26,8 @@ namespace Application.Commands.RateExpert
                 if (httpContext == null)
                 {
                     response.Success = false;
-                    response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                    response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -35,7 +36,8 @@ namespace Application.Commands.RateExpert
                 if (string.IsNullOrEmpty(userId))
                 {
                     response.Success = false;
-                    response.Message = "Không thể xác định UserId từ yêu cầu.";
+                    response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -43,52 +45,36 @@ namespace Application.Commands.RateExpert
                 var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId);
                 if (appointment == null)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Không tìm thấy lịch hẹn.",
-                        Field = "AppointmentId"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Không tìm thấy lịch hẹn.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
                 if (appointment.UserId != userId)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Người dùng không có quyền đánh giá lịch hẹn này.",
-                        Field = "UserId"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Người dùng không có quyền đánh giá lịch hẹn này.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
                 if (appointment.Status != 3) // 3 = Completed
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Chỉ có thể đánh giá sau khi tư vấn hoàn thành.",
-                        Field = "AppointmentStatus"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Chỉ có thể đánh giá sau khi tư vấn hoàn thành.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
                 if (request.Rating < 1 || request.Rating > 5)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Đánh giá phải nằm trong khoảng từ 1 đến 5.",
-                        Field = "Rating"
-                    });
                     response.Success = false;
-                    response.Message = "Có lỗi trong dữ liệu đầu vào.";
+                    response.Errors.Add("Đánh giá phải nằm trong khoảng từ 1 đến 5.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -106,13 +92,9 @@ namespace Application.Commands.RateExpert
             }
             catch (Exception ex)
             {
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
                 response.Success = false;
-                response.Message = "Có lỗi xảy ra khi đánh giá.";
+                response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

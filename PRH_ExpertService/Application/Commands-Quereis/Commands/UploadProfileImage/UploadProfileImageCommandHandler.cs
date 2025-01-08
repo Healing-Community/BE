@@ -9,25 +9,26 @@ namespace Application.Commands.UploadProfileImage
 {
     public class UploadProfileImageCommandHandler(
         IFirebaseStorageService firebaseStorageService,
-        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UploadProfileImageCommand, DetailBaseResponse<string>>
+        IHttpContextAccessor httpContextAccessor) : IRequestHandler<UploadProfileImageCommand, BaseResponse<string>>
     {
         private static readonly List<string> ValidFileExtensions = new() { ".jpg", ".jpeg", ".png", ".gif" };
         private static readonly List<string> AllowedMimeTypes = new() { "image/jpeg", "image/png", "image/gif" };
 
-        public async Task<DetailBaseResponse<string>> Handle(UploadProfileImageCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<string>> Handle(UploadProfileImageCommand request, CancellationToken cancellationToken)
         {
-            var response = new DetailBaseResponse<string>
+            var response = new BaseResponse<string>
             {
                 Id = Ulid.NewUlid().ToString(),
                 Timestamp = DateTime.UtcNow.AddHours(7),
-                Errors = new List<ErrorDetail>()
+                Errors = new List<string>()
             };
 
             var httpContext = httpContextAccessor.HttpContext;
             if (httpContext == null)
             {
                 response.Success = false;
-                response.Message = "Lỗi hệ thống: không thể xác định context của yêu cầu.";
+                response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status400BadRequest;
                 return response;
             }
@@ -36,7 +37,8 @@ namespace Application.Commands.UploadProfileImage
             if (string.IsNullOrEmpty(userId))
             {
                 response.Success = false;
-                response.Message = "Không thể xác định UserId từ yêu cầu.";
+                response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status401Unauthorized;
                 return response;
             }
@@ -44,11 +46,7 @@ namespace Application.Commands.UploadProfileImage
             var file = request.File;
             if (file == null || file.Length == 0)
             {
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = "File không hợp lệ.",
-                    Field = "File"
-                });
+                response.Errors.Add("File không hợp lệ.");
             }
             else
             {
@@ -56,37 +54,25 @@ namespace Application.Commands.UploadProfileImage
 
                 if (!ValidFileExtensions.Contains(extension))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Định dạng file không hợp lệ.",
-                        Field = "File"
-                    });
+                    response.Errors.Add("Định dạng file không hợp lệ.");
                 }
 
                 if (!AllowedMimeTypes.Contains(file.ContentType))
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Loại file không được phép.",
-                        Field = "File"
-                    });
+                    response.Errors.Add("Loại file không được phép.");
                 }
 
                 // Giới hạn dung lượng tối đa (ví dụ: 30MB)
                 if (file.Length > 30 * 1024 * 1024)
                 {
-                    response.Errors.Add(new ErrorDetail
-                    {
-                        Message = "Dung lượng ảnh vượt quá giới hạn cho phép (30MB).",
-                        Field = "File"
-                    });
+                    response.Errors.Add("Dung lượng ảnh vượt quá giới hạn cho phép (30MB).");
                 }
             }
 
-            if (response.Errors.Count > 0)
+            if (response.Errors.Any())
             {
                 response.Success = false;
-                response.Message = "Có lỗi trong quá trình xử lý yêu cầu.";
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                 return response;
             }
@@ -113,22 +99,14 @@ namespace Application.Commands.UploadProfileImage
                     }
                     catch (Exception deleteEx)
                     {
-                        response.Errors.Add(new ErrorDetail
-                        {
-                            Message = $"Lỗi khi xóa file trên Firebase: {deleteEx.Message}",
-                            Field = "Cleanup"
-                        });
+                        response.Errors.Add($"Lỗi khi xóa file trên Firebase: {deleteEx.Message}");
                     }
                 }
 
                 response.Success = false;
-                response.Message = "Đã xảy ra lỗi trong quá trình xử lý yêu cầu.";
+                response.Errors.Add($"Exception: {ex.Message}");
+                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                 response.StatusCode = StatusCodes.Status500InternalServerError;
-                response.Errors.Add(new ErrorDetail
-                {
-                    Message = ex.Message,
-                    Field = "Exception"
-                });
             }
 
             return response;
