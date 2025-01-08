@@ -106,5 +106,27 @@ namespace PRH_PostService_API
                 return null; // Trả về null nếu lỗi
             }
         }
+        public async Task<GroupInfoDto?> GetGroupInfoAsync(string groupId)
+        {
+            var request = new GetGroupInfoRequest { GroupId = groupId };
+
+            try
+            {
+                var response = await _client.GetGroupInfoAsync(request);
+                return response != null
+                    ? new GroupInfoDto
+                    {
+                        GroupId = response.GroupId,
+                        GroupName = response.GroupName,
+                        Visibility = response.Visibility
+                    }
+                    : null;
+            }
+            catch (Grpc.Core.RpcException ex)
+            {
+                Console.WriteLine($"Lỗi khi gọi gRPC: {ex.Status.Detail}");
+                return null; // Trả về null nếu có lỗi xảy ra
+            }
+        }
     }
 }

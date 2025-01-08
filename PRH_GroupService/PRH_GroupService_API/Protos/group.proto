@@ -11,6 +11,7 @@ service GroupService {
     rpc GetGroupDetails (GetGroupDetailsRequest) returns (GetGroupDetailsResponse);
     rpc CheckUserInGroupOrPublic (CheckUserInGroupRequest) returns (CheckUserInGroupResponse);
     rpc GetUserRoleInGroup (GetUserRoleInGroupRequest) returns (GetUserRoleInGroupResponse);
+    rpc GetGroupInfo (GetGroupInfoRequest) returns (GetGroupInfoResponse);
 }
 
 // Messages
@@ -28,8 +29,8 @@ message CheckUserInGroupRequest {
 }
 
 message CheckUserInGroupResponse {
-    bool is_member = 1; // Indicates if the user is a member of the group
-    bool has_access = 2; // Indicates if the user has access (public or member)
+    bool is_member = 1;
+    bool has_access = 2;
 }
 
 message GetGroupDetailsRequest {
@@ -38,16 +39,26 @@ message GetGroupDetailsRequest {
 
 message GetGroupDetailsResponse {
     string group_id = 1;
-    int32 visibility = 2; // 0: Public, 1: Private
+    int32 visibility = 2;
 }
 
-message GetUserRoleInGroupRequest { 
+message GetUserRoleInGroupRequest {
     string group_id = 1;
     string user_id = 2;
 }
 
-message GetUserRoleInGroupResponse { 
+message GetUserRoleInGroupResponse {
     string group_id = 1;
     string user_id = 2;
-    string role = 3; // "Owner", "Moderator", "User"
+    string role = 3;
+}
+
+message GetGroupInfoRequest {
+    string group_id = 1;
+}
+
+message GetGroupInfoResponse {
+    string group_id = 1;
+    string group_name = 2;
+    int32 visibility = 3;
 }

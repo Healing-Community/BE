@@ -1,4 +1,5 @@
 ﻿using Application.Commads_Queries.Commands.Posts.UpdatePostInGroup;
+using Application.Commads_Queries.Queries.Posts.GetGroupsWithPosts;
 using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
 using Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup;
 using Application.Commads_Queries.Queries.Posts.GetPostsInGroupByGroupId;
@@ -226,6 +227,16 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> DeletePost(string id)
         {
             var response = await sender.Send(new DeletePostCommand(id));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Lấy danh sách các nhóm public có bài viết > 10
+        /// </summary>
+        /// <returns>Danh sách nhóm</returns>
+        [HttpGet("get-recommend-groups")]
+        public async Task<IActionResult> GetGroupsWithPosts()
+        {
+            var response = await sender.Send(new GetGroupsWithPostsQuery());
             return response.ToActionResult();
         }
     }
