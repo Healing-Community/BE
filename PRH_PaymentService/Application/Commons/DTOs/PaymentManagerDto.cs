@@ -14,7 +14,8 @@ public class PaymentManagerDto
     public required string EndTime { get; set; }
     public long OrderCode { get; set; }
     public int Amount { get; set; }
-    public int Status { get; set; }
+    public int PaymemtStatus { get; set; }
+    public int AppointmentStatus { get; set; }
     public string? UserPaymentQrCodeLink { get; set; }
     public string? ExpertPaymentQrCodeLink { get; set; }
     public string PaymentDetail { get; set; } = string.Empty;
