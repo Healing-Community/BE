@@ -14,5 +14,7 @@ namespace Application.Interfaces.Repository
         Task<IEnumerable<Post>> GetsPostByPropertyPagingAsync(Expression<Func<Post, bool>> predicate, int pageNumber, int pageSize);
         Task<IEnumerable<Post>> GetPostsByGroupIdAsync(string groupId);
         Task<IEnumerable<Post>> GetAllPostsInGroupsWithValidationAsync(string userId, Func<string, Task<GroupDetailsDto?>> getGroupDetails, Func<string, string, Task<bool>> isUserInGroup);
+        Task<IEnumerable<GroupWithPostCountEntity>> GetGroupsWithPostCountAsync(int minPostCount);
+        Task<IEnumerable<GroupPostCount>> GetGroupPostCountsAsync();
     }
 }
