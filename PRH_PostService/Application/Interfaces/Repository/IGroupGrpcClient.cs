@@ -9,5 +9,6 @@ namespace Application.Interfaces.Repository
         Task<GroupDetailsDto?> GetGroupDetailsAsync(string groupId);
         Task<bool> CheckUserInGroupOrPublicAsync(string groupId, string userId);
         Task<string?> GetUserRoleInGroupAsync(string groupId, string userId);
+        Task<GroupInfoDto?> GetGroupInfoAsync(string groupId);
     }
 }

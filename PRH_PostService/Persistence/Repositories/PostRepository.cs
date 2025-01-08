@@ -158,5 +158,32 @@ namespace Persistence.Repositories
                 .Where(p => p.GroupId == groupId && p.Status == (int)PostStatus.Group) 
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<GroupWithPostCountEntity>> GetGroupsWithPostCountAsync(int minPostCount)
+        {
+            return await context.Posts
+                .Where(p => !string.IsNullOrEmpty(p.GroupId)) 
+                .GroupBy(p => p.GroupId)
+                .Where(g => g.Count() >= minPostCount)
+                .Select(g => new GroupWithPostCountEntity
+                {
+                    GroupId = g.Key,
+                    PostCount = g.Count()
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<GroupPostCount>> GetGroupPostCountsAsync()
+        {
+            return await context.Posts
+                .Where(p => !string.IsNullOrEmpty(p.GroupId)) 
+                .GroupBy(p => p.GroupId)
+                .Select(g => new GroupPostCount
+                {
+                    GroupId = g.Key,
+                    PostCount = g.Count()
+                })
+                .ToListAsync();
+        }
     }
 }
