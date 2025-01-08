@@ -5,5 +5,6 @@ public enum QueueName
     PostQueue,
     ReactionQueue,
     CommentQueue,
-    ReportQueue
+    PostReportQueue,
+    CommentReportQueue,
 }

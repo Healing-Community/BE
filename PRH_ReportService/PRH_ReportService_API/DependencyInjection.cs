@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRH_ReportService_API.Consumer;
 using PRH_ReportService_API.Consummer;
 
 namespace PRH_ReportService_API;
@@ -67,7 +68,8 @@ public static class DependencyInjection
         {
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<ReportConsumer>();
+                x.AddConsumer<PostReportConsumer>();
+                x.AddConsumer<CommentReportConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
@@ -77,9 +79,13 @@ public static class DependencyInjection
                     });
 
                     // Đăng ký consumer
-                    cfg.ReceiveEndpoint(QueueName.ReportQueue.ToString(), c =>
+                    cfg.ReceiveEndpoint(QueueName.PostReportQueue.ToString(), c =>
                     {
-                        c.ConfigureConsumer<ReportConsumer>(context);
+                        c.ConfigureConsumer<PostReportConsumer>(context);
+                    });
+                    cfg.ReceiveEndpoint(QueueName.CommentReportQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<CommentReportConsumer>(context);
                     });
 
                     // Thiết lập Retry

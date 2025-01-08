@@ -7,4 +7,5 @@ public interface IReadRepository<T>
     Task<IEnumerable<T>> GetsAsync();
     Task<T> GetByIdAsync(Guid id);
     Task<T> GetByPropertyAsync(Expression<Func<T, bool>> predicate);
+    Task<IEnumerable<T>> GetManyByPropertyAsync(Expression<Func<T, bool>> predicate);
 }
