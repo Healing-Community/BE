@@ -40,6 +40,7 @@ namespace Application.Commands.GroupRequests.ApproveGroupRequest
                     GroupName = existingRequest.GroupName,
                     Description = existingRequest.Description,
                     CreatedByUserId = request.ApprovedById,
+                    AvatarGroup = existingRequest.CoverImg,
                     CreatedAt = DateTime.UtcNow.AddHours(7),
                     GroupVisibility = 1, 
                     CurrentMemberCount = 2, 
