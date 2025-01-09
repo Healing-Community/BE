@@ -52,7 +52,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User, Expert")]
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateComment(CommentDto comment)
         {
@@ -60,7 +60,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User, Expert")]
+        [Authorize]
         [HttpPost("create-for-share")]
         public async Task<IActionResult> CreateCommentForShare(CreateCommentForShareDto commentDto)
         {
@@ -68,7 +68,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User, Expert")]
+        [Authorize]
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateComment(string id, CommentDto comment)
         {
@@ -76,7 +76,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "User, Expert")]
+        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteComment(string id)
         {
