@@ -1,4 +1,6 @@
-﻿namespace Domain.Constants;
+using System;
+
+namespace Domain.Constants.AMQPMessage;
 
 public enum QueueName
 {

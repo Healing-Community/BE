@@ -15,9 +15,15 @@ public class CreatePostReportCommandHandler(IMongoRepository<PostReport> postRep
             var postReport = new PostReport
             {
                 Id = Ulid.NewUlid().ToString(),
+                PostTitle = request.PostReportMessage.PostTitle,
+                ReportedUserEmail = request.PostReportMessage.ReportedUserEmail,
+                ReportedUserId = request.PostReportMessage.ReportedUserId,
+                ReportedUserName = request.PostReportMessage.ReportedUserName,
+                UserEmail = request.PostReportMessage.UserEmail,
+                UserName = request.PostReportMessage.UserName,
                 PostId = request.PostReportMessage.PostId,
                 UserId = request.PostReportMessage.UserId,
-                reportTypeEnum = request.PostReportMessage.ReportTypeEnum,
+                ReportTypeEnum = request.PostReportMessage.ReportTypeEnum,
                 CreatedAt = DateTime.UtcNow + TimeSpan.FromHours(7),
                 UpdatedAt = DateTime.UtcNow + TimeSpan.FromHours(7)
             };

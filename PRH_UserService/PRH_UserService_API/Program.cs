@@ -115,6 +115,7 @@ app.UseMetricServer();
 #region Grpc-Service
 
 app.MapGrpcService<UserService>();
+app.MapGrpcService<UserInfoService>();
 
 #endregion
 

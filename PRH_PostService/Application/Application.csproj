@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Commands\PostRequest\**" />
-    <EmbeddedResource Remove="Commands\PostRequest\**" />
-    <None Remove="Commands\PostRequest\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Commands\PostRequest\**" />
+		<EmbeddedResource Remove="Commands\PostRequest\**" />
+		<None Remove="Commands\PostRequest\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
@@ -19,7 +19,9 @@
 		<PackageReference Include="MediatR" Version="12.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
 		<PackageReference Include="NUlid" Version="1.7.2" />
-		<PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.27.3" />
+    	<PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
+    	<PackageReference Include="Grpc.Tools" Version="2.67.0"/>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
 		<PackageReference Include="Google.Cloud.Storage.V1" Version="4.10.0" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
@@ -27,7 +29,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Domain\Domain.csproj" />
-		
+		<Protobuf Include="Protos\userInfo.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 
