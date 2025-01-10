@@ -31,6 +31,7 @@ namespace Application.Queries.GroupRequests.GetUserRequests
                 GroupRequestId = r.GroupRequestId,
                 GroupName = r.GroupName,
                 Description = r.Description,
+                CoverImg = r.CoverImg,
                 IsApproved = r.IsApproved,
                 ApprovedAt = r.ApprovedAt,
                 ApprovedById = r.ApprovedById,

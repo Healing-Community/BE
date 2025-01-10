@@ -5,6 +5,7 @@
         public required string PaymentId { get; set; }
         public required string UserId { get; set; }
         public required string AppointmentId { get; set; }
+        public int ExpertAmount { get; set; }
         public long OrderCode { get; set; }
         public int Amount { get; set; }
         public int Status { get; set; }

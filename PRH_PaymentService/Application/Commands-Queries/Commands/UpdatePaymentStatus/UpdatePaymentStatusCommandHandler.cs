@@ -107,6 +107,7 @@ namespace Application.Commands.CancelPaymentLink
                     var expertQrCode = CreateQrCode(ExpertPaymentInfoReply.AccountNumber, ExpertPaymentInfoReply.BankName, ExpertPaymentInfoReply.AccountName, CaculateAmount(GetAppointmentsReply.Amount, platformFee.PlatformFeeValue).ToString(), $"EXPERT{paymentIndb.OrderCode}");
                     // Update payment with QrCode
                     
+                    paymentIndb.ExpertAmount = CaculateAmount(GetAppointmentsReply.Amount, platformFee.PlatformFeeValue);
                     paymentIndb.UserPaymentQrCodeLink = userQrCode;
                     paymentIndb.ExpertPaymentQrCodeLink = expertQrCode;
         

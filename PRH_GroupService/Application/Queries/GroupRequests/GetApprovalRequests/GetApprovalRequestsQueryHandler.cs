@@ -30,6 +30,7 @@ namespace Application.Queries.GroupRequests.GetApprovalRequests
                 GroupRequestId = r.GroupRequestId,
                 GroupName = r.GroupName,
                 Description = r.Description,
+                CoverImg = r.CoverImg,
                 RequestedById = r.RequestedById,
                 RequestedAt = r.RequestedAt
             });

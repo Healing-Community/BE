@@ -34,6 +34,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("ExpertAmount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ExpertPaymentQrCodeLink")
                         .HasColumnType("text");
 

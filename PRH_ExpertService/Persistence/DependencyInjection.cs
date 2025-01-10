@@ -1,4 +1,6 @@
-﻿using Application.Interfaces.Repository;
+﻿using Application.Interfaces.AMQP;
+using Application.Interfaces.Repository;
+using CleanArchitecture.Persistence.AMQP;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Repositories;
 
@@ -15,5 +17,8 @@ public static class DependencyInjection
         services.AddScoped<IExpertAvailabilityRepository, ExpertAvailabilityRepository>();
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddScoped<IWorkExperienceRepository, WorkExperienceRepository>();
+
+        services.AddScoped<IMessagePublisher, MessagePublisher>();
+
     }
 }
