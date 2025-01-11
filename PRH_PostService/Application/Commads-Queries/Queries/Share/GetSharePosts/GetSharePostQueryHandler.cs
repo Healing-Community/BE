@@ -35,7 +35,7 @@ public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepo
                 UpdateAt = p.Post.UpdateAt
             });
             if (postDetailDtos == null) return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn([]);
-            return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(postDetailDtos);
+            return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(postDetailDtos.Where(p => p.Status == (int)PostStatus.Public));
         }
         catch (Exception e)
         {

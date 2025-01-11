@@ -9,5 +9,6 @@ public enum QueueName
     CommentQueue,
     PostReportQueue,
     CommentReportQueue,
-    AppointmentReportQueue
+    AppointmentReportQueue,
+    AppointmentModerateQueue,
 }

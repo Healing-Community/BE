@@ -131,7 +131,7 @@ namespace PRH_PostService_API.Controllers
         [Obsolete]
         [Authorize]
         [HttpGet("get-by-user-id/{userId}")]
-        public async Task<IActionResult> GetByUserId(string userId)
+        private async Task<IActionResult> GetByUserId(string userId)
         {
             var response = await sender.Send(new GetPostsByUserIdQuery(userId));
             return response.ToActionResult();

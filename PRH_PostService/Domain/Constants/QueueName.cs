@@ -7,4 +7,6 @@ public enum QueueName
     CommentQueue,
     PostReportQueue,
     CommentReportQueue,
+    BanPostQueue,
+    BanCommentQueue,
 }

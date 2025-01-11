@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using Domain.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -22,7 +23,7 @@ public class GetsPostBookmarkHandler(IBookMarkRepository bookmarkRepository,IPos
             var bookmarkPostList = bookmarkPost?.ToList();
             foreach (var item in bookmarkPostList)
             {
-                item.Post = await postRepository.GetByIdAsync(item.PostId);
+                item.Post = await postRepository.GetByPropertyAsync(p => p.PostId == item.PostId && p.Status != (int)PostStatus.Baned);
             }
             var postDetailDtos = bookmarkPostList?.Select(bp => new PostDetailDto
             {
