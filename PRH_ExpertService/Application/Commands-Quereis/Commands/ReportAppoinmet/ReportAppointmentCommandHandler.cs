@@ -1,10 +1,10 @@
-using System;
 using System.Security.Claims;
 using Application.Commons;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
 using Domain.Constants.AMQPMessage;
+using Domain.Constants.AMQPMessage.MailMessage;
 using Domain.Constants.AMQPMessage.Report;
 using Domain.Enum;
 using MediatR;
@@ -60,6 +60,19 @@ public class ReportAppointmentCommandHandler(IGrpcHelper grpcHelper,IMessagePubl
                 AppointmentId = appointment.AppointmentId,
                 ReportDescription = request.ReportDescription
             }, QueueName.AppointmentReportQueue, cancellationToken);
+
+            var userMail = new SendMailMessage
+            {
+                To = userReply.Email,
+                Subject = "Báo cáo lịch hẹn",
+                Body = $"Lịch hẹn với chuyên giai '{expertReply.UserName}' của bạn đã được báo cáo thành công và sẽ được xử lý trong thời gian sớm nhất"
+            };
+            var expertMail = new SendMailMessage
+            {
+                To = expertReply.Email,
+                Subject = "Báo cáo lịch hẹn",
+                Body = $"Lịch hẹn từ '{appointment.StartTime}' đến '{appointment.EndTime}' vào ngày '{appointment.AppointmentDate}' của bạn đã bị báo cáo bởi {userReply.UserName}. Vui lòng cung cấp thông tin video hoặc hình ảnh để chứng minh sự việc. \n Hãy trả lời tin nhắn này và gửi đính kèm đường link hoặc file hình ảnh, video để được duyệt. \n Nội dung báo cáo: {request.ReportDescription} \n Xin cảm ơn"
+            };
 
             return BaseResponse<string>.SuccessReturn("Báo cáo của bạn đã được ghi nhận và sẽ được xử lý trong thời gian sớm nhất");  
 

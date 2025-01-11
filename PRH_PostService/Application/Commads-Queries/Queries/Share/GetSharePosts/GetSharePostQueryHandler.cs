@@ -1,6 +1,7 @@
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using Domain.Enum;
 using MediatR;
 
 namespace Application.Commads_Queries.Queries.Share;

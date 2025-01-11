@@ -7,5 +7,6 @@ namespace Domain.Constants
         ReactionQueue,
         CommentQueue,
         ReportQueue,
+        MailQueue
     }
 }

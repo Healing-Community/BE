@@ -52,12 +52,23 @@ namespace Application.Commands.ReportPosts.AddReport
                     ReportTypeEnum = request.ReportDto.ReportTypeEnum
                 };
                 await messagePublisher.PublishAsync(reportRequestCreatedMessage, QueueName.PostReportQueue, cancellationToken);
+                // Send mail to user to confirm report
+                await messagePublisher.PublishAsync(new SendMailMessage{
+                    To = userReply.Email,
+                    Subject = "Báo cáo bài viết",
+                    Body = EmailBody(post.Title, reportedUserReply.UserName)
+                }, QueueName.MailQueue, cancellationToken);
                 return BaseResponse<string>.SuccessReturn(message: "Báo cáo của bạn đã được gửi thành công");
             }
             catch (Exception ex)
             {
                 return BaseResponse<string>.InternalServerError(ex.Message);
             }
+        }
+        // Make this mail formly in the future
+        public string EmailBody(string postTitle, string postUserName)
+        {
+            return $"Bạn đã báo cáo bài viết '{postTitle}' của người dùng {postUserName}. Báo cáo của bạn đã được gửi thành công và sẽ được xử lý trong thời gian sớm nhất. Cảm ơn bạn đã đóng góp vào việc xây dựng cộng đồng";
         }
     }
 }

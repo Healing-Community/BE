@@ -13,9 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Constants/AMQPMessage/MailMessage/SendMailMessage.cs" />
     <Compile Include="Constants/AMQPMessage/QueueName.cs" />
     <Compile Include="Constants/AMQPMessage/Report/ModerateAppointmentMessage.cs" />
     <Compile Include="Constants/AMQPMessage/Report/ReportAppointmentMessage.cs" />
+    <Compile Include="Constants/AMQPMessage/Report/SyncModerateAppointmentMessage.cs" />
   </ItemGroup>
 
   <ItemGroup>

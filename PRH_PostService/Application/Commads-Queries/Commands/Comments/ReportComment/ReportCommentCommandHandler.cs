@@ -53,6 +53,13 @@ public class ReportCommentCommandHandler(IGrpcHelper grpcHelper, ICommentReposit
             };
 
             await messagePublisher.PublishAsync(commentReportMessage, QueueName.CommentReportQueue, cancellationToken);
+            // Send mail to user to confirm report
+            await messagePublisher.PublishAsync(new SendMailMessage
+            {
+                To = userReply.Email,
+                Subject = "Báo cáo bình luận",
+                Body = EmailBody(comment.Content, reportedUserReply.UserName ?? "Data not found")
+            }, QueueName.MailQueue, cancellationToken);
             //if (!IsSended) return BaseResponse<string>.InternalServerError(message:"Báo cáo không thành công vui lòng thử lại sau");
             return BaseResponse<string>.SuccessReturn(message: "Báo cáo thành công bình luận của bạn đã được gửi");
         }
@@ -61,5 +68,10 @@ public class ReportCommentCommandHandler(IGrpcHelper grpcHelper, ICommentReposit
             return BaseResponse<string>.InternalServerError(ex.Message);
             throw;
         }
+    }
+    // Make this mail formly in the future
+    public string EmailBody(string commentContent, string reportedUserName)
+    {
+        return $"Bạn đã báo cáo bình luận '{commentContent}' của người dùng {reportedUserName}. Báo cáo của bạn đã được gửi thành công và sẽ được xử lý trong thời gian sớm nhất. Cảm ơn bạn đã đóng góp vào việc xây dựng cộng đồng";
     }
 }

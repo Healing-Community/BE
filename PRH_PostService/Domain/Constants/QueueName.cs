@@ -2,6 +2,7 @@
 
 public enum QueueName
 {
+    MailQueue,
     PostQueue,
     ReactionQueue,
     CommentQueue,
@@ -9,4 +10,7 @@ public enum QueueName
     CommentReportQueue,
     BanPostQueue,
     BanCommentQueue,
+    SyncCommentReportQueue, // to sync with other services
+    SyncPostReportQueue, // to sync with other services
+    SyncAppointmentReportQueue, // to sync with other services
 }

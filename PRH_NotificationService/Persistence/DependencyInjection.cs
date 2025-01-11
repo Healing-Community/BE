@@ -8,6 +8,7 @@ public static class DependencyInjection
 {
     public static void AddPersistenceDependencies(this IServiceCollection services)
     {
+        services.AddScoped<IEmailRepository, EmailRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationTypeRepository, NotificationTypeRepository>();
         services.AddScoped<IUserNotificationPreferenceRepository, UserNotificationPreferenceRepository>();

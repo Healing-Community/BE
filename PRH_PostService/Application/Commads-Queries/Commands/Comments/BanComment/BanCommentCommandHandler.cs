@@ -30,9 +30,12 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
             }
             // Override comment content
             comment.Content = "Bình luận này đã bị ban do vi phạm quy định";
-            
-            await commentRepository.Update(comment.CommentId, comment);
-
+            // Bị ban
+            if(request.IsApprove)
+            {
+                await commentRepository.Update(comment.CommentId, comment);
+            }
+            // Nếu không ban thì không cần update
             // Grpc to user service to get user email (moderator)
 
             var userInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
@@ -51,12 +54,19 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
                 UserId = userId,
                 UserName = userInfoReply.UserName,
                 UserEmail = userInfoReply.Email,
-                Content = comment.Content
+                Content = comment.Content,
+                IsApprove = request.IsApprove
             };
 
             await messagePublisher.PublishAsync(message,QueueName.BanCommentQueue,cancellationToken);
 
-            return BaseResponse<string>.SuccessReturn("Bình luận đã bị ban");
+            await messagePublisher.PublishAsync(new SyncBanCommentReportMessage
+            {
+                CommentId = comment.CommentId,
+                IsApprove = request.IsApprove
+            }, QueueName.SyncCommentReportQueue, cancellationToken);
+
+            return BaseResponse<string>.SuccessReturn("Kiểm duyệt bình luận thành công với trạng thái: " + (request.IsApprove ? "Đã ban" : "Không ban"));
 
         }
         catch (Exception e)

@@ -53,8 +53,7 @@ public class ModerateAppointmentReportCommandHandler(IAppointmentRepository appo
                 return BaseResponse<string>.NotFound("Không tìm thấy thông tin người dùng");
             }
 
-            // Send to report service through message queue
-
+            // Moderate activity
             await messagePublisher.PublishAsync(new ModerateAppointmentMessage
             {
                 AppointmentId = appointment.AppointmentId,
@@ -70,6 +69,12 @@ public class ModerateAppointmentReportCommandHandler(IAppointmentRepository appo
                 UserEmail = userInfoReply.Email,
                 UserName = userInfoReply.UserName
             },QueueName.AppointmentModerateQueue, cancellationToken);
+            // Sync with report services
+            await messagePublisher.PublishAsync(new SyncModerateAppointmentMessage
+            {
+                AppointmentId = appointment.AppointmentId,
+                IsApprove = request.IsApprove
+            }, QueueName.SyncAppointmentReportQueue, cancellationToken);
 
             return BaseResponse<string>.SuccessReturn("Duyệt báo cáo lịch hẹn thành công với trạng thái " + (request.IsApprove ? "Thành công" : "Thất bại"));
 

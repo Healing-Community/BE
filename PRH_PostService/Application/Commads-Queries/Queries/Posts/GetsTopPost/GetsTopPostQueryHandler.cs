@@ -2,6 +2,7 @@ using Application.CommandsQueries.Queries.Posts.GetsTopPost;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using Domain.Enum;
 using MediatR;
 
 namespace Application.Commads_Queries.Queries.Posts.GetsTopPost;
@@ -16,7 +17,7 @@ public class GetsTopPostQueryHandler(IPostRepository postRepository, IReactionRe
             var topPosts = new List<PostRecommendDto>();
             foreach (var post in topReactionPosts)
             {
-                var postEntity = await postRepository.GetByPropertyAsync(p=>p.PostId == post.PostId && p.Status == PostStatus.Public);
+                var postEntity = await postRepository.GetByPropertyAsync(p=>p.PostId == post.PostId && p.Status == (int)PostStatus.Public);
                 var postDto = new PostRecommendDto
                 {
                     PostId = postEntity.PostId,

@@ -12,7 +12,7 @@ using UserInformation;
 
 namespace Application.Commads_Queries.Commands.Posts.BanPost_Moderator;
 
-public class BanPostCommandHandler(IGrpcHelper grpcHelper,IHttpContextAccessor accessor,IMessagePublisher messagePublisher,IPostRepository postRepository) : IRequestHandler<BanPostCommand, BaseResponse<string>>
+public class BanPostCommandHandler(IGrpcHelper grpcHelper, IHttpContextAccessor accessor, IMessagePublisher messagePublisher, IPostRepository postRepository) : IRequestHandler<BanPostCommand, BaseResponse<string>>
 {
     public async Task<BaseResponse<string>> Handle(BanPostCommand request, CancellationToken cancellationToken)
     {
@@ -33,11 +33,22 @@ public class BanPostCommandHandler(IGrpcHelper grpcHelper,IHttpContextAccessor a
                 return BaseResponse<string>.SuccessReturn();
             }
             post.Status = (int)PostStatus.Baned;
-            
-            await postRepository.Update(post.PostId, post);
+
+
+            if (request.IsApprove)
+            {
+                await postRepository.Update(post.PostId, post);
+            }
+
+            // Tạo message qua report service để đồng bộ dữ liệu
+            await messagePublisher.PublishAsync(new SyncBanPostReportMessage
+            {
+                PostId = post.PostId,
+                IsApprove = request.IsApprove
+            }, QueueName.SyncPostReportQueue, cancellationToken);
+
 
             // Grpc to user service to get user email (moderator)
-
             var reportedUserReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
                     "UserService",
                     async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = userId })
@@ -47,7 +58,7 @@ public class BanPostCommandHandler(IGrpcHelper grpcHelper,IHttpContextAccessor a
             {
                 return BaseResponse<string>.NotFound();
             }
-        
+
             var message = new BanPostMessage
             {
                 PostId = post.PostId,
@@ -55,13 +66,14 @@ public class BanPostCommandHandler(IGrpcHelper grpcHelper,IHttpContextAccessor a
                 UserId = userId,
                 UserName = reportedUserReply.UserName,
                 PostTitle = post.Title,
-                Reason = "Bị ban do vi phạm quy định"
+                Reason = request.IsApprove ? "Ban bài viết do vi phạm qui định nền tảng" : "Không ban bài viết do không vi phạm qui định nền tảng",
+                IsApprove = request.IsApprove
             };
-
+            // Tạo message qua report service admin xem hành động của moderate
             await messagePublisher.PublishAsync(message, QueueName.BanPostQueue, cancellationToken);
 
             return BaseResponse<string>.SuccessReturn();
-            
+
         }
         catch (Exception e)
         {
