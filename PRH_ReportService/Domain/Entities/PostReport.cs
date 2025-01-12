@@ -17,7 +17,7 @@ public class PostReport
     public required string PostTitle { get; set; }  
     public required ReportTypeEnum ReportTypeEnum { get; set; }
 
-    public bool IsApprove { get; set; }
+    public bool? IsApprove { get; set; }
 
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

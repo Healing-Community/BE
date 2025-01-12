@@ -30,7 +30,7 @@ public class BanPostCommandHandler(IGrpcHelper grpcHelper, IHttpContextAccessor 
             }
             if (post.Status == (int)PostStatus.Baned)
             {
-                return BaseResponse<string>.SuccessReturn("Bài viết đã bị ban trước đó");
+                return BaseResponse<string>.SuccessReturn(classInstance: "Bài viết đã bị ban trước đó");
             }
             post.Status = (int)PostStatus.Baned;
 

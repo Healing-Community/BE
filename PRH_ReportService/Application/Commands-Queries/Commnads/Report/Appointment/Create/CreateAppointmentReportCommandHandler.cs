@@ -23,6 +23,8 @@ public class CreateAppointmentReportCommandHandler(IMongoRepository<AppointmentR
                 UserId = request.ReportAppointmentMessage.UserId,
                 AppointmentId = request.ReportAppointmentMessage.AppointmentId,
 
+                IsApprove = null,
+
                 UserEmail = request.ReportAppointmentMessage.UserEmail,
                 UserName = request.ReportAppointmentMessage.UserName,
 

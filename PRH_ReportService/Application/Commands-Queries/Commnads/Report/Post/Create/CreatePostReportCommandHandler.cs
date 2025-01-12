@@ -24,6 +24,7 @@ public class CreatePostReportCommandHandler(IMongoRepository<PostReport> postRep
                 PostId = request.PostReportMessage.PostId,
                 UserId = request.PostReportMessage.UserId,
                 ReportTypeEnum = request.PostReportMessage.ReportTypeEnum,
+                IsApprove = null,
                 CreatedAt = DateTime.UtcNow + TimeSpan.FromHours(7),
                 UpdatedAt = DateTime.UtcNow + TimeSpan.FromHours(7)
             };

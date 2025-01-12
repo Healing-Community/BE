@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using Application.Commons;
 using Application.Interfaces.AMQP;
@@ -26,7 +25,7 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
             var comment = await commentRepository.GetByIdAsync(request.CommentId);
             if (comment == null)
             {
-                return BaseResponse<string>.NotFound();
+                return BaseResponse<string>.NotFound("Không tìm thấy bình luận");
             }
             // Override comment content
             comment.Content = "Bình luận này đã bị ban do vi phạm quy định";
@@ -66,7 +65,7 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
                 IsApprove = request.IsApprove
             }, QueueName.SyncCommentReportQueue, cancellationToken);
 
-            return BaseResponse<string>.SuccessReturn("Kiểm duyệt bình luận thành công với trạng thái: " + (request.IsApprove ? "Đã ban" : "Không ban"));
+            return BaseResponse<string>.SuccessReturn(message:"Kiểm duyệt bình luận thành công với trạng thái: " + (request.IsApprove ? "Đã ban" : "Không ban"));
 
         }
         catch (Exception e)
