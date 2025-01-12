@@ -30,7 +30,7 @@ public class BanPostCommandHandler(IGrpcHelper grpcHelper, IHttpContextAccessor 
             }
             if (post.Status == (int)PostStatus.Baned)
             {
-                return BaseResponse<string>.SuccessReturn();
+                return BaseResponse<string>.SuccessReturn("Bài viết đã bị ban trước đó");
             }
             post.Status = (int)PostStatus.Baned;
 
@@ -41,6 +41,7 @@ public class BanPostCommandHandler(IGrpcHelper grpcHelper, IHttpContextAccessor 
             }
 
             // Tạo message qua report service để đồng bộ dữ liệu
+
             await messagePublisher.PublishAsync(new SyncBanPostReportMessage
             {
                 PostId = post.PostId,

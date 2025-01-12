@@ -11,7 +11,7 @@ public class UpdateCommentReportStatusHandler(IMongoRepository<CommentReport> re
     {
         try
         {
-            var commentReport = await repository.GetByPropertyAsync(x => x.Id == request.CommentId && x.IsApprove == false);
+            var commentReport = await repository.GetByPropertyAsync(x => x.CommentId == request.CommentId);
             if (commentReport == null)
             {
                 return BaseResponse<string>.NotFound("Bình luận này đã được duyệt");

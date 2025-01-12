@@ -11,7 +11,7 @@ public class UpdateAppointmetReportStatusCommandHandler(IMongoRepository<Appoint
     {
         try
         {
-            var appointmentReport = await repository.GetByPropertyAsync(x => x.Id == request.AppointmentId);
+            var appointmentReport = await repository.GetByPropertyAsync(x => x.AppointmentId == request.AppointmentId);
             if (appointmentReport == null)
             {
                 return BaseResponse<string>.NotFound("Appointment report not found");

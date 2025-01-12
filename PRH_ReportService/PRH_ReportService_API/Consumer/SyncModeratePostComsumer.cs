@@ -1,4 +1,3 @@
-using System;
 using Application.Commands_Queries.Commnads.Report.Post.Update;
 using Domain.Constants.AMQPMessage.Report;
 using MassTransit;
@@ -12,5 +11,6 @@ public class SyncModeratePostComsumer(ISender sender) : IConsumer<SyncBanPostRep
     {
         var message = context.Message;
         await sender.Send(new UpdatePostReportStatusCommand(message.PostId,message.IsApprove));
+        await Console.Out.WriteLineAsync("Moderator report updated successfully");
     }
 }

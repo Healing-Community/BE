@@ -16,6 +16,6 @@ public class ModeratorActivityBanPostConsumer(ISender sender) : IConsumer<BanPos
 
         await sender.Send(command);
 
-        await Console.Out.WriteLineAsync("Post report activity created");
+        await Console.Out.WriteLineAsync("Moderator report createed successfully");
     }
 }

@@ -12,7 +12,7 @@ public class UpdatePostReportStatusCommandHandler(IMongoRepository<PostReport> r
     {
         try
         {
-            var postReport = await repository.GetByPropertyAsync(x => x.Id == request.PostId && x.IsApprove == false);
+            var postReport = await repository.GetByPropertyAsync(x => x.PostId == request.PostId);
             if (postReport == null)
             {
                 return BaseResponse<string>.NotFound("Bài này đã được duyệt");
