@@ -1,11 +1,16 @@
 ﻿using Application.Commands;
 using Application.Commands.CalcDass21Quizz;
+using Application.Commands.CalcMbti21Quiz;
 using Application.Commands.CreateDass21Quiz;
+using Application.Commands.CreateMbti21Quiz;
 using Application.Commons.DTOs;
 using Application.Queries;
 using Application.Queries.GetDass21Result;
 using Application.Queries.GetDass22Quizz;
+using Application.Queries.GetMbti21Quizz;
+using Application.Queries.GetMbti21Result;
 using Domain.Entities.DASS21;
+using Domain.Entities.MBTI21;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,4 +51,36 @@ public class QuizController(ISender sender) : ControllerBase
         var response = await sender.Send(new GetDass21ResultQuery(HttpContext));
         return response.ToActionResult();
     }
+
+    [Obsolete]
+    [HttpPost("create-mbti21-quizz")]
+    public async Task<IActionResult> CreateMBTI21()
+    {
+        var response = await sender.Send(new CreateMBTI21Command(new Mbti21() { Id = Ulid.NewUlid().ToString() }));
+        return response.ToActionResult();
+    }
+
+    [HttpGet("get-mbti21-quiz")]
+    public async Task<IActionResult> GetMBTI21Quiz()
+    {
+        var response = await sender.Send(new GetMBTI21QuizQuery());
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "User")]
+    [HttpPost("submit-mbti21-quizz")]
+    public async Task<IActionResult> SubmitMBTI21([FromBody] MBTIQuizzResultRequest request)
+    {
+        var response = await sender.Send(new SubmitMBTI21ResultCommand(request, HttpContext));
+        return response.ToActionResult();
+    }
+
+    [Authorize(Roles = "User")]
+    [HttpGet("get-mbti21-result")]
+    public async Task<IActionResult> GetMBTI21Result()
+    {
+        var response = await sender.Send(new GetMBTI21ResultQuery(HttpContext));
+        return response.ToActionResult();
+    }
+
 }
