@@ -1,5 +1,6 @@
 ﻿using Application.Commands.CancelPaymentLink;
 using Application.Commands.CreatePayment;
+using Application.Commands_Queries.Queries.GetExpertRevenueDetails;
 using Application.Commands_Queries.Queries.GetPaymentDetails;
 using Application.Commands_Queries.Queries.GetPaymentInfo;
 using Application.Commands_Queries.Queries.GetPaymentManager;
@@ -64,6 +65,7 @@ namespace PRH_PaymentService_API.Controllers
             var response = await sender.Send(new GetPaymentDetailsQuery(paymentId));
             return response.ToActionResult();
         }
+
         [Authorize(Roles = "Moderator")]
         [HttpGet("manager-payment-moderator")]
         public async Task<IActionResult> GetPaymentManager()
@@ -71,6 +73,7 @@ namespace PRH_PaymentService_API.Controllers
             var response = await sender.Send(new GetPaymentManagerQuery());
             return response.ToActionResult();
         }
+
         [Authorize(Roles = "Expert")]
         [HttpGet("get-payments-manager-expert")]
         public async Task<IActionResult> GetPaymentManagerExpert()
@@ -78,6 +81,7 @@ namespace PRH_PaymentService_API.Controllers
             var response = await sender.Send(new GetPaymentManagerExpertQuery());
             return response.ToActionResult();
         }
+
         [Authorize(Roles = "User")]
         [HttpGet("get-payments-manager-user")]
         public async Task<IActionResult> GetPaymentManagerUser()
@@ -85,12 +89,13 @@ namespace PRH_PaymentService_API.Controllers
             var response = await sender.Send(new GetPaymentManagerUserQuery());
             return response.ToActionResult();
         }
-        // [Authorize]
-        // [HttpGet("test")]
-        // public async Task<IActionResult> Test(string appointmentId)
-        // {
-        //     var response = await sender.Send(new GetPaymentInfoQuery(appointmentId));
-        //     return response.ToActionResult();
-        // }
+
+        [Authorize(Roles = "Expert")]
+        [HttpGet("revenue-details")]
+        public async Task<IActionResult> GetExpertRevenueDetails()
+        {
+            var response = await sender.Send(new GetExpertRevenueDetailsQuery());
+            return response.ToActionResult();
+        }
     }
 }
