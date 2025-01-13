@@ -1,4 +1,5 @@
 ﻿using Application.Commads_Queries.Commands.Posts.UpdatePostInGroup;
+using Application.Commads_Queries.Queries.Posts.GetCountPosts;
 using Application.Commads_Queries.Queries.Posts.GetGroupsWithPosts;
 using Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
 using Application.Commads_Queries.Queries.Posts.GetPostsByReactionInGroup;
@@ -237,6 +238,18 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> GetGroupsWithPosts()
         {
             var response = await sender.Send(new GetGroupsWithPostsQuery());
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Đếm tổng số bài viết mà người dùng đã đăng - không cần login
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("count-posts/{userId}")]
+        public async Task<IActionResult> CountPosts(string userId)
+        {
+            var response = await sender.Send(new CountPostsQuery(userId));
             return response.ToActionResult();
         }
     }

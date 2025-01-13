@@ -1,5 +1,6 @@
 ﻿using Application.Commads_Queries.Commands.Reactions.AddReactionForShare;
 using Application.Commads_Queries.Commands.Reactions.DeleteReactionByShareId;
+using Application.Commads_Queries.Queries.Reactions.GetCountReactions;
 using Application.Commads_Queries.Queries.Reactions.GetShareReactionCount;
 using Application.Commads_Queries.Queries.Reactions.GetUserReactionByShareId;
 using Application.Commands.Reactions.AddReaction;
@@ -148,6 +149,18 @@ namespace PRH_PostService_API.Controllers
         public async Task<IActionResult> DeleteReactionByShareId(ShareIdOnlyDto removeReactionDto)
         {
             var response = await sender.Send(new DeleteReactionByShareIdCommand(removeReactionDto));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        /// Đếm tổng số lượt react mà người dùng đã tương tác với bài viết - không cần login
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("count-reactions/{userId}")]
+        public async Task<IActionResult> CountReactions(string userId)
+        {
+            var response = await sender.Send(new CountReactionsQuery(userId));
             return response.ToActionResult();
         }
     }
