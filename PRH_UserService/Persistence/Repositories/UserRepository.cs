@@ -66,4 +66,23 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
     {
         return await hFDbContext.Users.Where(predicate).ToListAsync();
     }
+
+    public async Task<int> CountAsync()
+    {
+        return await hFDbContext.Set<User>().CountAsync();
+    }
+
+    public async Task<int> CountNewUsersThisMonthAsync()
+    {
+        var startOfMonth = new DateTime(DateTime.UtcNow.AddHours(7).Year, DateTime.UtcNow.AddHours(7).Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        return await hFDbContext.Set<User>().CountAsync(u => u.CreatedAt >= startOfMonth);
+    }
+
+    public async Task<Dictionary<string, int>> CountUsersByRoleAsync()
+    {
+        return await hFDbContext.Set<User>()
+            .GroupBy(u => u.Role.RoleName)
+            .Select(g => new { RoleName = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(g => g.RoleName, g => g.Count);
+    }
 }
