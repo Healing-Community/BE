@@ -94,7 +94,7 @@ app.UseHttpMetrics();
 app.UseMetricServer();
 
 #endregion
-app.UserStaticFiles();
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
