@@ -76,6 +76,7 @@ public static class DependencyInjection
                 x.AddConsumer<ModeratorActivityBanCommentConsumer>();
                 x.AddConsumer<ModeratorActivityBanPostConsumer>();
                 x.AddConsumer<ModeratorActivityModerateAppointmentConsumer>();
+                x.AddConsumer<AppointmentReportConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
@@ -119,6 +120,10 @@ public static class DependencyInjection
                     cfg.ReceiveEndpoint(QueueName.BanCommentQueue.ToString(), c =>
                     {
                         c.ConfigureConsumer<ModeratorActivityBanCommentConsumer>(context);
+                    });
+                    cfg.ReceiveEndpoint(QueueName.AppointmentReportQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<AppointmentReportConsumer>(context);
                     });
 
                     // Thiết lập Retry
