@@ -27,12 +27,5 @@ namespace PRH_ReportService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet("get-appointment-report-activity")]
-        public async Task<IActionResult> GetAppointmentReportActivity()
-        {
-            var response = await sender.Send(new GetAppointmentReportActivityQuery());
-            return response.ToActionResult();
-        }
     }
 }
