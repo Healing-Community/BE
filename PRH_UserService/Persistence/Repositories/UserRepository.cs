@@ -30,8 +30,7 @@ public class UserRepository(UserServiceDbContext hFDbContext) : IUserRepository
 
     public async Task<User?> GetByPropertyAsync(Expression<Func<User, bool>> predicate)
     {
-        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate) ??
-               new User { UserId = Ulid.Empty.ToString() };
+        return await hFDbContext.Users.AsNoTracking().FirstOrDefaultAsync(predicate);
     }
 
     public async Task UpdateAsync(string id, User entity)

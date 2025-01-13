@@ -1,6 +1,7 @@
 ﻿using Application.Commands_Queries.Queries.Report.Appointment;
 using Application.Commands_Queries.Queries.Report.Comment.GetCommentReport;
 using Application.Commands_Queries.Queries.Report.GetPostReport;
+using Application.Queries.SystemReport;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,13 @@ public class ReportController(ISender sender) : ControllerBase
     public async Task<IActionResult> GetAppointmentReports()
     {
         var response = await sender.Send(new GetAppointmentReportQuery());
+        return response.ToActionResult();
+    }
+    [Authorize(Roles="Admin")]
+    [HttpGet("get-system-report")]
+    public async Task<IActionResult> GetSystemReports()
+    {
+        var response = await sender.Send(new GetsUserSystemReportQuery());
         return response.ToActionResult();
     }
 }

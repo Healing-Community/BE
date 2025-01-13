@@ -10,6 +10,7 @@ public enum QueueName
     AppointmentReportQueue,
     BanPostQueue,
     BanCommentQueue,
+    UserReportSystemQueue,
     AppointmentModerateQueue,
     SyncCommentReportQueue, // to sync with other services
     SyncPostReportQueue, // to sync with other services
