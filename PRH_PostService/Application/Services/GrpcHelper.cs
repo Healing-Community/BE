@@ -15,7 +15,7 @@ public class GrpcHelper(IConfiguration configuration) : IGrpcHelper
         where TResponse : class
     {
         // Retrieve the URL from configuration
-        var serviceUrl = configuration.GetSection("GrpcServerUrl")[serviceUrlKey];
+        var serviceUrl = configuration.GetSection("GrpcSettings")[serviceUrlKey];
         if (string.IsNullOrEmpty(serviceUrl))
         {
             throw new ArgumentException($"Service URL for key '{serviceUrlKey}' cannot be null or empty.", nameof(serviceUrlKey));

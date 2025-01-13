@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using Domain.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 /// <summary>
@@ -16,10 +17,11 @@ public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpCo
         try
         {
             var userId = accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            // Not login
             if (string.IsNullOrEmpty(userId))
             {
                 var randomPosts = await repository.GetRandomPostsAsync(request.PageNumber, request.PageSize);
-                return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(randomPosts.Where(post=>post.Status == 0).Select(post => new PostRecommendDto
+                return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(randomPosts.Where(post=>post.Status == (int)PostStatus.Public).Select(post => new PostRecommendDto
                 {
                     PostId = post.PostId,
                     UserId = post.UserId,
@@ -32,9 +34,10 @@ public class GetRecommendedPostsQueryHandler(IPostRepository repository, IHttpCo
                     UpdateAt = post.UpdateAt
                 }));
             }
+            // Get recommended posts for user logined
             var posts = await repository.GetRecommendedPostsAsync(userId ?? string.Empty, request.PageNumber, request.PageSize);
             // Map Post to PostDto in a new list
-            var data = posts.Select(post => new PostRecommendDto
+            var data = posts.Where(p=>p.Status == (int)PostStatus.Public).Select(post => new PostRecommendDto
             {
                     PostId = post.PostId,
                     UserId = post.UserId,

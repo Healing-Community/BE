@@ -1,6 +1,7 @@
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using Domain.Enum;
 using MediatR;
 
 public class GetSideRecommendPostQueryHandler(IPostRepository repository) : IRequestHandler<GetSideRecommendPostQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
@@ -11,7 +12,7 @@ public class GetSideRecommendPostQueryHandler(IPostRepository repository) : IReq
         {
             var posts = await repository.GetRandomPostsAsync(request.PageSize, request.PageNumber);
             // Map Post to PostDto in a new list
-            var data = posts.Where(p=>p.Status == 0).Select(post => new PostRecommendDto
+            var data = posts.Where(p=>p.Status == (int)PostStatus.Public).Select(post => new PostRecommendDto
             {
                     PostId = post.PostId,
                     UserId = post.UserId,

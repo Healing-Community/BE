@@ -10,5 +10,7 @@ public enum AppointmentStatusEnum
     Completed = 3,
     CancelledPayment = 4,
     Refunded = 5,
-    Reported = 6
+    Reported = 6,
+    ReportSuccess = 7,
+    ReportFailed = 8,
 }

@@ -20,6 +20,8 @@ public class CommentReport
     public required string PostId { get; set; }
     public required ReportTypeEnum ReportTypeEnum { get; set; }
 
+    public bool? IsApprove { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

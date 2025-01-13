@@ -24,6 +24,7 @@ public class CreateCommentReportCommandHandler(IMongoRepository<CommentReport> c
                 UserEmail = request.CommentReportMessage.UserEmail,
                 UserName = request.CommentReportMessage.UserName,
                 PostId = request.CommentReportMessage.PostId,
+                IsApprove = null,
                 ReportTypeEnum = request.CommentReportMessage.ReportTypeEnum,
                 CreatedAt = DateTime.UtcNow + TimeSpan.FromHours(7),
                 UpdatedAt = DateTime.UtcNow + TimeSpan.FromHours(7)

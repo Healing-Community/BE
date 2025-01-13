@@ -19,7 +19,6 @@
     <Folder Include="Commons/DTOs/" />
     <Folder Include="Interfaces\Repository\" />
     <Folder Include="Interfaces\Services\" />
-    <Folder Include="Queries\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

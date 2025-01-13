@@ -1,24 +1,36 @@
-D:\Repos\BE\PRH_NotificationService\Domain\bin\Debug\net8.0\Domain.deps.json
-D:\Repos\BE\PRH_NotificationService\Domain\bin\Debug\net8.0\Domain.dll
-D:\Repos\BE\PRH_NotificationService\Domain\bin\Debug\net8.0\Domain.pdb
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.sourcelink.json
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.dll
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\refint\Domain.dll
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.pdb
-D:\Repos\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\ref\Domain.dll
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\bin\Debug\net8.0\Domain.deps.json
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\bin\Debug\net8.0\Domain.dll
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\bin\Debug\net8.0\Domain.pdb
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.sourcelink.json
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.dll
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\refint\Domain.dll
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\Domain.pdb
-C:\Users\nghia\OneDrive\Documents\FPT Fall 2024 Semester 9\SEP490\BE\PRH_NotificationService\Domain\obj\Debug\net8.0\ref\Domain.dll
+D:/Repos/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.deps.json
+D:/Repos/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.dll
+D:/Repos/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.pdb
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.AssemblyInfoInputs.cache
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.AssemblyInfo.cs
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.csproj.CoreCompileInputs.cache
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.sourcelink.json
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.dll
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/refint/Domain.dll
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.pdb
+D:/Repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/ref/Domain.dll
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.deps.json
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.dll
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.pdb
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.AssemblyInfoInputs.cache
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.AssemblyInfo.cs
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.csproj.CoreCompileInputs.cache
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.sourcelink.json
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.dll
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/refint/Domain.dll
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.pdb
+C:/Users/nghia/OneDrive/Documents/FPT Fall 2024 Semester 9/SEP490/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/ref/Domain.dll
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.deps.json
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.dll
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/bin/Debug/net8.0/Domain.pdb
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.AssemblyInfoInputs.cache
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.AssemblyInfo.cs
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.csproj.CoreCompileInputs.cache
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.sourcelink.json
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.dll
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/refint/Domain.dll
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/Domain.pdb
+/home/nghialoe/repos/BE/PRH_NotificationService/Domain/obj/Debug/net8.0/ref/Domain.dll

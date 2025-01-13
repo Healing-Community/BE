@@ -1,6 +1,8 @@
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using Domain.Entities;
+using Domain.Enum;
 using MediatR;
 
 namespace Application.Commads_Queries.Queries.Posts.GetRelativeCatogoryPost;
@@ -14,7 +16,7 @@ public class GetRelativeCatogoryPostQueryHandler(IPostRepository postRepository)
             var post = await postRepository.GetByIdAsync(request.PostId);
             // Get all post in the same category except the current post
             var relativeCategoryPost = await postRepository.GetsByPropertyAsync(
-                x => x.CategoryId == post.CategoryId && x.Status == 0 && x.PostId != post.PostId,
+                x => x.CategoryId == post.CategoryId && x.Status == (int)PostStatus.Public && x.PostId != post.PostId,
                 request.Top);
             // Remove the current post from the list
             relativeCategoryPost = relativeCategoryPost?.Where(x => x.PostId != post.PostId);

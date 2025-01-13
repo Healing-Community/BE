@@ -1,6 +1,7 @@
 using Application.Commons;
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
+using Domain.Enum;
 using MediatR;
 
 namespace Application.Commads_Queries.Queries.Share;
@@ -35,7 +36,7 @@ public class GetSharePostQueryHandler(IShareRepository shareRepository,IPostRepo
                 UpdateAt = p.Post.UpdateAt
             });
             if (postDetailDtos == null) return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn([]);
-            return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(postDetailDtos);
+            return BaseResponse<IEnumerable<PostDetailShareDto>>.SuccessReturn(postDetailDtos.Where(p => p.Status == (int)PostStatus.Public));
         }
         catch (Exception e)
         {

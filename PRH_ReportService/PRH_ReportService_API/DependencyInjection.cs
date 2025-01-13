@@ -70,6 +70,13 @@ public static class DependencyInjection
             {
                 x.AddConsumer<PostReportConsumer>();
                 x.AddConsumer<CommentReportConsumer>();
+                x.AddConsumer<SyncModerateAppointmentConsumer>();
+                x.AddConsumer<SyncModeratePostComsumer>();
+                x.AddConsumer<SyncModerateCommentConsumer>();
+                x.AddConsumer<ModeratorActivityBanCommentConsumer>();
+                x.AddConsumer<ModeratorActivityBanPostConsumer>();
+                x.AddConsumer<ModeratorActivityModerateAppointmentConsumer>();
+                x.AddConsumer<AppointmentReportConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
@@ -86,6 +93,37 @@ public static class DependencyInjection
                     cfg.ReceiveEndpoint(QueueName.CommentReportQueue.ToString(), c =>
                     {
                         c.ConfigureConsumer<CommentReportConsumer>(context);
+                    });
+                    cfg.ReceiveEndpoint(QueueName.SyncAppointmentReportQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<SyncModerateAppointmentConsumer>(context);
+                    });
+                    cfg.ReceiveEndpoint(QueueName.SyncPostReportQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<SyncModeratePostComsumer>(context);
+                    });
+                    cfg.ReceiveEndpoint(QueueName.SyncCommentReportQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<SyncModerateCommentConsumer>(context);
+                    });
+
+                    cfg.ReceiveEndpoint(QueueName.AppointmentModerateQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<ModeratorActivityModerateAppointmentConsumer>(context);
+                    });
+
+                    cfg.ReceiveEndpoint(QueueName.BanPostQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<ModeratorActivityBanPostConsumer>(context);
+                    });
+
+                    cfg.ReceiveEndpoint(QueueName.BanCommentQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<ModeratorActivityBanCommentConsumer>(context);
+                    });
+                    cfg.ReceiveEndpoint(QueueName.AppointmentReportQueue.ToString(), c =>
+                    {
+                        c.ConfigureConsumer<AppointmentReportConsumer>(context);
                     });
 
                     // Thiết lập Retry
