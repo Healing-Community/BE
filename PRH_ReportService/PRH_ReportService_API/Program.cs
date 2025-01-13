@@ -37,6 +37,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", builder.Configuration["GeneralSettings:ApiName"]);
+    c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
     c.RoutePrefix = "";
 });
 
@@ -93,6 +94,7 @@ app.UseHttpMetrics();
 app.UseMetricServer();
 
 #endregion
+app.UserStaticFiles();
 
 app.UseHttpsRedirection();
 
