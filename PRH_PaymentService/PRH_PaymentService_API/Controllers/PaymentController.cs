@@ -6,6 +6,7 @@ using Application.Commands_Queries.Queries.GetPaymentInfo;
 using Application.Commands_Queries.Queries.GetPaymentManager;
 using Application.Commands_Queries.Queries.GetPaymentManager.GetPaymentManager_Expert;
 using Application.Commands_Queries.Queries.GetPaymentManager.GetPaymentManager_User;
+using Application.Commands_Queries.Queries.GetRevenueStatistics;
 using Application.Queries.GetPaymentStatus;
 using Application.Queries.GetTransactionHistory;
 using Domain.Contracts;
@@ -95,6 +96,14 @@ namespace PRH_PaymentService_API.Controllers
         public async Task<IActionResult> GetExpertRevenueDetails()
         {
             var response = await sender.Send(new GetExpertRevenueDetailsQuery());
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("revenue-statistics")]
+        public async Task<IActionResult> GetRevenueStatistics()
+        {
+            var response = await sender.Send(new GetRevenueStatisticsQuery());
             return response.ToActionResult();
         }
     }

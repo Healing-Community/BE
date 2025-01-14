@@ -11,7 +11,7 @@ namespace PRH_ReportService_API.Controllers
     [ApiController]
     public class ModeratorActivityController(ISender sender) : ControllerBase
     {
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("get-comment-report-activity")]
         public async Task<IActionResult> GetCommentReportActivity()
         {
@@ -19,15 +19,14 @@ namespace PRH_ReportService_API.Controllers
             return response.ToActionResult();
         }
 
-        [Authorize (Roles = "Moderator")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("get-post-report-activity")]
         public async Task<IActionResult> GetPostReportActivity()
         {
             var response = await sender.Send(new GetPostReportActivityQuery());
             return response.ToActionResult();
         }
-
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("get-appointment-report-activity")]
         public async Task<IActionResult> GetAppointmentReportActivity()
         {

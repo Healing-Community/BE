@@ -1,5 +1,7 @@
-using Application.Commands_Queries.Commands.Users.UserFollower;
+﻿using Application.Commands_Queries.Commands.Users.UserFollower;
 using Application.Commands_Queries.Commands.Users.UserFollower.UnfollowUser;
+using Application.Commands_Queries.Queries.Users.GetCountUserFollower;
+using Application.Commands_Queries.Queries.Users.GetCountUserFollowing;
 using Application.Commands_Queries.Queries.Users.GetUserProfile;
 
 namespace PRH_UserService_API.Controllers
@@ -28,6 +30,30 @@ namespace PRH_UserService_API.Controllers
         public async Task<IActionResult> UnfollowUser(string userId)
         {
             var response = await sender.Send(new UnfollowUserCommand(userId));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        ///  Đếm số lượng người mà bạn đang theo dõi - không phân quyền login
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("count-followers/{userId}")]
+        public async Task<IActionResult> CountFollowers(string userId)
+        {
+            var response = await sender.Send(new CountFollowersQuery(userId));
+            return response.ToActionResult();
+        }
+        /// <summary>
+        ///  Đếm số lượng người đang theo dõi bạn - không phân quyền login
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("count-following/{userId}")]
+        public async Task<IActionResult> CountFollowing(string userId)
+        {
+            var response = await sender.Send(new CountFollowingQuery(userId));
             return response.ToActionResult();
         }
     }
