@@ -152,7 +152,7 @@ namespace PRH_PostService_API.Controllers
             return response.ToActionResult();
         }
         /// <summary>
-        /// Đếm tổng số lượt react mà người dùng đã tương tác với bài viết - không cần login
+        /// Đếm tổng số lượt react mà người dùng được người dùng khác react - không cần login
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
