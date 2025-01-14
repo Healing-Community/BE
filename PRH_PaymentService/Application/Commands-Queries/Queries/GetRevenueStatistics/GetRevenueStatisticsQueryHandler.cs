@@ -6,48 +6,122 @@ using MediatR;
 
 namespace Application.Commands_Queries.Queries.GetRevenueStatistics
 {
-    public class GetRevenueStatisticsQueryHandler(IPlatformFeeRepository platformFeeRepository, IPaymentRepository paymentRepository) : IRequestHandler<GetRevenueStatisticsQuery, BaseResponse<RevenueStatisticsDto>>
+    public class GetRevenueStatisticsQueryHandler(IPlatformFeeRepository platformFeeRepository, IPaymentRepository paymentRepository) : IRequestHandler<GetRevenueStatisticsQuery, BaseResponse<IEnumerable<RevenueStatisticsDto>>>
     {
-        public async Task<BaseResponse<RevenueStatisticsDto>> Handle(GetRevenueStatisticsQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<IEnumerable<RevenueStatisticsDto>>> Handle(GetRevenueStatisticsQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                // Get platform fee
+                // Lấy thông tin phí nền tảng
                 var platformFee = await platformFeeRepository.GetByPropertyAsync(p => p.PlatformFeeName == "PlatformFee");
                 if (platformFee == null)
                 {
-                    return BaseResponse<RevenueStatisticsDto>.NotFound("Không tìm thấy thông tin phí.");
+                    return BaseResponse<IEnumerable<RevenueStatisticsDto>>.NotFound("Không tìm thấy thông tin phí.");
                 }
 
-                // Get all completed payments
+                // Lấy danh sách thanh toán đã hoàn thành
                 var payments = await paymentRepository.GetsByPropertyAsync(p => p.Status == (int)PaymentStatus.Completed);
                 if (payments == null || !payments.Any())
                 {
-                    return BaseResponse<RevenueStatisticsDto>.SuccessReturn(new RevenueStatisticsDto(), "Không tìm thấy thông tin thanh toán.");
+                    return BaseResponse<IEnumerable<RevenueStatisticsDto>>.SuccessReturn(new List<RevenueStatisticsDto>(), "Không tìm thấy thông tin thanh toán.");
                 }
 
-                // Calculate total revenue
-                var totalRevenue = payments.Sum(p => p.Amount * platformFee.PlatformFeeValue / 100);
-
-                // Calculate revenue for the current month
-                var currentMonth = DateTime.UtcNow.Month;
-                var currentYear = DateTime.UtcNow.Year;
-                var currentMonthRevenue = payments
-                    .Where(p => p.PaymentDate.Month == currentMonth && p.PaymentDate.Year == currentYear)
-                    .Sum(p => p.Amount * platformFee.PlatformFeeValue / 100);
-
-                var revenueStatistics = new RevenueStatisticsDto
+                // Chuyển đổi thời gian thanh toán sang GMT+7
+                foreach (var payment in payments)
                 {
-                    TotalRevenue = totalRevenue,
-                    CurrentMonthRevenue = currentMonthRevenue
-                };
+                    payment.PaymentDate = ConvertToGmtPlus7(payment.PaymentDate);
+                }
 
-                return BaseResponse<RevenueStatisticsDto>.SuccessReturn(revenueStatistics);
+                IEnumerable<RevenueStatisticsDto> groupedStatistics;
+
+                // Lọc theo loại nhóm (FilterType)
+                switch (request.FilterType?.ToLower())
+                {
+                    case "day":
+                        groupedStatistics = payments.GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, p.PaymentDate.Day })
+                                                    .Select(g => new RevenueStatisticsDto
+                                                    {
+                                                        Year = g.Key.Year,
+                                                        Month = g.Key.Month,
+                                                        Day = g.Key.Day,
+                                                        DayOfWeek = new DateTime(g.Key.Year, g.Key.Month, g.Key.Day).DayOfWeek.ToString(),
+                                                        TotalRevenue = g.Sum(p => p.Amount * platformFee.PlatformFeeValue / 100),
+                                                        TotalBookings = g.Count()
+                                                    }).ToList();
+                        break;
+
+                    case "week":
+                        groupedStatistics = payments.GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, WeekOfMonth = GetWeekOfMonth(p.PaymentDate) })
+                                                    .Select(g => new RevenueStatisticsDto
+                                                    {
+                                                        Year = g.Key.Year,
+                                                        Month = g.Key.Month,
+                                                        WeekOfMonth = g.Key.WeekOfMonth,
+                                                        TotalRevenue = g.Sum(p => p.Amount * platformFee.PlatformFeeValue / 100),
+                                                        TotalBookings = g.Count()
+                                                    }).ToList();
+                        break;
+
+                    case "month":
+                        groupedStatistics = payments.GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
+                                                    .Select(g => new RevenueStatisticsDto
+                                                    {
+                                                        Year = g.Key.Year,
+                                                        Month = g.Key.Month,
+                                                        TotalRevenue = g.Sum(p => p.Amount * platformFee.PlatformFeeValue / 100),
+                                                        TotalBookings = g.Count()
+                                                    }).ToList();
+                        break;
+
+                    case "year":
+                        groupedStatistics = payments.GroupBy(p => p.PaymentDate.Year)
+                                                    .Select(g => new RevenueStatisticsDto
+                                                    {
+                                                        Year = g.Key,
+                                                        TotalRevenue = g.Sum(p => p.Amount * platformFee.PlatformFeeValue / 100),
+                                                        TotalBookings = g.Count()
+                                                    }).ToList();
+                        break;
+
+                    default:
+                        return BaseResponse<IEnumerable<RevenueStatisticsDto>>.BadRequest("Invalid filter type.");
+                }
+
+                return BaseResponse<IEnumerable<RevenueStatisticsDto>>.SuccessReturn(groupedStatistics);
             }
             catch (Exception e)
             {
-                return BaseResponse<RevenueStatisticsDto>.InternalServerError(e.Message);
+                return BaseResponse<IEnumerable<RevenueStatisticsDto>>.InternalServerError(e.Message);
             }
+        }
+
+        private static DateTime ConvertToGmtPlus7(DateTime utcDate)
+        {
+            try
+            {
+                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                return TimeZoneInfo.ConvertTimeFromUtc(utcDate, timeZoneInfo);
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                throw new Exception("The specified time zone (SE Asia Standard Time) could not be found.");
+            }
+            catch (InvalidTimeZoneException)
+            {
+                throw new Exception("The specified time zone (SE Asia Standard Time) is invalid.");
+            }
+        }
+
+        private static int GetWeekOfMonth(DateTime date)
+        {
+            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+            int firstDayWeek = (int)firstDayOfMonth.DayOfWeek;
+            if (firstDayWeek == 0) firstDayWeek = 7; // Sunday as 7
+
+            int currentDayWeek = (int)date.DayOfWeek;
+            if (currentDayWeek == 0) currentDayWeek = 7; // Sunday as 7
+
+            return ((date.Day + firstDayWeek - 2) / 7) + 1;
         }
     }
 }

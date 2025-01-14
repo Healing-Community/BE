@@ -7,6 +7,8 @@ using Application.Commands_Queries.Queries.GetPaymentManager;
 using Application.Commands_Queries.Queries.GetPaymentManager.GetPaymentManager_Expert;
 using Application.Commands_Queries.Queries.GetPaymentManager.GetPaymentManager_User;
 using Application.Commands_Queries.Queries.GetRevenueStatistics;
+using Application.Commands_Queries.Queries.GetTotalRevenueAdmin;
+using Application.Commands_Queries.Queries.GetTotalRevenueExpert;
 using Application.Queries.GetPaymentStatus;
 using Application.Queries.GetTransactionHistory;
 using Domain.Contracts;
@@ -92,18 +94,40 @@ namespace PRH_PaymentService_API.Controllers
         }
 
         [Authorize(Roles = "Expert")]
-        [HttpGet("revenue-details")]
-        public async Task<IActionResult> GetExpertRevenueDetails()
+        [HttpGet("revenue-details-experts")]
+        public async Task<IActionResult> GetExpertRevenueDetails([FromQuery] string filterType)
         {
-            var response = await sender.Send(new GetExpertRevenueDetailsQuery());
+            var response = await sender.Send(new GetExpertRevenueDetailsQuery
+            {
+                FilterType = filterType
+            });
             return response.ToActionResult();
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpGet("revenue-statistics")]
-        public async Task<IActionResult> GetRevenueStatistics()
+        [HttpGet("revenue-statistics-admin")]
+        public async Task<IActionResult> GetRevenueStatistics([FromQuery] string filterType)
         {
-            var response = await sender.Send(new GetRevenueStatisticsQuery());
+            var response = await sender.Send(new GetRevenueStatisticsQuery
+            {
+                FilterType = filterType
+            });
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("total-revenue-admin")]
+        public async Task<IActionResult> GetTotalRevenueForAdmin()
+        {
+            var response = await sender.Send(new GetTotalRevenueAdminQuery());
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "Expert")]
+        [HttpGet("total-revenue-expert")]
+        public async Task<IActionResult> GetTotalRevenueForExpert()
+        {
+            var response = await sender.Send(new GetTotalRevenueExpertQuery());
             return response.ToActionResult();
         }
     }
