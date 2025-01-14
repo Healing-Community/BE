@@ -26,12 +26,6 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
                     return BaseResponse<IEnumerable<RevenueStatisticsDto>>.SuccessReturn(new List<RevenueStatisticsDto>(), "Không tìm thấy thông tin thanh toán.");
                 }
 
-                // Chuyển đổi thời gian thanh toán sang GMT+7
-                foreach (var payment in payments)
-                {
-                    payment.PaymentDate = ConvertToGmtPlus7(payment.PaymentDate);
-                }
-
                 IEnumerable<RevenueStatisticsDto> groupedStatistics;
 
                 // Lọc theo loại nhóm (FilterType)
@@ -92,23 +86,6 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
             catch (Exception e)
             {
                 return BaseResponse<IEnumerable<RevenueStatisticsDto>>.InternalServerError(e.Message);
-            }
-        }
-
-        private static DateTime ConvertToGmtPlus7(DateTime utcDate)
-        {
-            try
-            {
-                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                return TimeZoneInfo.ConvertTimeFromUtc(utcDate, timeZoneInfo);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                throw new Exception("The specified time zone (SE Asia Standard Time) could not be found.");
-            }
-            catch (InvalidTimeZoneException)
-            {
-                throw new Exception("The specified time zone (SE Asia Standard Time) is invalid.");
             }
         }
 
