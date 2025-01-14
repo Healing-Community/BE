@@ -58,6 +58,8 @@ public class CreateModeratorAccountCommandHandler(IUserRepository userRepository
                 UserId = Ulid.NewUlid().ToString(),
                 Email = request.registerModeratorAccountDto.Email,
                 UserName = request.registerModeratorAccountDto.UserName,
+                PhoneNumber = request.registerModeratorAccountDto.PhoneNumber,
+                FullName = request.registerModeratorAccountDto.FullName,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.registerModeratorAccountDto.Password),
                 CreatedAt = DateTime.UtcNow + TimeSpan.FromHours(7),
                 UpdatedAt = DateTime.UtcNow + TimeSpan.FromHours(7),

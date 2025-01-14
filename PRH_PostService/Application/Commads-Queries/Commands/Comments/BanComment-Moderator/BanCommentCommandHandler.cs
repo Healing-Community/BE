@@ -11,7 +11,7 @@ using UserInformation;
 
 namespace Application.Commads_Queries.Commands.Comments.BanComment;
 
-public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHelper grpcHelper,IHttpContextAccessor accessor, ICommentRepository commentRepository) : IRequestHandler<BanCommentCommand, BaseResponse<string>>
+public class BanCommentCommandHandler(IMessagePublisher messagePublisher, IGrpcHelper grpcHelper, IHttpContextAccessor accessor, ICommentRepository commentRepository) : IRequestHandler<BanCommentCommand, BaseResponse<string>>
 {
     public async Task<BaseResponse<string>> Handle(BanCommentCommand request, CancellationToken cancellationToken)
     {
@@ -28,10 +28,10 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
                 return BaseResponse<string>.NotFound("Không tìm thấy bình luận");
             }
             // Override comment content
-            comment.Content = "Bình luận này đã bị ban do vi phạm quy định";
             // Bị ban
-            if(request.IsApprove)
+            if (request.IsApprove == true)
             {
+                comment.Content = "[Bình luận này đã bị ban do vi phạm quy định của hệ thống]";
                 await commentRepository.Update(comment.CommentId, comment);
             }
             // Nếu không ban thì không cần update
@@ -48,7 +48,8 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
             }
 
             // Send message to user service to notify user that their comment has been banned
-            var message = new BanCommentMessage{
+            var message = new BanCommentMessage
+            {
                 CommentId = comment.CommentId,
                 UserId = userId,
                 UserName = userInfoReply.UserName,
@@ -57,7 +58,7 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
                 IsApprove = request.IsApprove
             };
 
-            await messagePublisher.PublishAsync(message,QueueName.BanCommentQueue,cancellationToken);
+            await messagePublisher.PublishAsync(message, QueueName.BanCommentQueue, cancellationToken);
 
             await messagePublisher.PublishAsync(new SyncBanCommentReportMessage
             {
@@ -65,7 +66,7 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher,IGrpcHe
                 IsApprove = request.IsApprove
             }, QueueName.SyncCommentReportQueue, cancellationToken);
 
-            return BaseResponse<string>.SuccessReturn(message:"Kiểm duyệt bình luận thành công với trạng thái: " + (request.IsApprove ? "Đã ban" : "Không ban"));
+            return BaseResponse<string>.SuccessReturn(message: "Kiểm duyệt bình luận thành công với trạng thái: " + (request.IsApprove ? "Đã ban" : "Không ban"));
 
         }
         catch (Exception e)

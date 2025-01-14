@@ -9,4 +9,7 @@ public interface IUserRepository : IReadRepository<User>, ICreateRepository<User
     Task<User?> GetUserByEmailAsync(string email);
     Task<User?> GetUserByUserNameAsync(string userName);
     Task<bool> IsUserExistAsync(string userId);
+    Task<int> CountAsync();
+    Task<int> CountNewUsersThisMonthAsync();
+    Task<Dictionary<string, int>> CountUsersByRoleAsync();
 }

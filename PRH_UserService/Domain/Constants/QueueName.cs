@@ -3,5 +3,7 @@
 public enum QueueName
 {
     PostQueue,
-    ReportQueue
+    ReportQueue,
+    MailQueue,
+    UserReportSystemQueue,
 }
