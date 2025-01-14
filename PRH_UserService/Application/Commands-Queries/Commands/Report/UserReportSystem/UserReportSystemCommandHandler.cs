@@ -25,6 +25,7 @@ public class UserReportSystemCommandHandler(IUserRepository userRepository, IHtt
             {
                 Email = user?.Email,
                 UserId = user?.UserId,
+                UserName = user?.UserName,
                 Content = request.Content
             };
             await messagePublisher.PublishAsync(message: message, QueueName.UserReportSystemQueue, cancellationToken);
