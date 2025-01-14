@@ -8,6 +8,7 @@ using Application.Commands_Queries.Commands.Users.UpdateUserProfile.DeleteUserSo
 using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateProfilePicture;
 using Application.Commands_Queries.Commands.Users.UpdateUserProfile.UpdateSocialMediaLink;
 using Application.Commands_Queries.Commands.Users.VerifyUser;
+using Application.Commands_Queries.Queries.Users.GetCountRegistrationDays;
 using Application.Commands_Queries.Queries.Users.GetUserManager;
 using Application.Commands_Queries.Queries.Users.GetUsers;
 using Application.Commands_Queries.Queries.Users.GetUsersById;
@@ -151,6 +152,18 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {
         var response = await sender.Send(new ResetPasswordCommand(resetPasswordDto, HttpContext));
+        return response.ToActionResult();
+    }
+    /// <summary>
+    ///  Đếm số lượng ngày bạn đã đăng kí tài khoản - không phân quyền login
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpGet("count-registration-days/{userId}")]
+    public async Task<IActionResult> CountRegistrationDays(string userId)
+    {
+        var response = await sender.Send(new CountRegistrationDaysQuery(userId));
         return response.ToActionResult();
     }
 }
