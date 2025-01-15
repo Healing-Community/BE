@@ -70,16 +70,20 @@ namespace Application.Commands.CreateAvailability
                 }
                 // Kiểm tra expert đã có thông tin thanh toán chưa
 
-                var userPaymentInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
-                "UserService",
-                async client => await client.GetUserPaymentInfoAsync(new GetUserPaymentInfoRequest { UserId = userId })
-                );
-                if (userPaymentInfoReply == null)
+                try
                 {
+                    var userPaymentInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
+                                    "UserService",
+                                    async client => await client.GetUserPaymentInfoAsync(new GetUserPaymentInfoRequest { UserId = userId })
+                                    );
+                }
+                catch
+                {
+
                     response.Success = false;
                     response.Errors.Add("Không tìm thấy thông tin thanh toán. Vui lòng cập nhật thông tin thanh toán trước khi tạo lịch trống.");
                     response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
-                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 

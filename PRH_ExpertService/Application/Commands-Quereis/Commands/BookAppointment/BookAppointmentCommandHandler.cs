@@ -58,17 +58,20 @@ namespace Application.Commands.BookAppointment
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
-
-                var userPaymentInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
-                "UserService",
-                async client => await client.GetUserPaymentInfoAsync(new GetUserPaymentInfoRequest { UserId = userId })
-                );
-                if (userPaymentInfoReply == null)
+                try
                 {
+                    var userPaymentInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
+                                    "UserService",
+                                    async client => await client.GetUserPaymentInfoAsync(new GetUserPaymentInfoRequest { UserId = userId })
+                                    );
+                }
+                catch
+                {
+
                     response.Success = false;
                     response.Errors.Add("Không tìm thấy thông tin thanh toán. Vui lòng cập nhật thông tin thanh toán trước khi đặt lịch.");
                     response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
-                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
 
