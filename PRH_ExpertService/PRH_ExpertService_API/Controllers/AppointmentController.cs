@@ -126,6 +126,7 @@ namespace PRH_ExpertService_API.Controllers
             var response = await sender.Send(new GetAppointmentRatingStatusQuery { AppointmentId = appointmentId });
             return response.ToActionResult();
         }
+
         [Authorize(Roles = "Expert")]
         [HttpGet("statistics")]
         public async Task<IActionResult> GetExpertStatistics()
