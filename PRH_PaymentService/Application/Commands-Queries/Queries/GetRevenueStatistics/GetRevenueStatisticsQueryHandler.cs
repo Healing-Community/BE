@@ -45,7 +45,9 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
                         break;
 
                     case "week":
-                        groupedStatistics = payments.GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, WeekOfMonth = GetWeekOfMonth(p.PaymentDate) })
+                        var currentWeekStart = DateTime.Now.StartOfWeek(DayOfWeek.Monday);
+                        groupedStatistics = payments.Where(p => p.PaymentDate >= currentWeekStart && p.PaymentDate < currentWeekStart.AddDays(7))
+                                                    .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, WeekOfMonth = GetWeekOfMonth(p.PaymentDate) })
                                                     .Select(g => new RevenueStatisticsDto
                                                     {
                                                         Year = g.Key.Year,
@@ -57,11 +59,14 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
                         break;
 
                     case "month":
-                        groupedStatistics = payments.GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
+                        var currentMonthStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                        groupedStatistics = payments.Where(p => p.PaymentDate >= currentMonthStart && p.PaymentDate < currentMonthStart.AddMonths(1))
+                                                    .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, WeekOfMonth = GetWeekOfMonth(p.PaymentDate) })
                                                     .Select(g => new RevenueStatisticsDto
                                                     {
                                                         Year = g.Key.Year,
                                                         Month = g.Key.Month,
+                                                        WeekOfMonth = g.Key.WeekOfMonth,
                                                         TotalRevenue = g.Sum(p => p.Amount * platformFee.PlatformFeeValue / 100),
                                                         TotalBookings = g.Count()
                                                     }).ToList();
@@ -99,6 +104,15 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
             if (currentDayWeek == 0) currentDayWeek = 7; // Sunday as 7
 
             return ((date.Day + firstDayWeek - 2) / 7) + 1;
+        }
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
         }
     }
 }
