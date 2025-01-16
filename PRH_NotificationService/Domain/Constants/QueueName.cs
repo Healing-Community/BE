@@ -8,5 +8,6 @@
         ReportQueue,
         MailQueue,
         FollowQueue,
+        ShareQueue
     }
 }

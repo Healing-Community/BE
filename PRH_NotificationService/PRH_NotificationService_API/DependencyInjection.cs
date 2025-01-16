@@ -98,6 +98,7 @@ public static class DependencyInjection
             x.AddConsumer<ReportServiceConsumer>();
             x.AddConsumer<MailConsumer>();
             x.AddConsumer<FollowServiceConsumer>();
+            x.AddConsumer<ShareServiceConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -143,13 +144,17 @@ public static class DependencyInjection
                     c.ConfigureConsumer<FollowServiceConsumer>(context);
                 });
 
+                // Register ShareServiceConsumer
+                cfg.ReceiveEndpoint(QueueName.ShareQueue.ToString(), c =>
+                {
+                    c.ConfigureConsumer<ShareServiceConsumer>(context);
+                });
+
                 // Configure Retry
                 cfg.UseMessageRetry(retryConfig =>
                 {
                     retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Retry 5 times, every 5 seconds
                 });
-
-
 
                 // Configure CircuitBreaker
                 cfg.UseCircuitBreaker(cbConfig =>
