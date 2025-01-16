@@ -1,6 +1,6 @@
-﻿using Application.Commons;
-using Application.Commons.DTOs;
+﻿using Application.Commons.DTOs;
 using Application.Commons.Tools;
+using Application.Commons;
 using Application.Interfaces.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -46,15 +46,15 @@ namespace Application.Queries.GetUserRatingAndComment
                 {
                     response.Success = false;
                     response.Message = "Lịch hẹn không tồn tại hoặc không thuộc về người dùng hiện tại.";
-                    response.StatusCode = 404;
+                    response.StatusCode = 200; // Trả về 200 để tránh lỗi 404
                     return response;
                 }
 
-                if (!appointment.Rating.HasValue || string.IsNullOrEmpty(appointment.Comment))
+                if (!appointment.Rating.HasValue)
                 {
                     response.Success = false;
-                    response.Message = "Lịch hẹn chưa được đánh giá hoặc bình luận.";
-                    response.StatusCode = 404;
+                    response.Message = "Lịch hẹn chưa được đánh giá.";
+                    response.StatusCode = 200; // Trả về 200 thay vì 404
                     return response;
                 }
 
