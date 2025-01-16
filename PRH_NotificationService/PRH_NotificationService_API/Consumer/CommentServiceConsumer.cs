@@ -1,5 +1,5 @@
-﻿using Application.Commons.Request.Comment;
-using Application.Interfaces.Repository;
+﻿using Application.Interfaces.Repository;
+using Domain.Constants.AMQPMessage.Comment;
 using Domain.Entities;
 using MassTransit;
 using NUlid;

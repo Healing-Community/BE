@@ -32,6 +32,7 @@ public class BanCommentCommandHandler(IMessagePublisher messagePublisher, IGrpcH
             if (request.IsApprove == true)
             {
                 comment.Content = "[Bình luận này đã bị ban do vi phạm quy định của hệ thống]";
+                comment.CoverImgUrl = null;
                 await commentRepository.Update(comment.CommentId, comment);
             }
             // Nếu không ban thì không cần update

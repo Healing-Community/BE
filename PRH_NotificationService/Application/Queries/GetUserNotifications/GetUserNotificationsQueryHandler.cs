@@ -16,7 +16,7 @@ namespace Application.Queries.GetUserNotifications
             var response = new BaseResponse<List<NotificationDto>>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
@@ -40,7 +40,7 @@ namespace Application.Queries.GetUserNotifications
                     return response;
                 }
 
-                var notifications = await notificationRepository.GetNotificationsByUserAsync(userId, request.IncludeRead);
+                var notifications = await notificationRepository.GetNotificationsByUserAsync(userId);
 
                 response.Success = true;
                 response.Data = notifications.Select(n => new NotificationDto

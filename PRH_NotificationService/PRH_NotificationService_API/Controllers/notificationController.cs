@@ -4,6 +4,7 @@ using Application.Commands.CreateNotificationType;
 using Application.Commands.DeleteNotification;
 using Application.Commands.MarkNotificationAsRead;
 using Application.Commands.UpdateNotificationPreference;
+using Application.Queries.GetNotificationTypes;
 using Application.Queries.GetPopularNotificationTypes;
 using Application.Queries.GetReadNotificationRate;
 using Application.Queries.GetUnreadNotificationCount;
@@ -78,9 +79,9 @@ namespace PRH_NotificationService_API.Controllers
 
         [Authorize]
         [HttpGet("notifications")]
-        public async Task<IActionResult> GetUserNotifications([FromQuery] bool includeRead = false)
+        public async Task<IActionResult> GetUserNotifications()
         {
-            var response = await sender.Send(new GetUserNotificationsQuery(includeRead));
+            var response = await sender.Send(new GetUserNotificationsQuery());
             return response.ToActionResult();
         }
 
@@ -97,6 +98,14 @@ namespace PRH_NotificationService_API.Controllers
         public async Task<IActionResult> CreateNotificationType([FromBody] CreateNotificationTypeCommand command)
         {
             var response = await sender.Send(command);
+            return response.ToActionResult();
+        }
+
+        [Authorize]
+        [HttpGet("get-all-notification-type")]
+        public async Task<IActionResult> GetAllNotificationType()
+        {
+            var response = await sender.Send(new GetNotificationTypesQuery());
             return response.ToActionResult();
         }
     }

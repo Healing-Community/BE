@@ -20,7 +20,7 @@ public class HandleWebhookCommandHandler(IGrpcHelper grpcHelper, IPaymentReposit
             Match match = Regex.Match(webhookData.Description, pattern);
             if (!match.Success)
             {
-                return BaseResponse<string>.BadRequest("Invalid description");
+                return BaseResponse<string>.SuccessReturn("Thông tin không hợp lệ");
             }
             string role = match.Groups[1].Value; // Phần định danh role (EXPERT hoặc USER)
             string orderCode = match.Groups[2].Value; // Phần OrderCode

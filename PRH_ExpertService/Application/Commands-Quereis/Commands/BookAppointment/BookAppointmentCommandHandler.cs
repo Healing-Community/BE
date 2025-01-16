@@ -1,14 +1,18 @@
 ﻿using Application.Commons;
 using Application.Commons.Tools;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using NUlid;
+using UserInformation;
+using UserPaymentService;
 
 namespace Application.Commands.BookAppointment
 {
     public class BookAppointmentCommandHandler(
+        IGrpcHelper grpcHelper,
         IExpertAvailabilityRepository availabilityRepository,
         IAppointmentRepository appointmentRepository,
         IExpertProfileRepository expertProfileRepository,
@@ -50,6 +54,22 @@ namespace Application.Commands.BookAppointment
                 {
                     response.Errors.Add("Không tìm thấy email người dùng.");
                     response.Success = false;
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                    return response;
+                }
+                try
+                {
+                    var userPaymentInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
+                                    "UserService",
+                                    async client => await client.GetUserPaymentInfoAsync(new GetUserPaymentInfoRequest { UserId = userId })
+                                    );
+                }
+                catch
+                {
+
+                    response.Success = false;
+                    response.Errors.Add("Không tìm thấy thông tin thanh toán. Vui lòng cập nhật thông tin thanh toán trước khi đặt lịch.");
                     response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;

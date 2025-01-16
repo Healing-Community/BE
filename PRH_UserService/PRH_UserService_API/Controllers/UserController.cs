@@ -140,7 +140,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         return Redirect("https://nghia46.github.io/Static-Page-Healing-community/success-verification");
     }
 
-    [Authorize(Roles = "User")]
+    [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout([FromBody] LogoutRequestDto logoutRequestDto)
     {
@@ -148,7 +148,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "User, Expert")]
+    [Authorize]
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {

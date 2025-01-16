@@ -9,15 +9,10 @@ namespace Persistence.Repositories
 {
     public class NotificationRepository(HFDBNotificationServiceContext context) : INotificationRepository
     {
-        public async Task<List<Notification>> GetNotificationsByUserAsync(string userId, bool includeRead)
+        public async Task<List<Notification>> GetNotificationsByUserAsync(string userId)
         {
             var query = context.Notifications
                 .Where(n => n.UserId == userId);
-
-            if (!includeRead)
-            {
-                query = query.Where(n => !n.IsRead);
-            }
 
             return await query.OrderByDescending(n => n.CreatedAt).ToListAsync();
         }
