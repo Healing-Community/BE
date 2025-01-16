@@ -16,7 +16,7 @@ namespace Application.Queries.GetUserNotifications
             var response = new BaseResponse<List<NotificationDto>>
             {
                 Id = Ulid.NewUlid().ToString(),
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(7),
                 Errors = []
             };
 
