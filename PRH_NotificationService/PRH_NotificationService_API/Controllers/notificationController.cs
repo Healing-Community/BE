@@ -78,9 +78,9 @@ namespace PRH_NotificationService_API.Controllers
 
         [Authorize]
         [HttpGet("notifications")]
-        public async Task<IActionResult> GetUserNotifications([FromQuery] bool includeRead = false)
+        public async Task<IActionResult> GetUserNotifications()
         {
-            var response = await sender.Send(new GetUserNotificationsQuery(includeRead));
+            var response = await sender.Send(new GetUserNotificationsQuery());
             return response.ToActionResult();
         }
 

@@ -1,5 +1,4 @@
-﻿
-namespace Domain.Constants
+﻿namespace Domain.Constants
 {
     public enum QueueName
     {
@@ -7,6 +6,7 @@ namespace Domain.Constants
         ReactionQueue,
         CommentQueue,
         ReportQueue,
-        MailQueue
+        MailQueue,
+        FollowQueue,
     }
 }

@@ -97,6 +97,7 @@ public static class DependencyInjection
             x.AddConsumer<CommentServiceConsumer>();
             x.AddConsumer<ReportServiceConsumer>();
             x.AddConsumer<MailConsumer>();
+            x.AddConsumer<FollowServiceConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -134,6 +135,12 @@ public static class DependencyInjection
                 cfg.ReceiveEndpoint(QueueName.MailQueue.ToString(), c =>
                 {
                     c.ConfigureConsumer<MailConsumer>(context);
+                });
+
+                // Register FollowServiceConsumer
+                cfg.ReceiveEndpoint(QueueName.FollowQueue.ToString(), c =>
+                {
+                    c.ConfigureConsumer<FollowServiceConsumer>(context);
                 });
 
                 // Configure Retry

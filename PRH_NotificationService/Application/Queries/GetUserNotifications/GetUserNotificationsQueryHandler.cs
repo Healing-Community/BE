@@ -40,7 +40,7 @@ namespace Application.Queries.GetUserNotifications
                     return response;
                 }
 
-                var notifications = await notificationRepository.GetNotificationsByUserAsync(userId, request.IncludeRead);
+                var notifications = await notificationRepository.GetNotificationsByUserAsync(userId);
 
                 response.Success = true;
                 response.Data = notifications.Select(n => new NotificationDto

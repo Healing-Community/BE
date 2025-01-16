@@ -1,5 +1,5 @@
-﻿namespace Application.Commons.Request.Post
-{
+﻿namespace Domain.Constants.AMQPMessage.Post;
+
     public class PostingRequest
     {
         public required string PostId { get; set; }
@@ -8,4 +8,3 @@
         public DateTime PostedDate { get; set; }
 
     }
-}

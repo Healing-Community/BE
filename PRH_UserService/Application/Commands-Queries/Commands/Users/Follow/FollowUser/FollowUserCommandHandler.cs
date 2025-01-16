@@ -1,8 +1,11 @@
 using System;
 using System.Security.Claims;
 using Application.Commons;
+using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
 using AutoMapper;
+using Domain.Constants;
+using Domain.Constants.AMQPMessage;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +13,7 @@ using NUlid;
 
 namespace Application.Commands_Queries.Commands.Users.UserFollower;
 
-public class FollowUserCommandHandler(IUserRepository userRepository, IMapper mapper, IFollowerRepository followerRepository, IHttpContextAccessor accessor) : IRequestHandler<FollowUserCommand, BaseResponse<string>>
+public class FollowUserCommandHandler(IUserRepository userRepository, IMapper mapper, IFollowerRepository followerRepository, IHttpContextAccessor accessor, IMessagePublisher messagePublisher) : IRequestHandler<FollowUserCommand, BaseResponse<string>>
 {
     public async Task<BaseResponse<string>> Handle(FollowUserCommand request, CancellationToken cancellationToken)
     {
@@ -27,8 +30,22 @@ public class FollowUserCommandHandler(IUserRepository userRepository, IMapper ma
 
             // Create follower
             var follower = new Follower(id: Ulid.NewUlid().ToString(), userId: userId, followerId: request.FollowUserDto.FollowerId);
+
             // Save follower
             await followerRepository.Create(follower);
+
+            var createdFollower = await followerRepository.GetByIdAsync(follower.Id);
+
+            var followMessage = new FollowMessage
+            {
+                FollowerId = userId,
+                FollowedUserId = request.FollowUserDto.FollowerId,
+                FollowDate = createdFollower.CreatedAt
+            };
+
+            // Publish follow message to queue
+            await messagePublisher.PublishAsync(followMessage, QueueName.FollowQueue, cancellationToken);
+
             return BaseResponse<string>.SuccessReturn("Theo dõi người dùng thành công");
         }
         catch (Exception e)
@@ -37,3 +54,4 @@ public class FollowUserCommandHandler(IUserRepository userRepository, IMapper ma
         }
     }
 }
+
