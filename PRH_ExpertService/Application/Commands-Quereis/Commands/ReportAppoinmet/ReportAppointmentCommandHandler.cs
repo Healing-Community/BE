@@ -78,7 +78,7 @@ public class ReportAppointmentCommandHandler(IGrpcHelper grpcHelper,IMessagePubl
                     </div>
                 </body>
                 </html>
-                ";
+                "
             };
             var expertMail = new SendMailMessage
             {
@@ -97,7 +97,7 @@ public class ReportAppointmentCommandHandler(IGrpcHelper grpcHelper,IMessagePubl
                     </div>
                 </body>
                 </html>
-                ";
+                "
             };
 
             await messagePublisher.PublishAsync(userMail, QueueName.MailQueue, cancellationToken);
