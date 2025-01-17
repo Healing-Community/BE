@@ -14,10 +14,12 @@ public class GetsTopPostQueryHandler(IPostRepository postRepository, IReactionRe
         try
         {
             var topReactionPosts = await reactionRepository.GetsMostReactedPost(request.Top);
+           // return BaseResponse<IEnumerable<PostRecommendDto>>.SuccessReturn(message:topReactionPosts.Count().ToString());
             var topPosts = new List<PostRecommendDto>();
             foreach (var post in topReactionPosts)
             {
                 var postEntity = await postRepository.GetByPropertyAsync(p=>p.PostId == post.PostId && p.Status == (int)PostStatus.Public);
+                if (postEntity == null) continue;
                 var postDto = new PostRecommendDto
                 {
                     PostId = postEntity.PostId,
@@ -36,7 +38,7 @@ public class GetsTopPostQueryHandler(IPostRepository postRepository, IReactionRe
         }
         catch (Exception e)
         {
-            return BaseResponse<IEnumerable<PostRecommendDto>>.InternalServerError(e.Message);
+            return BaseResponse<IEnumerable<PostRecommendDto>>.InternalServerError(e.ToString());
         }
     }
 }
