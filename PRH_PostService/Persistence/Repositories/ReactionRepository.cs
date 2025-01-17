@@ -63,7 +63,8 @@ namespace Persistence.Repositories
             var reactions = new List<Reaction>();
             foreach (var react in reaction)
             {
-                var reactionEntity = await hFDBPostserviceContext.Reactions.FirstOrDefaultAsync(x => x.PostId == react.PostId);
+                var reactionEntity = await hFDBPostserviceContext.Reactions.FirstAsync(x => x.PostId == react.PostId);
+                if (reactionEntity == null) continue;
                 reactions.Add(reactionEntity);
             }
             return reactions;

@@ -39,7 +39,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
         var response = await sender.Send(new GetUsersByIdQuery(userId));
         return response.ToActionResult();
     }
-    [Authorize]
+
     [HttpGet("get-user-role/{userId}")]
     public async Task<IActionResult> GetRoleByPropertyQuery(string userId)
     {
