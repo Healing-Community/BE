@@ -101,34 +101,34 @@ public static class DependencyInjection
 
         #region AMQP
 
-        var rabbitMq = configuration.GetSection("RabbitMq");
+        //var rabbitMq = configuration.GetSection("RabbitMq");
 
-        services.AddMassTransit(x =>
-        {
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
-                {
-                    h.Username(rabbitMq["Username"] ?? throw new NullReferenceException());
-                    h.Password(rabbitMq["Password"] ?? throw new NullReferenceException());
-                });
-                // Thiết lập Retry
-                cfg.UseMessageRetry(retryConfig =>
-                {
-                    retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Thử lại 5 lần, mỗi lần cách nhau 10 giây
-                });
+        //services.AddMassTransit(x =>
+        //{
+        //    x.UsingRabbitMq((context, cfg) =>
+        //    {
+        //        cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
+        //        {
+        //            h.Username(rabbitMq["Username"] ?? throw new NullReferenceException());
+        //            h.Password(rabbitMq["Password"] ?? throw new NullReferenceException());
+        //        });
+        //        // Thiết lập Retry
+        //        cfg.UseMessageRetry(retryConfig =>
+        //        {
+        //            retryConfig.Interval(5, TimeSpan.FromSeconds(5)); // Thử lại 5 lần, mỗi lần cách nhau 10 giây
+        //        });
 
-                // Tùy chọn khác như Timeout, CircuitBreaker nếu cần
-                cfg.UseCircuitBreaker(cbConfig =>
-                {
-                    cbConfig.TrackingPeriod = TimeSpan.FromMinutes(1);
-                    cbConfig.ActiveThreshold = 5;
-                    cbConfig.ResetInterval = TimeSpan.FromMinutes(5);
-                });
-            });
-        });
-        // Add MassTransit hosted service
-        services.AddHostedService<MassTransitHostedService>();
+        //        // Tùy chọn khác như Timeout, CircuitBreaker nếu cần
+        //        cfg.UseCircuitBreaker(cbConfig =>
+        //        {
+        //            cbConfig.TrackingPeriod = TimeSpan.FromMinutes(1);
+        //            cbConfig.ActiveThreshold = 5;
+        //            cbConfig.ResetInterval = TimeSpan.FromMinutes(5);
+        //        });
+        //    });
+        //});
+        //// Add MassTransit hosted service
+        //services.AddHostedService<MassTransitHostedService>();
 
         #endregion
 
