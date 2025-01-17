@@ -34,7 +34,6 @@ namespace PRH_ExpertService_API.Controllers
         //    return response.ToActionResult();
         //}
 
-        [Authorize]
         [HttpGet("profile/{expertProfileId}")]
         public async Task<IActionResult> GetExpertProfile([FromRoute] string expertProfileId)
         {
