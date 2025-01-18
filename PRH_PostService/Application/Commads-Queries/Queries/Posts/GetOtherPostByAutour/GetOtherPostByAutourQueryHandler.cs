@@ -5,7 +5,7 @@ using Application.Interfaces.Repository;
 using Domain.Enum;
 using MediatR;
 
-namespace Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour;
+namespace Application.Commads_Queries.Queries.Posts.GetOtherPostByAutour; 
 
 public class GetOtherPostByAutourQueryHandler(IPostRepository postRepository) : IRequestHandler<GetOtherPostByAutourQuery, BaseResponse<IEnumerable<PostRecommendDto>>>
 {
@@ -13,7 +13,7 @@ public class GetOtherPostByAutourQueryHandler(IPostRepository postRepository) : 
     {
         try
         {
-            var otherPostByAuthour = await postRepository.GetsByPropertyAsync(x => x.UserId == request.AuthourId && x.Status != (int)PostStatus.Baned && x.Status != (int)PostStatus.Group, request.Top);
+            var otherPostByAuthour = await postRepository.GetsByPropertyAsync(x => x.UserId == request.AuthourId && x.Status != (int)PostStatus.Baned && x.Status != (int)PostStatus.Group && x.Status != (int)PostStatus.Private, request.Top);
             var otherPosts = new List<PostRecommendDto>();
             foreach (var post in otherPostByAuthour)
             {
