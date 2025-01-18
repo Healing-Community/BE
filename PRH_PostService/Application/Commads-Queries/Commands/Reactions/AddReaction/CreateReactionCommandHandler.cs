@@ -15,7 +15,8 @@ namespace Application.Commands.Reactions.AddReaction
         IMessagePublisher messagePublisher,
         IReactionTypeRepository reactionTypeRepository,
         IHttpContextAccessor accessor,
-        IReactionRepository reactionRepository) : IRequestHandler<CreateReactionCommand, BaseResponse<ReactionType>>
+        IReactionRepository reactionRepository,
+        IPostRepository postRepository) : IRequestHandler<CreateReactionCommand, BaseResponse<ReactionType>>
     {
         public async Task<BaseResponse<ReactionType>> Handle(CreateReactionCommand request, CancellationToken cancellationToken)
         {
@@ -74,12 +75,22 @@ namespace Application.Commands.Reactions.AddReaction
                     return BaseResponse<ReactionType>.NotFound("Loại reaction không tồn tại.");
                 }
 
+                // Lấy thông tin bài viết để lấy tiêu đề (Title)
+                var post = await postRepository.GetByIdAsync(request.ReactionDto.PostId);
+                if (post == null)
+                {
+                    return BaseResponse<ReactionType>.NotFound("Bài viết không tồn tại.");
+                }
+
                 await messagePublisher.PublishAsync(new ReactionRequestCreatedMessage
                 {
                     ReactionRequestId = Ulid.NewUlid().ToString(),
                     UserId = userId,
                     PostId = request.ReactionDto.PostId,
                     ReactionTypeId = request.ReactionDto.ReactionTypeId,
+                    Title = post.Title,
+                    ReactionTypeName = reactionType.Name,
+                    ReactionTypeIcon = reactionType.Icon,
                     ReactionDate = currentTime
                 }, QueueName.ReactionQueue, cancellationToken);
 
