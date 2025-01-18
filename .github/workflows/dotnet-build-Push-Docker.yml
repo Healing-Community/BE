@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - TestCiCd
 
 jobs:
   build-and-publish:
@@ -19,13 +20,14 @@ jobs:
           - { name: group, dir: PRH_GroupService }
           - { name: payment, dir: PRH_PaymentService }
           - { name: chat, dir: PRH_ChatService }
-    
+          - { name: expert, dir: PRH_ExpertService }
+          - { name: post, dir: PRH_PostService }
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4 # Updated to v4
+      uses: actions/checkout@v4
 
     - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v4 # Updated to v4
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0'
 
@@ -56,7 +58,7 @@ jobs:
       run: dotnet publish --configuration Release --output ./publish
 
     - name: Upload ${{ matrix.service.name }} Service artifacts
-      uses: actions/upload-artifact@v4 # Updated to v4
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.service.name }}-service-publish
         path: ./${{ matrix.service.dir }}/publish
@@ -67,9 +69,7 @@ jobs:
     - name: Build and tag Docker images
       working-directory: ./${{ matrix.service.dir }}
       run: |
-        # Build with version tag
         docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} -f Dockerfile .
-        # Tag as latest
         docker tag ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
 
     - name: List Docker images
@@ -77,9 +77,7 @@ jobs:
 
     - name: Push Docker images
       run: |
-        # Push version tag
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}
-        # Push latest tag
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
 
     - name: Echo deployment info
@@ -92,15 +90,25 @@ jobs:
       run: |
         REPO=${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service
         echo "Fetching tags for $REPO"
-
-        # Fetch all tags, sort by creation time, and remove all except the 5 most recent
         tags=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
           "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | \
           jq -r '.results | sort_by(.last_updated) | .[:-5] | .[].name')
-
-        # Delete tags older than the 5 most recent
         for tag in $tags; do
           echo "Deleting old tag: $tag"
           curl -s -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
             "https://hub.docker.com/v2/repositories/$REPO/tags/$tag/"
         done
+
+    # Step chỉ dành cho expert service
+    - name: Inject credentials for Expert Service
+      if: matrix.service.name == 'expert'
+      run: |
+        touch ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+        echo "${{ secrets.GOOGLEJSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+
+    # Step chỉ dành cho post service
+    - name: Inject credentials for Post Service
+      if: matrix.service.name == 'post'
+      run: |
+        touch ./PRH_PostService/PRH_PostService_API/healing-community.json
+        echo "${{ secrets.GOOGLEJSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
