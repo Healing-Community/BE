@@ -47,6 +47,7 @@ namespace Application.Queries.GetUserNotifications
                 {
                     NotificationId = n.NotificationId,
                     NotificationTypeId = n.NotificationTypeId,
+                    UserId = n.UserId,
                     Message = n.Message,
                     IsRead = n.IsRead,
                     CreatedAt = n.CreatedAt,

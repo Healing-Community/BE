@@ -4,32 +4,32 @@ using Domain.Entities;
 using MassTransit;
 using NUlid;
 
-namespace PRH_NotificationService_API.Consumer
+namespace PRH_NotificationService_API.Consumer;
+
+public class ReactionServiceConsumer(INotificationRepository notificationRepository, INotificationTypeRepository notificationTypeRepository) : IConsumer<ReactionRequestCreatedMessage>
 {
-    public class ReactionServiceConsumer(INotificationRepository notificationRepository, INotificationTypeRepository notificationTypeRepository) : IConsumer<ReactionRequestCreatedMessage>
+    public async Task Consume(ConsumeContext<ReactionRequestCreatedMessage> context)
     {
-        public async Task Consume(ConsumeContext<ReactionRequestCreatedMessage> context)
+        var reactionRequest = context.Message;
+
+        // Lấy thông tin loại thông báo
+        var notificationType = await notificationTypeRepository.GetByIdAsync("10")
+                               ?? throw new Exception("Notification type not found");
+
+        // Tạo thông báo
+        var notification = new Notification
         {
-            var reactionRequest = context.Message;
+            NotificationId = Ulid.NewUlid().ToString(),
+            UserId = reactionRequest.UserId,
+            PostId = reactionRequest.PostId,
+            NotificationTypeId = notificationType.NotificationTypeId,
+            Message = $"Người dùng {reactionRequest.UserName} đã {reactionRequest.ReactionTypeIcon} với bài viết {reactionRequest.Title}",
+            CreatedAt = reactionRequest.ReactionDate,
+            UpdatedAt = reactionRequest.ReactionDate,
+            IsRead = false
+        };
 
-            if (reactionRequest.UserId == null)
-            {
-                throw new ArgumentNullException(nameof(reactionRequest.UserId), "UserId cannot be null");
-            }
-
-            var notificationType = await notificationTypeRepository.GetByIdAsync("10") ?? throw new Exception("Notification type not found");
-            var notification = new Notification
-            {
-                NotificationId = Ulid.NewUlid().ToString(),
-                UserId = reactionRequest.UserId,
-                NotificationTypeId = notificationType.NotificationTypeId,
-                Message = $"Người dùng {reactionRequest.UserId} đã phản ứng với bài viết {reactionRequest.PostId} bằng loại phản ứng {reactionRequest.ReactionTypeId}",
-                CreatedAt = reactionRequest.ReactionDate,
-                UpdatedAt = reactionRequest.ReactionDate,
-                IsRead = false
-            };
-
-            await notificationRepository.CreateNotificationsAsync([notification]);
-        }
+        // Lưu thông báo vào cơ sở dữ liệu
+        await notificationRepository.CreateNotificationsAsync(new List<Notification> { notification });
     }
 }

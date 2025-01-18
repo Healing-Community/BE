@@ -1,6 +1,7 @@
 ﻿using Application.Commons;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using Domain.Constants;
 using Domain.Constants.AMQPMessage.Reaction;
 using Domain.Entities;
@@ -8,6 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using NUlid;
 using System.Security.Claims;
+using UserInformation;
 
 namespace Application.Commands.Reactions.AddReaction
 {
@@ -16,7 +18,8 @@ namespace Application.Commands.Reactions.AddReaction
         IReactionTypeRepository reactionTypeRepository,
         IHttpContextAccessor accessor,
         IReactionRepository reactionRepository,
-        IPostRepository postRepository) : IRequestHandler<CreateReactionCommand, BaseResponse<ReactionType>>
+        IPostRepository postRepository,
+        IGrpcHelper grpcHelper) : IRequestHandler<CreateReactionCommand, BaseResponse<ReactionType>>
     {
         public async Task<BaseResponse<ReactionType>> Handle(CreateReactionCommand request, CancellationToken cancellationToken)
         {
@@ -82,12 +85,18 @@ namespace Application.Commands.Reactions.AddReaction
                     return BaseResponse<ReactionType>.NotFound("Bài viết không tồn tại.");
                 }
 
+                var userReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
+                    "UserService",
+                    async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = userId })
+                );
+
                 await messagePublisher.PublishAsync(new ReactionRequestCreatedMessage
                 {
                     ReactionRequestId = Ulid.NewUlid().ToString(),
                     UserId = userId,
                     PostId = request.ReactionDto.PostId,
                     ReactionTypeId = request.ReactionDto.ReactionTypeId,
+                    UserName = userReply.UserName,
                     Title = post.Title,
                     ReactionTypeName = reactionType.Name,
                     ReactionTypeIcon = reactionType.Icon,
