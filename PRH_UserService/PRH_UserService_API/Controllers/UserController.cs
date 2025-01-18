@@ -122,9 +122,9 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     [HttpPost("register-user")]
     public async Task<IActionResult> RegisterUser(RegisterUserDto registerUserDto)
     {
-        var request = accessor.HttpContext?.Request;
+        //var request = accessor.HttpContext?.Request;
         //var baseUrl = $"{request?.Scheme}://{request?.Host}";
-        var baseUrl = $"{Request.Scheme}://localhost:8000/user";
+        var baseUrl = $"http://35.240.242.49:8000/user";
         var response = await sender.Send(new RegisterUserCommand(registerUserDto, baseUrl));
         return response.ToActionResult();
     }
