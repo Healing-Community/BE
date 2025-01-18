@@ -14,10 +14,10 @@ namespace PRH_ExpertService_API.Consumer
             {
                 ExpertProfileId = message.UserId,
                 UserId = message.UserId,
-                Fullname = string.Empty,
-                Email = string.Empty,
-                Specialization = string.Empty,
-                ExpertiseAreas = string.Empty,
+                Fullname = message.UserName,
+                Email = message.UserEmail,
+                Specialization = "Trống",
+                ExpertiseAreas = "Trống",
                 CreatedAt = DateTime.UtcNow.AddHours(7),
                 UpdatedAt = DateTime.UtcNow.AddHours(7)
             });

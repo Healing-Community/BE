@@ -56,14 +56,14 @@ namespace Application.Commands.CreateWorkExperience
                     return response;
                 }
 
-                if (expertProfile.Status != 1) // Approved
-                {
-                    response.Success = false;
-                    response.Errors.Add("Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.");
-                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
-                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
-                    return response;
-                }
+                //if (expertProfile.Status != 1) // Approved
+                //{
+                //    response.Success = false;
+                //    response.Errors.Add("Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.");
+                //    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                //    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                //    return response;
+                //}
 
                 // Validate input
                 if (string.IsNullOrWhiteSpace(request.CompanyName))
@@ -79,6 +79,16 @@ namespace Application.Commands.CreateWorkExperience
                 if (request.StartDate >= request.EndDate)
                 {
                     response.Errors.Add("Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
+                }
+
+                // Chuyển đổi StartDate và EndDate từ DateOnly sang DateTime
+                var startDateTime = request.StartDate.ToDateTime(TimeOnly.MinValue);
+                var endDateTime = request.EndDate.ToDateTime(TimeOnly.MinValue);
+
+                // Kiểm tra nếu EndDate vượt quá thời gian hiện tại
+                if (endDateTime > DateTime.UtcNow.AddHours(7))
+                {
+                    response.Errors.Add("Ngày kết thúc không thể lớn hơn thời gian hiện tại.");
                 }
 
                 if (response.Errors.Any())
