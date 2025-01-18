@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      -TestCiCd
 
 jobs:
   build-and-publish:
