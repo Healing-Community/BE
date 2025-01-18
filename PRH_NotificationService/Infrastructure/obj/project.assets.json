@@ -2351,39 +2351,32 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\nghia\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "/home/nghialoe/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Infrastructure\\Infrastructure.csproj",
+      "projectUniqueName": "/home/nghialoe/repos/BE/PRH_NotificationService/Infrastructure/Infrastructure.csproj",
       "projectName": "Infrastructure",
-      "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Infrastructure\\Infrastructure.csproj",
-      "packagesPath": "C:\\Users\\nghia\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Infrastructure\\obj\\",
+      "projectPath": "/home/nghialoe/repos/BE/PRH_NotificationService/Infrastructure/Infrastructure.csproj",
+      "packagesPath": "/home/nghialoe/.nuget/packages/",
+      "outputPath": "/home/nghialoe/repos/BE/PRH_NotificationService/Infrastructure/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\nghia\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/nghialoe/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj": {
-              "projectPath": "C:\\Users\\nghia\\OneDrive\\Documents\\FPT Fall 2024 Semester 9\\SEP490\\BE\\PRH_NotificationService\\Domain\\Domain.csproj"
+            "/home/nghialoe/repos/BE/PRH_NotificationService/Domain/Domain.csproj": {
+              "projectPath": "/home/nghialoe/repos/BE/PRH_NotificationService/Domain/Domain.csproj"
             }
           }
         }
@@ -2444,12 +2437,18 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.11, 8.0.11]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

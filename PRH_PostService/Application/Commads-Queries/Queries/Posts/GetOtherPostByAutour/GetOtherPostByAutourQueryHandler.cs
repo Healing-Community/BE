@@ -13,7 +13,7 @@ public class GetOtherPostByAutourQueryHandler(IPostRepository postRepository) : 
     {
         try
         {
-            var otherPostByAuthour = await postRepository.GetsByPropertyAsync(x => x.UserId == request.AuthourId && x.Status != (int)PostStatus.Baned, request.Top);
+            var otherPostByAuthour = await postRepository.GetsByPropertyAsync(x => x.UserId == request.AuthourId && x.Status != (int)PostStatus.Baned && x.Status != (int)PostStatus.Group, request.Top);
             var otherPosts = new List<PostRecommendDto>();
             foreach (var post in otherPostByAuthour)
             {

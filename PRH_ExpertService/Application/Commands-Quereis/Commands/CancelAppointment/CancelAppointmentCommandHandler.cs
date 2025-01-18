@@ -79,6 +79,7 @@ namespace Application.Commands.CancelAppointment
 
                 if (userRole == "Expert")
                 {
+                    // Chưa có trừ điểm rating của Expert ở đây
                     return BaseResponse<bool>.SuccessReturn(reply.IsSucess, "Hủy lịch hẹn thành công điểm sẽ bị trừ n điểm.");
                 }
                 else
