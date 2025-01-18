@@ -49,5 +49,13 @@ namespace Persistence.Repositories
                 await expertDbContext.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<CertificateType>> GetMandatoryCertificateTypesAsync()
+        {
+            // Assuming you have a DbContext named _context
+            return await expertDbContext.CertificateTypes
+                .Where(ct => ct.IsMandatory)
+                .ToListAsync();
+        }
     }
 }

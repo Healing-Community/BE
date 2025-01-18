@@ -33,7 +33,7 @@ public class UploadCertificateCommandHandler(
         {
             response.Success = false;
             response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
-            response.Message = string.Join(" ", response.Errors); // Gộp các lỗi lại trong Message
+            response.Message = string.Join(" ", response.Errors);
             response.StatusCode = StatusCodes.Status400BadRequest;
             return response;
         }
@@ -43,7 +43,7 @@ public class UploadCertificateCommandHandler(
         {
             response.Success = false;
             response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
-            response.Message = string.Join(" ", response.Errors); // Gộp các lỗi lại trong Message
+            response.Message = string.Join(" ", response.Errors);
             response.StatusCode = StatusCodes.Status401Unauthorized;
             return response;
         }
@@ -83,7 +83,7 @@ public class UploadCertificateCommandHandler(
         {
             response.StatusCode = StatusCodes.Status422UnprocessableEntity;
             response.Success = false;
-            response.Message = string.Join(" ", response.Errors); // Gộp các lỗi lại trong Message
+            response.Message = string.Join(" ", response.Errors);
             return response;
         }
 
@@ -135,7 +135,7 @@ public class UploadCertificateCommandHandler(
             response.StatusCode = StatusCodes.Status500InternalServerError;
             response.Success = false;
             response.Errors.Add($"Exception: {ex.Message}");
-            response.Message = string.Join(" ", response.Errors); // Gộp các lỗi lại trong Message
+            response.Message = string.Join(" ", response.Errors);
         }
 
         return response;

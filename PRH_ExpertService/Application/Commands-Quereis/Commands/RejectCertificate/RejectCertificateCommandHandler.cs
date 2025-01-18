@@ -10,6 +10,7 @@ namespace Application.Commands.RejectCertificate
     public class RejectCertificateCommandHandler(
         ICertificateRepository certificateRepository,
         IExpertProfileRepository expertProfileRepository,
+        ICertificateTypeRepository certificateTypeRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<RejectCertificateCommand, BaseResponse<bool>>
     {
         public async Task<BaseResponse<bool>> Handle(RejectCertificateCommand request, CancellationToken cancellationToken)
@@ -28,7 +29,7 @@ namespace Application.Commands.RejectCertificate
                 {
                     response.Success = false;
                     response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
-                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.Message = string.Join(" ", response.Errors);
                     response.StatusCode = StatusCodes.Status400BadRequest;
                     return response;
                 }
@@ -38,7 +39,7 @@ namespace Application.Commands.RejectCertificate
                 {
                     response.Success = false;
                     response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
-                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.Message = string.Join(" ", response.Errors);
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     return response;
                 }
@@ -48,7 +49,7 @@ namespace Application.Commands.RejectCertificate
                 {
                     response.Success = false;
                     response.Errors.Add("Chứng chỉ không tồn tại.");
-                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.Message = string.Join(" ", response.Errors);
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
@@ -65,14 +66,22 @@ namespace Application.Commands.RejectCertificate
                 var expertProfile = await expertProfileRepository.GetByIdAsync(certificate.ExpertProfileId);
                 if (expertProfile != null)
                 {
-                    // Kiểm tra nếu có bất kỳ chứng chỉ nào được duyệt
-                    var certificates = await certificateRepository.GetByExpertProfileIdAsync(expertProfile.ExpertProfileId);
-                    if (!certificates.Any(c => c.Status == 1)) // No Verified certificates
+                    // Lấy danh sách các loại chứng chỉ bắt buộc
+                    var mandatoryCertificateTypes = await certificateTypeRepository.GetMandatoryCertificateTypesAsync();
+
+                    // Lấy danh sách chứng chỉ đã được duyệt của chuyên gia
+                    var approvedCertificates = await certificateRepository.GetApprovedCertificatesByExpertIdAsync(expertProfile.ExpertProfileId);
+
+                    // Kiểm tra nếu tất cả chứng chỉ bắt buộc đều đã được duyệt
+                    bool allMandatoryCertificatesApproved = mandatoryCertificateTypes.All(mandatoryType =>
+                        approvedCertificates.Any(c => c.CertificateTypeId == mandatoryType.CertificateTypeId));
+
+                    if (!allMandatoryCertificatesApproved)
                     {
                         expertProfile.Status = 2; // Rejected
+                        expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                        await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
                     }
-                    expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
-                    await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
                 }
 
                 response.Success = true;
@@ -84,7 +93,7 @@ namespace Application.Commands.RejectCertificate
             {
                 response.Success = false;
                 response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
-                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                response.Message = string.Join(" ", response.Errors);
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

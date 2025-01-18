@@ -7,5 +7,6 @@ namespace Application.Interfaces.Repository
     {
         Task<IEnumerable<Certificate>> GetCertificatesByExpertIdAsync(string expertProfileId);
         Task<IEnumerable<Certificate>> GetByExpertProfileIdAsync(string expertProfileId);
+        Task<IEnumerable<Certificate>> GetApprovedCertificatesByExpertIdAsync(string expertProfileId);
     }
 }

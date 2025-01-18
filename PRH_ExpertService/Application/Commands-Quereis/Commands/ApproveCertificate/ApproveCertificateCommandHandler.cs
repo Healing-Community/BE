@@ -10,6 +10,7 @@ namespace Application.Commands.ApproveCertificate
     public class ApproveCertificateCommandHandler(
         ICertificateRepository certificateRepository,
         IExpertProfileRepository expertProfileRepository,
+        ICertificateTypeRepository certificateTypeRepository,
         IHttpContextAccessor httpContextAccessor) : IRequestHandler<ApproveCertificateCommand, BaseResponse<bool>>
     {
         public async Task<BaseResponse<bool>> Handle(ApproveCertificateCommand request, CancellationToken cancellationToken)
@@ -27,7 +28,7 @@ namespace Application.Commands.ApproveCertificate
             {
                 response.Success = false;
                 response.Errors.Add("Lỗi hệ thống: không thể xác định context của yêu cầu.");
-                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                response.Message = string.Join(" ", response.Errors);
                 response.StatusCode = StatusCodes.Status400BadRequest;
                 return response;
             }
@@ -37,7 +38,7 @@ namespace Application.Commands.ApproveCertificate
             {
                 response.Success = false;
                 response.Errors.Add("Không thể xác định UserId từ yêu cầu.");
-                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                response.Message = string.Join(" ", response.Errors);
                 response.StatusCode = StatusCodes.Status401Unauthorized;
                 return response;
             }
@@ -48,7 +49,7 @@ namespace Application.Commands.ApproveCertificate
             {
                 response.Errors.Add($"Chứng chỉ với ID '{request.CertificateId}' không tồn tại.");
                 response.Success = false;
-                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                response.Message = string.Join(" ", response.Errors);
                 response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                 return response;
             }
@@ -66,9 +67,22 @@ namespace Application.Commands.ApproveCertificate
                 var expertProfile = await expertProfileRepository.GetByIdAsync(certificate.ExpertProfileId);
                 if (expertProfile != null)
                 {
-                    expertProfile.Status = 1; // Approved
-                    expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
-                    await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
+                    // Lấy danh sách các loại chứng chỉ bắt buộc
+                    var mandatoryCertificateTypes = await certificateTypeRepository.GetMandatoryCertificateTypesAsync();
+
+                    // Lấy danh sách chứng chỉ đã được duyệt của chuyên gia
+                    var approvedCertificates = await certificateRepository.GetApprovedCertificatesByExpertIdAsync(expertProfile.ExpertProfileId);
+
+                    // Kiểm tra nếu tất cả chứng chỉ bắt buộc đều đã được duyệt
+                    bool allMandatoryCertificatesApproved = mandatoryCertificateTypes.All(mandatoryType =>
+                        approvedCertificates.Any(c => c.CertificateTypeId == mandatoryType.CertificateTypeId));
+
+                    if (allMandatoryCertificatesApproved)
+                    {
+                        expertProfile.Status = 1; // Approved
+                        expertProfile.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                        await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
+                    }
                 }
 
                 response.Success = true;
@@ -81,7 +95,7 @@ namespace Application.Commands.ApproveCertificate
                 // Lỗi hệ thống khi xử lý logic
                 response.Success = false;
                 response.Errors.Add($"Chi tiết lỗi: {ex.Message}");
-                response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                response.Message = string.Join(" ", response.Errors);
                 response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

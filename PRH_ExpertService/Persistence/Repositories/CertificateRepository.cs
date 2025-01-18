@@ -64,5 +64,11 @@ namespace Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Certificate>> GetApprovedCertificatesByExpertIdAsync(string expertProfileId)
+        {
+            return await expertDbContext.Certificates
+                .Where(c => c.ExpertProfileId == expertProfileId && c.Status == 1) // Status 1 means approved
+                .ToListAsync();
+        }
     }
 }
