@@ -48,6 +48,16 @@ jobs:
         SHORT_SHA=$(git rev-parse --short HEAD)
         echo "TAG=${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
         echo "Created tag: ${BRANCH_NAME}-${SHORT_SHA}"
+      # Inject credentials trước khi build Docker image
+    - name: Inject credentials for Expert Service
+      if: matrix.service.name == 'expert'
+      run: |
+        echo "${{ secrets.GOOGLEJSON }}" >> ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+
+    - name: Inject credentials for Post Service
+      if: matrix.service.name == 'post'
+      run: |
+        echo "${{ secrets.GOOGLEJSON }}" >> ./PRH_PostService/PRH_PostService_API/healing-community.json
 
     - name: Build ${{ matrix.service.name }} Service
       working-directory: ./${{ matrix.service.dir }}
@@ -62,20 +72,7 @@ jobs:
       with:
         name: ${{ matrix.service.name }}-service-publish
         path: ./${{ matrix.service.dir }}/publish
-
-    # Inject credentials trước khi build Docker image
-    - name: Inject credentials for Expert Service
-      if: matrix.service.name == 'expert'
-      run: |
-        echo "${{ secrets.GOOGLEJSON }}" >> ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-        cat ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-
-    - name: Inject credentials for Post Service
-      if: matrix.service.name == 'post'
-      run: |
-        echo "${{ secrets.GOOGLEJSON }}" >> ./PRH_PostService/PRH_PostService_API/healing-community.json
-        cat ./PRH_PostService/PRH_PostService_API/healing-community.json
-
+        
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
