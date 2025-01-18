@@ -91,11 +91,14 @@ namespace Application.Commands.Comments.AddComment
                 // Gửi thông báo vào hàng đợi
                 var commentRequestCreatedMessage = new CommentRequestCreatedMessage
                 {
-                    CommentRequestId = comment.CommentId,
+                    CommentRequestId = Ulid.NewUlid().ToString(),
+                    CommentId = comment.CommentId,
+                    UserName = userReply.UserName,
                     PostId = comment.PostId,
                     ParentId = comment.ParentId,
                     UserId = comment.UserId,
                     Content = comment.Content,
+                    Title = post.Title,
                     CommentedDate = comment.CreatedAt
                 };
                 await messagePublisher.PublishAsync(commentRequestCreatedMessage, QueueName.CommentQueue, cancellationToken);
