@@ -27,13 +27,6 @@ namespace Application.Queries.GetExpertProfile
             {
                 // Lấy ExpertProfile
                 var expertProfile = await expertProfileRepository.GetByIdAsync(request.ExpertProfileId);
-                if (expertProfile == null)
-                {
-                    response.Success = false;
-                    response.Message = "Không tìm thấy hồ sơ chuyên gia.";
-                    response.StatusCode = 404;
-                    return response;
-                }
 
                 // Map ExpertProfile
                 var expertProfileDto = mapper.Map<ExpertProfileDTO>(expertProfile);
