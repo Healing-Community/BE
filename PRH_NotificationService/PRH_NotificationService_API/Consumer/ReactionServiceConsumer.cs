@@ -20,7 +20,7 @@ public class ReactionServiceConsumer(INotificationRepository notificationReposit
         var notification = new Notification
         {
             NotificationId = Ulid.NewUlid().ToString(),
-            UserId = reactionRequest.UserId,
+            UserId = reactionRequest.UserPostId,
             PostId = reactionRequest.PostId,
             NotificationTypeId = notificationType.NotificationTypeId,
             Message = $"Người dùng {reactionRequest.UserName} đã {reactionRequest.ReactionTypeIcon} với bài viết {reactionRequest.Title}",
