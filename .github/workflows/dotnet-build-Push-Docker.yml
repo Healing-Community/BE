@@ -32,11 +32,11 @@ jobs:
     - name: inject google json to post-service
       run : | 
           touch ./PRH_PostService/PRH_PostService_API/healing-community.json
-          echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
+          echo "${{ secrets.GOOGLEJSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
     - name: inject google json to expert-service
       run : | 
           touch ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-          echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+          echo "${{ secrets.GOOGLEJSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
     - name: Install jq
       run: |
         if ! command -v jq &> /dev/null; then
