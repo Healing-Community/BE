@@ -49,13 +49,13 @@ namespace Application.Commands.ManageGroup.RemoveMember
                 }
 
                 // Kiểm tra nếu người thực hiện không phải là chủ nhóm
-                if (group.CreatedByUserId != ownerUserId)
-                {
-                    response.Success = false;
-                    response.Message = "Chỉ có chủ nhóm mới có quyền loại bỏ thành viên.";
-                    response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    return response;
-                }
+                //if (group.CreatedByUserId != ownerUserId)
+                //{
+                //    response.Success = false;
+                //    response.Message = "Chỉ có chủ nhóm mới có quyền loại bỏ thành viên.";
+                //    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                //    return response;
+                //}
 
                 // Kiểm tra nếu chủ nhóm đang cố gắng xóa chính mình
                 if (request.MemberUserId == ownerUserId)
