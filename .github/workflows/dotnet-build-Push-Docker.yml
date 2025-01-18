@@ -1,14 +1,13 @@
-name: Build Multiple Services
+name: Build and Dockerize Multiple Services
 
 on:
   push:
     branches:
       - main
       - dev
-      - TestCiCd
 
 jobs:
-  build-and-publish:
+  build-services:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -31,24 +30,6 @@ jobs:
       with:
         dotnet-version: '8.0'
 
-    - name: Install jq
-      run: |
-        if ! command -v jq &> /dev/null; then
-          echo "jq not found. Installing jq..."
-          sudo apt-get update
-          sudo apt-get install -y jq
-        else
-          echo "jq is already installed."
-        fi
-
-    - name: Generate Docker tag
-      id: docker_tag
-      run: |
-        BRANCH_NAME=${GITHUB_REF#refs/heads/}
-        SHORT_SHA=$(git rev-parse --short HEAD)
-        echo "TAG=${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_OUTPUT
-        echo "Created tag: ${BRANCH_NAME}-${SHORT_SHA}"
-
     - name: Build ${{ matrix.service.name }} Service
       working-directory: ./${{ matrix.service.dir }}
       run: dotnet build --configuration Release
@@ -63,52 +44,75 @@ jobs:
         name: ${{ matrix.service.name }}-service-publish
         path: ./${{ matrix.service.dir }}/publish
 
+  dockerize-services:
+    runs-on: ubuntu-latest
+    needs: build-services
+    strategy:
+      matrix:
+        service:
+          - { name: notification, dir: PRH_NotificationService }
+          - { name: user, dir: PRH_UserService }
+          - { name: report, dir: PRH_ReportService }
+          - { name: quiz, dir: PRH_QuizService }
+          - { name: group, dir: PRH_GroupService }
+          - { name: payment, dir: PRH_PaymentService }
+          - { name: chat, dir: PRH_ChatService }
+          - { name: expert, dir: PRH_ExpertService }
+          - { name: post, dir: PRH_PostService }
+    steps:
+    - name: Download ${{ matrix.service.name }} Service artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ matrix.service.name }}-service-publish
+
+    - name: Inject credentials for Expert Service
+      if: matrix.service.name == 'expert'
+      run: |
+        touch ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+        echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+
+    - name: Inject credentials for Post Service
+      if: matrix.service.name == 'post'
+      run: |
+        touch ./PRH_PostService/PRH_PostService_API/healing-community.json
+        echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
+
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build and tag Docker images
       working-directory: ./${{ matrix.service.dir }}
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} -f Dockerfile .
-        docker tag ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }} ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
+        # Generate tag
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        SHORT_SHA=$(git rev-parse --short HEAD)
+        TAG="${BRANCH_NAME}-${SHORT_SHA}"
 
-    - name: List Docker images
-      run: docker images
+        # Build with version tag
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${TAG} -f Dockerfile .
+        # Tag as latest
+        docker tag ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${TAG} ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
 
     - name: Push Docker images
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}
+        # Push version tag
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${TAG}
+        # Push latest tag
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:latest
-
-    - name: Echo deployment info
-      run: |
-        echo "Service: ${{ matrix.service.name }}"
-        echo "Version Tag: ${{ steps.docker_tag.outputs.TAG }}"
-        echo "Docker Image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service:${{ steps.docker_tag.outputs.TAG }}"
 
     - name: Cleanup old Docker images
       run: |
         REPO=${{ secrets.DOCKER_USERNAME }}/${{ matrix.service.name }}-service
         echo "Fetching tags for $REPO"
+
+        # Fetch all tags, sort by creation time, and remove all except the 5 most recent
         tags=$(curl -s -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
           "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | \
           jq -r '.results | sort_by(.last_updated) | .[:-5] | .[].name')
+
+        # Delete tags older than the 5 most recent
         for tag in $tags; do
           echo "Deleting old tag: $tag"
           curl -s -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
             "https://hub.docker.com/v2/repositories/$REPO/tags/$tag/"
         done
-
-    # Step chỉ dành cho expert service
-    - name: Inject credentials for Expert Service
-      if: matrix.service.name == 'expert'
-      run: |
-        touch ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-        echo "${{ secrets.GOOGLEJSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-
-    # Step chỉ dành cho post service
-    - name: Inject credentials for Post Service
-      if: matrix.service.name == 'post'
-      run: |
-        touch ./PRH_PostService/PRH_PostService_API/healing-community.json
-        echo "${{ secrets.GOOGLEJSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
