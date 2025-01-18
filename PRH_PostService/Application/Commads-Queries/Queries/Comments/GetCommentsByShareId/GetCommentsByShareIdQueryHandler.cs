@@ -2,10 +2,12 @@
 using Application.Commons.DTOs;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Service;
+using Application.Interfaces.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NUlid;
 using System.Net;
+using UserInformation;
 
 
 namespace Application.Commads_Queries.Queries.Comments.GetCommentsByShareId
@@ -14,11 +16,13 @@ namespace Application.Commads_Queries.Queries.Comments.GetCommentsByShareId
     {
         private readonly ICommentRepository _commentRepository;
         private readonly ICommentTreeService _commentTreeService;
+        private readonly IGrpcHelper _grpcHelper;
 
-        public GetCommentsByShareIdQueryHandler(ICommentRepository commentRepository, ICommentTreeService commentTreeService)
+        public GetCommentsByShareIdQueryHandler(ICommentRepository commentRepository, ICommentTreeService commentTreeService, IGrpcHelper grpcHelper)
         {
             _commentRepository = commentRepository;
             _commentTreeService = commentTreeService;
+            _grpcHelper = grpcHelper;
         }
 
         public async Task<BaseResponse<List<CommentDtoResponse>>> Handle(GetCommentsByShareIdQuery request, CancellationToken cancellationToken)
@@ -32,26 +36,13 @@ namespace Application.Commads_Queries.Queries.Comments.GetCommentsByShareId
 
             try
             {
-                // Lấy danh sách comment theo ShareId
+                // Fetch comments by ShareId
                 var comments = await _commentRepository.GetQueryable()
                     .Where(c => c.ShareId == request.ShareId)
-                    .OrderBy(c => c.CreatedAt) // Sắp xếp theo thời gian tạo
-                    .Select(c => new CommentDtoResponse
-                    {
-                        CommentId = c.CommentId,
-                        PostId = c.PostId,
-                        ShareId = c.ShareId,
-                        ParentId = c.ParentId,
-                        UserId = c.UserId,
-                        Content = c.Content,
-                        CreatedAt = c.CreatedAt,
-                        UpdatedAt = c.UpdatedAt,
-                        CoverImgUrl = c.CoverImgUrl,
-                        Replies = new List<CommentDtoResponse>()
-                    })
+                    .OrderBy(c => c.CreatedAt)
                     .ToListAsync(cancellationToken);
 
-                // Kiểm tra nếu không có bình luận
+                // Check if no comments exist
                 if (!comments.Any())
                 {
                     response.Data = new List<CommentDtoResponse>();
@@ -61,7 +52,35 @@ namespace Application.Commads_Queries.Queries.Comments.GetCommentsByShareId
                     return response;
                 }
 
-                var commentTree = _commentTreeService.BuildCommentTree(comments);
+                // Convert comments to DTOs and fetch user info via gRPC
+                var commentDtos = new List<CommentDtoResponse>();
+                foreach (var comment in comments)
+                {
+                    // Fetch user information via gRPC for each comment's userId
+                    var userReply = await _grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
+                        "UserService",
+                        async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = comment.UserId })
+                    );
+
+                    // Map comment to DTO
+                    commentDtos.Add(new CommentDtoResponse
+                    {
+                        CommentId = comment.CommentId,
+                        PostId = comment.PostId,
+                        ShareId = comment.ShareId,
+                        ParentId = comment.ParentId,
+                        UserId = comment.UserId,
+                        Content = comment.Content,
+                        CoverImgUrl = comment.CoverImgUrl,
+                        CreatedAt = comment.CreatedAt,
+                        UpdatedAt = comment.UpdatedAt,
+                        ProfilePicture = userReply.ProfilePicture, // Map ProfilePicture
+                        UserName = userReply.UserName,           // Map UserName
+                        Replies = new List<CommentDtoResponse>() // Initialize Replies as an empty list
+                    });
+                }
+
+                var commentTree = _commentTreeService.BuildCommentTree(commentDtos);
 
                 response.Data = commentTree;
                 response.Success = true;
