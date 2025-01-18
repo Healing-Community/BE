@@ -63,6 +63,19 @@ jobs:
         name: ${{ matrix.service.name }}-service-publish
         path: ./${{ matrix.service.dir }}/publish
 
+    # Inject credentials trước khi build Docker image
+    - name: Inject credentials for Expert Service
+      if: matrix.service.name == 'expert'
+      run: |
+        touch ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+        echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
+
+    - name: Inject credentials for Post Service
+      if: matrix.service.name == 'post'
+      run: |
+        touch ./PRH_PostService/PRH_PostService_API/healing-community.json
+        echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
+
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
@@ -98,17 +111,3 @@ jobs:
           curl -s -X DELETE -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }}" \
             "https://hub.docker.com/v2/repositories/$REPO/tags/$tag/"
         done
-
-    # Step chỉ dành cho expert service
-    - name: Inject credentials for Expert Service
-      if: matrix.service.name == 'expert'
-      run: |
-        touch ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-        echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-
-    # Step chỉ dành cho post service
-    - name: Inject credentials for Post Service
-      if: matrix.service.name == 'post'
-      run: |
-        touch ./PRH_PostService/PRH_PostService_API/healing-community.json
-        echo "${{ secrets.GOOGLE_JSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
