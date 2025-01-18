@@ -2,16 +2,20 @@
 using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using Domain.Constants;
 using Domain.Constants.AMQPMessage.Post;
 using Domain.Entities;
 using MediatR;
 using NUlid;
 using System.Net;
+using UserInformation;
 
 namespace Application.Commands.Posts.AddPost
 {
-    public class CreatePostCommandHandler(IMessagePublisher messagePublisher, IPostRepository postRepository, ICategoryRepository categoryRepository)
+    public class CreatePostCommandHandler(IMessagePublisher messagePublisher,
+        IPostRepository postRepository, ICategoryRepository categoryRepository,
+        IGrpcHelper grpcHelper)
         : IRequestHandler<CreatePostCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -83,13 +87,28 @@ namespace Application.Commands.Posts.AddPost
                 response.Message = "Tạo bài viết thành công";
                 response.Data = post.PostId;
 
-                // Gửi thông báo đến Queue để xử lý tiếp (nếu cần)
+                var userReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
+                    "UserService",
+                    async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = userId })
+                );
+
+                var userFollowersReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, ListFollowerResponse>(
+                    "UserService",
+                    async client => await client.GetListFollowerAsync(new UserInfoRequest { UserId = userId })
+                );
+
+                var arrayUserFollowerReply = userFollowersReply.Followers.ToArray();
+
+                var followers = arrayUserFollowerReply.Select(x => x.FollowId).ToArray();
+
                 var postingRequestCreatedMessage = new PostingRequestCreatedMessage
                 {
                     PostingRequestId = post.PostId,
+                    UserName = userReply.UserName,
                     UserId = post.UserId,
                     Tittle = post.Title,
-                    PostedDate = post.CreateAt
+                    PostedDate = post.CreateAt,
+                    FollowersId = followers
                 };
                 await messagePublisher.PublishAsync(postingRequestCreatedMessage, QueueName.PostQueue, cancellationToken);
             }

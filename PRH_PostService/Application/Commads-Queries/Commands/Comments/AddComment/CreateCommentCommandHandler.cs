@@ -2,19 +2,22 @@
 using Application.Commons.Tools;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using Domain.Constants;
 using Domain.Constants.AMQPMessage.Comment;
 using Domain.Entities;
 using MediatR;
 using NUlid;
 using System.Net;
+using UserInformation;
 
 namespace Application.Commands.Comments.AddComment
 {
     public class CreateCommentCommandHandler(
-        ICommentRepository commentRepository, 
-        IMessagePublisher messagePublisher, 
-        IPostRepository postRepository)
+        ICommentRepository commentRepository,
+        IMessagePublisher messagePublisher,
+        IPostRepository postRepository,
+        IGrpcHelper grpcHelper)
         : IRequestHandler<CreateCommentCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
@@ -50,7 +53,6 @@ namespace Application.Commands.Comments.AddComment
                 // Xử lý parentId
                 if (!string.IsNullOrEmpty(request.CommentDto.ParentId))
                 {
-                    // Kiểm tra parentId là một comment hợp lệ
                     var parentComment = await commentRepository.GetByIdAsync(request.CommentDto.ParentId);
                     if (parentComment == null)
                     {
@@ -61,11 +63,12 @@ namespace Application.Commands.Comments.AddComment
                     }
                 }
 
+                // Tạo bình luận
                 var comment = new Comment
                 {
                     CommentId = Ulid.NewUlid().ToString(),
                     PostId = request.CommentDto.PostId,
-                    ParentId = request.CommentDto.ParentId, 
+                    ParentId = request.CommentDto.ParentId,
                     UserId = userId,
                     Content = request.CommentDto.Content,
                     CoverImgUrl = request.CommentDto.CoverImgUrl,
@@ -79,7 +82,13 @@ namespace Application.Commands.Comments.AddComment
                 response.Message = "Tạo bình luận thành công";
                 response.Data = comment.CommentId;
 
-                // Send the Request to the Queue for processing
+                // Lấy thông tin người dùng qua gRPC
+                var userReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
+                    "UserService",
+                    async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = userId })
+                );
+
+                // Gửi thông báo vào hàng đợi
                 var commentRequestCreatedMessage = new CommentRequestCreatedMessage
                 {
                     CommentRequestId = comment.CommentId,

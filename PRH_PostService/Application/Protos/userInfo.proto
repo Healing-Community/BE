@@ -6,6 +6,7 @@ package user;
 
 service UserInfo {
     rpc GetUserInfo (UserInfoRequest) returns (UserInfoResponse);
+    rpc GetListFollower (UserInfoRequest) returns (ListFollowerResponse);
 }   
 
 message UserInfoRequest {
@@ -15,4 +16,12 @@ message UserInfoRequest {
 message UserInfoResponse {
     string userName = 1;
     string email = 2;
+}
+
+message FollowerResponse {
+    string followId = 1;
+}
+
+message ListFollowerResponse {
+    repeated FollowerResponse followers = 1;
 }
