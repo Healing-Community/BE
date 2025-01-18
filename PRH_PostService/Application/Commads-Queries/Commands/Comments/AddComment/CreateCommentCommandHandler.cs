@@ -96,7 +96,8 @@ namespace Application.Commands.Comments.AddComment
                     UserName = userReply.UserName,
                     PostId = comment.PostId,
                     ParentId = comment.ParentId,
-                    UserId = comment.UserId,
+                    UserCommentId = comment.UserId,
+                    UserPostId = post.UserId,
                     Content = comment.Content,
                     Title = post.Title,
                     CommentedDate = comment.CreatedAt
