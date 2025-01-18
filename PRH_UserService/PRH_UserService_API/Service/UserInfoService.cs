@@ -16,6 +16,7 @@ public class UserInfoService(ISender sender, IFollowerRepository followerReposit
         {
             UserName = response.Data?.UserName,
             Email = response.Data?.Email,
+            ProfilePicture = response.Data?.ProfilePicture
         };
     }
     public override async Task<ListFollowerResponse> GetListFollower(UserInfoRequest request, ServerCallContext context)

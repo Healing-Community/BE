@@ -16,6 +16,7 @@ message UserInfoRequest {
 message UserInfoResponse {
     string userName = 1;
     string email = 2;
+    string profilePicture = 3;
 }
 
 message FollowerResponse {
