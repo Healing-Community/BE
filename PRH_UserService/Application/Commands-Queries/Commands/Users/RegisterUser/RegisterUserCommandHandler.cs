@@ -94,7 +94,8 @@ public class RegisterUserCommandHandler(
             // Publish message to RabbitMQ
             await messagePublisher.PublishAsync(new CreateExpertMessage{
                 UserId = user.UserId,
-                UserName = user.UserName
+                UserName = user.UserName,
+                UserEmail = user.Email
             },QueueName.ExpertCreateQueue, cancellationToken);
         }
         catch (Exception ex)
