@@ -19,8 +19,6 @@ jobs:
           - { name: group, dir: PRH_GroupService }
           - { name: payment, dir: PRH_PaymentService }
           - { name: chat, dir: PRH_ChatService }
-          - {name: post, dir: PRH_PostService }
-          - {name: expert, dir: PRH_ExpertService }
     steps:
     - name: Checkout code
       uses: actions/checkout@v4 # Updated to v4
@@ -29,14 +27,6 @@ jobs:
       uses: actions/setup-dotnet@v4 # Updated to v4
       with:
         dotnet-version: '8.0'
-    - name: inject google json to post-service
-      run : | 
-          touch ./PRH_PostService/PRH_PostService_API/healing-community.json
-          echo "${{ secrets.GOOGLEJSON }}" > ./PRH_PostService/PRH_PostService_API/healing-community.json
-    - name: inject google json to expert-service
-      run : | 
-          touch ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
-          echo "${{ secrets.GOOGLEJSON }}" > ./PRH_ExpertService/PRH_ExpertService_API/healing-community.json
     - name: Install jq
       run: |
         if ! command -v jq &> /dev/null; then
