@@ -6,7 +6,6 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using NUlid;
-using UserInformation;
 using UserPaymentService;
 
 namespace Application.Commands.CreateAvailability
@@ -15,7 +14,9 @@ namespace Application.Commands.CreateAvailability
         IGrpcHelper grpcHelper,
         IExpertAvailabilityRepository expertAvailabilityRepository,
         IHttpContextAccessor httpContextAccessor,
-        IExpertProfileRepository expertProfileRepository)
+        IExpertProfileRepository expertProfileRepository,
+        ICertificateTypeRepository certificateTypeRepository,
+        ICertificateRepository certificateRepository)
         : IRequestHandler<CreateAvailabilityCommand, BaseResponse<string>>
     {
         public async Task<BaseResponse<string>> Handle(CreateAvailabilityCommand request, CancellationToken cancellationToken)
@@ -68,8 +69,8 @@ namespace Application.Commands.CreateAvailability
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;
                 }
-                // Kiểm tra expert đã có thông tin thanh toán chưa
 
+                // Kiểm tra expert đã có thông tin thanh toán chưa
                 try
                 {
                     var userPaymentInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
@@ -79,7 +80,6 @@ namespace Application.Commands.CreateAvailability
                 }
                 catch
                 {
-
                     response.Success = false;
                     response.Errors.Add("Không tìm thấy thông tin thanh toán. Vui lòng cập nhật thông tin thanh toán trước khi tạo lịch trống.");
                     response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
@@ -91,6 +91,24 @@ namespace Application.Commands.CreateAvailability
                 {
                     response.Success = false;
                     response.Errors.Add("Hồ sơ của bạn chưa được duyệt. Vui lòng hoàn tất thông tin cá nhân và tải lên chứng chỉ, sau đó chờ phê duyệt.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                    return response;
+                }
+
+                // Kiểm tra các chứng chỉ bắt buộc
+                var mandatoryCertificateTypes = await certificateTypeRepository.GetMandatoryCertificateTypesAsync();
+                var approvedCertificates = await certificateRepository.GetApprovedCertificatesByExpertIdAsync(expertProfile.ExpertProfileId);
+
+                var missingCertificates = mandatoryCertificateTypes
+                    .Where(mandatoryType => !approvedCertificates.Any(c => c.CertificateTypeId == mandatoryType.CertificateTypeId))
+                    .Select(mandatoryType => mandatoryType.Name)
+                    .ToList();
+
+                if (missingCertificates.Any())
+                {
+                    response.Success = false;
+                    response.Errors.Add($"Bạn cần bổ sung các chứng chỉ sau: {string.Join(", ", missingCertificates)}.");
                     response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;

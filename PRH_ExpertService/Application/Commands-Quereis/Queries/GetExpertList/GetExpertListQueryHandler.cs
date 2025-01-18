@@ -42,12 +42,11 @@ namespace Application.Queries.GetExpertList
                     // Tính tổng số đánh giá
                     var totalRatings = ratedAppointments.Count;
 
-                    // Tính trung bình đánh giá và làm tròn đến nửa sao gần nhất
+                    // Tính trung bình đánh giá
                     decimal averageRating = 0M;
                     if (totalRatings > 0)
                     {
                         averageRating = (decimal)ratedAppointments.Average(a => a.Rating.Value);
-                        averageRating = Math.Round(averageRating * 2, MidpointRounding.AwayFromZero) / 2;
                     }
 
                     var expertDetailsDto = new ExpertListDTO
