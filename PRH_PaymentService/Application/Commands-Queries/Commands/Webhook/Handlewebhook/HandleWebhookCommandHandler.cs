@@ -36,7 +36,7 @@ public class HandleWebhookCommandHandler(IGrpcHelper grpcHelper, IPaymentReposit
                 // Gửi appointmentId để update status của appointment về đã hoàn thành
                 var UpdateAppointmentReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(
                     "ExpertServiceUrl",
-                    async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = paymentInDb.AppointmentId, Status = (int)AppointmentStatus.Completed })
+                    async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = paymentInDb.AppointmentId, Status = (int)AppointmentStatus.PayForExpert })
                 );
                 paymentInDb.Status = (int)PaymentStatus.Completed;
                 paymentInDb.PaymentDetail = "Đã thanh toán tiền thành công cho Chuyên gia";
@@ -46,7 +46,7 @@ public class HandleWebhookCommandHandler(IGrpcHelper grpcHelper, IPaymentReposit
                 // Gửi appointmentId để update status của appointment về đã hoàn tiền cho người dùng
                 var UpdateAppointmentReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(
                     "ExpertServiceUrl",
-                    async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = paymentInDb.AppointmentId, Status = (int)AppointmentStatus.Refunded })
+                    async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = paymentInDb.AppointmentId, Status = (int)AppointmentStatus.PayForUser })
                 );
                 paymentInDb.Status = (int)PaymentStatus.Refunded;
                 paymentInDb.PaymentDetail = "Đã hoàn tiền cho người dùng";

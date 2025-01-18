@@ -29,7 +29,7 @@ namespace Application.Commands.CancelPaymentLink
                     // Gửi appointmentId để update status của appointment về đã hủy thanh toán
                     var UpdateAppointmentReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(
                         "ExpertServiceUrl",
-                        async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = (int)AppointmentStatus.CancelPayment })
+                        async client => await client.UpdateAppointmentAsync(new GetAppointmentsRequest { AppointmentId = request.AppointmentId, Status = (int)AppointmentStatus.CancelledPayment })
                     );
                     // Gửi appointmentId để update status lịch hẹn về trạng thái có thể đặt lịch hẹn
                     var UpdateExpertAvailabilityReply = await grpcHelper.ExecuteGrpcCallAsync<ExpertService.ExpertServiceClient, GetAppointmentsRequest, UpdateResponse>(

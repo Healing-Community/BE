@@ -74,10 +74,12 @@ namespace Application.Queries.GetAppointmentsByExpert
                 2 => "Đã hủy",
                 3 => "Đã hoàn thành",
                 4 => "Hủy thanh toán",
-                5 => "Đã hoàn thành",
+                5 => "Hoàn tiền cho người dùng",
                 6 => "Chờ báo cáo",
-                7 => "Hoàn tiền cho người dùng",
-                8 => "Chuyển tiền cho chuyên gia",
+                7 => "Duyệt báo cáo người dùng thành công",
+                8 => "Duyệt báo cáo người dùng thất bại",
+                9 => "Chuyển tiền cho người dùng",
+                10 => "Chuyển tiền cho chuyên gia",
                 _ => "Không xác định"
             };
         }
