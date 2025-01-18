@@ -1,16 +1,20 @@
 ﻿using Application.Commons;
 using Application.Commons.DTOs;
+using Application.Commons.Tools;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Service;
+using Application.Interfaces.Services;
 using MediatR;
 using NUlid;
 using System.Net;
+using UserInformation;
 
 namespace Application.Queries.Comments.GetCommentsByPostId
 {
     public class GetCommentsByPostIdQueryHandler(
         ICommentRepository commentRepository,
-        ICommentTreeService commentTreeService)
+        ICommentTreeService commentTreeService,
+        IGrpcHelper grpcHelper)
         : IRequestHandler<GetCommentsByPostIdQuery, BaseResponse<List<CommentDtoResponse>>>
     {
         public async Task<BaseResponse<List<CommentDtoResponse>>> Handle(GetCommentsByPostIdQuery request, CancellationToken cancellationToken)
@@ -24,6 +28,8 @@ namespace Application.Queries.Comments.GetCommentsByPostId
 
             try
             {
+
+
                 // Lấy tất cả comment của PostId
                 var comments = await commentRepository.GetAllCommentsByPostIdAsync(request.PostId);
 
@@ -35,19 +41,32 @@ namespace Application.Queries.Comments.GetCommentsByPostId
                     return response;
                 }
 
-                // Chuyển đổi sang DTO
-                var commentDtos = comments.Select(c => new CommentDtoResponse
+                // Convert comments to DTOs
+                var commentDtos = new List<CommentDtoResponse>();
+
+                foreach (var comment in comments)
                 {
-                    CommentId = c.CommentId,
-                    PostId = c.PostId,
-                    ParentId = c.ParentId,
-                    UserId = c.UserId,
-                    Content = c.Content,
-                    CoverImgUrl = c.CoverImgUrl,
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt,
-                    Replies = new List<CommentDtoResponse>() // Bắt đầu với danh sách rỗng
-                }).ToList();
+                    // Fetch user information via gRPC for each comment's userId
+                    var userReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
+                        "UserService",
+                        async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = comment.UserId })
+                    );
+
+                    // Map to DTO
+                    commentDtos.Add(new CommentDtoResponse
+                    {
+                        CommentId = comment.CommentId,
+                        PostId = comment.PostId,
+                        ParentId = comment.ParentId,
+                        UserId = comment.UserId,
+                        Content = comment.Content,
+                        CoverImgUrl = comment.CoverImgUrl,
+                        ProfilePicture = userReply.ProfilePicture, 
+                        CreatedAt = comment.CreatedAt,
+                        UpdatedAt = comment.UpdatedAt,
+                        Replies = new List<CommentDtoResponse>() // Initialize with an empty list
+                    });
+                }
 
                 // Xây dựng cây bình luận bằng CommentTreeService
                 var commentTree = commentTreeService.BuildCommentTree(commentDtos);
