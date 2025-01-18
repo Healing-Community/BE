@@ -30,6 +30,7 @@ namespace Application.Commands.RateExpert
                     return response;
                 }
 
+                // Lấy danh sách các cuộc hẹn của chuyên gia
                 var appointments = await appointmentRepository.GetByExpertProfileIdAsync(request.ExpertProfileId);
                 var ratedAppointments = appointments
                     .Where(a => a.Rating.HasValue && a.Rating.Value > 0)
@@ -37,13 +38,15 @@ namespace Application.Commands.RateExpert
                     .ToList();
 
                 var totalRatings = ratedAppointments.Count;
-                decimal averageRating = 0M;
+
+                // Tính điểm trung bình từ các cuộc hẹn đã đánh giá
+                decimal averageRating = expertProfile.AverageRating;
                 if (totalRatings > 0)
                 {
                     averageRating = (decimal)ratedAppointments.Average(a => a.Rating.Value);
-                    averageRating = Math.Round(averageRating * 2, MidpointRounding.AwayFromZero) / 2;
                 }
 
+                // Tạo danh sách đánh giá
                 var ratings = ratedAppointments
                     .Select(a => new ExpertRatingDTO
                     {
@@ -53,6 +56,7 @@ namespace Application.Commands.RateExpert
                         Time = a.UpdatedAt
                     }).ToList();
 
+                // Tạo phản hồi dữ liệu
                 var expertRatingsResponse = new ExpertRatingsResponseDTO
                 {
                     AverageRating = averageRating,
@@ -76,4 +80,3 @@ namespace Application.Commands.RateExpert
         }
     }
 }
-

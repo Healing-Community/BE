@@ -3,6 +3,7 @@
     public class CommentRequestCreatedMessage
     {
         public required string CommentRequestId { get; set; }
+        public string? UserName { get; set; }
         public required string PostId { get; set; }
         public string? ParentId { get; set; }
         public required string UserId { get; set; }

@@ -116,7 +116,6 @@ app.UseMetricServer();
 
 app.MapGrpcService<UserService>();
 app.MapGrpcService<UserInfoService>();
-
 #endregion
 
 app.UseHttpsRedirection();

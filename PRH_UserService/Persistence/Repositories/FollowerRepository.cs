@@ -53,4 +53,9 @@ public class FollowerRepository(UserServiceDbContext context) : IFollowerReposit
         context.Entry(existingRecord).CurrentValues.SetValues(entity);
         await context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Follower>?> GetFollowers(string userId)
+    {
+        return await context.Followers.AsNoTracking().Where(x => x.FollowerId == userId).ToListAsync();
+    }
 }
