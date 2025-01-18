@@ -39,13 +39,6 @@ namespace Application.Commands.RateExpert
 
                 var totalRatings = ratedAppointments.Count;
 
-                // Tính điểm trung bình từ các cuộc hẹn đã đánh giá
-                decimal averageRating = expertProfile.AverageRating;
-                if (totalRatings > 0)
-                {
-                    averageRating = (decimal)ratedAppointments.Average(a => a.Rating.Value);
-                }
-
                 // Tạo danh sách đánh giá
                 var ratings = ratedAppointments
                     .Select(a => new ExpertRatingDTO
@@ -59,7 +52,7 @@ namespace Application.Commands.RateExpert
                 // Tạo phản hồi dữ liệu
                 var expertRatingsResponse = new ExpertRatingsResponseDTO
                 {
-                    AverageRating = averageRating,
+                    AverageRating = expertProfile.AverageRating,
                     Ratings = ratings
                 };
 

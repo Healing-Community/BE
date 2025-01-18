@@ -24,6 +24,7 @@ public class PostServiceConsumer(INotificationRepository notificationRepository,
             {
                 NotificationId = Ulid.NewUlid().ToString(),
                 UserId = followerId,
+                PostId = postingRequest.PostingRequestId,
                 NotificationTypeId = notificationType.NotificationTypeId,
                 Message = $"Người dùng {postingRequest.UserName} đã đăng bài viết với tiêu đề: {postingRequest.Tittle}",
                 CreatedAt = postingRequest.PostedDate,

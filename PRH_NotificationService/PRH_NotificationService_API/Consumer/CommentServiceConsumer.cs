@@ -19,13 +19,22 @@ public class CommentServiceConsumer(INotificationRepository notificationReposito
         // Kiểm tra xem nội dung bình luận và bài viết có hợp lệ
         if (!string.IsNullOrWhiteSpace(commentRequest.Content) && !string.IsNullOrEmpty(commentRequest.PostId))
         {
+            // Tạo thông báo với đầy đủ thông tin
+            var notificationMessage = $"Người dùng {commentRequest.UserName} đã bình luận: {commentRequest.Content} trên bài viết '{commentRequest.Title}'";
+
+            // Nếu có ParentId thì thêm thông tin
+            if (!string.IsNullOrEmpty(commentRequest.ParentId))
+            {
+                notificationMessage += $" (trả lời bình luận ID: {commentRequest.ParentId})";
+            }
+
             // Tạo thông báo
             var notification = new Notification
             {
                 NotificationId = Ulid.NewUlid().ToString(),
                 UserId = commentRequest.UserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
-                Message = $"Người dùng {commentRequest.UserName} đã bình luận: {commentRequest.Content} trên bài viết",
+                Message = notificationMessage,
                 CreatedAt = commentRequest.CommentedDate,
                 UpdatedAt = commentRequest.CommentedDate,
                 IsRead = false
