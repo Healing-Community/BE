@@ -62,6 +62,7 @@ namespace Application.Queries.Comments.GetCommentsByPostId
                         Content = comment.Content,
                         CoverImgUrl = comment.CoverImgUrl,
                         ProfilePicture = userReply.ProfilePicture, 
+                        UserName = userReply.UserName,
                         CreatedAt = comment.CreatedAt,
                         UpdatedAt = comment.UpdatedAt,
                         Replies = new List<CommentDtoResponse>() // Initialize with an empty list
