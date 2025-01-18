@@ -16,9 +16,9 @@ namespace PRH_NotificationService_API.Consumer
             var notification = new Notification
             {
                 NotificationId = Ulid.NewUlid().ToString(),
-                UserId = followRequest.FollowerId,
+                UserId = followRequest.FollowedUserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
-                Message = $"Người dùng {followRequest.FollowingUserName} đã theo dõi người dùng {followRequest.FollowedUserName}",
+                Message = $"Người dùng {followRequest.FollowingUserName} đã theo dõi {followRequest.FollowedUserName}",
                 CreatedAt = followRequest.FollowDate,
                 UpdatedAt = followRequest.FollowDate,
                 IsRead = false

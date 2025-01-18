@@ -22,7 +22,7 @@ public class CommentServiceConsumer(INotificationRepository notificationReposito
             UserId = commentRequest.UserId,
             PostId = commentRequest.PostId,
             NotificationTypeId = notificationType.NotificationTypeId,
-            Message = $"Người dùng {commentRequest.UserName} đã bình luận: {commentRequest.Content} trên bài viết",
+            Message = $"Người dùng {commentRequest.UserName} đã bình luận: {commentRequest.Content} trên bài viết của bạn.",
             CreatedAt = commentRequest.CommentedDate,
             UpdatedAt = commentRequest.CommentedDate,
             IsRead = false
