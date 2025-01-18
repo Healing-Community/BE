@@ -25,7 +25,7 @@ public class CommentServiceConsumer(INotificationRepository notificationReposito
                 NotificationId = Ulid.NewUlid().ToString(),
                 UserId = commentRequest.UserId,
                 NotificationTypeId = notificationType.NotificationTypeId,
-                Message = $"Người dùng {commentRequest.UserName} đã bình luận: {commentRequest.Content} trên bài viết {commentRequest.}",
+                Message = $"Người dùng {commentRequest.UserName} đã bình luận: {commentRequest.Content} trên bài viết",
                 CreatedAt = commentRequest.CommentedDate,
                 UpdatedAt = commentRequest.CommentedDate,
                 IsRead = false
