@@ -39,7 +39,7 @@ namespace Persistence.Repositories
         public async Task<Post?> GetByPropertyAsync(Expression<Func<Post, bool>> predicate)
         {
             var post = await context.Posts.AsNoTracking().FirstOrDefaultAsync(predicate);
-            return post ?? new Post() { PostId = Ulid.Empty.ToString() };
+            return post;
         }
 
         public async Task<IEnumerable<Post>> GetByUserIdAsync(string userId)

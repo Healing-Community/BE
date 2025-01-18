@@ -1,14 +1,18 @@
 ﻿using Application.Commons;
 using Application.Commons.Tools;
 using Application.Interfaces.Repository;
+using Application.Interfaces.Services;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using NUlid;
+using UserInformation;
+using UserPaymentService;
 
 namespace Application.Commands.CreateAvailability
 {
     public class CreateAvailabilityCommandHandler(
+        IGrpcHelper grpcHelper,
         IExpertAvailabilityRepository expertAvailabilityRepository,
         IHttpContextAccessor httpContextAccessor,
         IExpertProfileRepository expertProfileRepository)
@@ -60,6 +64,24 @@ namespace Application.Commands.CreateAvailability
                 {
                     response.Success = false;
                     response.Errors.Add("Hồ sơ của bạn đã bị từ chối. Bạn không thể tạo lịch trống.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                    return response;
+                }
+                // Kiểm tra expert đã có thông tin thanh toán chưa
+
+                try
+                {
+                    var userPaymentInfoReply = await grpcHelper.ExecuteGrpcCallAsync<UserService.UserServiceClient, GetUserPaymentInfoRequest, GetPaymentInfoResponse>(
+                                    "UserService",
+                                    async client => await client.GetUserPaymentInfoAsync(new GetUserPaymentInfoRequest { UserId = userId })
+                                    );
+                }
+                catch
+                {
+
+                    response.Success = false;
+                    response.Errors.Add("Không tìm thấy thông tin thanh toán. Vui lòng cập nhật thông tin thanh toán trước khi tạo lịch trống.");
                     response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
                     response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     return response;

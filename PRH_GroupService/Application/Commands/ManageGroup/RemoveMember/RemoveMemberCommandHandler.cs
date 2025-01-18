@@ -79,6 +79,13 @@ namespace Application.Commands.ManageGroup.RemoveMember
                 // Xóa thành viên khỏi nhóm
                 await _userGroupRepository.DeleteAsyncV2(request.GroupId, request.MemberUserId);
 
+                var groups = await _groupRepository.GetByIdAsync(request.GroupId);
+                if (groups != null)
+                {
+                    groups.CurrentMemberCount--;
+                    await _groupRepository.UpdateAfterLeaving(groups);
+                }
+
                 response.StatusCode = 200;
                 response.Success = true;
                 response.Message = "Loại bỏ thành viên khỏi nhóm thành công.";

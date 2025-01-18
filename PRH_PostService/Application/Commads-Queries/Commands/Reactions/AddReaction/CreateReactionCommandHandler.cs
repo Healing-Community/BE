@@ -1,6 +1,8 @@
 ﻿using Application.Commons;
 using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
+using Domain.Constants;
+using Domain.Constants.AMQPMessage.Reaction;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +12,7 @@ using System.Security.Claims;
 namespace Application.Commands.Reactions.AddReaction
 {
     public class CreateReactionCommandHandler(
+        IMessagePublisher messagePublisher,
         IReactionTypeRepository reactionTypeRepository,
         IHttpContextAccessor accessor,
         IReactionRepository reactionRepository) : IRequestHandler<CreateReactionCommand, BaseResponse<ReactionType>>
@@ -70,6 +73,15 @@ namespace Application.Commands.Reactions.AddReaction
                 {
                     return BaseResponse<ReactionType>.NotFound("Loại reaction không tồn tại.");
                 }
+
+                await messagePublisher.PublishAsync(new ReactionRequestCreatedMessage
+                {
+                    ReactionRequestId = Ulid.NewUlid().ToString(),
+                    UserId = userId,
+                    PostId = request.ReactionDto.PostId,
+                    ReactionTypeId = request.ReactionDto.ReactionTypeId,
+                    ReactionDate = currentTime
+                }, QueueName.ReactionQueue, cancellationToken);
 
                 // Tạo mới một reaction
                 var newReaction = new Reaction

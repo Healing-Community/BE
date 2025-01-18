@@ -73,6 +73,11 @@ namespace Application.Queries.GetAppointmentsByUser
                 1 when appointmentDateTime > now => "Sắp diễn ra",
                 2 => "Đã hủy",
                 3 => "Đã hoàn thành",
+                4 => "Hủy thanh toán",
+                5 => "Đã hoàn thành",
+                6 => "Chờ báo cáo",
+                7 => "Hoàn tiền cho người dùng",
+                8 => "Chuyển tiền cho chuyên gia",
                 _ => "Không xác định"
             };
         }

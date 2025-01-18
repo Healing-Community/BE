@@ -12,6 +12,7 @@ using Application.Queries.GetAppointmentsByExpert;
 using Application.Queries.GetAppointmentsByUser;
 using Application.Queries.GetExpertStatistics;
 using Application.Queries.GetRecentRatings;
+using Application.Queries.GetUserRatingAndComment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,11 +30,11 @@ namespace PRH_ExpertService_API.Controllers
             var response = await sender.Send(new GetAppointmentByPropertyQuery(appointmentId));
             return response.ToActionResult();
         }
+
         [Authorize(Roles = "User")]
         [HttpGet("user")]
         public async Task<IActionResult> GetAppointmentsByUser()
         {
-            // Lấy UserId từ token
             var userId = Authentication.GetUserIdFromHttpContext(HttpContext);
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("Không xác định được người dùng.");
@@ -46,7 +47,6 @@ namespace PRH_ExpertService_API.Controllers
         [HttpGet("expert")]
         public async Task<IActionResult> GetAppointmentsByExpert()
         {
-            // Lấy ExpertProfileId từ token
             var expertProfileId = Authentication.GetUserIdFromHttpContext(HttpContext);
             if (string.IsNullOrEmpty(expertProfileId))
                 return Unauthorized("Không xác định được chuyên gia.");
@@ -126,6 +126,7 @@ namespace PRH_ExpertService_API.Controllers
             var response = await sender.Send(new GetAppointmentRatingStatusQuery { AppointmentId = appointmentId });
             return response.ToActionResult();
         }
+
         [Authorize(Roles = "Expert")]
         [HttpGet("statistics")]
         public async Task<IActionResult> GetExpertStatistics()
@@ -147,6 +148,14 @@ namespace PRH_ExpertService_API.Controllers
         public async Task<IActionResult> GetActivityReport()
         {
             var response = await sender.Send(new GetActivityReportQuery());
+            return response.ToActionResult();
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpGet("get-rating-user/{appointmentId}")]
+        public async Task<IActionResult> GetRatingUser(string appointmentId)
+        {
+            var response = await sender.Send(new GetUserRatingAndCommentQuery { AppointmentId = appointmentId});
             return response.ToActionResult();
         }
     }

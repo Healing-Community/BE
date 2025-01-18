@@ -11,7 +11,7 @@ namespace Application.Commands.CancelAppointment
 {
     public class CancelAppointmentCommandHandler(
         IAppointmentRepository appointmentRepository, IGrpcHelper grpcHelper, IHttpContextAccessor accessor,
-        IExpertAvailabilityRepository availabilityRepository) : IRequestHandler<CancelAppointmentCommand, BaseResponse<bool>>
+        IExpertAvailabilityRepository availabilityRepository, IExpertProfileRepository expertProfileRepository) : IRequestHandler<CancelAppointmentCommand, BaseResponse<bool>>
     {
         public async Task<BaseResponse<bool>> Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
@@ -50,6 +50,20 @@ namespace Application.Commands.CancelAppointment
                 availability.Status = 0; // Available
                 await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
 
+                // Trừ điểm rating của Expert nếu họ hủy lịch hẹn
+                if (userRole == "Expert")
+                {
+                    var expertProfile = await expertProfileRepository.GetByIdAsync(appointment.ExpertProfileId);
+                    if (expertProfile != null)
+                    {
+                        expertProfile.AverageRating -= 0.1M; // Trừ 0.1 điểm
+
+                        // Đảm bảo điểm rating nằm trong khoảng từ 1 đến 5
+                        expertProfile.AverageRating = Math.Clamp(expertProfile.AverageRating, 1, 5);
+
+                        await expertProfileRepository.Update(expertProfile.ExpertProfileId, expertProfile);
+                    }
+                }
 
                 var status = userRole == "User" ? 5 : userRole == "Expert" ? 6 : throw new ArgumentException("Invalid role", nameof(userRole));
                 // Grpc call to Payment service to refund the payment
@@ -65,7 +79,7 @@ namespace Application.Commands.CancelAppointment
 
                 if (userRole == "Expert")
                 {
-
+                    // Chưa có trừ điểm rating của Expert ở đây
                     return BaseResponse<bool>.SuccessReturn(reply.IsSucess, "Hủy lịch hẹn thành công điểm sẽ bị trừ n điểm.");
                 }
                 else

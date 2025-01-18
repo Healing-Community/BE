@@ -1,5 +1,5 @@
-﻿using Application.Commons.Request.Post;
-using Application.Interfaces.Repository;
+﻿using Application.Interfaces.Repository;
+using Domain.Constants.AMQPMessage.Post;
 using Domain.Entities;
 using MassTransit;
 using NUlid;

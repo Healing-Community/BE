@@ -15,7 +15,6 @@ namespace PRH_PostService_API.Controllers
     [ApiController]
     public class categoryController(ISender sender) : ControllerBase
     {
-        [Authorize]
         [HttpGet("get-all")]
         public async Task<IActionResult> GetsCategory()
         {

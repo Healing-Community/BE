@@ -6,4 +6,5 @@ public enum QueueName
     ReportQueue,
     MailQueue,
     UserReportSystemQueue,
+    FollowQueue,
 }

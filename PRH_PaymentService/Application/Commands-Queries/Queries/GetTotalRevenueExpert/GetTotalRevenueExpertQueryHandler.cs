@@ -41,7 +41,7 @@ namespace Application.Commands_Queries.Queries.GetTotalRevenueExpert
                 }
 
                 // Tính tổng doanh thu
-                var totalRevenue = payments.Sum(p => p.Amount);
+                var totalRevenue = payments.Sum(p => p.ExpertAmount);
 
                 return BaseResponse<decimal>.SuccessReturn(totalRevenue);
             }

@@ -26,12 +26,6 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
                     return BaseResponse<IEnumerable<RevenueStatisticsDto>>.SuccessReturn(new List<RevenueStatisticsDto>(), "Không tìm thấy thông tin thanh toán.");
                 }
 
-                // Chuyển đổi thời gian thanh toán sang GMT+7
-                foreach (var payment in payments)
-                {
-                    payment.PaymentDate = ConvertToGmtPlus7(payment.PaymentDate);
-                }
-
                 IEnumerable<RevenueStatisticsDto> groupedStatistics;
 
                 // Lọc theo loại nhóm (FilterType)
@@ -51,7 +45,9 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
                         break;
 
                     case "week":
-                        groupedStatistics = payments.GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, WeekOfMonth = GetWeekOfMonth(p.PaymentDate) })
+                        var currentWeekStart = DateTime.Now.StartOfWeek(DayOfWeek.Monday);
+                        groupedStatistics = payments.Where(p => p.PaymentDate >= currentWeekStart && p.PaymentDate < currentWeekStart.AddDays(7))
+                                                    .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, WeekOfMonth = GetWeekOfMonth(p.PaymentDate) })
                                                     .Select(g => new RevenueStatisticsDto
                                                     {
                                                         Year = g.Key.Year,
@@ -63,11 +59,14 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
                         break;
 
                     case "month":
-                        groupedStatistics = payments.GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
+                        var currentMonthStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                        groupedStatistics = payments.Where(p => p.PaymentDate >= currentMonthStart && p.PaymentDate < currentMonthStart.AddMonths(1))
+                                                    .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month, WeekOfMonth = GetWeekOfMonth(p.PaymentDate) })
                                                     .Select(g => new RevenueStatisticsDto
                                                     {
                                                         Year = g.Key.Year,
                                                         Month = g.Key.Month,
+                                                        WeekOfMonth = g.Key.WeekOfMonth,
                                                         TotalRevenue = g.Sum(p => p.Amount * platformFee.PlatformFeeValue / 100),
                                                         TotalBookings = g.Count()
                                                     }).ToList();
@@ -95,23 +94,6 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
             }
         }
 
-        private static DateTime ConvertToGmtPlus7(DateTime utcDate)
-        {
-            try
-            {
-                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                return TimeZoneInfo.ConvertTimeFromUtc(utcDate, timeZoneInfo);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                throw new Exception("The specified time zone (SE Asia Standard Time) could not be found.");
-            }
-            catch (InvalidTimeZoneException)
-            {
-                throw new Exception("The specified time zone (SE Asia Standard Time) is invalid.");
-            }
-        }
-
         private static int GetWeekOfMonth(DateTime date)
         {
             var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
@@ -122,6 +104,15 @@ namespace Application.Commands_Queries.Queries.GetRevenueStatistics
             if (currentDayWeek == 0) currentDayWeek = 7; // Sunday as 7
 
             return ((date.Day + firstDayWeek - 2) / 7) + 1;
+        }
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
         }
     }
 }

@@ -14,6 +14,6 @@ namespace Application.Interfaces.Repository
         Task <double> GetReadNotificationRateAsync();
         Task<Dictionary<string, int>> GetPopularNotificationTypesAsync();
         Task<int> GetUnreadCountAsync(string userId);
-        Task<List<Notification>> GetNotificationsByUserAsync(string userId, bool includeRead);
+        Task<List<Notification>> GetNotificationsByUserAsync(string userId);
     }
 }

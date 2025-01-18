@@ -6,11 +6,15 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using NUlid;
+using Application.Interfaces.AMQP;
+using Domain.Constants;
+using Domain.Constants.AMQPMessage.Share;
 
 namespace Application.Commands_Queries.Commands.CreateShare;
 
-public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpContextAccessor accessor) : IRequestHandler<CreateShareCommand, BaseResponse<string>>
-{    public async Task<BaseResponse<string>> Handle(CreateShareCommand request, CancellationToken cancellationToken)
+public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpContextAccessor accessor, IMessagePublisher messagePublisher) : IRequestHandler<CreateShareCommand, BaseResponse<string>>
+{
+    public async Task<BaseResponse<string>> Handle(CreateShareCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -23,9 +27,9 @@ public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpCo
             // Check if the platform is Internal and prevent duplicate shares
             if (request.ShareDto.Platform?.Equals("Internal", StringComparison.OrdinalIgnoreCase) == true)
             {
-                var existingShare = await shareRepository.GetByPropertyAsync(s => 
-                    s.PostId == request.ShareDto.PostId && 
-                    s.UserId == userId && 
+                var existingShare = await shareRepository.GetByPropertyAsync(s =>
+                    s.PostId == request.ShareDto.PostId &&
+                    s.UserId == userId &&
                     s.Platform == "Internal");
 
                 if (existingShare != null)
@@ -47,6 +51,18 @@ public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpCo
             };
 
             await shareRepository.Create(newShare);
+
+            // Create and publish the ShareMessage
+            var shareMessage = new ShareMessage
+            {
+                PostId = newShare.PostId,
+                UserId = newShare.UserId,
+                Platform = newShare.Platform,
+                Description = newShare.Description,
+                ShareDate = newShare.CreatedAt
+            };
+
+            await messagePublisher.PublishAsync(shareMessage, QueueName.ShareQueue, cancellationToken);
 
             var message = request.ShareDto.Platform?.Equals("Internal", StringComparison.OrdinalIgnoreCase) == true
                 ? "Chia sẻ bài viết thành công"

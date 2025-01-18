@@ -16,6 +16,6 @@ public class MailConsumer(IEmailRepository emailRepository) : IConsumer<SendMail
             Body = message.Body
         };
         await emailRepository.SendEmailAsync(sendMailMessage.To, sendMailMessage.Subject, sendMailMessage.Body);
-        // Email sent successfully
+        await Console.Out.WriteLineAsync($"Mail sent to {sendMailMessage.To}");
     }
 }
