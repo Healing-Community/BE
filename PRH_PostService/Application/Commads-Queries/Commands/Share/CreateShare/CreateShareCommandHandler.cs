@@ -9,10 +9,15 @@ using NUlid;
 using Application.Interfaces.AMQP;
 using Domain.Constants;
 using Domain.Constants.AMQPMessage.Share;
+using Application.Interfaces.Services;
+using UserInformation;
 
 namespace Application.Commands_Queries.Commands.CreateShare;
 
-public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpContextAccessor accessor, IMessagePublisher messagePublisher) : IRequestHandler<CreateShareCommand, BaseResponse<string>>
+public class CreateShareCommandHandler(IShareRepository shareRepository,
+    IHttpContextAccessor accessor, IMessagePublisher messagePublisher,
+    IGrpcHelper grpcHelper,
+    IPostRepository postRepository) : IRequestHandler<CreateShareCommand, BaseResponse<string>>
 {
     public async Task<BaseResponse<string>> Handle(CreateShareCommand request, CancellationToken cancellationToken)
     {
@@ -38,6 +43,11 @@ public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpCo
                 }
             }
 
+            var userReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
+                    "UserService",
+                    async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = userId })
+                );
+
             // Create and save the new share
             var newShare = new Share
             {
@@ -52,14 +62,23 @@ public class CreateShareCommandHandler(IShareRepository shareRepository, IHttpCo
 
             await shareRepository.Create(newShare);
 
+            var post = await postRepository.GetByIdAsync(newShare.PostId);
+
+            var userPostReply = await grpcHelper.ExecuteGrpcCallAsync<UserInfo.UserInfoClient, UserInfoRequest, UserInfoResponse>(
+                    "UserService",
+                    async client => await client.GetUserInfoAsync(new UserInfoRequest { UserId = post.UserId })
+                );
+
             // Create and publish the ShareMessage
             var shareMessage = new ShareMessage
             {
                 PostId = newShare.PostId,
                 UserId = newShare.UserId,
+                UserPostId = post.UserId,
                 Platform = newShare.Platform,
                 Description = newShare.Description,
-                ShareDate = newShare.CreatedAt
+                ShareDate = newShare.CreatedAt,
+                UserName = userReply.UserName,
             };
 
             await messagePublisher.PublishAsync(shareMessage, QueueName.ShareQueue, cancellationToken);

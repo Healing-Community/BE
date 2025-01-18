@@ -47,9 +47,11 @@ namespace Application.Queries.GetUserNotifications
                 {
                     NotificationId = n.NotificationId,
                     NotificationTypeId = n.NotificationTypeId,
+                    UserId = n.UserId,
                     Message = n.Message,
                     IsRead = n.IsRead,
-                    CreatedAt = n.CreatedAt
+                    CreatedAt = n.CreatedAt,
+                    PostId = n.PostId
                 }).ToList();
                 response.StatusCode = 200;
                 response.Message = "Lấy thông báo thành công.";

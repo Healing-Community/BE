@@ -24,6 +24,7 @@ namespace Application.Commands.CancelAppointment
                 {
                     return BaseResponse<bool>.NotFound("Lịch hẹn không tồn tại.");
                 }
+
                 // Kiểm tra trạng thái. Nếu Completed(3) hoặc Cancelled(2) thì không thể hủy.
                 if (appointment.Status == 3 || appointment.Status == 2)
                 {
@@ -31,7 +32,6 @@ namespace Application.Commands.CancelAppointment
                 }
 
                 // Kiểm tra lịch hẹn với thời gian hiện tại xem đã qua 24h kể từ lúc hẹn chưa.
-                // Assuming AppointmentDate is a date-only property (e.g., DateOnly in C# 10 or a DateTime with time truncated)
                 var appointmentDateTime = appointment.AppointmentDate.ToDateTime(TimeOnly.MinValue).AddHours(24);
                 if (DateTime.UtcNow.AddHours(7) > appointmentDateTime)
                 {
@@ -51,12 +51,14 @@ namespace Application.Commands.CancelAppointment
                 await availabilityRepository.Update(availability.ExpertAvailabilityId, availability);
 
                 // Trừ điểm rating của Expert nếu họ hủy lịch hẹn
+                decimal penalty = 0.1M; // Mức phạt cố định
                 if (userRole == "Expert")
                 {
                     var expertProfile = await expertProfileRepository.GetByIdAsync(appointment.ExpertProfileId);
                     if (expertProfile != null)
                     {
-                        expertProfile.AverageRating -= 0.1M; // Trừ 0.1 điểm
+                        // Trừ điểm rating và cập nhật
+                        expertProfile.AverageRating -= penalty;
 
                         // Đảm bảo điểm rating nằm trong khoảng từ 1 đến 5
                         expertProfile.AverageRating = Math.Clamp(expertProfile.AverageRating, 1, 5);
@@ -79,11 +81,11 @@ namespace Application.Commands.CancelAppointment
 
                 if (userRole == "Expert")
                 {
-                    return BaseResponse<bool>.SuccessReturn(reply.IsSucess, "Hủy lịch hẹn thành công điểm sẽ bị trừ n điểm.");
+                    return BaseResponse<bool>.SuccessReturn(reply.IsSucess, $"Hủy lịch hẹn thành công. Điểm rating của bạn đã bị trừ {penalty} điểm.");
                 }
                 else
                 {
-                    return BaseResponse<bool>.SuccessReturn(reply.IsSucess, "Hủy lịch hẹn thành công tiền sẽ được hoàn trả trong vòng 1-5 ngày.");
+                    return BaseResponse<bool>.SuccessReturn(reply.IsSucess, "Hủy lịch hẹn thành công. Tiền sẽ được hoàn trả trong vòng 1-5 ngày.");
                 }
             }
             catch (Exception ex)

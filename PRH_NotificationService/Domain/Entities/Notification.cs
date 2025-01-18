@@ -4,6 +4,7 @@
     {
         public required string NotificationId { get; init; }
         public required string UserId { get; init; }
+        public string? PostId { get; init; }
         public required string NotificationTypeId { get; init; }
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; set; }

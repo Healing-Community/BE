@@ -49,13 +49,13 @@ namespace Application.Commands.ManageGroup.RemoveMember
                 }
 
                 // Kiểm tra nếu người thực hiện không phải là chủ nhóm
-                if (group.CreatedByUserId != ownerUserId)
-                {
-                    response.Success = false;
-                    response.Message = "Chỉ có chủ nhóm mới có quyền loại bỏ thành viên.";
-                    response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    return response;
-                }
+                //if (group.CreatedByUserId != ownerUserId)
+                //{
+                //    response.Success = false;
+                //    response.Message = "Chỉ có chủ nhóm mới có quyền loại bỏ thành viên.";
+                //    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                //    return response;
+                //}
 
                 // Kiểm tra nếu chủ nhóm đang cố gắng xóa chính mình
                 if (request.MemberUserId == ownerUserId)
@@ -78,6 +78,13 @@ namespace Application.Commands.ManageGroup.RemoveMember
 
                 // Xóa thành viên khỏi nhóm
                 await _userGroupRepository.DeleteAsyncV2(request.GroupId, request.MemberUserId);
+
+                var groups = await _groupRepository.GetByIdAsync(request.GroupId);
+                if (groups != null)
+                {
+                    groups.CurrentMemberCount--;
+                    await _groupRepository.UpdateAfterLeaving(groups);
+                }
 
                 response.StatusCode = 200;
                 response.Success = true;

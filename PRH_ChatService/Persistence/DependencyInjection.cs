@@ -11,7 +11,7 @@ public static class DependencyInjection
     public static void AddPersistenceDependencies(this IServiceCollection services)
     {
         // AMQP
-        services.AddScoped<IMessagePublisher, MessagePublisher>();
+        //services.AddScoped<IMessagePublisher, MessagePublisher>();
         // Repositories
 
         #region MongoDB

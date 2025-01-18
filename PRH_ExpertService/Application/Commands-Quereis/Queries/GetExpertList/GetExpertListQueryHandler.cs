@@ -42,13 +42,8 @@ namespace Application.Queries.GetExpertList
                     // Tính tổng số đánh giá
                     var totalRatings = ratedAppointments.Count;
 
-                    // Tính trung bình đánh giá và làm tròn đến nửa sao gần nhất
-                    decimal averageRating = 0M;
-                    if (totalRatings > 0)
-                    {
-                        averageRating = (decimal)ratedAppointments.Average(a => a.Rating.Value);
-                        averageRating = Math.Round(averageRating * 2, MidpointRounding.AwayFromZero) / 2;
-                    }
+                    // Tính trung bình đánh giá từ cơ sở dữ liệu
+                    decimal averageRating = expertProfile.AverageRating;
 
                     var expertDetailsDto = new ExpertListDTO
                     {
@@ -56,9 +51,9 @@ namespace Application.Queries.GetExpertList
                         Fullname = expertProfile.Fullname,
                         Specialization = expertProfile.Specialization,
                         AverageRating = averageRating,
-                        TotalAppointments = completedAppointments.Count,
+                        TotalAppointments = completedAppointments.Count, // Tính từ danh sách cuộc hẹn
                         ProfileImageUrl = expertProfile.ProfileImageUrl,
-                        TotalRatings = totalRatings
+                        TotalRatings = totalRatings // Tính từ danh sách cuộc hẹn đã được đánh giá
                     };
                     expertDetailsDtos.Add(expertDetailsDto);
                 }

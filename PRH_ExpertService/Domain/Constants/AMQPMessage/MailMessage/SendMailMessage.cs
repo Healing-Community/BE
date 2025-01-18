@@ -1,6 +1,4 @@
-using System;
-
-namespace Domain.Constants.AMQPMessage.MailMessage;
+namespace Domain.Constants.AMQPMessage;
 
 public class SendMailMessage
 {

@@ -59,9 +59,9 @@ app.Map("/ws", async context =>
 
 #region MassTransitHostedService
 
-// Configure MassTransit bus control
-var busControl = app.Services.GetRequiredService<IBusControl>();
-await busControl.StartAsync();
+//// Configure MassTransit bus control
+//var busControl = app.Services.GetRequiredService<IBusControl>();
+//await busControl.StartAsync();
 
 #endregion
 

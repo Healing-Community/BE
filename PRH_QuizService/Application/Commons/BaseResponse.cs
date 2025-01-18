@@ -32,7 +32,7 @@ public class BaseResponse<T>
         {
             Id = Ulid.NewUlid().ToString(),
             StatusCode = StatusCodes.Status200OK,
-            Message = "thành công",
+            Message = "Thành công",
             Success = true,
             Data = classInstance,
             Timestamp = DateTime.UtcNow + TimeSpan.FromHours(7) // UTC+7

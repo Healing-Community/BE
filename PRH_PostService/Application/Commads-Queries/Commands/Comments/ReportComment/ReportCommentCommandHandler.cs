@@ -72,6 +72,28 @@ public class ReportCommentCommandHandler(IGrpcHelper grpcHelper, ICommentReposit
     // Make this mail formly in the future
     public string EmailBody(string commentContent, string reportedUserName)
     {
-        return $"Bạn đã báo cáo bình luận '{commentContent}' của người dùng {reportedUserName}. Báo cáo của bạn đã được gửi thành công và sẽ được xử lý trong thời gian sớm nhất. Cảm ơn bạn đã đóng góp vào việc xây dựng cộng đồng";
+        return $@"
+    <html>
+    <body style=""margin: 0; padding: 0; font-family: 'Verdana', sans-serif; background-color: #f0f4f8;"">
+        <div style=""max-width: 650px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);"">
+            <div style=""text-align: center;"">
+                <img src=""https://firebasestorage.googleapis.com/v0/b/healing-community.appspot.com/o/logo%2Flogo.png?alt=media&token=4e7cda70-2c98-4185-a693-b03564f68a4c"" alt=""Healing Image"" style=""max-width: 100%; height: auto; border-radius: 8px;"">
+            </div>
+            <h2 style=""color: #4caf50; text-align: center; margin-top: 20px;"">Báo cáo bình luận</h2>
+            <p style=""font-size: 17px; line-height: 1.8; color: #444; text-align: justify;"">
+                Bạn đã báo cáo bình luận <strong>'{commentContent}'</strong> của người dùng <strong>{reportedUserName}</strong>.
+            </p>
+            <p style=""font-size: 17px; line-height: 1.8; color: #444; text-align: justify;"">
+                Báo cáo của bạn đã được gửi thành công và sẽ được xử lý trong thời gian sớm nhất.
+            </p>
+            <p style=""font-size: 17px; line-height: 1.8; color: #444; text-align: justify;"">
+                Cảm ơn bạn đã đóng góp vào việc xây dựng cộng đồng <strong>Healing Community</strong>.
+            </p>
+            <p style=""text-align: center; color: #999; font-size: 13px;"">&copy; 2024 Healing Community. Tất cả các quyền được bảo lưu.</p>
+        </div>
+    </body>
+    </html>
+    ";
     }
+
 }

@@ -5,5 +5,6 @@ namespace Application.Interfaces.Repository
 {
     public interface ICertificateTypeRepository : IReadRepository<CertificateType>, ICreateRepository<CertificateType>, IUpdateRepository<CertificateType>, IDeleteRepository
     {
+        Task<IEnumerable<CertificateType>> GetMandatoryCertificateTypesAsync();
     }
 }

@@ -36,7 +36,7 @@ public class QuizController(ISender sender) : ControllerBase
         var response = await sender.Send(new GetDASS21Quizz());
         return response.ToActionResult();
     }
-    [Authorize(Roles = "User")]
+    [Authorize]
     [HttpPost("submit_dass21_quizz")]
     public async Task<IActionResult> SubmitDass21([FromBody] Dass21QuizzResultRequest dass21QuizzResultRequest)
     {
@@ -44,7 +44,7 @@ public class QuizController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "User")]
+    [Authorize]
     [HttpGet("get_dass21_result")]
     public async Task<IActionResult> GetDass21Result()
     {
@@ -67,7 +67,7 @@ public class QuizController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "User")]
+    [Authorize]
     [HttpPost("submit-mbti21-quizz")]
     public async Task<IActionResult> SubmitMBTI21([FromBody] MBTIQuizzResultRequest request)
     {
@@ -75,7 +75,7 @@ public class QuizController(ISender sender) : ControllerBase
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "User")]
+    [Authorize]
     [HttpGet("get-mbti21-result")]
     public async Task<IActionResult> GetMBTI21Result()
     {

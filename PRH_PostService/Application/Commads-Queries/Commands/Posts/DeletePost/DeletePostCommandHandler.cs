@@ -39,13 +39,13 @@ namespace Application.Commands.Posts.DeletePost
                     return response;
                 }
 
-                if (post.UserId != userId)
-                {
-                    response.Success = false;
-                    response.Message = "Bạn không có quyền xoá bài viết này";
-                    response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    return response;
-                }
+                //if (post.UserId != userId)
+                //{
+                //    response.Success = false;
+                //    response.Message = "Bạn không có quyền xoá bài viết này";
+                //    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                //    return response;
+                //}
 
                 await postRepository.DeleteAsync(request.Id);
                 response.StatusCode = (int)HttpStatusCode.OK;
