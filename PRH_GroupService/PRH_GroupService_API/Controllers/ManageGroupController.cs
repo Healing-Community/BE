@@ -39,10 +39,6 @@ namespace PRH_GroupService_API.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveMember(string groupId, string memberUserId)
         {
-            if (!Authentication.IsUserInRole(HttpContext, "Admin", "Moderator"))
-            {
-                return Forbid("Chỉ có chủ nhóm mới có quyền loại bỏ thành viên.");
-            }
             var response = await _sender.Send(new RemoveMemberCommand(groupId, memberUserId, HttpContext));
             return response.ToActionResult();
         }
