@@ -13,14 +13,14 @@ public class GetRoleByPropertyQueryHandler(IRoleRepository roleRepository, IUser
 
             if (user == null)
             {
-                return BaseResponse<Role>.NotFound();
+                return BaseResponse<Role>.SuccessReturn(null,message:"User not found");
             }
 
             var role = await roleRepository.GetByPropertyAsync(r => r.RoleId == user.RoleId);
 
             if (role == null)
             {
-                return BaseResponse<Role>.NotFound();
+                return BaseResponse<Role>.SuccessReturn(null,message:"Role not found");
             }
 
             return BaseResponse<Role>.SuccessReturn(role);
