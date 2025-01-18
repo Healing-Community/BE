@@ -13,4 +13,6 @@ public enum AppointmentStatusEnum
     Reported = 6,
     ReportSuccess = 7,
     ReportFailed = 8,
+    PayForUser = 9,
+    PayForExpert = 10,
 }

@@ -2,10 +2,15 @@ namespace Domain.Enum;
 
 public enum AppointmentStatus
 {
-    PendingPayment = 0, // Chờ thanh toán
-    Scheduled = 1, // Đã tạo mã QR
-    Cancelled = 2, // Đã hủy
-    Completed = 3, // Đã hoàn thành
-    CancelPayment = 4, // Đã hủy thanh toán
-    Refunded = 5, // Đã hoàn lại tiền
+    PendingPayment = 0,
+    Scheduled = 1,
+    Canceled = 2,
+    Completed = 3,
+    CancelledPayment = 4,
+    Refunded = 5,
+    Reported = 6,
+    ReportSuccess = 7,
+    ReportFailed = 8,
+    PayForUser = 9,
+    PayForExpert = 10,
 }
