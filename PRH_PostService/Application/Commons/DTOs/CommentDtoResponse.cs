@@ -10,6 +10,7 @@
         public string Content { get; set; }
         public string? CoverImgUrl { get; set; }
         public string? ProfilePicture {  get; set; }
+        public string? UserName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public List<CommentDtoResponse> Replies { get; set; } = new();

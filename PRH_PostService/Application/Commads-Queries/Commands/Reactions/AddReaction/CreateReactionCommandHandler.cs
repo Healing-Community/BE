@@ -93,7 +93,8 @@ namespace Application.Commands.Reactions.AddReaction
                 await messagePublisher.PublishAsync(new ReactionRequestCreatedMessage
                 {
                     ReactionRequestId = Ulid.NewUlid().ToString(),
-                    UserId = userId,
+                    UserReactionId = userId,
+                    UserPostId = post.UserId,
                     PostId = request.ReactionDto.PostId,
                     ReactionTypeId = request.ReactionDto.ReactionTypeId,
                     UserName = userReply.UserName,

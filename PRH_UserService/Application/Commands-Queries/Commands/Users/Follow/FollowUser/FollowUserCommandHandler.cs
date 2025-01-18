@@ -40,7 +40,9 @@ public class FollowUserCommandHandler(IUserRepository userRepository, IMapper ma
             {
                 FollowerId = userId,
                 FollowedUserId = request.FollowUserDto.FollowerId,
-                FollowDate = createdFollower.CreatedAt
+                FollowDate = createdFollower.CreatedAt,
+                FollowedUserName = followUser.UserName,
+                FollowingUserName = user.UserName
             };
 
             // Publish follow message to queue

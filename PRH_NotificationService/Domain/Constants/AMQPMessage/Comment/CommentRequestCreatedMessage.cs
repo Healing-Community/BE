@@ -7,7 +7,8 @@
         public string? UserName { get; set; }
         public required string PostId { get; set; }
         public string? ParentId { get; set; }
-        public required string UserId { get; set; }
+        public required string UserCommentId { get; set; }
+        public required string UserPostId { get; set; }
         public string? Title { get; set; }
         public string? Content { get; set; }
         public DateTime CommentedDate { get; set; }

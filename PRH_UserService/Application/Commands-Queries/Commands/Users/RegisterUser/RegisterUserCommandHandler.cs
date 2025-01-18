@@ -1,8 +1,11 @@
 ﻿using System.Net;
 using Application.Commons;
 using Application.Commons.Enum;
+using Application.Interfaces.AMQP;
 using Application.Interfaces.Repository;
 using Application.Interfaces.Services;
+using Domain.Constants;
+using Domain.Constants.AMQPMessage;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +16,8 @@ namespace Application.Commands_Queries.Commands.Users.RegisterUser;
 public class RegisterUserCommandHandler(
     ITokenService tokenService,
     IUserRepository userRepository,
-    IEmailService emailService)
+    IEmailService emailService,
+    IMessagePublisher messagePublisher)
     : IRequestHandler<RegisterUserCommand, DetailBaseResponse<string>>
 {
     public async Task<DetailBaseResponse<string>> Handle(RegisterUserCommand request,
@@ -85,6 +89,14 @@ public class RegisterUserCommandHandler(
             response.StatusCode = (int)HttpStatusCode.OK;
             response.Success = true;
             response.Message = "Đăng ký thành công. Vui lòng kiểm tra email của bạn để xác thực tài khoản.";
+
+            if (!request.RegisterUserDto.IsExpert) return response;
+            // Publish message to RabbitMQ
+            await messagePublisher.PublishAsync(new CreateExpertMessage{
+                UserId = user.UserId,
+                UserName = user.UserName,
+                UserEmail = user.Email
+            },QueueName.ExpertCreateQueue, cancellationToken);
         }
         catch (Exception ex)
         {
