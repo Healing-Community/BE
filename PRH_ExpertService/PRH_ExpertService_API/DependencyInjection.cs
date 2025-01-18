@@ -10,6 +10,8 @@ using PRH_ExpertService_API.FileUpload;
 using Application.Commons;
 using Microsoft.AspNetCore.Mvc;
 using NUlid;
+using PRH_ExpertService_API.Consumer;
+using Domain.Constants.AMQPMessage;
 
 namespace PRH_ExpertService_API;
 
@@ -108,6 +110,8 @@ public static class DependencyInjection
 
         services.AddMassTransit(x =>
         {
+            x.AddConsumer<CreateExpertProfileServiceConsumer>();
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(new Uri(rabbitMq["Host"] ?? throw new NullReferenceException()), h =>
@@ -127,6 +131,11 @@ public static class DependencyInjection
                     cbConfig.TrackingPeriod = TimeSpan.FromMinutes(1);
                     cbConfig.ActiveThreshold = 5;
                     cbConfig.ResetInterval = TimeSpan.FromMinutes(5);
+                });
+
+                cfg.ReceiveEndpoint(QueueName.ExpertCreateQueue.ToString(), ep =>
+                {
+                    ep.ConfigureConsumer<CreateExpertProfileServiceConsumer>(context);
                 });
             });
         });

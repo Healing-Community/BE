@@ -16,4 +16,6 @@ public enum QueueName
     SyncCommentReportQueue, // to sync with other services
     SyncPostReportQueue, // to sync with other services
     SyncAppointmentReportQueue, // to sync with other services
+
+    ExpertCreateQueue,
 }
