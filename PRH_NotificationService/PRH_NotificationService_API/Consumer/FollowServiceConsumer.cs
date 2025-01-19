@@ -12,7 +12,7 @@ namespace PRH_NotificationService_API.Consumer
         {
             var followRequest = context.Message;
 
-            var notificationType = await notificationTypeRepository.GetByIdAsync("02");
+            var notificationType = await notificationTypeRepository.GetByIdAsync("06");
             var notification = new Notification
             {
                 NotificationId = Ulid.NewUlid().ToString(),
