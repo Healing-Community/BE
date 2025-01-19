@@ -98,6 +98,15 @@ namespace Application.Commands.BookAppointment
                     return response;
                 }
 
+                if (expertProfile == null || expertProfile.Status != 1) // Chỉ cho phép nếu status = 1
+                {
+                    response.Success = false;
+                    response.Errors.Add("Lịch hẹn này của chuyên gia hiện đang bị khóa và không thể đặt vào lúc này.");
+                    response.Message = string.Join(" ", response.Errors); // Gộp lỗi vào Message
+                    response.StatusCode = StatusCodes.Status403Forbidden;
+                    return response;
+                }
+
                 var expertEmail = expertProfile.Email;
 
                 // Đổi trạng thái của lịch trống sang PendingPayment
