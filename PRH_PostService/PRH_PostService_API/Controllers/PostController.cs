@@ -60,7 +60,7 @@ namespace PRH_PostService_API.Controllers
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [HttpGet("get-by-post-id/{postId}")]
         public async Task<IActionResult> GetById(string postId)
         {

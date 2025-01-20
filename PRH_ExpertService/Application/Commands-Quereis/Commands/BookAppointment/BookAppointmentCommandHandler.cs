@@ -196,6 +196,9 @@ namespace Application.Commands.BookAppointment
                 Vui lòng kiểm tra lại thông tin trên và có mặt đúng giờ để đảm bảo buổi hẹn diễn ra suôn sẻ. Nếu bạn có bất kỳ thay đổi nào cần cập nhật, vui lòng liên hệ với chúng tôi qua email hoặc hotline.
             </p>
             <p style=""font-size: 17px; line-height: 1.8; color: #444; text-align: justify;"">
+            Nếu bạn chưa thanh toán thì có thể bỏ qua email này, Link thanh toán sẽ hết hạn sau 5 phút.
+            </p>
+            <p style=""font-size: 17px; line-height: 1.8; color: #444; text-align: justify;"">
                 Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của <strong>Healing Community</strong>. Chúng tôi hy vọng sẽ mang lại cho bạn trải nghiệm tốt nhất.
             </p>
             <p style=""text-align: center; color: #999; font-size: 13px;"">&copy; 2024 Healing Community. Tất cả các quyền được bảo lưu.</p>
