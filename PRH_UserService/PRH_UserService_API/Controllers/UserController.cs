@@ -124,7 +124,7 @@ public class UserController(ISender sender, IHttpContextAccessor accessor) : Con
     {
         //var request = accessor.HttpContext?.Request;
         //var baseUrl = $"{request?.Scheme}://{request?.Host}";
-        var baseUrl = $"http://35.240.242.49:8000/user";
+        var baseUrl = $"https://nghialoe.site/user";
         var response = await sender.Send(new RegisterUserCommand(registerUserDto, baseUrl));
         return response.ToActionResult();
     }
